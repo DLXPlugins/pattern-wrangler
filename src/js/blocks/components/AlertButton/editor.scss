@@ -1,0 +1,26 @@
+.alerts-dlx-button-popover-base-control {
+	padding: 16px;
+}
+.alertx-dlx-button-link {
+	max-width: 100%;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+}
+
+.alerts-dlx-button-wrapper {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+}
+.alerts-dlx-button-wrapper {
+	.alertx-dlx-button-link-icon {
+		visibility: hidden;
+	}
+
+	&:hover .alertx-dlx-button-link-icon, &:focus .alertx-dlx-button-link-icon{
+		visibility: visible;
+	}
+}
+.alerts-dlx-link-toggle {
+	margin-top: 15px;
+}

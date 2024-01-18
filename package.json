@@ -1,0 +1,79 @@
+{
+  "name": "pattern-wrangler",
+  "version": "1.0.0",
+  "description": "Manage your block patterns.",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "wp-scripts build --env mode=production",
+    "start": "wp-scripts start --env mode=development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dlxplugins/dlx-pattern-wrangler.git"
+  },
+  "keywords": [
+    "generateblocks",
+    "hacks"
+  ],
+  "author": "Ronald Huereca",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/dlxplugins/dlx-pattern-wrangler/issues"
+  },
+  "homepage": "https://dlxplugins.com/plugins/dlx-pattern-wrangler/",
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.18.2",
+    "@babel/plugin-transform-arrow-functions": "^7.17.12",
+    "@babel/plugin-transform-class-properties": "^7.23.3",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-react": "^7.17.12",
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/pro-duotone-svg-icons": "^6.4.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@types/photoswipe": "^4.1.2",
+    "@types/react": "^18.0.14",
+    "@wordpress/commands": "^0.16.0",
+    "@wordpress/components": "^25.11.0",
+    "@wordpress/element": "^4.9.0",
+    "@wordpress/eslint-plugin": "^12.8.0",
+    "@wordpress/i18n": "^4.11.0",
+    "@wordpress/icons": "^9.36.0",
+    "@wordpress/scripts": "^26.16.0",
+    "axios": "^1.6.1",
+    "babel-plugin-macros": "^3.1.0",
+    "classnames": "^2.3.1",
+    "css-loader": "^6.7.1",
+    "dompurify": "^2.4.0",
+    "eslint": "^8.18.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "grunt": "^1.6.1",
+    "grunt-contrib-compress": "^2.0.0",
+    "lodash.uniqueid": "^4.0.1",
+    "lucide-react": "^0.292.0",
+    "mini-css-extract-plugin": "^2.6.1",
+    "prettier": "^2.7.1",
+    "prettier-eslint": "^15.0.1",
+    "process": "^0.11.10",
+    "prop-types": "^15.8.1",
+    "qs": "^6.10.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2",
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.66.1",
+    "sass-loader": "^13.0.2",
+    "scss-tokenizer": "^0.4.3",
+    "use-async-resource": "^2.2.2",
+    "util": "^0.12.4",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-remove-empty-scripts": "^0.8.1"
+  },
+  "dependencies": {
+    "@wordpress/a11y": "^3.11.0",
+    "grunt-cli": "^1.4.3",
+    "html-to-react": "^1.4.8"
+  }
+}

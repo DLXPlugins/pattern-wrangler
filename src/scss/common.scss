@@ -1,0 +1,94 @@
+@import 'button-resets.scss';
+@import 'block-editor.scss';
+
+$white: #ffffff;
+
+/* MaterialUI Fonts */
+.template-material *,
+.template-chakra *,
+.template-bootstrap * {
+	font-family: 'Lato', 'Helvetica', 'Arial', sans-serif;
+}
+
+a.alerts-dlx-button.button-reset,
+a.alerts-dlx-button,
+button.button-reset,
+button.button-reset:hover,
+a.alerts-dlx-button,
+button.button-reset.components-button,
+button.button-reset.components-button:hover {
+	padding: 10px 30px;
+	border-radius: 0.3125em;
+	margin-top: 0.5em;
+	line-height: 1.2em;
+	font-size: 1em;
+	height: auto;
+	text-decoration: none;
+	transition: all 0.3s ease-in-out;
+
+	& ~ .button-reset,
+	& ~ .button-reset:hover {
+		margin-top: 0.5em;
+		padding: 0;
+		transition: all 0.3s ease-in-out;
+	}
+}
+
+.template-chakra {
+	a.alerts-dlx-button.button-reset,
+	a.alerts-dlx-button,
+	button.button-reset,
+	button.button-reset:hover,
+	a.alerts-dlx-button,
+	button.button-reset.components-button,
+	button.button-reset.components-button:hover {
+		border-radius: 0;
+	}
+}
+
+/* Block margins on front-end and block editor */
+.template-material,
+.template-chakra,
+.template-bootstrap,
+.template-shoelace {
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+	margin-block-start: 1.5rem;
+    margin-block-end: 1.5rem;
+
+	figcaption h2 {
+		font-family: 'Lato', 'Helvetica', 'Arial', sans-serif;
+		font-weight: 900;
+	}
+}
+
+/* Consolidate variants for ChakraUI options */
+.alerts-dlx-chakra-variants,
+.alerts-dlx-material-variants,
+.alerts-dlx-shoelace-variants,
+.alerts-dlx-chakra-mode,
+.alerts-dlx-material-mode,
+.alerts-dlx-bootstrap-mode {
+	.components-button-group {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		row-gap: 8px;
+		column-gap: 8px;
+		justify-content: center;
+		button {
+			display: flex;
+			justify-content: center;
+			width: 100%;
+		}
+	}
+}
+
+figure.alerts-dlx-alert {
+	text-align: left;
+	box-sizing: border-box;
+}
+.alerts-dlx-content a,
+.alerts-dlx-content a:hover {
+	color: inherit;
+	text-decoration: underline;
+}
