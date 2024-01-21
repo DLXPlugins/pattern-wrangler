@@ -122,20 +122,44 @@ const Interface = ( props ) => {
 					return (
 						<li key={ category.slug }>
 							<div className="dlx-category__controls">
-								<Controller
-									name={ `categories.${ category.slug }.enabled` }
-									control={ control }
-									render={ ( { field: { onChange, value } } ) => (
-										<ToggleControl
-											label={ category.label }
-											checked={ value }
-											onChange={ ( boolValue ) => {
-												onChange( boolValue );
-											} }
-											help={ category.slug }
+								<div className="dlx-category__controls__grid">
+									<div className="dlx-category__drag-handle">
+										drag
+									</div>
+									<div className="dlx-category__label-wrapper">
+										<div className="dlx-category__label">
+											{ category.label }
+											<span className="dlx-category__edit">
+												<FontAwesomeIcon icon={ faEye } />
+											</span>
+										</div>
+										<div className="dlx-category__slug">
+											{ category.slug }
+										</div>
+									</div>
+									<div className="dlx-category__toggle">
+										<Controller
+											name={ `categories.${ category.slug }.enabled` }
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													aria-label={ category.label }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+												/>
+											) }
 										/>
-									) }
-								/>
+									</div>
+								</div>
+								{
+									category.custom && (
+										<div className="dlx-category__remove">
+											<FontAwesomeIcon icon={ CircularExclamation } />
+										</div>
+									)
+								}
 							</div>
 						</li>
 					);

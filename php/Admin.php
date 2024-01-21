@@ -397,6 +397,16 @@ class Admin {
 			4
 		);
 
+		add_submenu_page(
+			'dlx-pattern-wrangler',
+			__( 'Settings', 'dlx-pattern-wrangler' ),
+			__( 'Settings', 'dlx-pattern-wrangler' ),
+			'manage_options',
+			'dlx-pattern-wrangler',
+			array( $this, 'admin_page' ),
+			1
+		);
+
 		// Show core patterns (synced, unsynced) if enabled.
 		$can_show_core_patterns_ui = (bool) $options['showSyncedPatternsUI'];
 		if ( $can_show_core_patterns_ui ) {

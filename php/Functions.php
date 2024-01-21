@@ -102,11 +102,13 @@ class Functions {
 			// Loop through custom categories, and determine if a category is on or off.
 			$category_enabled                    = isset( $custom_pattern_categories[ $category['name'] ]['enabled'] ) ? (bool) $custom_pattern_categories[ $category['name'] ]['enabled'] : true;
 			$category_order                      = isset( $custom_pattern_categories[ $category['name'] ]['order'] ) ? (bool) $custom_pattern_categories[ $category['name'] ]['order'] : 0;
+			$category_custom                     = isset( $custom_pattern_categories[ $category['name'] ]['custom'] ) ? (bool) $custom_pattern_categories[ $category['name'] ]['custom'] : false;
 			$all_categories[ $category['name'] ] = array(
 				'label'   => $category['label'],
 				'enabled' => true,
 				'order'   => $category_order,
 				'slug'    => $category['name'],
+				'custom'  => $category_custom,
 			);
 		}
 
@@ -117,6 +119,7 @@ class Functions {
 				'enabled' => (bool) $category['enabled'],
 				'order'   => (int) $category['order'],
 				'slug'    => $category_name,
+				'custom'  => true,
 			);
 		}
 
