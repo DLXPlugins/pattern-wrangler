@@ -93,8 +93,9 @@ class Functions {
 		$pattern_categories = \WP_Block_Pattern_Categories_Registry::get_instance();
 		$pattern_categories = $pattern_categories->get_all_registered();
 
-		// Get any custom pattern cateogories.
-		$custom_pattern_categories = $options['categories'];
+		// Get all registered block patterns.
+		$pattern_registry = \WP_Block_Patterns_Registry::get_instance();
+		$pattern_registry = $pattern_registry->get_all_registered();
 
 		// Loop through custom categories, and determine if a category is on or off.
 		$all_categories = array();
@@ -106,71 +107,25 @@ class Functions {
 			$all_categories[ $category['name'] ] = array(
 				'label'   => $category['label'],
 				'enabled' => true,
-				'order'   => $category_order,
 				'slug'    => $category['name'],
-				'custom'  => $category_custom,
-			);
-		}
-
-		// Now loop through custom categories and override the defaults.
-		foreach ( $custom_pattern_categories as $category_name => $category ) {
-			$all_categories[ $category_name ] = array(
-				'label'   => $category['label'],
-				'enabled' => (bool) $category['enabled'],
-				'order'   => (int) $category['order'],
-				'slug'    => $category_name,
-				'custom'  => true,
+				'count' => 0,
 			);
 		}
 
 		// Ensure all categories are unique.
 		$all_categories = array_unique( $all_categories, SORT_REGULAR );
 
-		// If custom categories are empty, then the defaults are used, so let's sort by name to attempt to get things alphabetical.
-		if ( empty( $custom_pattern_categories ) ) {
-			// Sort by name.
-			uasort(
-				$all_categories,
-				function ( $a, $b ) {
-					return strcmp( $a['label'], $b['label'] );
+		// Loop through all patterns and increment a count for each category.
+		foreach ( $pattern_registry as $pattern ) {
+			$pattern_categories = $pattern['categories'];
+			foreach ( $pattern_categories as $category ) {
+				if ( isset( $all_categories[ $category ] ) ) {
+					++$all_categories[ $category ]['count'];
 				}
-			);
-		} else {
-			// Sort by order.
-			uasort(
-				$all_categories,
-				function ( $a, $b ) {
-					return $a['order'] - $b['order'];
-				}
-			);
+			}
 		}
 
 		return $all_categories;
-	}
-
-	/**
-	 * Get the plugin's supported file extensions.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array The supported file extensions.
-	 */
-	public static function get_supported_file_extensions() {
-		$file_extensions = array(
-			'jpeg',
-			'jpg',
-			'gif',
-			'png',
-			'webp',
-		);
-		/**
-		 * Filter the valid file extensions for the photo block.
-		 *
-		 * @param array $file_extensions The valid mime types.
-		 */
-		$file_extensions = apply_filters( 'wppic_block_file_extensions', $file_extensions );
-
-		return $file_extensions;
 	}
 
 	/**

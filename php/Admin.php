@@ -432,11 +432,12 @@ class Admin {
 		$current_tab = Functions::get_admin_tab();
 		if ( null === $current_tab || 'settings' === $current_tab ) {
 			// Enqueue main scripts.
+			$deps = require_once Functions::get_plugin_dir( 'dist/dlx-pw-admin.asset.php' );
 			wp_enqueue_script(
 				'dlx-pw-admin',
 				Functions::get_plugin_url( 'dist/dlx-pw-admin.js' ),
-				array(),
-				Functions::get_plugin_version(),
+				$deps['dependencies'],
+				$deps['version'],
 				true
 			);
 

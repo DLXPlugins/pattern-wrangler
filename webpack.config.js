@@ -1,6 +1,7 @@
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
+const DependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extraction-webpack-plugin' );
 const path = require( 'path' );
 module.exports = ( env ) => {
 	return [
@@ -93,7 +94,7 @@ module.exports = ( env ) => {
 					},
 				],
 			},
-			plugins: [ new RemoveEmptyScriptsPlugin(), new MiniCssExtractPlugin() ],
+			plugins: [ new RemoveEmptyScriptsPlugin(), new MiniCssExtractPlugin(), new DependencyExtractionWebpackPlugin() ],
 		},
 	];
 };
