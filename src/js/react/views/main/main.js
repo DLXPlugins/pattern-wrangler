@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import {
 	ToggleControl,
 	TextControl,
@@ -14,7 +14,7 @@ import { useAsyncResource } from 'use-async-resource';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTriangleExclamation as TriangleExclamation, faCircleCheck as CircleCheck, faEye, faExternalLink as ExternalLink } from '@fortawesome/free-solid-svg-icons';
 import { faCircleExclamation as CircularExclamation } from '@fortawesome/free-solid-svg-icons/faCircleExclamation';
-import { __ } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import classNames from 'classnames';
 
@@ -46,6 +46,111 @@ const Main = ( props ) => {
 		</Suspense>
 	);
 };
+
+const usePatternCategories = ( props ) => {
+	const { getValues } = props;
+
+	const getEnabledCategories = () => {
+		const categories = getValues( 'categories' );
+		if ( ! categories ) {
+			return null;
+		}
+		return Object.values( categories ).filter( ( category ) => category.enabled );
+	};
+
+	return {
+		enabledCategories: getEnabledCategories(),
+	};
+};
+
+const Category = ( props ) => {
+	const { category, control, getValues, setValue } = props;
+	const { enabledCategories } = usePatternCategories( { getValues } );
+
+	const getCategories = () => {
+		const localCategories = enabledCategories.map( ( cat ) => {
+			return {
+				label: cat.label + ' (' + cat.slug + ')',
+				value: cat.slug,
+			};
+		} );
+		localCategories.push( {
+			label: __( 'Uncategorized', 'dlx-pattern-wrangler' ),
+			value: 'uncategorized',
+		} );
+		return localCategories;
+	};
+
+	/**
+	 * Make sure mapped to category is valid, especially if a mapped category is disabled.
+	 */
+	useEffect( () => {
+		if ( category.mapTo && ! getCategories().find( ( cat ) => cat.value === category.mapTo ) ) {
+			setValue( `categories.${ category.slug }.mapTo`, 'uncategorized' );
+		}
+	}, [ enabledCategories ] );
+
+	return (
+		<div className="dlx-category-row">
+			<div className="dlx-category-row__toggle">
+				<Controller
+					name={ `categories.${ category.slug }.enabled` }
+					control={ control }
+					render={ ( { field: { onChange, value } } ) => (
+						<ToggleControl
+							aria-label={ category.label }
+							checked={ value }
+							onChange={ ( boolValue ) => {
+								// If disabled and mapped slug to uncategorized.
+								if ( ! boolValue && ! category.mapTo ) {
+									setValue( `categories.${ category.slug }.mapTo`, 'uncategorized' );
+								}
+								onChange( boolValue );
+							} }
+						/>
+					) }
+				/>
+			</div>
+			<div className="dlx-category-row__label">
+				<div className="dlx-category-row__label-text">
+					{ category.label }
+					<Button
+						variant="link"
+						className="dlx-category-row__label-link"
+					>
+						{ __( 'Edit', 'dlx-pattern-wrangler' ) }
+					</Button>
+				</div>
+				<div className="dlx-category-row__slug">
+					{ category.slug }
+				</div>
+				<div className="dlx-category-row__count">
+					{ _n( 'Pattern', 'Patterns', category.count, 'dlx-pattern-wrangler' ) }
+				</div>
+				{
+					! category.enabled && (
+						<div className="dlx-category-row__map">
+							<Controller
+								name={ `categories.${ category.slug }.mapTo` }
+								control={ control }
+								render={ ( { field: { onChange, value } } ) => (
+									<SelectControl
+										label={ __( 'Map to Category', 'dlx-pattern-wrangler' ) }
+										value={ category.mapTo }
+										onChange={ ( newValue ) => {
+											onChange( newValue );
+										} }
+										options={ getCategories() }
+									/>
+								) }
+							/>
+						</div>
+					)
+				}
+			</div>
+		</div>
+	)
+}
 
 const Interface = ( props ) => {
 	const { defaults } = props;
@@ -112,55 +217,13 @@ const Interface = ( props ) => {
 	};
 	const getCategories = () => {
 		const categories = getValues( 'categories' );
-		console.log( categories );
-		if ( ! categories ) {
-			return null;
-		}
+
 		return (
 			<ul className="dlx-category-list">
-				{ Object.values( categories ).map( ( category, index ) => {
+				{ Object.values( categories ).map( ( category ) => {
 					return (
 						<li key={ category.slug }>
-							<div className="dlx-category__controls">
-								<div className="dlx-category__controls__grid">
-									<div className="dlx-category__drag-handle">
-										drag
-									</div>
-									<div className="dlx-category__label-wrapper">
-										<div className="dlx-category__label">
-											{ category.label }
-											<span className="dlx-category__edit">
-												<FontAwesomeIcon icon={ faEye } />
-											</span>
-										</div>
-										<div className="dlx-category__slug">
-											{ category.slug }
-										</div>
-									</div>
-									<div className="dlx-category__toggle">
-										<Controller
-											name={ `categories.${ category.slug }.enabled` }
-											control={ control }
-											render={ ( { field: { onChange, value } } ) => (
-												<ToggleControl
-													aria-label={ category.label }
-													checked={ value }
-													onChange={ ( boolValue ) => {
-														onChange( boolValue );
-													} }
-												/>
-											) }
-										/>
-									</div>
-								</div>
-								{
-									category.custom && (
-										<div className="dlx-category__remove">
-											<FontAwesomeIcon icon={ CircularExclamation } />
-										</div>
-									)
-								}
-							</div>
+							<Category category={ category } control={ control } getValues={ getValues } setValue={ setValue } />
 						</li>
 					);
 				} ) }

@@ -109,6 +109,7 @@ class Functions {
 				'enabled' => true,
 				'slug'    => $category['name'],
 				'count' => 0,
+				'mappedTo' => false,
 			);
 		}
 
