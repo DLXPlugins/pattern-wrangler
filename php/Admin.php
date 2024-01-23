@@ -407,29 +407,15 @@ class Admin {
 			1
 		);
 
-		// Show core patterns (synced, unsynced) if enabled.
-		$can_show_core_patterns_ui = (bool) $options['showSyncedPatternsUI'];
-		if ( $can_show_core_patterns_ui ) {
-			add_submenu_page(
-				'dlx-pattern-wrangler',
-				__( 'Block Patterns', 'dlx-pattern-wrangler' ),
-				__( 'Block Patterns', 'dlx-pattern-wrangler' ),
-				'edit_posts',
-				'edit.php?post_type=wp_block',
-				'',
-				10
-			);
-		}
-
 		add_submenu_page(
-				'dlx-pattern-wrangler',
-				__( 'Local Patterns', 'dlx-pattern-wrangler' ),
-				__( 'Local Patterns', 'dlx-pattern-wrangler' ),
-				'edit_posts',
-				'edit.php?post_type=pw_pattern',
-				'',
-				12
-			);
+			'dlx-pattern-wrangler',
+			__( 'Block Patterns', 'dlx-pattern-wrangler' ),
+			__( 'Block Patterns', 'dlx-pattern-wrangler' ),
+			'edit_posts',
+			'edit.php?post_type=wp_block',
+			'',
+			10
+		);
 	}
 
 	/**

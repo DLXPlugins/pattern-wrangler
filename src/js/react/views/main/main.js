@@ -64,15 +64,15 @@ const Interface = ( props ) => {
 		setValue,
 	} = useForm( {
 		defaultValues: {
-			disableCoreCategories: data.disableCoreCategories,
-			disableThirdPartyCategories: data.disableThirdPartyCategories,
 			hideAllPatterns: data.hideAllPatterns,
 			hideCorePatterns: data.hideCorePatterns,
-			hideThemePatterns: data.hideThemePatterns,
 			hideRemotePatterns: data.hideRemotePatterns,
-			disableSyncedPatterns: data.disableSyncedPatterns,
-			showSyncedPatternsUI: data.showSyncedPatternsUI,
 			disablePatternImporterBlock: data.disablePatternImporterBlock,
+			allowFrontendPatternPreview: data.allowFrontendPatternPreview,
+			hideUncategorizedPatterns: data.hideUncategorizedPatterns,
+			enableCustomizerUI: data.enableCustomizerUI,
+			loadCustomizerCSSBlockEditor: data.loadCustomizerCSSBlockEditor,
+			loadCustomizerCSSFrontend: data.loadCustomizerCSSFrontend,
 			categories: data.categories ?? [],
 			saveNonce: dlxPatternWranglerAdmin.saveNonce,
 			resetNonce: dlxPatternWranglerAdmin.resetNonce,
@@ -207,6 +207,24 @@ const Interface = ( props ) => {
 											) }
 										/>
 									</div>
+									{ getValues( 'hideAllPatterns' ) && (
+										<div className="dlx-admin__row">
+											<Controller
+												name="hidePatternsMenu"
+												control={ control }
+												render={ ( { field: { onChange, value } } ) => (
+													<ToggleControl
+														label={ __( 'Hide Pattern Wrangler Menu Item', 'dlx-pattern-wrangler' ) }
+														checked={ value }
+														onChange={ ( boolValue ) => {
+															onChange( boolValue );
+														} }
+														help={ __( 'This will disable the top-level menu and move the Patterns menu under Appearance.', 'dlx-pattern-wrangler' ) }
+													/>
+												) }
+											/>
+										</div>
+									) }
 									<div className="dlx-admin__row">
 										<Controller
 											name="hideCorePatterns"
@@ -241,16 +259,16 @@ const Interface = ( props ) => {
 									</div>
 									<div className="dlx-admin__row">
 										<Controller
-											name="hideThemePatterns"
+											name="hideUncategorizedPatterns"
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
 												<ToggleControl
-													label={ __( 'Hide Theme Patterns', 'dlx-pattern-wrangler' ) }
+													label={ __( 'Hide Uncategorized Patterns', 'dlx-pattern-wrangler' ) }
 													checked={ value }
 													onChange={ ( boolValue ) => {
 														onChange( boolValue );
 													} }
-													help={ __( 'Disable any patterns registered from the theme you are using.', 'dlx-pattern-wrangler' ) }
+													help={ __( 'Prevent any patterns not in any registered categories from displaying.', 'dlx-pattern-wrangler' ) }
 												/>
 											) }
 										/>
@@ -259,35 +277,92 @@ const Interface = ( props ) => {
 							</tr>
 							<tr>
 								<th scope="row">
-									{ __( 'Synced Patterns', 'dlx-pattern-wrangler' ) }
+									{ __( 'Customizer', 'dlx-pattern-wrangler' ) }
 								</th>
 								<td>
 									<div className="dlx-admin__row">
 										<Controller
-											name="disableSyncedPatterns"
+											name="enableCustomizerUI"
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
 												<ToggleControl
-													label={ __( 'Disable Synced Patterns', 'dlx-pattern-wrangler' ) }
+													label={ __( 'Enable the Customizer UI', 'dlx-pattern-wrangler' ) }
 													checked={ value }
 													onChange={ ( boolValue ) => {
 														onChange( boolValue );
 													} }
-													help={ __( 'Prevent users from creating synced patterns.', 'dlx-pattern-wrangler' ) }
+													help={ __( 'If full-site editing is enabled, the customizer menu item is hidden. This will ensure the customizer menu item shows up under Appearance.', 'dlx-pattern-wrangler' ) }
 												/>
 											) }
 										/>
+									</div>
+									<div className="dlx-admin__row">
 										<Controller
-											name="showSyncedPatternsUI"
+											name="loadCustomizerCSSBlockEditor"
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
 												<ToggleControl
-													label={ __( 'Show Synced Patterns UI', 'dlx-pattern-wrangler' ) }
+													label={ __( 'Load Customizer CSS in the Block Editor', 'dlx-pattern-wrangler' ) }
 													checked={ value }
 													onChange={ ( boolValue ) => {
 														onChange( boolValue );
 													} }
-													help={ __( 'Display a synced patterns menu item, so you can edit the synced and unsynced patterns like you would regular posts.', 'dlx-pattern-wrangler' ) }
+													help={ __( 'This will load any CSS in the customizer in the block editor as well.', 'dlx-pattern-wrangler' ) }
+												/>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											name="loadCustomizerCSSFrontend"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __( 'Load Customizer CSS on the Frontend', 'dlx-pattern-wrangler' ) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __( 'By default, WordPress loads customizer CSS on the frontend. Disable this option to prevent any customizer CSS from loading.', 'dlx-pattern-wrangler' ) }
+												/>
+											) }
+										/>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									{ __( 'Miscellaneous', 'dlx-pattern-wrangler' ) }
+								</th>
+								<td>
+									<div className="dlx-admin__row">
+										<Controller
+											name="disablePatternImporterBlock"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __( 'Disable Patterns Importer Block', 'dlx-pattern-wrangler' ) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __( 'Disable the pattern importer block, which helps load in remote images.', 'dlx-pattern-wrangler' ) }
+												/>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											name="allowFrontendPatternPreview"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __( 'Enable a Pattern Preview on the Frontend', 'dlx-pattern-wrangler' ) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __( 'This will enable previews in the patterns post type so you can preview a pattern as if it were on a page.', 'dlx-pattern-wrangler' ) }
 												/>
 											) }
 										/>

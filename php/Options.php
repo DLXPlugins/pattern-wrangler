@@ -101,16 +101,17 @@ class Options {
 	public static function get_defaults() {
 
 		$defaults = array(
-			'disableCoreCategories' => false,
-			'disableThirdPartyCategories' => false,
-			'hideAllPatterns' => false,
-			'hideCorePatterns' => false,
-			'hideThemePatterns' => false,
-			'hideRemotePatterns' => false,
-			'disableSyncedPatterns' => false,
-			'showSyncedPatternsUI' => false,
-			'disablePatternImporterBlock' => false,
-			'categories' => array(),
+			'hideAllPatterns'              => false,
+			'hidePatternsMenu'             => false, /* only if hideAllPatterns is true, place in the Appearance menu */
+			'hideCorePatterns'             => false,
+			'hideRemotePatterns'           => false,
+			'disablePatternImporterBlock'  => false,
+			'categories'                   => array(),
+			'allowFrontendPatternPreview'  => true,
+			'hideUncategorizedPatterns'    => false,
+			'enableCustomizerUI'           => true, /* only applicable for FSE themes */
+			'loadCustomizerCSSBlockEditor' => false,
+			'loadCustomizerCSSFrontend'    => true,
 		);
 		return $defaults;
 	}
