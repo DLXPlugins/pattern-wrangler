@@ -8,6 +8,7 @@ import {
 	BaseControl,
 	SelectControl,
 	PanelBody,
+	Popover,
 	Button,
 } from '@wordpress/components';
 import { useAsyncResource } from 'use-async-resource';
@@ -64,6 +65,8 @@ const usePatternCategories = ( props ) => {
 };
 
 const Category = ( props ) => {
+	const [ showLabelPopover, setShowLabelPopover ] = useState( false );
+	const [ labelEditButton, setLabelEditButton ] = useState( false );
 	const { category, control, getValues, setValue } = props;
 	const { enabledCategories } = usePatternCategories( { getValues } );
 
@@ -75,8 +78,8 @@ const Category = ( props ) => {
 			};
 		} );
 		localCategories.push( {
-			label: __( 'Uncategorized', 'dlx-pattern-wrangler' ),
-			value: 'uncategorized',
+			label: __( 'None', 'dlx-pattern-wrangler' ),
+			value: 'none',
 		} );
 		return localCategories;
 	};
@@ -85,72 +88,113 @@ const Category = ( props ) => {
 	 * Make sure mapped to category is valid, especially if a mapped category is disabled.
 	 */
 	useEffect( () => {
-		if ( category.mapTo && ! getCategories().find( ( cat ) => cat.value === category.mapTo ) ) {
-			setValue( `categories.${ category.slug }.mapTo`, 'uncategorized' );
+		if ( category.mappedTo && ! getCategories().find( ( cat ) => cat.value === category.mappedTo ) ) {
+			setValue( `categories.${ category.slug }.mappedTo`, 'none' );
 		}
 	}, [ enabledCategories ] );
 
+	/**
+	 * Get the label to display.
+	 * @return {string} The label to display.
+	 */
+	const getLabel = () => {
+		if ( category.customLabel && category.customLabel.length > 0 ) {
+			return category.customLabel;
+		}
+		return category.label;
+	};
+
 	return (
-		<div className="dlx-category-row">
-			<div className="dlx-category-row__toggle">
-				<Controller
-					name={ `categories.${ category.slug }.enabled` }
-					control={ control }
-					render={ ( { field: { onChange, value } } ) => (
-						<ToggleControl
-							aria-label={ category.label }
-							checked={ value }
-							onChange={ ( boolValue ) => {
-								// If disabled and mapped slug to uncategorized.
-								if ( ! boolValue && ! category.mapTo ) {
-									setValue( `categories.${ category.slug }.mapTo`, 'uncategorized' );
-								}
-								onChange( boolValue );
-							} }
+		<>
+			{ showLabelPopover && (
+				<Popover
+					placement="right-start"
+					onClose={ () => setShowLabelPopover( false ) }
+					anchor={ labelEditButton }
+					noArrow={ false }
+					offset={ 10 }
+				>
+					<div className="dlx-category-popover">
+						<Controller
+							name={ `categories.${ category.slug }.customLabel` }
+							control={ control }
+							render={ ( { field: { onChange, value } } ) => (
+								<TextControl
+									label={ __( 'Category Label', 'dlx-pattern-wrangler' ) }
+									value={ value }
+									onChange={ ( newValue ) => {
+										onChange( newValue );
+									} }
+								/>
+							) }
 						/>
-					) }
-				/>
-			</div>
-			<div className="dlx-category-row__label">
-				<div className="dlx-category-row__label-text">
-					{ category.label }
-					<Button
-						variant="link"
-						className="dlx-category-row__label-link"
-					>
-						{ __( 'Edit', 'dlx-pattern-wrangler' ) }
-					</Button>
-				</div>
-				<div className="dlx-category-row__slug">
-					{ category.slug }
-				</div>
-				<div className="dlx-category-row__count">
-					{ _n( 'Pattern', 'Patterns', category.count, 'dlx-pattern-wrangler' ) }
-				</div>
-				{
-					! category.enabled && (
-						<div className="dlx-category-row__map">
-							<Controller
-								name={ `categories.${ category.slug }.mapTo` }
-								control={ control }
-								render={ ( { field: { onChange, value } } ) => (
-									<SelectControl
-										label={ __( 'Map to Category', 'dlx-pattern-wrangler' ) }
-										value={ category.mapTo }
-										onChange={ ( newValue ) => {
-											onChange( newValue );
-										} }
-										options={ getCategories() }
-									/>
-								) }
+					</div>
+				</Popover>
+			) }
+			<div className="dlx-category-row">
+				<div className="dlx-category-row__toggle">
+					<Controller
+						name={ `categories.${ category.slug }.enabled` }
+						control={ control }
+						render={ ( { field: { onChange, value } } ) => (
+							<ToggleControl
+								aria-label={ category.label }
+								checked={ value }
+								onChange={ ( boolValue ) => {
+									// If disabled and mapped slug to uncategorized.
+									if ( ! boolValue && ! category.mappedTo ) {
+										setValue( `categories.${ category.slug }.mappedTo`, 'none' );
+									}
+									onChange( boolValue );
+								} }
 							/>
-						</div>
-					)
-				}
+						) }
+					/>
+				</div>
+				<div className="dlx-category-row__label">
+					<div className="dlx-category-row__label-text">
+						{ getLabel() }
+						{ ' ' }
+						<Button
+							variant="link"
+							className="dlx-category-row__label-link"
+							ref={ setLabelEditButton }
+							onClick={ () => setShowLabelPopover( true ) }
+						>
+							{ __( 'Edit', 'dlx-pattern-wrangler' ) }
+						</Button>
+					</div>
+					<div className="dlx-category-row__slug">
+						{ category.slug }
+					</div>
+					<div className="dlx-category-row__count">
+						{ category.count } { _n( 'Pattern', 'Patterns', category.count, 'dlx-pattern-wrangler' ) }
+					</div>
+					{
+						! category.enabled && (
+							<div className="dlx-category-row__map">
+								<Controller
+									name={ `categories.${ category.slug }.mappedTo` }
+									control={ control }
+									render={ ( { field: { onChange, value } } ) => (
+										<SelectControl
+											label={ __( 'Map to Category', 'dlx-pattern-wrangler' ) }
+											value={ value }
+											onChange={ ( newValue ) => {
+												onChange( newValue );
+											} }
+											options={ getCategories() }
+										/>
+									) }
+								/>
+							</div>
+						)
+					}
+				</div>
 			</div>
-		</div>
-	)
-}
+		</>
+	);
+};
 
 const Interface = ( props ) => {
 	const { defaults } = props;

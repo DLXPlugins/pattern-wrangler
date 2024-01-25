@@ -82,6 +82,22 @@ class Functions {
 	}
 
 	/**
+	 * Get the pattern categories from the taxonomy.
+	 *
+	 * @return array The pattern categories.
+	 */
+	public static function get_pattern_categories_from_taxonomy() {
+		$categories = get_terms(
+			array(
+				'taxonomy'   => 'wp_pattern_category',
+				'hide_empty' => false,
+				'count'      => true,
+			)
+		);
+		return $categories;
+	}
+
+	/**
 	 * Get the pattern categories.
 	 *
 	 * @return array The pattern categories.
@@ -93,30 +109,67 @@ class Functions {
 		$pattern_categories = \WP_Block_Pattern_Categories_Registry::get_instance();
 		$pattern_categories = $pattern_categories->get_all_registered();
 
-		// Get all registered block patterns.
+		// Get all registered block patterns. We'll use this for a count.
 		$pattern_registry = \WP_Block_Patterns_Registry::get_instance();
 		$pattern_registry = $pattern_registry->get_all_registered();
 
+		// Get all pattern categories from the built-in WP taxonomy.
+		$pattern_categories_taxonomy = self::get_pattern_categories_from_taxonomy();
+
+		// Merge taxonomy categories with registered categories.
+		foreach ( $pattern_categories_taxonomy as $category ) {
+			$pattern_categories[] = array(
+				'name'  => $category->slug,
+				'label' => $category->name,
+				'count' => $category->count,
+			);
+		}
+
+		// Get saved category data.
+		$custom_pattern_categories = $options['categories'];
+
 		// Loop through custom categories, and determine if a category is on or off.
 		$all_categories = array();
+
+		// Exclude these categories as they are deprecated in WordPress core.
+		$excluded_cats = array(
+			'buttons',
+			'columns',
+			'query',
+		);
+
 		foreach ( $pattern_categories as $category ) {
+			/* Excluded Categories */
+			if ( in_array( $category['name'], $excluded_cats, true ) ) {
+				continue;
+			}
+
 			// Loop through custom categories, and determine if a category is on or off.
 			$category_enabled                    = isset( $custom_pattern_categories[ $category['name'] ]['enabled'] ) ? (bool) $custom_pattern_categories[ $category['name'] ]['enabled'] : true;
-			$category_order                      = isset( $custom_pattern_categories[ $category['name'] ]['order'] ) ? (bool) $custom_pattern_categories[ $category['name'] ]['order'] : 0;
-			$category_custom                     = isset( $custom_pattern_categories[ $category['name'] ]['custom'] ) ? (bool) $custom_pattern_categories[ $category['name'] ]['custom'] : false;
+			$category_custom                     = isset( $custom_pattern_categories[ $category['name'] ]['customLabel'] ) ? $custom_pattern_categories[ $category['name'] ]['customLabel'] : $category['label'];
+			$category_mapped_to                  = isset( $custom_pattern_categories[ $category['name'] ]['mappedTo'] ) ? $custom_pattern_categories[ $category['name'] ]['mappedTo'] : false;
 			$all_categories[ $category['name'] ] = array(
-				'label'   => $category['label'],
-				'enabled' => true,
-				'slug'    => $category['name'],
-				'count' => 0,
-				'mappedTo' => false,
+				'label'       => $category['label'],
+				'customLabel' => ! empty( $category_custom ) ? $category_custom : $category['label'],
+				'enabled'     => $category_enabled,
+				'slug'        => $category['name'],
+				'count'       => $category['count'] ?? 0,
+				'mappedTo'    => $category_mapped_to,
 			);
 		}
 
 		// Ensure all categories are unique.
 		$all_categories = array_unique( $all_categories, SORT_REGULAR );
 
-		// Loop through all patterns and increment a count for each category.
+		// Sort by label.
+		uasort(
+			$all_categories,
+			function ( $a, $b ) {
+				return strcasecmp( $a['customLabel'], $b['customLabel'] );
+			}
+		);
+
+		// Loop through all patterns and increment a count for each category. Since core tax pattern categories have a count for core patterns.
 		foreach ( $pattern_registry as $pattern ) {
 			$pattern_categories = $pattern['categories'];
 			foreach ( $pattern_categories as $category ) {

@@ -279,7 +279,31 @@ html {
 		border-radius: 4px;
 	}
 }
-
+.dlx-category-row {
+	display: flex;
+	justify-content: flex-start;
+	align-items: baseline;
+	column-gap: 20px;
+}
+.dlx-category-row__label-text {
+	font-size: 1.2em;
+	font-weight: 600;
+}
+.dlx-category-row__slug {
+	margin-top: 4px;
+	font-size: 13px;
+	color: #666;
+}
+.dlx-category-row__count {
+	margin-top: 4px;
+	font-size: 13px;
+	color: #666;
+	font-style: italic;
+}
+.dlx-category-popover {
+	padding: 20px;
+	min-width: 175px;
+}
 /**
  * Snackbar styles.
  */
