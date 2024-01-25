@@ -206,6 +206,10 @@ html {
 		}
 		max-width: 600px !important;
 
+		&.dlx-admin__row-full-width {
+			max-width: 100% !important;
+		}
+
 		.components-panel__body {
 			margin-top: 20px;
 			background: #FFF;
@@ -277,7 +281,11 @@ html {
 		padding: 15px 20px;
 		border: 1px solid #c3c4c7;
 		border-radius: 4px;
+		margin-bottom: 12px;
 	}
+}
+.dlx-category-row__label {
+	flex: 1;
 }
 .dlx-category-row {
 	display: flex;

@@ -481,8 +481,13 @@ const Interface = ( props ) => {
 									{ __( 'Pattern Categories', 'dlx-pattern-wrangler' ) }
 								</th>
 								<td>
-									<div className="dlx-admin__row">
-										{ getCategories() }
+									<div className="dlx-admin__row dlx-admin__row-full-width" >
+										<PanelBody
+											title={ __( 'Pattern Categories', 'dlx-pattern-wrangler' ) }
+											initialOpen={ false }
+										>
+											{ getCategories() }
+										</PanelBody>
 									</div>
 								</td>
 							</tr>
