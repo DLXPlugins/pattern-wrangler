@@ -51,6 +51,9 @@ class Admin {
 
 		// Output synced vs. unsynced.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'output_pattern_sync_column' ), 10, 2 );
+
+		// Setting effects
+		add_action( 'admin_init', array( $this, 'check_options_and_implement' ) );
 	}
 
 	
@@ -539,4 +542,72 @@ class Admin {
 		</div>
 		<?php
 	}
+
+	/**
+	 * Function check_options_and_implement to check options and integrate its purpose
+	 */
+
+	public function check_options_and_implement() {
+		$options = Options::get_options();
+		if ( $options['loadCustomizerCSSBlockEditor'] ) {
+			add_action('customize_register', array( $this, 'theme_customize_register' ) );
+			add_action('enqueue_block_assets', array( $this, 'enqueue_custom_css' ) );
+			add_action('enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_script' ) );
+		}
+	 }
+
+	 /**
+	  * Function theme customizer for custom css
+	  */
+
+	public function theme_customize_register($wp_customize) {
+		$wp_customize->add_section('custom_css_section', array(
+			'title' => __('Custom CSS', 'dlx-customizer-css'),
+			'priority' => 30,
+		));
+	
+		$wp_customize->add_setting('custom_css', array(
+			'default' => '',
+			'sanitize_callback' => 'wp_kses_post', 
+		));
+	
+		$wp_customize->add_control('custom_css', array(
+			'label' => __('Custom CSS', 'dlx-customizer-css'),
+			'section' => 'custom_css_section',
+			'type' => 'textarea',
+		));
+	}
+
+	/**
+	 * Function enqueue the custom css from theme customizer using enqueue block assets
+	 */
+
+	public function enqueue_custom_css() {
+		$custom_css = get_theme_mod('custom_css', '');
+	
+		if ($custom_css) {
+			wp_add_inline_style('dlx-customizer-css', $custom_css);
+		}
+	}
+
+	/**
+	 * Function enqueue javascript for dynamic styles
+	 */
+
+	public function enqueue_block_editor_script() {
+		wp_enqueue_script(
+			'block-editor-custom-scripts',
+			Functions::get_plugin_url( 'src/js/block-editor-custom-scripts.js' ),
+			array('wp-blocks', 'wp-dom-ready', 'wp-edit-post'),
+			true
+		);
+	
+		// Pass the custom CSS to the script
+		wp_localize_script(
+			'block-editor-custom-scripts',
+			'customCss',
+			array('css' => get_theme_mod('custom_css', ''))
+		);
+	}
+	
 }
