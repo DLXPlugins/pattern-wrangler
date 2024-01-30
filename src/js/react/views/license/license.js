@@ -8,11 +8,7 @@ import { __ } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import { useAsyncResource } from 'use-async-resource';
 import classNames from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye as EyeIcon, faCircleCheck as CircleCheck, faKey as Key } from '@fortawesome/free-solid-svg-icons';
-import { faEyeSlash as EyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
-import { faCircleExclamation as CircularExclamation } from '@fortawesome/free-solid-svg-icons/faCircleExclamation';
-import { faLoader as Loader } from '@fortawesome/pro-duotone-svg-icons/faLoader';
+import { CheckCircle, Key, Loader2, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 // Local imports.
 import SendCommand from '../../utils/SendCommand';
@@ -188,7 +184,7 @@ const Interface = ( props ) => {
 					message={ __( 'Your license is valid. Thank you so much for purchasing a license.', 'dlx-pattern-wrangler' ) }
 					status="success"
 					politeness="polite"
-					icon={ () => <FontAwesomeIcon icon={ CircleCheck } style={ { color: 'currentColor' } } /> }
+					icon={ () => <CheckCircle /> }
 				/>
 			);
 		}
@@ -200,7 +196,7 @@ const Interface = ( props ) => {
 				) }
 				status="warning"
 				politeness="polite"
-				icon={ () => <FontAwesomeIcon icon={ Key } style={ { color: 'currentColor' } } /> }
+				icon={ () => <Key /> }
 			/>
 		);
 	};
@@ -224,7 +220,7 @@ const Interface = ( props ) => {
 					) }
 					type="submit"
 					text={ saving ? saveTextLoading : saveText }
-					icon={ saving ? <FontAwesomeIcon icon={ Loader } style={ { color: 'currentColor' } } /> : false }
+					icon={ saving ? () => <Loader2 /> : false }
 					iconSize="1x"
 					iconPosition="right"
 					disabled={ saving || revokingLicense }
@@ -309,14 +305,14 @@ const Interface = ( props ) => {
 										<Button
 											label={ __( 'Show License', 'dlx-pattern-wrangler' ) }
 											size={ 20 }
-											icon={ () => <FontAwesomeIcon icon={ EyeIcon } style={ { color: 'currentColor' } } /> }
+											icon={ () => <Eye /> }
 											className="button-reset"
 										/>
 									) : (
 										<Button
 											label={ __( 'Hide License', 'dlx-pattern-wrangler' ) }
 											size={ 20 }
-											icon={ () => <FontAwesomeIcon icon={ EyeSlash } style={ { color: 'currentColor' } } /> }
+											icon={ () => <EyeOff /> }
 											className="button-reset"
 										/>
 									) }
@@ -329,7 +325,7 @@ const Interface = ( props ) => {
 								status="error"
 								politeness="assertive"
 								inline={ true }
-								icon={ () => <FontAwesomeIcon icon={ CircularExclamation } style={ { color: 'currentColor' } } /> }
+								icon={ () => <AlertCircle /> }
 							/>
 						) }
 						{ 'pattern' === errors.licenseKey?.type && (
@@ -340,7 +336,7 @@ const Interface = ( props ) => {
 								status="error"
 								politeness="assertive"
 								inline={ true }
-								icon={ () => <FontAwesomeIcon icon={ CircularExclamation } style={ { color: 'currentColor' } } /> }
+								icon={ () => <AlertCircle /> }
 							/>
 						) }
 						{ 'validate' === errors.licenseKey?.type && (
@@ -349,7 +345,7 @@ const Interface = ( props ) => {
 								status="error"
 								politeness="assertive"
 								inline={ true }
-								icon={ () => <FontAwesomeIcon icon={ CircularExclamation } style={ { color: 'currentColor' } } /> }
+								icon={ () => <AlertCircle /> }
 							/>
 						) }
 					</div>
@@ -375,7 +371,7 @@ const Interface = ( props ) => {
 										? __( 'Revoking License…', 'dlx-pattern-wrangler' )
 										: __( 'Revoke License', 'dlx-pattern-wrangler' )
 								}
-								icon={ revokingLicense ? <FontAwesomeIcon icon={ Loader } style={ { color: 'currentColor' } } /> : false }
+								icon={ revokingLicense ? () => <Loader2 /> : false }
 								iconSize="1x"
 								iconPosition="right"
 								disabled={ saving || revokingLicense }

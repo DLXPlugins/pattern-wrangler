@@ -468,11 +468,12 @@ class Admin {
 				)
 			);
 		} elseif ( 'license' === $current_tab ) {
+			$deps = require_once Functions::get_plugin_dir( 'dist/dlx-pw-admin-license.asset.php' );
 			wp_enqueue_script(
 				'dlx-pw-admin-license',
 				Functions::get_plugin_url( 'dist/dlx-pw-admin-license.js' ),
-				array(),
-				Functions::get_plugin_version(),
+				$deps['dependencies'],
+				$deps['version'],
 				true
 			);
 			wp_localize_script(

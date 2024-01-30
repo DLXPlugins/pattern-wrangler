@@ -12,9 +12,8 @@ import {
 	Button,
 } from '@wordpress/components';
 import { useAsyncResource } from 'use-async-resource';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTriangleExclamation as TriangleExclamation, faCircleCheck as CircleCheck, faEye, faExternalLink as ExternalLink } from '@fortawesome/free-solid-svg-icons';
-import { faCircleExclamation as CircularExclamation } from '@fortawesome/free-solid-svg-icons/faCircleExclamation';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
+
 import { __, _n } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import classNames from 'classnames';
@@ -245,7 +244,7 @@ const Interface = ( props ) => {
 					status="success"
 					politeness="assertive"
 					inline={ false }
-					icon={ () => <FontAwesomeIcon icon={ CircleCheck } style={ { color: 'currentColor' } } /> }
+					icon={ () => () => <CheckCircle style={ { fill: 'none' } } /> }
 				/>
 			);
 		}
@@ -255,7 +254,7 @@ const Interface = ( props ) => {
 				status="warning"
 				politeness="assertive"
 				inline={ false }
-				icon={ () => <FontAwesomeIcon size="1x" icon={ TriangleExclamation } style={ { color: 'currentColor' } } /> }
+				icon={ () => <AlertTriangle style={ { fill: 'none' } } /> }
 			/>
 		);
 	};
