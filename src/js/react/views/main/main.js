@@ -215,11 +215,11 @@ const Interface = ( props ) => {
 		defaultValues: {
 			hideAllPatterns: data.hideAllPatterns,
 			hideCorePatterns: data.hideCorePatterns,
+			hidePatternsMenu: data.hidePatternsMenu,
 			hideRemotePatterns: data.hideRemotePatterns,
 			disablePatternImporterBlock: data.disablePatternImporterBlock,
 			allowFrontendPatternPreview: data.allowFrontendPatternPreview,
 			hideUncategorizedPatterns: data.hideUncategorizedPatterns,
-			enableCustomizerUI: data.enableCustomizerUI,
 			loadCustomizerCSSBlockEditor: data.loadCustomizerCSSBlockEditor,
 			loadCustomizerCSSFrontend: data.loadCustomizerCSSFrontend,
 			categories: data.categories ?? [],
@@ -387,22 +387,6 @@ const Interface = ( props ) => {
 									{ __( 'Customizer', 'dlx-pattern-wrangler' ) }
 								</th>
 								<td>
-									<div className="dlx-admin__row">
-										<Controller
-											name="enableCustomizerUI"
-											control={ control }
-											render={ ( { field: { onChange, value } } ) => (
-												<ToggleControl
-													label={ __( 'Enable the Customizer UI', 'dlx-pattern-wrangler' ) }
-													checked={ value }
-													onChange={ ( boolValue ) => {
-														onChange( boolValue );
-													} }
-													help={ __( 'If full-site editing is enabled, the customizer menu item is hidden. This will ensure the customizer menu item shows up under Appearance.', 'dlx-pattern-wrangler' ) }
-												/>
-											) }
-										/>
-									</div>
 									<div className="dlx-admin__row">
 										<Controller
 											name="loadCustomizerCSSBlockEditor"
