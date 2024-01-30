@@ -28,31 +28,77 @@ class Patterns {
 		// Deregister any patterns that are uncategorized.
 		add_action( 'init', array( $this, 'maybe_deregister_uncategorized_patterns' ), 1002 );
 
+		// Deregister all pattenrs if all patterns are disabled.
+		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 1003 );
+
 		// Modify term query in REST to disable any deactivated terms.
 		add_filter( 'rest_wp_pattern_category_query', array( $this, 'modify_term_query' ), 10, 2 );
 
-		/**
-		 * Filters WP_Query arguments when querying posts via the REST API.
-		 *
-		 * The dynamic portion of the hook name, `$this->post_type`, refers to the post type slug.
-		 *
-		 * Possible hook names include:
-		 *
-		 *  - `rest_post_query`
-		 *  - `rest_page_query`
-		 *  - `rest_attachment_query`
-		 *
-		 * Enables adding extra arguments or setting defaults for a post collection request.
-		 *
-		 * @since 4.7.0
-		 * @since 5.7.0 Moved after the `tax_query` query arg is generated.
-		 *
-		 * @link https://developer.wordpress.org/reference/classes/wp_query/
-		 *
-		 * @param array           $args    Array of arguments for WP_Query.
-		 * @param WP_REST_Request $request The REST API request.
-		 */
-		// $args       = apply_filters( "rest_{$this->post_type}_query", $args, $request );
+		// Modify REST query to exclude any patterns if disabled.
+		add_filter( 'rest_wp_block_query', array( $this, 'modify_blocks_rest_query' ), 10, 2 );
+
+		$options = Options::get_options();
+
+		$hide_all_patterns = (bool) $options['hideAllPatterns'];
+		if ( $hide_all_patterns ) {
+			add_action( 'init', array( $this, 'remove_core_patterns' ), 1004 );
+			add_filter( 'should_load_remote_block_patterns', '__return_false' );
+		}
+	}
+
+	/**
+	 * Remove core patterns.
+	 */
+	public function remove_core_patterns() {
+		remove_theme_support( 'core-block-patterns' );
+	}
+
+	/**
+	 * Deregister all patterns if all patterns are disabled.
+	 */
+	public function maybe_deregister_all_patterns() {
+		// Get options.
+		$options = Options::get_options();
+
+		$hide_all_patterns = (bool) $options['hideAllPatterns'];
+
+		// Exit early if not enabled.
+		if ( ! $hide_all_patterns ) {
+			return;
+		}
+
+		// Retrieve all patterns.
+		$patterns     = \WP_Block_Patterns_Registry::get_instance();
+		$all_patterns = $patterns->get_all_registered();
+
+		// Loop through all patterns and deregister any that are uncategorized.
+		foreach ( $all_patterns as $index => $pattern ) {
+			unregister_block_pattern( $pattern['name'] );
+		}
+	}
+
+	/**
+	 * Modify REST query to exclude any patterns if disabled.
+	 *
+	 * @param array           $args    Array of arguments for WP_Query.
+	 * @param WP_REST_Request $request The REST API request.
+	 *
+	 * @return array
+	 */
+	public function modify_blocks_rest_query( $args, $request ) {
+		// Get options.
+		$options = Options::get_options();
+
+		$hide_all_patterns = (bool) $options['hideAllPatterns'];
+
+		// Exit early if not enabled.
+		if ( ! $hide_all_patterns ) {
+			return $args;
+		}
+
+		// Return empty array.
+		$args['post__in'] = array( -1 );
+		return $args;
 	}
 
 	/**
