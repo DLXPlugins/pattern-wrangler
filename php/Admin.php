@@ -386,8 +386,8 @@ class Admin {
 	 * Add the admin menu.
 	 */
 	public function add_admin_menu() {
-		$options = Options::get_options();
-		$hide_all_patterns = (bool) $options['hideAllPatterns'] ?? false;
+		$options            = Options::get_options();
+		$hide_all_patterns  = (bool) $options['hideAllPatterns'] ?? false;
 		$hide_patterns_menu = (bool) $options['hidePatternsMenu'] ?? false;
 
 		if ( $hide_all_patterns && $hide_patterns_menu ) {
