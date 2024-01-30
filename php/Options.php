@@ -111,7 +111,6 @@ class Options {
 			'categories'                   => array(),
 			'allowFrontendPatternPreview'  => true,
 			'hideUncategorizedPatterns'    => false,
-			'enableCustomizerUI'           => true, /* only applicable for FSE themes */
 			'loadCustomizerCSSBlockEditor' => false,
 			'loadCustomizerCSSFrontend'    => true,
 		);
