@@ -310,7 +310,6 @@ class Blocks {
 		);
 
 		// Enqueue block assets.
-		// add_action( 'enqueue_block_assets', array( $this, 'register_block_styles' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'register_block_editor_scripts' ) );
 	}
 

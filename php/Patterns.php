@@ -41,8 +41,21 @@ class Patterns {
 
 		$hide_all_patterns = (bool) $options['hideAllPatterns'];
 		if ( $hide_all_patterns ) {
-			add_action( 'init', array( $this, 'remove_core_patterns' ), 1004 );
+			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			add_filter( 'should_load_remote_block_patterns', '__return_false' );
+		}
+
+		// Check if remote patterns is disabled.
+		$hide_remote_patterns = (bool) $options['hideRemotePatterns'];
+		if ( $hide_remote_patterns ) {
+			add_filter( 'should_load_remote_block_patterns', '__return_false' );
+		}
+
+		// Check if core patterns is disabled.
+		$hide_core_patterns = (bool) $options['hideCorePatterns'];
+		if ( $hide_core_patterns ) {
+			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
+			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
 	}
 
@@ -155,6 +168,18 @@ class Patterns {
 		foreach ( $all_patterns as $index => $pattern ) {
 			if ( ! isset( $pattern['categories'] ) || empty( $pattern['categories'] ) ) {
 				unregister_block_pattern( $pattern['slug'] );
+			} else {
+				$found            = false;
+				$block_categories = $pattern['categories'] ?? array();
+				foreach ( $block_categories as $block_category ) {
+					$categories = \WP_Block_Pattern_Categories_Registry::get_instance();
+					if ( $categories->is_registered( $block_category ) ) {
+						$found = true;
+					}
+				}
+				if ( ! $found ) {
+					unregister_block_pattern( $pattern['name'] );
+				}
 			}
 		}
 	}

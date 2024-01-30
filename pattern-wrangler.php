@@ -65,8 +65,6 @@ class PatternWrangler {
 			basename( __DIR__ ) . '/languages'
 		);
 
-		// Blocks::run();
-
 		$admin = new Admin();
 		$admin->run();
 
