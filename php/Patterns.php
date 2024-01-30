@@ -37,6 +37,18 @@ class Patterns {
 		// Modify REST query to exclude any patterns if disabled.
 		add_filter( 'rest_wp_block_query', array( $this, 'modify_blocks_rest_query' ), 10, 2 );
 
+		// Add a featured image to the wp_block post type.
+		add_action( 'init', array( $this, 'add_featured_image_support' ) );
+
+		// Change post type label for featured image.
+		add_filter( 'post_type_labels_wp_block', array( $this, 'change_featured_image_label' ) );
+
+		// Add post type column for featured image.
+		add_filter( 'manage_wp_block_posts_columns', array( $this, 'add_featured_image_column' ) );
+
+		// Add a featured image to the wp_block post type column.
+		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_featured_image_column_content' ), 10, 2 );
+
 		$options = Options::get_options();
 
 		$hide_all_patterns = (bool) $options['hideAllPatterns'];
@@ -57,6 +69,52 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
+	}
+
+	/**
+	 * Add featured image to wp_block post type column.
+	 *
+	 * @param string $column_name Column name.
+	 * @param int    $post_id Post ID.
+	 */
+	public function add_featured_image_column_content( $column_name, $post_id ) {
+		if ( 'featured_image' === $column_name ) {
+			$thumbnail = get_the_post_thumbnail( $post_id, array( 125, 125 ) );
+			echo wp_kses_post( $thumbnail );
+		}
+	}
+
+	/**
+	 * Add featured image column to wp_block post type.
+	 *
+	 * @param array $columns Array of columns.
+	 *
+	 * @return array Updated columns.
+	 */
+	public function add_featured_image_column( $columns ) {
+		// Add featured image to 2nd column.
+		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'dlx-block-patterns' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
+		return $columns;
+	}
+
+	/**
+	 * Change featured image label for wp_block post type.
+	 *
+	 * @param object $labels Object of labels.
+	 *
+	 * @return object Updated labels.
+	 */
+	public function change_featured_image_label( $labels ) {
+		$labels->featured_image     = __( 'Pattern Preview', 'dlx-block-patterns' );
+		$labels->set_featured_image = __( 'Set pattern preview', 'dlx-block-patterns' );
+		return $labels;
+	}
+
+	/**
+	 * Add featured image support to wp_block post type.
+	 */
+	public function add_featured_image_support() {
+		add_post_type_support( 'wp_block', 'thumbnail' );
 	}
 
 	/**
