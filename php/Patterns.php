@@ -51,15 +51,6 @@ class Patterns {
 		// Add a featured image to the wp_block post type column.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_featured_image_column_content' ), 10, 2 );
 
-		$can_preview_frontend = (bool) $options['allowFrontendPatternPreview'];
-		if ( $can_preview_frontend ) {
-			// Add a preview button to the quick actions for the wp_block post type.
-			add_filter( 'post_row_actions', array( $this, 'add_preview_button_quick_action' ), 10, 2 );
-
-			// Add preview query var to frontend.
-			add_filter( 'query_vars', array( $this, 'add_preview_query_var' ) );
-		}
-
 		$hide_all_patterns = (bool) $options['hideAllPatterns'];
 		if ( $hide_all_patterns ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
@@ -78,37 +69,6 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
-	}
-
-	/**
-	 * Add preview query var to frontend.
-	 *
-	 * @param array $query_vars Array of query vars.
-	 *
-	 * @return array updated query vars.
-	 */
-	public function add_preview_query_var( $query_vars ) {
-		$query_vars[] = 'dlxpw_preview';
-		return $query_vars;
-	}
-
-	/**
-	 * Add a preview button to the quick actions for the wp_block post type.
-	 *
-	 * @param array   $actions Array of actions.
-	 * @param WP_Post $post Post object.
-	 *
-	 * @return array
-	 */
-	public function add_preview_button_quick_action( $actions, $post ) {
-		if ( 'wp_block' === $post->post_type ) {
-			$actions['preview_pattern'] = sprintf(
-				'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
-				esc_url_raw( Functions::get_pattern_preview_url( $post->ID ) ),
-				esc_html__( 'Preview', 'dlx-pattern-wrangler' )
-			);
-		}
-		return $actions;
 	}
 
 	/**
