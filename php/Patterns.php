@@ -16,6 +16,8 @@ class Patterns {
 	 * Class runner.
 	 */
 	public function run() {
+		$options = Options::get_options();
+
 		// Deregister any disabled pattern categories.
 		add_action( 'init', array( $this, 'maybe_deregister_pattern_categories' ), 999 );
 
@@ -49,7 +51,14 @@ class Patterns {
 		// Add a featured image to the wp_block post type column.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_featured_image_column_content' ), 10, 2 );
 
-		$options = Options::get_options();
+		$can_preview_frontend = (bool) $options['allowFrontendPatternPreview'];
+		if ( $can_preview_frontend ) {
+			// Add a preview button to the quick actions for the wp_block post type.
+			add_filter( 'post_row_actions', array( $this, 'add_preview_button_quick_action' ), 10, 2 );
+
+			// Add preview query var to frontend.
+			add_filter( 'query_vars', array( $this, 'add_preview_query_var' ) );
+		}
 
 		$hide_all_patterns = (bool) $options['hideAllPatterns'];
 		if ( $hide_all_patterns ) {
@@ -69,6 +78,37 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
+	}
+
+	/**
+	 * Add preview query var to frontend.
+	 *
+	 * @param array $query_vars Array of query vars.
+	 *
+	 * @return array updated query vars.
+	 */
+	public function add_preview_query_var( $query_vars ) {
+		$query_vars[] = 'dlxpw_preview';
+		return $query_vars;
+	}
+
+	/**
+	 * Add a preview button to the quick actions for the wp_block post type.
+	 *
+	 * @param array   $actions Array of actions.
+	 * @param WP_Post $post Post object.
+	 *
+	 * @return array
+	 */
+	public function add_preview_button_quick_action( $actions, $post ) {
+		if ( 'wp_block' === $post->post_type ) {
+			$actions['preview_pattern'] = sprintf(
+				'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+				esc_url_raw( Functions::get_pattern_preview_url( $post->ID ) ),
+				esc_html__( 'Preview', 'dlx-pattern-wrangler' )
+			);
+		}
+		return $actions;
 	}
 
 	/**
@@ -93,7 +133,7 @@ class Patterns {
 	 */
 	public function add_featured_image_column( $columns ) {
 		// Add featured image to 2nd column.
-		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'dlx-block-patterns' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
+		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'dlx-pattern-wrangler' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
 		return $columns;
 	}
 
@@ -105,8 +145,8 @@ class Patterns {
 	 * @return object Updated labels.
 	 */
 	public function change_featured_image_label( $labels ) {
-		$labels->featured_image     = __( 'Pattern Preview', 'dlx-block-patterns' );
-		$labels->set_featured_image = __( 'Set pattern preview', 'dlx-block-patterns' );
+		$labels->featured_image     = __( 'Pattern Preview', 'dlx-pattern-wrangler' );
+		$labels->set_featured_image = __( 'Set pattern preview', 'dlx-pattern-wrangler' );
 		return $labels;
 	}
 
