@@ -29,6 +29,34 @@ class Preview {
 
 		// Override the template for the wp_block post type.
 		add_filter( 'template_include', array( $this, 'maybe_override_template' ) );
+
+		// Add a preview button to the top toolbar section.
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_preview_toolbar_scripts' ) );
+	}
+
+	/**
+	 * Enqueue the preview toolbar scripts.
+	 */
+	public function enqueue_preview_toolbar_scripts() {
+		$screen = get_current_screen();
+		if ( 'wp_block' !== $screen->post_type ) {
+			return;
+		}
+		$deps = require_once Functions::get_plugin_dir( 'build/dlx-pw-preview.asset.php' );
+		wp_enqueue_script(
+			'dlx-pattern-wrangler-preview',
+			Functions::get_plugin_url( 'build/dlx-pw-preview.js' ),
+			$deps['dependencies'],
+			$deps['version'],
+			true
+		);
+		wp_localize_script(
+			'dlx-pattern-wrangler-preview',
+			'dlxPatternWranglerPreview',
+			array(
+				'previewUrl' => Functions::get_pattern_preview_url( get_the_ID() ),
+			)
+		);
 	}
 
 	/**
