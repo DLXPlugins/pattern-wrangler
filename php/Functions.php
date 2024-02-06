@@ -183,6 +183,26 @@ class Functions {
 	}
 
 	/**
+	 * Get preview URL for previewing a pattern.
+	 *
+	 * @param int $post_id The post ID.
+	 *
+	 * @return string The preview URL (unescaped).
+	 */
+	public static function get_pattern_preview_url( $post_id ) {
+		$preview_url = add_query_arg(
+			array(
+				'dlxpw_preview' => '1',
+				'action'        => 'preview',
+				'pattern'       => $post_id,
+				'nonce'         => wp_create_nonce( 'preview-pattern_' . $post_id ),
+			),
+			home_url(),
+		);
+		return $preview_url;
+	}
+
+	/**
 	 * Get the plugin's supported file extensions.
 	 *
 	 * @since 1.0.0

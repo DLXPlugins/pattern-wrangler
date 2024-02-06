@@ -74,6 +74,9 @@ class PatternWrangler {
 		$drafts = new Drafts();
 		$drafts->run();
 
+		$preview = new Preview();
+		$preview->run();
+
 		/**
 		 * When PatternWrangler can be extended.
 		 *

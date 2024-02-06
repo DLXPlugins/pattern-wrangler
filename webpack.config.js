@@ -13,6 +13,10 @@ module.exports = ( env ) => {
 			},
 			mode: env.mode,
 			devtool: 'production' === env.mode ? 'source-map' : false,
+			entry: {
+				index: '/src/index.js',
+				'dlx-pw-preview': './src/js/blocks/plugins/pattern-preview.js',
+			},
 		},
 		{
 			entry: {

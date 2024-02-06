@@ -6,7 +6,8 @@
 		"window": true,
 		"document": true,
 		"dlxPatternWranglerLicense": "readonly",
-		"dlxPatternWranglerAdminUrl": "readonly"
+		"dlxPatternWranglerAdminUrl": "readonly",
+		"dlxPatternWranglerPreview": "readonly"
 	},
 	"env": {
 		"browser": true,
