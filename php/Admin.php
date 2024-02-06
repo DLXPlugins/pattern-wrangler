@@ -566,42 +566,21 @@ class Admin {
 	public function check_options_and_implement() {
 		$options = Options::get_options();
 		if ( $options['loadCustomizerCSSBlockEditor'] ) {
-			add_action('customize_register', array( $this, 'theme_customize_register' ) );
-			add_action('enqueue_block_assets', array( $this, 'enqueue_custom_css' ) );
+			add_action('enqueue_block_editor_assets', array( $this, 'enqueue_custom_css' ), PHP_INT_MAX );
+			add_action('wp_footer', array( $this, 'enqueue_custom_css' ), PHP_INT_MAX );
 		}
 	 }
-
-	 /**
-	  * Function theme customizer for custom css
-	  */
-
-	public function theme_customize_register($wp_customize) {
-		$wp_customize->add_section('custom_css_section', array(
-			'title' => __('Custom CSS', 'dlx-theme'),
-			'priority' => 30,
-		));
-	
-		$wp_customize->add_setting('custom_css', array(
-			'default' => '',
-			'sanitize_callback' => 'wp_kses_post', // Use a proper sanitization function
-		));
-	
-		$wp_customize->add_control('custom_css', array(
-			'label' => __('Custom CSS', 'dlx-theme'),
-			'section' => 'custom_css_section',
-			'type' => 'textarea',
-		));
-	}
 
 	/**
 	 * Function enqueue the custom css from theme customizer using enqueue block assets
 	 */
 
 	public function enqueue_custom_css() {
-		$custom_css = get_theme_mod('custom_css', '');
-
-		if ($custom_css) {
-			wp_add_inline_style('your-theme-stylesheet', $custom_css);
-		}
+		$custom_css = wp_get_custom_css();
+        if (!empty($custom_css)) {
+			$theme = wp_get_theme(); // Get the current theme object
+			$theme_handle = $theme->get_stylesheet(); 
+			wp_add_inline_style($theme_handle, $custom_css);
+        }
 	}
 }
