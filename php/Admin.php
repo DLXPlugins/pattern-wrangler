@@ -568,7 +568,6 @@ class Admin {
 		if ( $options['loadCustomizerCSSBlockEditor'] ) {
 			add_action('customize_register', array( $this, 'theme_customize_register' ) );
 			add_action('enqueue_block_assets', array( $this, 'enqueue_custom_css' ) );
-			add_action('enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_script' ) );
 		}
 	 }
 
@@ -578,17 +577,17 @@ class Admin {
 
 	public function theme_customize_register($wp_customize) {
 		$wp_customize->add_section('custom_css_section', array(
-			'title' => __('Custom CSS', 'dlx-customizer-css'),
+			'title' => __('Custom CSS', 'dlx-theme'),
 			'priority' => 30,
 		));
 	
 		$wp_customize->add_setting('custom_css', array(
 			'default' => '',
-			'sanitize_callback' => 'wp_kses_post', 
+			'sanitize_callback' => 'wp_kses_post', // Use a proper sanitization function
 		));
 	
 		$wp_customize->add_control('custom_css', array(
-			'label' => __('Custom CSS', 'dlx-customizer-css'),
+			'label' => __('Custom CSS', 'dlx-theme'),
 			'section' => 'custom_css_section',
 			'type' => 'textarea',
 		));
@@ -600,30 +599,9 @@ class Admin {
 
 	public function enqueue_custom_css() {
 		$custom_css = get_theme_mod('custom_css', '');
-	
+
 		if ($custom_css) {
-			wp_add_inline_style('dlx-customizer-css', $custom_css);
+			wp_add_inline_style('your-theme-stylesheet', $custom_css);
 		}
 	}
-
-	/**
-	 * Function enqueue javascript for dynamic styles
-	 */
-
-	public function enqueue_block_editor_script() {
-		wp_enqueue_script(
-			'block-editor-custom-scripts',
-			Functions::get_plugin_url( 'src/js/block-editor-custom-scripts.js' ),
-			array('wp-blocks', 'wp-dom-ready', 'wp-edit-post'),
-			true
-		);
-	
-		// Pass the custom CSS to the script
-		wp_localize_script(
-			'block-editor-custom-scripts',
-			'customCss',
-			array('css' => get_theme_mod('custom_css', ''))
-		);
-	}
-	
 }
