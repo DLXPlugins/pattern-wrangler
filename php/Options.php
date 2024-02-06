@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Options class.
  *
@@ -75,8 +74,6 @@ class Options {
 	 * @return array Array of options.
 	 */
 	public static function get_options( $force = false ) {
-		// delete_option( self::$options_key );
-		// die( '' );
 		if ( is_array( self::$options ) && ! $force ) {
 			return self::$options;
 		}
@@ -111,7 +108,6 @@ class Options {
 			'categories'                   => array(),
 			'allowFrontendPatternPreview'  => true,
 			'hideUncategorizedPatterns'    => false,
-			'enableCustomizerUI'           => true, /* only applicable for FSE themes */
 			'loadCustomizerCSSBlockEditor' => false,
 			'loadCustomizerCSSFrontend'    => true,
 		);

@@ -28,31 +28,148 @@ class Patterns {
 		// Deregister any patterns that are uncategorized.
 		add_action( 'init', array( $this, 'maybe_deregister_uncategorized_patterns' ), 1002 );
 
+		// Deregister all pattenrs if all patterns are disabled.
+		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 1003 );
+
 		// Modify term query in REST to disable any deactivated terms.
 		add_filter( 'rest_wp_pattern_category_query', array( $this, 'modify_term_query' ), 10, 2 );
 
-		/**
-		 * Filters WP_Query arguments when querying posts via the REST API.
-		 *
-		 * The dynamic portion of the hook name, `$this->post_type`, refers to the post type slug.
-		 *
-		 * Possible hook names include:
-		 *
-		 *  - `rest_post_query`
-		 *  - `rest_page_query`
-		 *  - `rest_attachment_query`
-		 *
-		 * Enables adding extra arguments or setting defaults for a post collection request.
-		 *
-		 * @since 4.7.0
-		 * @since 5.7.0 Moved after the `tax_query` query arg is generated.
-		 *
-		 * @link https://developer.wordpress.org/reference/classes/wp_query/
-		 *
-		 * @param array           $args    Array of arguments for WP_Query.
-		 * @param WP_REST_Request $request The REST API request.
-		 */
-		// $args       = apply_filters( "rest_{$this->post_type}_query", $args, $request );
+		// Modify REST query to exclude any patterns if disabled.
+		add_filter( 'rest_wp_block_query', array( $this, 'modify_blocks_rest_query' ), 10, 2 );
+
+		// Add a featured image to the wp_block post type.
+		add_action( 'init', array( $this, 'add_featured_image_support' ) );
+
+		// Change post type label for featured image.
+		add_filter( 'post_type_labels_wp_block', array( $this, 'change_featured_image_label' ) );
+
+		// Add post type column for featured image.
+		add_filter( 'manage_wp_block_posts_columns', array( $this, 'add_featured_image_column' ) );
+
+		// Add a featured image to the wp_block post type column.
+		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_featured_image_column_content' ), 10, 2 );
+
+		$options = Options::get_options();
+
+		$hide_all_patterns = (bool) $options['hideAllPatterns'];
+		if ( $hide_all_patterns ) {
+			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
+			add_filter( 'should_load_remote_block_patterns', '__return_false' );
+		}
+
+		// Check if remote patterns is disabled.
+		$hide_remote_patterns = (bool) $options['hideRemotePatterns'];
+		if ( $hide_remote_patterns ) {
+			add_filter( 'should_load_remote_block_patterns', '__return_false' );
+		}
+
+		// Check if core patterns is disabled.
+		$hide_core_patterns = (bool) $options['hideCorePatterns'];
+		if ( $hide_core_patterns ) {
+			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
+			remove_action( 'init', '_register_core_block_patterns_and_categories' );
+		}
+	}
+
+	/**
+	 * Add featured image to wp_block post type column.
+	 *
+	 * @param string $column_name Column name.
+	 * @param int    $post_id Post ID.
+	 */
+	public function add_featured_image_column_content( $column_name, $post_id ) {
+		if ( 'featured_image' === $column_name ) {
+			$thumbnail = get_the_post_thumbnail( $post_id, array( 125, 125 ) );
+			echo wp_kses_post( $thumbnail );
+		}
+	}
+
+	/**
+	 * Add featured image column to wp_block post type.
+	 *
+	 * @param array $columns Array of columns.
+	 *
+	 * @return array Updated columns.
+	 */
+	public function add_featured_image_column( $columns ) {
+		// Add featured image to 2nd column.
+		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'dlx-block-patterns' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
+		return $columns;
+	}
+
+	/**
+	 * Change featured image label for wp_block post type.
+	 *
+	 * @param object $labels Object of labels.
+	 *
+	 * @return object Updated labels.
+	 */
+	public function change_featured_image_label( $labels ) {
+		$labels->featured_image     = __( 'Pattern Preview', 'dlx-block-patterns' );
+		$labels->set_featured_image = __( 'Set pattern preview', 'dlx-block-patterns' );
+		return $labels;
+	}
+
+	/**
+	 * Add featured image support to wp_block post type.
+	 */
+	public function add_featured_image_support() {
+		add_post_type_support( 'wp_block', 'thumbnail' );
+	}
+
+	/**
+	 * Remove core patterns.
+	 */
+	public function remove_core_patterns() {
+		remove_theme_support( 'core-block-patterns' );
+	}
+
+	/**
+	 * Deregister all patterns if all patterns are disabled.
+	 */
+	public function maybe_deregister_all_patterns() {
+		// Get options.
+		$options = Options::get_options();
+
+		$hide_all_patterns = (bool) $options['hideAllPatterns'];
+
+		// Exit early if not enabled.
+		if ( ! $hide_all_patterns ) {
+			return;
+		}
+
+		// Retrieve all patterns.
+		$patterns     = \WP_Block_Patterns_Registry::get_instance();
+		$all_patterns = $patterns->get_all_registered();
+
+		// Loop through all patterns and deregister any that are uncategorized.
+		foreach ( $all_patterns as $index => $pattern ) {
+			unregister_block_pattern( $pattern['name'] );
+		}
+	}
+
+	/**
+	 * Modify REST query to exclude any patterns if disabled.
+	 *
+	 * @param array           $args    Array of arguments for WP_Query.
+	 * @param WP_REST_Request $request The REST API request.
+	 *
+	 * @return array
+	 */
+	public function modify_blocks_rest_query( $args, $request ) {
+		// Get options.
+		$options = Options::get_options();
+
+		$hide_all_patterns = (bool) $options['hideAllPatterns'];
+
+		// Exit early if not enabled.
+		if ( ! $hide_all_patterns ) {
+			return $args;
+		}
+
+		// Return empty array.
+		$args['post__in'] = array( -1 );
+		return $args;
 	}
 
 	/**
@@ -109,6 +226,18 @@ class Patterns {
 		foreach ( $all_patterns as $index => $pattern ) {
 			if ( ! isset( $pattern['categories'] ) || empty( $pattern['categories'] ) ) {
 				unregister_block_pattern( $pattern['slug'] );
+			} else {
+				$found            = false;
+				$block_categories = $pattern['categories'] ?? array();
+				foreach ( $block_categories as $block_category ) {
+					$categories = \WP_Block_Pattern_Categories_Registry::get_instance();
+					if ( $categories->is_registered( $block_category ) ) {
+						$found = true;
+					}
+				}
+				if ( ! $found ) {
+					unregister_block_pattern( $pattern['name'] );
+				}
 			}
 		}
 	}

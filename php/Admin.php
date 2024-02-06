@@ -56,7 +56,7 @@ class Admin {
 		add_action( 'admin_init', array( $this, 'check_options_and_implement' ) );
 	}
 
-	
+
 	/**
 	 * Initialize the setting links for the plugin page.
 	 */
@@ -240,7 +240,7 @@ class Admin {
 
 		$form_enabled_post_types = $form_data['enabledPostTypes'] ?? array();
 		$enabled_post_types      = array();
-		
+
 		// Loop through enabled post types to save them in the right format.
 		foreach ( $form_enabled_post_types as $post_type => $enabled ) {
 			$post_type = trim( sanitize_text_field( $post_type ) );
@@ -348,7 +348,7 @@ class Admin {
 		$options = Options::get_options();
 
 		$options['categories'] = Functions::get_pattern_categories();
-	
+
 		wp_send_json_success( $options );
 	}
 
@@ -389,7 +389,22 @@ class Admin {
 	 * Add the admin menu.
 	 */
 	public function add_admin_menu() {
-		$options = Options::get_options();
+		$options            = Options::get_options();
+		$hide_all_patterns  = (bool) $options['hideAllPatterns'] ?? false;
+		$hide_patterns_menu = (bool) $options['hidePatternsMenu'] ?? false;
+
+		if ( $hide_all_patterns && $hide_patterns_menu ) {
+			add_submenu_page(
+				'themes.php',
+				__( 'Patterns', 'dlx-pattern-wrangler' ),
+				__( 'Patterns', 'dlx-pattern-wrangler' ),
+				'manage_options',
+				'dlx-pattern-wrangler',
+				array( $this, 'admin_page' ),
+				4
+			);
+			return;
+		}
 		add_menu_page(
 			__( 'Patterns', 'dlx-pattern-wrangler' ),
 			__( 'Patterns', 'dlx-pattern-wrangler' ),
@@ -427,11 +442,11 @@ class Admin {
 	 * @param string $hook The current admin page.
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( 'toplevel_page_dlx-pattern-wrangler' !== $hook ) {
+		if ( 'toplevel_page_dlx-pattern-wrangler' !== $hook && 'appearance_page_dlx-pattern-wrangler' !== $hook ) {
 			return;
 		}
 
-		$options = Options::get_options();
+		$options     = Options::get_options();
 		$current_tab = Functions::get_admin_tab();
 		if ( null === $current_tab || 'settings' === $current_tab ) {
 			// Enqueue main scripts.
@@ -448,19 +463,20 @@ class Admin {
 				'dlx-pw-admin',
 				'dlxPatternWranglerAdmin',
 				array(
-					'getNonce'   => wp_create_nonce( 'dlx-pw-admin-get-options' ),
-					'saveNonce'  => wp_create_nonce( 'dlx-pw-admin-save-options' ),
-					'resetNonce' => wp_create_nonce( 'dlx-pw-admin-reset-options' ),
+					'getNonce'     => wp_create_nonce( 'dlx-pw-admin-get-options' ),
+					'saveNonce'    => wp_create_nonce( 'dlx-pw-admin-save-options' ),
+					'resetNonce'   => wp_create_nonce( 'dlx-pw-admin-reset-options' ),
 					'previewNonce' => wp_create_nonce( 'dlx-pw-admin-preview' ),
-					'ajaxurl'	=> admin_url( 'admin-ajax.php' ),
+					'ajaxurl'      => admin_url( 'admin-ajax.php' ),
 				)
 			);
 		} elseif ( 'license' === $current_tab ) {
+			$deps = require_once Functions::get_plugin_dir( 'dist/dlx-pw-admin-license.asset.php' );
 			wp_enqueue_script(
 				'dlx-pw-admin-license',
 				Functions::get_plugin_url( 'dist/dlx-pw-admin-license.js' ),
-				array(),
-				Functions::get_plugin_version(),
+				$deps['dependencies'],
+				$deps['version'],
 				true
 			);
 			wp_localize_script(

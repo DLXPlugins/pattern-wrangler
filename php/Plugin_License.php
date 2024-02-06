@@ -78,8 +78,8 @@ class Plugin_License {
 	 */
 	private function perform_license_action( string $action, bool $force ) {
 
-		$options        = Options::get_options();
-		$maybe_check    = get_site_transient( 'dlxgbhacks_core_license_check' );
+		$options     = Options::get_options();
+		$maybe_check = get_site_transient( 'dlxgbhacks_core_license_check' );
 
 		if ( 'check_license' === $action && ! $force && $maybe_check ) {
 			return $maybe_check;
