@@ -16,6 +16,8 @@ class Patterns {
 	 * Class runner.
 	 */
 	public function run() {
+		$options = Options::get_options();
+
 		// Deregister any disabled pattern categories.
 		add_action( 'init', array( $this, 'maybe_deregister_pattern_categories' ), 999 );
 
@@ -48,8 +50,6 @@ class Patterns {
 
 		// Add a featured image to the wp_block post type column.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_featured_image_column_content' ), 10, 2 );
-
-		$options = Options::get_options();
 
 		$hide_all_patterns = (bool) $options['hideAllPatterns'];
 		if ( $hide_all_patterns ) {
@@ -93,7 +93,7 @@ class Patterns {
 	 */
 	public function add_featured_image_column( $columns ) {
 		// Add featured image to 2nd column.
-		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'dlx-block-patterns' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
+		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'dlx-pattern-wrangler' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
 		return $columns;
 	}
 
@@ -105,8 +105,8 @@ class Patterns {
 	 * @return object Updated labels.
 	 */
 	public function change_featured_image_label( $labels ) {
-		$labels->featured_image     = __( 'Pattern Preview', 'dlx-block-patterns' );
-		$labels->set_featured_image = __( 'Set pattern preview', 'dlx-block-patterns' );
+		$labels->featured_image     = __( 'Pattern Preview', 'dlx-pattern-wrangler' );
+		$labels->set_featured_image = __( 'Set pattern preview', 'dlx-pattern-wrangler' );
 		return $labels;
 	}
 

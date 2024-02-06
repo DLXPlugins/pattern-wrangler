@@ -110,6 +110,7 @@ class Options {
 			'hideUncategorizedPatterns'    => false,
 			'loadCustomizerCSSBlockEditor' => false,
 			'loadCustomizerCSSFrontend'    => true,
+			'licenseValid'                 => false,
 		);
 		return $defaults;
 	}
