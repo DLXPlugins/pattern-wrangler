@@ -40,7 +40,7 @@ var PatternPreviewButton = function PatternPreviewButton() {
     // Create the button.
     var button = document.createElement('a');
     button.className = 'dlx-button-preview components-button has-icon';
-    button.ariaLabel = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Preview', 'futuris-demo-importer');
+    button.ariaLabel = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Preview', 'dlx-pattern-wrangler');
     button.href = dlxPatternWranglerPreview.previewUrl;
     button.target = '_blank';
     button.rel = 'noopener noreferrer';

@@ -108,6 +108,8 @@ class Options {
 			'categories'                   => array(),
 			'allowFrontendPatternPreview'  => true,
 			'hideUncategorizedPatterns'    => false,
+			'showCustomizerUI'             => true,
+			'showMenusUI'                  => true,
 			'loadCustomizerCSSBlockEditor' => false,
 			'loadCustomizerCSSFrontend'    => true,
 			'licenseValid'                 => false,
