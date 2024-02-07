@@ -219,8 +219,10 @@ const Interface = ( props ) => {
 			disablePatternImporterBlock: data.disablePatternImporterBlock,
 			allowFrontendPatternPreview: data.allowFrontendPatternPreview,
 			hideUncategorizedPatterns: data.hideUncategorizedPatterns,
+			showCustomizerUI: data.showCustomizerUI,
 			loadCustomizerCSSBlockEditor: data.loadCustomizerCSSBlockEditor,
 			loadCustomizerCSSFrontend: data.loadCustomizerCSSFrontend,
+			showMenusUI: data.showMenusUI,
 			categories: data.categories ?? [],
 			saveNonce: dlxPatternWranglerAdmin.saveNonce,
 			resetNonce: dlxPatternWranglerAdmin.resetNonce,
@@ -388,6 +390,22 @@ const Interface = ( props ) => {
 								<td>
 									<div className="dlx-admin__row">
 										<Controller
+											name="showCustomizerUI"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __( 'Show Customizer UI', 'dlx-pattern-wrangler' ) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __( 'This will show the customizer UI in the Appearance menu if enabled.', 'dlx-pattern-wrangler' ) }
+												/>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
 											name="loadCustomizerCSSBlockEditor"
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
@@ -425,6 +443,22 @@ const Interface = ( props ) => {
 									{ __( 'Miscellaneous', 'dlx-pattern-wrangler' ) }
 								</th>
 								<td>
+									<div className="dlx-admin__row">
+										<Controller
+											name="showMenusUI"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __( 'Show Menus UI', 'dlx-pattern-wrangler' ) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __( 'This will show the menus UI in the Appearance menu if enabled.', 'dlx-pattern-wrangler' ) }
+												/>
+											) }
+										/>
+									</div>
 									<div className="dlx-admin__row">
 										<Controller
 											name="disablePatternImporterBlock"
