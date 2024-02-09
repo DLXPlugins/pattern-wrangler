@@ -16,6 +16,9 @@ class Admin {
 	 * Class runner.
 	 */
 	public function run() {
+
+		$options = Options::get_options();
+
 		// Init the admin menu.
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 
@@ -52,8 +55,9 @@ class Admin {
 		// Output synced vs. unsynced.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'output_pattern_sync_column' ), 10, 2 );
 
-		// Setting effects.
-		add_action( 'admin_init', array( $this, 'check_options_and_implement' ) );
+		if ( (bool) $options['loadCustomizerCSSBlockEditor'] ) {
+			add_action( 'enqueue_block_assets', array( $this, 'enqueue_customizer_css_block_editor' ), PHP_INT_MAX );
+		}
 	}
 
 
@@ -560,23 +564,17 @@ class Admin {
 	}
 
 	/**
-	 * Function check_options_and_implement to check options and integrate its purpose.
+	 * Enqueue customizer CSS for the block editor.
 	 */
-	public function check_options_and_implement() {
-		$options = Options::get_options();
-		if ( $options['loadCustomizerCSSBlockEditor'] ) {
-			add_action( 'enqueue_block_assets', array( $this, 'enqueue_custom_css_admin' ), PHP_INT_MAX );
-		}
-	}
-
-	/**
-	 * Function enqueue on wp-edit-blocks.
-	 */
-	public function enqueue_custom_css_admin() {
+	public function enqueue_customizer_css_block_editor() {
 		$custom_css = wp_get_custom_css();
 		if ( ! empty( $custom_css ) ) {
-			wp_add_inline_style( 'wp-edit-blocks', $custom_css );
+			wp_register_style(
+				'dlx-pw-customizer-css-block-editor',
+				false
+			);
+			wp_enqueue_style( 'dlx-pw-customizer-css-block-editor' );
+			wp_add_inline_style( 'dlx-pw-customizer-css-block-editor', $custom_css );
 		}
 	}
-
 }
