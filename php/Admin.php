@@ -16,6 +16,9 @@ class Admin {
 	 * Class runner.
 	 */
 	public function run() {
+
+		$options = Options::get_options();
+
 		// Init the admin menu.
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 
@@ -51,6 +54,10 @@ class Admin {
 
 		// Output synced vs. unsynced.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'output_pattern_sync_column' ), 10, 2 );
+
+		if ( (bool) $options['loadCustomizerCSSBlockEditor'] ) {
+			add_action( 'enqueue_block_assets', array( $this, 'enqueue_customizer_css_block_editor' ), PHP_INT_MAX );
+		}
 	}
 
 
@@ -554,5 +561,20 @@ class Admin {
 			</main>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Enqueue customizer CSS for the block editor.
+	 */
+	public function enqueue_customizer_css_block_editor() {
+		$custom_css = wp_get_custom_css();
+		if ( ! empty( $custom_css ) ) {
+			wp_register_style(
+				'dlx-pw-customizer-css-block-editor',
+				false
+			);
+			wp_enqueue_style( 'dlx-pw-customizer-css-block-editor' );
+			wp_add_inline_style( 'dlx-pw-customizer-css-block-editor', $custom_css );
+		}
 	}
 }
