@@ -560,24 +560,23 @@ class Admin {
 	}
 
 	/**
-	 * Function check_options_and_implement to check options and integrate its purpose
+	 * Function check_options_and_implement to check options and integrate its purpose.
 	 */
-
 	public function check_options_and_implement() {
 		$options = Options::get_options();
 		if ( $options['loadCustomizerCSSBlockEditor'] ) {
-			add_action('enqueue_block_assets', array( $this, 'enqueue_custom_css_admin' ), PHP_INT_MAX );
+			add_action( 'enqueue_block_assets', array( $this, 'enqueue_custom_css_admin' ), PHP_INT_MAX );
 		}
-	 }
-	/**
-	 * Function enqueue on wp-edit-blocks
-	 */
+	}
 
+	/**
+	 * Function enqueue on wp-edit-blocks.
+	 */
 	public function enqueue_custom_css_admin() {
 		$custom_css = wp_get_custom_css();
-        if ( ! empty( $custom_css )) {
+		if ( ! empty( $custom_css )) {
 			wp_add_inline_style( 'wp-edit-blocks', $custom_css );
-        }
+		}
 	}
 
 }
