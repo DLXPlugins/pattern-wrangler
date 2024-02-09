@@ -566,21 +566,18 @@ class Admin {
 	public function check_options_and_implement() {
 		$options = Options::get_options();
 		if ( $options['loadCustomizerCSSBlockEditor'] ) {
-			add_action('enqueue_block_editor_assets', array( $this, 'enqueue_custom_css' ), PHP_INT_MAX );
-			add_action('wp_footer', array( $this, 'enqueue_custom_css' ), PHP_INT_MAX );
+			add_action('enqueue_block_assets', array( $this, 'enqueue_custom_css_admin' ), PHP_INT_MAX );
 		}
 	 }
-
 	/**
-	 * Function enqueue the custom css from theme customizer using enqueue block assets
+	 * Function enqueue on wp-edit-blocks
 	 */
 
-	public function enqueue_custom_css() {
+	public function enqueue_custom_css_admin() {
 		$custom_css = wp_get_custom_css();
-        if (!empty($custom_css)) {
-			$theme = wp_get_theme(); // Get the current theme object
-			$theme_handle = $theme->get_stylesheet(); 
-			wp_add_inline_style($theme_handle, $custom_css);
+        if ( ! empty( $custom_css )) {
+			wp_add_inline_style( 'wp-edit-blocks', $custom_css );
         }
 	}
+
 }
