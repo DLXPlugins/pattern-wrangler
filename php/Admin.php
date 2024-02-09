@@ -52,7 +52,7 @@ class Admin {
 		// Output synced vs. unsynced.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'output_pattern_sync_column' ), 10, 2 );
 
-		// Setting effects
+		// Setting effects.
 		add_action( 'admin_init', array( $this, 'check_options_and_implement' ) );
 	}
 
@@ -574,7 +574,7 @@ class Admin {
 	 */
 	public function enqueue_custom_css_admin() {
 		$custom_css = wp_get_custom_css();
-		if ( ! empty( $custom_css )) {
+		if ( ! empty( $custom_css ) ) {
 			wp_add_inline_style( 'wp-edit-blocks', $custom_css );
 		}
 	}
