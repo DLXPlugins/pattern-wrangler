@@ -60,7 +60,7 @@ class Admin {
 		}
 		// Since by default wp_custom_css_cb is add_action wp_head, just remove_action.
 		if ( ! (bool) $options['loadCustomizerCSSFrontend'] ) {
-			remove_action('wp_head', 'wp_custom_css_cb', 101);
+			remove_action( 'wp_head', 'wp_custom_css_cb', 101 );
 		}
 	}
 
