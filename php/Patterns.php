@@ -51,6 +51,18 @@ class Patterns {
 		// Add a featured image to the wp_block post type column.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_featured_image_column_content' ), 10, 2 );
 
+		// Show the customizer UI if enabled.
+		$show_customizer_ui = (bool) $options['showCustomizerUI'];
+		if ( $show_customizer_ui ) {
+			add_action( 'customize_register', '__return_true' );
+		}
+
+		// Show the menu UI if enabled.
+		$show_menu_ui = (bool) $options['showMenusUI'];
+		if ( $show_menu_ui ) {
+			add_action( 'after_setup_theme', array( $this, 'enable_menus_ui' ), 100 );
+		}
+
 		$hide_all_patterns = (bool) $options['hideAllPatterns'];
 		if ( $hide_all_patterns ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
@@ -69,6 +81,13 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
+	}
+
+	/**
+	 * Enable menus UI.
+	 */
+	public function enable_menus_ui() {
+		add_theme_support( 'menus' );
 	}
 
 	/**
