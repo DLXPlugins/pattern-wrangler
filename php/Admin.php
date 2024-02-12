@@ -417,29 +417,19 @@ class Admin {
 			__( 'Patterns', 'dlx-pattern-wrangler' ),
 			__( 'Patterns', 'dlx-pattern-wrangler' ),
 			'manage_options',
-			'dlx-pattern-wrangler',
-			array( $this, 'admin_page' ),
+			'edit.php?post_type=wp_block',
+			'',
 			'dashicons-layout',
 			6
 		);
 
 		add_submenu_page(
-			'dlx-pattern-wrangler',
+			'edit.php?post_type=wp_block',
 			__( 'Settings', 'dlx-pattern-wrangler' ),
 			__( 'Settings', 'dlx-pattern-wrangler' ),
-			'manage_options',
+			'edit_posts',
 			'dlx-pattern-wrangler',
 			array( $this, 'admin_page' ),
-			1
-		);
-
-		add_submenu_page(
-			'dlx-pattern-wrangler',
-			__( 'Block Patterns', 'dlx-pattern-wrangler' ),
-			__( 'Block Patterns', 'dlx-pattern-wrangler' ),
-			'edit_posts',
-			'edit.php?post_type=wp_block',
-			'',
 			10
 		);
 	}
@@ -450,7 +440,7 @@ class Admin {
 	 * @param string $hook The current admin page.
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( 'toplevel_page_dlx-pattern-wrangler' !== $hook && 'appearance_page_dlx-pattern-wrangler' !== $hook ) {
+		if ( 'patterns_page_dlx-pattern-wrangler' !== $hook && 'appearance_page_dlx-pattern-wrangler' !== $hook ) {
 			return;
 		}
 
