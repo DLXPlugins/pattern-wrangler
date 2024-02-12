@@ -62,6 +62,13 @@ class Admin {
 		if ( ! (bool) $options['loadCustomizerCSSFrontend'] ) {
 			remove_action( 'wp_head', 'wp_custom_css_cb', 101 );
 		}
+		$post_type = 'wp_block';
+    
+		// Unregister the 'category' taxonomy.
+		unregister_taxonomy_for_object_type('category', $post_type);
+	
+		// Unregister the 'post_tag' taxonomy.
+		unregister_taxonomy_for_object_type('post_tag', $post_type);
 	}
 
 
