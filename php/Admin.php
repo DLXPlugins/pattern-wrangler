@@ -58,6 +58,10 @@ class Admin {
 		if ( (bool) $options['loadCustomizerCSSBlockEditor'] ) {
 			add_action( 'enqueue_block_assets', array( $this, 'enqueue_customizer_css_block_editor' ), PHP_INT_MAX );
 		}
+		// Since by default wp_custom_css_cb is add_action wp_head, just remove_action.
+		if ( ! (bool) $options['loadCustomizerCSSFrontend'] ) {
+			remove_action( 'wp_head', 'wp_custom_css_cb', 101 );
+		}
 	}
 
 
@@ -568,7 +572,7 @@ class Admin {
 	 */
 	public function enqueue_customizer_css_block_editor() {
 		$custom_css = wp_get_custom_css();
-		if ( ! empty( $custom_css ) ) {
+		if ( ! empty( $custom_css ) && is_admin() ) {
 			wp_register_style(
 				'dlx-pw-customizer-css-block-editor',
 				false
