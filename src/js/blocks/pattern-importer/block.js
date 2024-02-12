@@ -43,8 +43,7 @@ import { useInstanceId } from '@wordpress/compose';
 import SendCommand from '../utils/SendCommand';
 
 // Image RegEx.
-const imageRegEx = /(<img[^>]+src=")([^">]+)("[^>]+>)/gi;
-const backgroundImageRegEx = /url\(["']?(.+?\.(jpg|jpeg|png|gif|webp))["']?\)/gi;
+const imageUrlRegex = /(http(?:s?):)([\/|.|@|\w|\s|-])*\.(?:jpg|gif|png|jpeg|webp)/gi;
 const uniqueIdRegex = /\"uniqueId\"\:\"([^"]+)\"/gi;
 
 // Unique ID storing.
@@ -104,29 +103,20 @@ const PatternImporter = ( props ) => {
 			}
 		};
 
-		const matches = [ ...patternText.matchAll( imageRegEx ) ];
+		const matches = [ ...patternText.matchAll( imageUrlRegex ) ];
 		const imagesToProcess = [];
 		let localPatternText = patternText;
 
 		if ( ! doNotImportRemoteImages ) {
 			// If there are matches, we need to process them.
 			if ( matches.length ) {
-				setPatternImages( matches );
 				matches.forEach( ( match ) => {
-					imagesToProcess.push( match[ 2 ] );
+					// Push if not a duplicate.
+					if ( ! imagesToProcess.includes( match[ 0 ] ) ) {
+						imagesToProcess.push( match[ 0 ] );
+					}
 				} );
-			}
-
-			// Check for background images.
-			const bgMatches = [ ...patternText.matchAll( backgroundImageRegEx ) ];
-
-			// If there are bg matches, we need to process them.
-			if ( bgMatches.length ) {
-				setPatternBackgroundImages( bgMatches );
-
-				bgMatches.forEach( ( match ) => {
-					imagesToProcess.push( match[ 1 ] );
-				} );
+				setPatternImages( imagesToProcess );
 			}
 
 			const imagesProcessed = [];

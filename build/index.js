@@ -64,8 +64,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 // Image RegEx.
-var imageRegEx = /(<img[^>]+src=")([^">]+)("[^>]+>)/gi;
-var backgroundImageRegEx = /url\(["']?(.+?\.(jpg|jpeg|png|gif|webp))["']?\)/gi;
+var imageUrlRegex = /(http(?:s?):)([\/|.|@|\w|\s|-])*\.(?:jpg|gif|png|jpeg|webp)/gi;
 var uniqueIdRegex = /\"uniqueId\"\:\"([^"]+)\"/gi;
 
 // Unique ID storing.
@@ -110,7 +109,7 @@ var PatternImporter = function PatternImporter(props) {
     replaceBlock = _useDispatch.replaceBlock;
   var onPatternSubmit = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var processImage, importPattern, matches, imagesToProcess, localPatternText, bgMatches, imagesProcessed, imagePromises;
+      var processImage, importPattern, matches, imagesToProcess, localPatternText, imagesProcessed, imagePromises;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
@@ -156,25 +155,19 @@ var PatternImporter = function PatternImporter(props) {
                 //replaceInnerBlocks( clientId, patternBlocks );
               } catch (error) {}
             };
-            matches = _toConsumableArray(patternText.matchAll(imageRegEx));
+            matches = _toConsumableArray(patternText.matchAll(imageUrlRegex));
             imagesToProcess = [];
             localPatternText = patternText;
             if (!doNotImportRemoteImages) {
               // If there are matches, we need to process them.
               if (matches.length) {
-                setPatternImages(matches);
                 matches.forEach(function (match) {
-                  imagesToProcess.push(match[2]);
+                  // Push if not a duplicate.
+                  if (!imagesToProcess.includes(match[0])) {
+                    imagesToProcess.push(match[0]);
+                  }
                 });
-              }
-
-              // Check for background images.
-              bgMatches = _toConsumableArray(patternText.matchAll(backgroundImageRegEx)); // If there are bg matches, we need to process them.
-              if (bgMatches.length) {
-                setPatternBackgroundImages(bgMatches);
-                bgMatches.forEach(function (match) {
-                  imagesToProcess.push(match[1]);
-                });
+                setPatternImages(imagesToProcess);
               }
               imagesProcessed = [];
               imagePromises = []; // Let's loop through images and process.
