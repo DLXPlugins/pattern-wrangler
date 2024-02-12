@@ -1,14 +1,14 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"title": "Pattern Inserter",
-	"apiVersion": 2,
-	"name": "dlxplugins/gbhx-pattern-inserter",
-	"category": "generateblocks",
+	"apiVersion": 3,
+	"name": "dlxplugins/dlx-pw-pattern-inserter",
+	"category": "design",
 	"icon": "",
 	"description": "Paste in a pattern and it will be inserted for you.",
-	"keywords": ["generateblocks", "pattern", "inserter"],
+	"keywords": ["remote", "pattern", "inserter"],
 	"version": "1.0.0",
-	"textdomain": "gb-hacks",
+	"textdomain": "dlx-pattern-wrangler",
 	"attributes": {
 		"preview": {
 			"type": "boolean",
@@ -20,5 +20,5 @@
 			"preview": true
 		}
 	},
-	"editorScript": "gb-hacks-pattern-inserter-block"
+	"editorScript": "dlx-pw-pattern-inserter-block"
 }

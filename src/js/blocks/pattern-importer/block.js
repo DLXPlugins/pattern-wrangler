@@ -72,12 +72,12 @@ const PatternImporter = ( props ) => {
 		setImporting( true );
 		const processImage = async( imgUrl, imgAlt ) => {
 			const response = await SendCommand(
-				gbHacksPatternInserter.restNonce,
+				dlxPWPatternInserter.restNonce,
 				{
 					imgUrl,
 					imgAlt,
 				},
-				gbHacksPatternInserter.restUrl + '/process_image'
+				dlxPWPatternInserter.restUrl + '/process_image'
 			);
 			return response;
 		};
@@ -147,12 +147,12 @@ const PatternImporter = ( props ) => {
 		}
 
 		Promise.all( imagePromises ).then( () => {
-			const gbUniqueIdMatches = [ ...localPatternText.matchAll( uniqueIdRegex ) ];
+			const pwUniqueIdMatches = [ ...localPatternText.matchAll( uniqueIdRegex ) ];
 
 			// If there are matches, we need to process them.
-			if ( gbUniqueIdMatches.length ) {
+			if ( pwUniqueIdMatches.length ) {
 				// Loop through matches, generate unique ID, and replace.
-				gbUniqueIdMatches.forEach( ( match ) => {
+				pwUniqueIdMatches.forEach( ( match ) => {
 					const newUniqueId = generateUniqueId();
 					uniqueIds.push( newUniqueId );
 					patternText.replace( match[ 1 ], `"uniqueId":"${ newUniqueId }"` );
@@ -170,12 +170,12 @@ const PatternImporter = ( props ) => {
 			} catch ( error ) {
 			}
 		} ).catch( ( error ) => {
-			const gbUniqueIdMatches = [ ...localPatternText.matchAll( uniqueIdRegex ) ];
+			const pwUniqueIdMatches = [ ...localPatternText.matchAll( uniqueIdRegex ) ];
 
 			// If there are matches, we need to process them.
-			if ( gbUniqueIdMatches.length ) {
+			if ( pwUniqueIdMatches.length ) {
 				// Loop through matches, generate unique ID, and replace.
-				gbUniqueIdMatches.forEach( ( match ) => {
+				pwUniqueIdMatches.forEach( ( match ) => {
 					const newUniqueId = generateUniqueId();
 					uniqueIds.push( newUniqueId );
 					patternText.replace( match[ 1 ], `"uniqueId":"${ newUniqueId }"` );
@@ -215,12 +215,12 @@ const PatternImporter = ( props ) => {
 		<>
 			<Card className="dlx-pattern-inserter">
 				<CardHeader>
-					{ __( 'Pattern Importer', 'alerts-dlx' ) }
+					{ __( 'Pattern Importer', 'dlx-pattern-wrangler' ) }
 				</CardHeader>
 				<CardBody>
 					<TextareaControl
-						label={ __( 'Paste your pattern here', 'alerts-dlx' ) }
-						placeholder={ __( 'Paste your pattern here', 'alerts-dlx' ) }
+						label={ __( 'Paste your pattern here', 'dlx-pattern-wrangler' ) }
+						placeholder={ __( 'Paste your pattern here', 'dlx-pattern-wrangler' ) }
 						value={ patternText }
 						onChange={ ( value ) => setPatternText( value ) }
 						disabled={ importing }
@@ -232,7 +232,7 @@ const PatternImporter = ( props ) => {
 						disabled={ ! patternText || importing }
 						onClick={ onPatternSubmit }
 					>
-						{ __( 'Import', 'alerts-dlx' ) }
+						{ __( 'Import', 'dlx-pattern-wrangler' ) }
 					</Button>
 					{ importing && (
 						<span className="gb-pattern-importer-image">
