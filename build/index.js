@@ -102,11 +102,15 @@ var PatternImporter = function PatternImporter(props) {
     _useState10 = _slicedToArray(_useState9, 2),
     imageProcessingCount = _useState10[0],
     setImageProcessingCount = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false),
+    _useState12 = _slicedToArray(_useState11, 2),
+    doNotImportRemoteImages = _useState12[0],
+    setDoNotImportRemoteImages = _useState12[1];
   var _useDispatch = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_6__.useDispatch)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_7__.store),
     replaceBlock = _useDispatch.replaceBlock;
   var onPatternSubmit = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var processImage, matches, imagesToProcess, bgMatches, imagesProcessed, imagePromises, localPatternText;
+      var processImage, importPattern, matches, imagesToProcess, localPatternText, bgMatches, imagesProcessed, imagePromises;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
@@ -135,106 +139,91 @@ var PatternImporter = function PatternImporter(props) {
                 return _ref2.apply(this, arguments);
               };
             }();
+            /**
+             * Import a pattern.
+             *
+             * @param {string} pattern The pattern.
+             */
+            importPattern = function importPattern(pattern) {
+              pattern = replaceUniqueIds(pattern);
+
+              // Convert pattern to blocks.
+              try {
+                var patternBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.parse)(pattern);
+                replaceBlock(clientId, patternBlocks);
+
+                // Insert block in place of this one.
+                //replaceInnerBlocks( clientId, patternBlocks );
+              } catch (error) {}
+            };
             matches = _toConsumableArray(patternText.matchAll(imageRegEx));
-            imagesToProcess = []; // If there are matches, we need to process them.
-            if (matches.length) {
-              setPatternImages(matches);
-              matches.forEach(function (match) {
-                imagesToProcess.push(match[2]);
-              });
-            }
+            imagesToProcess = [];
+            localPatternText = patternText;
+            if (!doNotImportRemoteImages) {
+              // If there are matches, we need to process them.
+              if (matches.length) {
+                setPatternImages(matches);
+                matches.forEach(function (match) {
+                  imagesToProcess.push(match[2]);
+                });
+              }
 
-            // Check for background images.
-            bgMatches = _toConsumableArray(patternText.matchAll(backgroundImageRegEx)); // If there are bg matches, we need to process them.
-            if (bgMatches.length) {
-              setPatternBackgroundImages(bgMatches);
-              bgMatches.forEach(function (match) {
-                imagesToProcess.push(match[1]);
-              });
-            }
-            imagesProcessed = [];
-            imagePromises = [];
-            localPatternText = patternText; // Let's loop through images and process.
-            if (imagesToProcess.length) {
-              imagePromises = imagesToProcess.map(function (image) {
-                try {
-                  var response = processImage(image, '');
-                  response.then(function (restResponse) {
-                    imagesProcessed.push(image);
-                    var _restResponse$data = restResponse.data,
-                      data = _restResponse$data.data,
-                      success = _restResponse$data.success;
-                    if (success) {
-                      imageCount++;
-                      setImageProcessingCount(imageCount);
+              // Check for background images.
+              bgMatches = _toConsumableArray(patternText.matchAll(backgroundImageRegEx)); // If there are bg matches, we need to process them.
+              if (bgMatches.length) {
+                setPatternBackgroundImages(bgMatches);
+                bgMatches.forEach(function (match) {
+                  imagesToProcess.push(match[1]);
+                });
+              }
+              imagesProcessed = [];
+              imagePromises = []; // Let's loop through images and process.
+              if (imagesToProcess.length) {
+                imagePromises = imagesToProcess.map(function (image) {
+                  try {
+                    var response = processImage(image, '');
+                    response.then(function (restResponse) {
+                      imagesProcessed.push(image);
+                      var _restResponse$data = restResponse.data,
+                        data = _restResponse$data.data,
+                        success = _restResponse$data.success;
+                      if (success) {
+                        imageCount++;
+                        setImageProcessingCount(imageCount);
 
-                      // Get the image URL and replace in pattern.
-                      var newImageUrl = data.attachmentUrl;
+                        // Get the image URL and replace in pattern.
+                        var newImageUrl = data.attachmentUrl;
 
-                      // Replace old URL with new URL.
-                      localPatternText = localPatternText.replace(image, newImageUrl);
-                      setPatternText(localPatternText);
-                    } else {
+                        // Replace old URL with new URL.
+                        localPatternText = localPatternText.replace(image, newImageUrl);
+                        setPatternText(localPatternText);
+                      } else {
+                        // Fail silently.
+                        imageCount++;
+                        setImageProcessingCount(imageCount);
+                      }
+                    })["catch"](function (error) {
                       // Fail silently.
                       imageCount++;
                       setImageProcessingCount(imageCount);
-                    }
-                  })["catch"](function (error) {
+                    });
+                    return response;
+                  } catch (error) {
                     // Fail silently.
                     imageCount++;
                     setImageProcessingCount(imageCount);
-                  });
-                  return response;
-                } catch (error) {
-                  // Fail silently.
-                  imageCount++;
-                  setImageProcessingCount(imageCount);
-                }
+                  }
+                });
+              }
+              Promise.all(imagePromises).then(function () {
+                importPattern(localPatternText);
+              })["catch"](function (error) {
+                importPattern(localPatternText);
               });
+            } else {
+              importPattern(localPatternText);
             }
-            Promise.all(imagePromises).then(function () {
-              var pwUniqueIdMatches = _toConsumableArray(localPatternText.matchAll(uniqueIdRegex));
-
-              // If there are matches, we need to process them.
-              if (pwUniqueIdMatches.length) {
-                // Loop through matches, generate unique ID, and replace.
-                pwUniqueIdMatches.forEach(function (match) {
-                  var newUniqueId = generateUniqueId();
-                  uniqueIds.push(newUniqueId);
-                  patternText.replace(match[1], "\"uniqueId\":\"".concat(newUniqueId, "\""));
-                });
-              }
-
-              // Convert pattern to blocks.
-              try {
-                var patternBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.parse)(localPatternText);
-                replaceBlock(clientId, patternBlocks);
-
-                // Insert block in place of this one.
-                //replaceInnerBlocks( clientId, patternBlocks );
-              } catch (error) {}
-            })["catch"](function (error) {
-              var pwUniqueIdMatches = _toConsumableArray(localPatternText.matchAll(uniqueIdRegex));
-
-              // If there are matches, we need to process them.
-              if (pwUniqueIdMatches.length) {
-                // Loop through matches, generate unique ID, and replace.
-                pwUniqueIdMatches.forEach(function (match) {
-                  var newUniqueId = generateUniqueId();
-                  uniqueIds.push(newUniqueId);
-                  patternText.replace(match[1], "\"uniqueId\":\"".concat(newUniqueId, "\""));
-                });
-              }
-              // Convert pattern to blocks.
-              try {
-                var patternBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.parse)(localPatternText);
-                replaceBlock(clientId, patternBlocks);
-
-                // Insert block in place of this one.
-                //replaceInnerBlocks( clientId, patternBlocks );
-              } catch (error) {}
-            });
-          case 12:
+          case 7:
           case "end":
             return _context2.stop();
         }
@@ -244,6 +233,26 @@ var PatternImporter = function PatternImporter(props) {
       return _ref.apply(this, arguments);
     };
   }();
+
+  /**
+   * Return and generate a new unique ID.
+   *
+   * @param {string} blockPatternText The block pattern text.
+   *
+   * @return {string} The blockPatternText.
+   */
+  var replaceUniqueIds = function replaceUniqueIds(blockPatternText) {
+    var pwUniqueIdMatches = _toConsumableArray(blockPatternText.matchAll(uniqueIdRegex));
+    if (pwUniqueIdMatches.length) {
+      // Loop through matches, generate unique ID, and replace.
+      pwUniqueIdMatches.forEach(function (match) {
+        var newUniqueId = generateUniqueId();
+        uniqueIds.push(newUniqueId);
+        blockPatternText.replace(match[1], "\"uniqueId\":\"".concat(newUniqueId, "\""));
+      });
+    }
+    return blockPatternText;
+  };
 
   /**
    * Return and generate a new unique ID.
@@ -269,6 +278,13 @@ var PatternImporter = function PatternImporter(props) {
     value: patternText,
     onChange: function onChange(value) {
       return setPatternText(value);
+    },
+    disabled: importing
+  }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.CheckboxControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Do not import remote images', 'dlx-pattern-wrangler'),
+    checked: doNotImportRemoteImages,
+    onChange: function onChange(value) {
+      return setDoNotImportRemoteImages(value);
     },
     disabled: importing
   })), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.CardFooter, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
