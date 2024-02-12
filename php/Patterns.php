@@ -51,6 +51,12 @@ class Patterns {
 		// Add a featured image to the wp_block post type column.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_featured_image_column_content' ), 10, 2 );
 
+		// Add bulk action for making patterns a draft.
+		add_filter( 'bulk_actions-edit-wp_block', array( $this, 'add_draft_bulk_actions' ) );
+
+		// Handle bulk actions for making patterns a draft.
+		add_action( 'handle_bulk_actions-edit-wp_block', array( $this, 'handle_bulk_actions' ), 10, 3 );
+
 		// Show the customizer UI if enabled.
 		$show_customizer_ui = (bool) $options['showCustomizerUI'];
 		if ( $show_customizer_ui ) {
@@ -81,6 +87,54 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
+	}
+
+	/**
+	 * Handle bulk actions.
+	 *
+	 * @param string $redirect_to Redirect URL.
+	 * @param string $doaction Action to perform.
+	 * @param array  $post_ids Array of post IDs.
+	 *
+	 * @return string
+	 */
+	public function handle_bulk_actions( $redirect_to, $doaction, $post_ids ) {
+		// Check if action is draft pattern.
+		if ( 'draft_pattern' !== $doaction ) {
+			return $redirect_to;
+		}
+
+		// Loop through post IDs and update status.
+		foreach ( $post_ids as $post_id ) {
+			wp_update_post(
+				array(
+					'ID'          => $post_id,
+					'post_status' => 'draft',
+				)
+			);
+		}
+
+		// Build redirect URL.
+		$redirect_url = add_query_arg(
+			array(
+				'post_type'     => 'wp_block',
+				'notice_action' => 'draft_pattern',
+			),
+			admin_url( 'edit.php' )
+		);
+		return esc_url_raw( $redirect_url );
+	}
+
+	/**
+	 * Add draft bulk actions.
+	 *
+	 * @param array $actions Array of actions.
+	 *
+	 * @return array Updated actions.
+	 */
+	public function add_draft_bulk_actions( $actions ) {
+		$actions['draft_pattern'] = __( 'Set as Draft', 'dlx-pattern-wrangler' );
+		return $actions;
 	}
 
 	/**
