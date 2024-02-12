@@ -420,7 +420,7 @@ class Admin {
 			'dlx-pattern-wrangler',
 			array( $this, 'admin_page' ),
 			'dashicons-layout',
-			4
+			6
 		);
 
 		add_submenu_page(
