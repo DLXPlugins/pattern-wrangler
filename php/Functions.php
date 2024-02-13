@@ -329,6 +329,12 @@ class Functions {
 			'class' => array(),
 		);
 		$allowed_tags['a']['class'] = array();
+		$allowed_tags['input']      = array(
+			'type'  => array(),
+			'name'  => array(),
+			'value' => array(),
+			'class' => array(),
+		);
 
 		if ( ! $svg ) {
 			return $allowed_tags;

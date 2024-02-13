@@ -46,10 +46,10 @@ class Patterns {
 		add_filter( 'post_type_labels_wp_block', array( $this, 'change_featured_image_label' ) );
 
 		// Add post type column for featured image.
-		add_filter( 'manage_wp_block_posts_columns', array( $this, 'add_featured_image_column' ) );
+		add_filter( 'manage_wp_block_posts_columns', array( $this, 'add_post_type_columns' ) );
 
 		// Add a featured image to the wp_block post type column.
-		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_featured_image_column_content' ), 10, 2 );
+		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_post_type_columns_content' ), 10, 2 );
 
 		// Add bulk action for making patterns a draft.
 		add_filter( 'bulk_actions-edit-wp_block', array( $this, 'add_draft_bulk_actions' ) );
@@ -150,10 +150,17 @@ class Patterns {
 	 * @param string $column_name Column name.
 	 * @param int    $post_id Post ID.
 	 */
-	public function add_featured_image_column_content( $column_name, $post_id ) {
+	public function add_post_type_columns_content( $column_name, $post_id ) {
 		if ( 'featured_image' === $column_name ) {
 			$thumbnail = get_the_post_thumbnail( $post_id, array( 125, 125 ) );
 			echo wp_kses_post( $thumbnail );
+		}
+		if ( 'shortcode' === $column_name ) {
+			$post = get_post( $post_id );
+			if ( 'publish' === $post->post_status ) {
+				$shortcode = sprintf( '<input type="text" value="%s" readonly>', esc_attr( sprintf( '[block slug="%s"]', $post->post_name ) ) );
+				echo wp_kses( $shortcode, Functions::get_kses_allowed_html( false ) );
+			}
 		}
 	}
 
@@ -164,9 +171,12 @@ class Patterns {
 	 *
 	 * @return array Updated columns.
 	 */
-	public function add_featured_image_column( $columns ) {
+	public function add_post_type_columns( $columns ) {
 		// Add featured image to 2nd column.
 		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'dlx-pattern-wrangler' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
+
+		// Add shortcode to 3rd column.
+		$columns = array_slice( $columns, 0, 3, true ) + array( 'shortcode' => __( 'Shortcode', 'dlx-pattern-wrangler' ) ) + array_slice( $columns, 2, count( $columns ) - 1, true );
 		return $columns;
 	}
 
