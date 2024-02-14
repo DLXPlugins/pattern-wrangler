@@ -21,133 +21,7 @@ class Blocks {
 		$self = new self();
 		add_action( 'init', array( $self, 'init' ) );
 		add_action( 'rest_api_init', array( $self, 'init_rest_api' ) );
-		add_filter( 'block_type_metadata', array( $self, 'add_block_metadata' ), 10, 1 );
-		add_filter( 'generateblocks_typography_font_family_list', array( $self, 'add_adobe_fonts' ), 10, 1 );
-		add_filter( 'generateblocks_typography_font_family_list', array( $self, 'add_blocksy_adobe_fonts' ), 10, 1 );
-		add_filter( 'generateblocks_do_content', array( $self, 'add_post_type_content' ), 10, 2 );
 		return $self;
-	}
-
-	/**
-	 * Add post type content.
-	 *
-	 * @param string $content Post content.
-	 */
-	public function add_post_type_content( $content ) {
-		global $post;
-		// Get the ID.
-		$post_id = $post->ID ?? 0;
-		// Bail if no ID.
-		if ( ! $post_id ) {
-			return $content;
-		}
-		$options            = Options::get_options();
-		$enabled_post_types = $options['enabledPostTypes'] ?? array();
-		$current_post_type  = get_post_type( $post_id );
-
-		// If post or page, bail.
-		if ( in_array( $current_post_type, array( 'post', 'page' ), true ) ) {
-			return $content;
-		}
-
-		if ( in_array( $current_post_type, $enabled_post_types, true ) ) {
-			$block_element = get_post( $post_id );
-			if ( $block_element ) {
-				if ( 'publish' === $block_element->post_status && empty( $block_element->post_password ) ) {
-					$content .= $block_element->post_content;
-				}
-			}
-		}
-		return $content;
-	}
-
-
-	/**
-	 * Add Adobe Fonts to the list of fonts.
-	 *
-	 * @param array $fonts List of fonts.
-	 */
-	public function add_adobe_fonts( $fonts ) {
-		$options = Options::get_options();
-		if ( ! (bool) $options['enableAdobeFonts'] ) {
-			return $fonts;
-		}
-
-		// Get the adobe fonts.
-		$fonts_group = array();
-		if ( defined( 'CUSTOM_TYPEKIT_FONTS_FILE' ) ) {
-			$adobe_fonts = get_option( 'custom-typekit-fonts', array() );
-			if ( isset( $adobe_fonts['custom-typekit-font-details'] ) ) {
-				foreach ( $adobe_fonts['custom-typekit-font-details'] as $font_name => $font_details ) {
-					$fonts_group[] = array(
-						'value' => $font_name,
-						'label' => $font_name,
-					);
-				}
-			}
-		}
-		if ( ! empty( $fonts_group ) ) {
-			$fonts[] = array(
-				'label'   => __( 'Adobe Fonts', 'gb-hacks' ),
-				'options' => $fonts_group,
-			);
-		}
-		return $fonts;
-	}
-
-	/**
-	 * Add Adobe Fonts to the list of fonts.
-	 *
-	 * @param array $fonts List of fonts.
-	 */
-	public function add_blocksy_adobe_fonts( $fonts ) {
-		$options = Options::get_options();
-		if ( ! (bool) $options['enableAdobeFonts'] ) {
-			return $fonts;
-		}
-
-		// Get blocksy adoobe fonts.
-		$options       = get_option( 'blocksy_ext_adobe_typekit_settings', array() );
-		$font_families = $options['fonts'] ?? array();
-
-		// Add fonts to list.
-		if ( ! empty( $font_families ) ) {
-			$fonts_group = array();
-			foreach ( $font_families as $font_family ) {
-				$fonts_group[] = array(
-					'value' => $font_family['slug'],
-					'label' => $font_family['name'],
-				);
-			}
-			$fonts[] = array(
-				'label'   => __( 'Adobe Fonts', 'gb-hacks' ),
-				'options' => $fonts_group,
-			);
-		}
-		return $fonts;
-	}
-
-	/**
-	 * Set Paragraph defaults.
-	 *
-	 * @param array $metadata {
-	 *    An array of arguments.
-	 *
-	 *    @type string $name       Block name.
-	 *    @type array  $attributes Block attributes.
-	 * }
-	 */
-	public function add_block_metadata( $metadata ) {
-		// Check the block type.
-		if ( 'generateblocks/headline' !== $metadata['name'] ) {
-			return $metadata;
-		}
-
-		// Add accordion view (collapsed view).
-		$metadata['attributes']['element']['default'] = 'p';
-
-		// Return the metadata.
-		return $metadata;
 	}
 
 	/**
@@ -155,7 +29,7 @@ class Blocks {
 	 */
 	public function init_rest_api() {
 		register_rest_route(
-			'dlxplugins/gb-hacks/v1',
+			'dlxplugins/pattern-wrangler/v1',
 			'/process_image',
 			array(
 				'methods'             => 'POST',
@@ -163,19 +37,10 @@ class Blocks {
 				'permission_callback' => array( $this, 'rest_image_sideload_permissions' ),
 			)
 		);
-		register_rest_route(
-			'dlxplugins/gb-hacks/v1',
-			'/get_asset_icon_groups',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'rest_get_gb_groups' ),
-				'permission_callback' => array( $this, 'rest_image_sideload_permissions' ),
-			)
-		);
 	}
 
 	/**
-	 * Process a list of images for a plugin.
+	 * Process a list of images for a pattern.
 	 *
 	 * @param WP_Rest $request REST request.
 	 */
@@ -206,7 +71,7 @@ class Blocks {
 			if ( ! $extension ) {
 				\wp_send_json_error(
 					array(
-						'message' => __( 'File extension not found.', 'gb-hacks' ),
+						'message' => __( 'File extension not found.', 'dlx-pattern-wrangler' ),
 					),
 					400
 				);
@@ -215,7 +80,7 @@ class Blocks {
 			if ( ! in_array( $extension, $valid_extensions, true ) ) {
 				\wp_send_json_error(
 					array(
-						'message' => __( 'Invalid file extension.', 'gb-hacks' ),
+						'message' => __( 'Invalid file extension.', 'dlx-pattern-wrangler' ),
 					),
 					400
 				);
@@ -257,36 +122,9 @@ class Blocks {
 		}
 		\wp_send_json_error(
 			array(
-				'message' => __( 'Invalid image URL.', 'gb-hacks' ),
+				'message' => __( 'Invalid image URL.', 'dlx-pattern-wrangler' ),
 			),
 			400
-		);
-	}
-
-	/**
-	 * Process a list of images for a plugin.
-	 *
-	 * @param WP_Rest $request REST request.
-	 */
-	public function rest_get_gb_groups( $request ) {
-
-		// Get existing SVGs.
-		$existing_svg_assets = get_option( 'generateblocks_svg_icons', array() );
-
-		// Loop through and get `group`.
-		$groups = array();
-		foreach ( $existing_svg_assets as $svg_asset ) {
-			$groups[] = $svg_asset['group'];
-		}
-
-		// If the group is empty, then on JS side, prompt for a group name.
-		$groups = array_unique( $groups );
-
-		// Send success.
-		\wp_send_json_success(
-			array(
-				'groups' => $groups,
-			)
 		);
 	}
 
@@ -317,25 +155,23 @@ class Blocks {
 	 * Register the block editor script with localized vars.
 	 */
 	public function register_block_editor_scripts() {
-		$options = Options::get_options();
+
+		$deps = require_once Functions::get_plugin_dir( 'build/index.asset.php' );
 
 		wp_register_script(
-			'gb-hacks-pattern-inserter-block',
+			'dlx-pw-pattern-inserter-block',
 			Functions::get_plugin_url( 'build/index.js' ),
-			array(),
-			Functions::get_plugin_version(),
+			$deps['dependencies'],
+			$deps['version'],
 			true
 		);
 
 		wp_localize_script(
-			'gb-hacks-pattern-inserter-block',
-			'gbHacksPatternInserter',
+			'dlx-pw-pattern-inserter-block',
+			'dlxPWPatternInserter',
 			array(
-				'restUrl'                     => rest_url( 'dlxplugins/gb-hacks/v1' ),
+				'restUrl'                     => rest_url( 'dlxplugins/pattern-wrangler/v1' ),
 				'restNonce'                   => wp_create_nonce( 'wp_rest' ),
-				'allowedGoogleFonts'          => $options['allowedGoogleFonts'] ?? array(),
-				'defaultHeadlineBlockEnabled' => (bool) $options['enableDefaultHeadlineBlock'] ?? false,
-				'defaultHeadlineBlockElement' => $options['headlineBlockElement'] ?? '',
 			)
 		);
 	}
