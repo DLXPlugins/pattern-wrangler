@@ -18,6 +18,9 @@ class Patterns {
 	public function run() {
 		$options = Options::get_options();
 
+		// Enqueue scripts for the wp_block post_type.
+		add_action( 'admin_enqueue_scripts', array( $this, 'add_post_type_enqueue_scripts' ) );
+
 		// Deregister any disabled pattern categories.
 		add_action( 'init', array( $this, 'maybe_deregister_pattern_categories' ), 999 );
 
@@ -45,7 +48,7 @@ class Patterns {
 		// Change post type label for featured image.
 		add_filter( 'post_type_labels_wp_block', array( $this, 'change_featured_image_label' ) );
 
-		// Add post type column for featured image.
+		// Add post type column for shortcode.
 		add_filter( 'manage_wp_block_posts_columns', array( $this, 'add_post_type_columns' ) );
 
 		// Add a featured image to the wp_block post type column.
@@ -158,8 +161,25 @@ class Patterns {
 		if ( 'shortcode' === $column_name ) {
 			$post = get_post( $post_id );
 			if ( 'publish' === $post->post_status ) {
-				$shortcode = sprintf( '<input type="text" value="%s" readonly>', esc_attr( sprintf( '[block slug="%s"]', $post->post_name ) ) );
-				echo wp_kses( $shortcode, Functions::get_kses_allowed_html( false ) );
+
+				// Generate the shortcode for the readonly input.
+				$shortcode = sprintf(
+					'<input type="text" value="%s" readonly>',
+					esc_attr( sprintf( '[block slug="%s"]', $post->post_name ) )
+				);
+
+				// Generate the shortcode for the button with dashicon.
+				$button_shortcode = sprintf(
+					'<button type="button" class="pw-copy-clipboard" title="Copy to Clipboard">%s</button>',
+					'<span class="dashicons dashicons-clipboard"></span>'
+				);
+				
+				// Concatenate both shortcodes.
+				$combined_shortcodes =  wp_kses( $shortcode, Functions::get_kses_allowed_html( false ) ) . $button_shortcode;
+
+				// Output the combined shortcode with allowed HTML tags.
+				echo $combined_shortcodes;
+
 			}
 		}
 	}
@@ -453,4 +473,47 @@ class Patterns {
 			}
 		}
 	}
+
+	/**
+	 * Enqueue scripts for the wp_block post type.
+	 *
+	 * @param string $hook The current post type page.
+	 */
+	public function add_post_type_enqueue_scripts( $hook ) {
+		// Only proceed if we are on a valid page and the current post is not null.
+		if ( $hook !== 'edit.php' || ! $post = get_post() ) {
+			return;
+		}
+
+		// Check if the current post type is wp_block.
+		if ( 'wp_block' === $post->post_type ) {
+			// Load asset file to get dependencies and version.
+			$asset_file = Functions::get_plugin_dir( 'dist/dlx-pw-admin.asset.php' );
+			
+			// Check if asset file exists and is readable.
+			if ( file_exists( $asset_file ) && is_readable( $asset_file ) ) {
+				// Retrieve dependencies and version from asset file.
+				$deps = require $asset_file;
+
+				// Enqueue script with retrieved dependencies and version.
+				wp_enqueue_script(
+					'dlx-pw-post-utilities',
+					Functions::get_plugin_url( 'dist/dlx-pw-post-utilities.js' ),
+					$deps['dependencies'],
+					$deps['version'],
+					true
+				);
+			}
+
+			// Enqueue admin styles.
+			wp_enqueue_style(
+				'dlx-pw-admin-css',
+				Functions::get_plugin_url( 'dist/dlx-pw-admin-utils-css.css' ),
+				array(),
+				Functions::get_plugin_version(),
+				'all'
+			);
+		}
+	}
+
 }
