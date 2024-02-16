@@ -90,6 +90,9 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
+
+		// Register the shortcode handler when the class is instantiated for the [block] shortcode
+        add_shortcode( 'block', array( $this, 'pw_render_block_shortcode' ) );
 	}
 
 	/**
@@ -514,6 +517,34 @@ class Patterns {
 				'all'
 			);
 		}
+	}
+
+	
+	
+	// Define the callback function for the [block] shortcode
+	public function pw_render_block_shortcode( $atts ) {
+		// Extract attributes from the shortcode
+		$atts = shortcode_atts( array(
+			'slug' => '', // Default value for the slug attribute
+		), $atts, 'block' );
+
+		// Retrieve the post by its post_name and post_type
+        $post = get_page_by_path( $atts['slug'], OBJECT, 'wp_block' );
+
+		// Initialize variable to store block content
+		$block_content = '';
+	
+		// Check if page exists and retrieve its content
+		if ( $post ) {
+			// Retrieve the content of the page
+			$block_content = $post->post_content;
+		}
+	
+		// Render blocks from the content
+		$rendered_content = do_blocks( $block_content );
+		
+		// Return the rendered content
+		return $rendered_content;
 	}
 
 }
