@@ -173,9 +173,9 @@ class Patterns {
 					'<button type="button" class="pw-copy-clipboard" title="Copy to Clipboard">%s</button>',
 					'<span class="dashicons dashicons-clipboard"></span>'
 				);
-				
+
 				// Concatenate both shortcodes.
-				$combined_shortcodes =  wp_kses( $shortcode, Functions::get_kses_allowed_html( false ) ) . $button_shortcode;
+				$combined_shortcodes = wp_kses( $shortcode, Functions::get_kses_allowed_html( false ) ) . $button_shortcode;
 
 				// Output the combined shortcode with allowed HTML tags.
 				echo $combined_shortcodes;
@@ -480,8 +480,9 @@ class Patterns {
 	 * @param string $hook The current post type page.
 	 */
 	public function add_post_type_enqueue_scripts( $hook ) {
+		$post = get_post();
 		// Only proceed if we are on a valid page and the current post is not null.
-		if ( $hook !== 'edit.php' || ! $post = get_post() ) {
+		if ( 'edit.php' !== $hook || ! $post ) {
 			return;
 		}
 
@@ -489,7 +490,7 @@ class Patterns {
 		if ( 'wp_block' === $post->post_type ) {
 			// Load asset file to get dependencies and version.
 			$asset_file = Functions::get_plugin_dir( 'dist/dlx-pw-admin.asset.php' );
-			
+
 			// Check if asset file exists and is readable.
 			if ( file_exists( $asset_file ) && is_readable( $asset_file ) ) {
 				// Retrieve dependencies and version from asset file.
@@ -515,5 +516,4 @@ class Patterns {
 			);
 		}
 	}
-
 }
