@@ -167,7 +167,7 @@ class Admin {
 		// Get latest options.
 		$options                = Options::get_options( true );
 		$options['licenseKey']  = $license_key;
-		$options['licenseData'] = get_site_transient( 'dlxgbhacks_core_license_check', array() );
+		$options['licenseData'] = get_site_transient( 'dlxpw_core_license_check', array() );
 		wp_send_json_success( $options );
 	}
 
@@ -218,7 +218,7 @@ class Admin {
 			);
 		}
 		$options                = Options::get_options( true );
-		$options['licenseData'] = get_site_transient( 'dlxgbhacks_core_license_check', array() );
+		$options['licenseData'] = get_site_transient( 'dlxpw_core_license_check', array() );
 		wp_send_json_success( $options );
 	}
 
