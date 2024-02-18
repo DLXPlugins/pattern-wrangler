@@ -43,11 +43,11 @@ const GBCommands = () => {
 		context: 'block-editor',
 	} );
 	useCommand( {
-		name: 'dlx-gb-hacks-Settings',
+		name: 'dlx-pattern-wrangler-Settings',
 		label: 'Go to GenerateBlocks (GB) Hacks Settings',
 		icon: settings,
 		callback: () => {
-			document.location.href = 'admin.php?page=dlx-gb-hacks';
+			document.location.href = 'admin.php?page=dlx-pattern-wrangler';
 		},
 		context: 'block-editor',
 	} );
