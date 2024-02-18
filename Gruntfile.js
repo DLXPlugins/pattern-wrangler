@@ -1,26 +1,23 @@
-module.exports = function (grunt) {
-	grunt.initConfig({
+module.exports = function( grunt ) {
+	grunt.initConfig( {
 		compress: {
 			main: {
-			  options: {
-				archive: 'gb-hacks.zip'
-			  },
-			  files: [
-				{src: ['gb-hacks.php'], dest: '/', filter: 'isFile'}, // includes files in path
-				{src: ['readme.txt'], dest: '/', filter: 'isFile'},
-				{src: ['assets/**'], dest: '/'}, // includes files in path and its subdirs
-				{src: ['php/**'], dest: '/'}, // includes files in path and its subdirs
-				{src: ['lib/**'], dest: '/'}, // includes files in path and its subdirs
-				{src: ['dist/**'], dest: '/'}, // includes files in path and its subdirs
-				{src: ['build/**'], dest: '/'}, // includes files in path and its subdirs
-			  ]
-			}
-		  }
-	  });
-	  grunt.registerTask('default', ["compress"]);
+				options: {
+					archive: 'dlx-pattern-wrangler.zip',
+				},
+				files: [
+					{ src: [ 'pattern-wrangler.php' ], dest: '/', filter: 'isFile' },
+					{ src: [ 'assets/**' ], dest: '/' },
+					{ src: [ 'build/**' ], dest: '/' },
+					{ src: [ 'dist/**' ], dest: '/' },
+					{ src: [ 'php/**' ], dest: '/' },
+					{ src: [ 'templates/**' ], dest: '/' },
+					{ src: [ 'lib/**' ], dest: '/' },
+				],
+			},
+		},
+	} );
+	grunt.registerTask( 'default', [ 'compress' ] );
 
- 
- 
 	grunt.loadNpmTasks( 'grunt-contrib-compress' );
-   
- };
+};
