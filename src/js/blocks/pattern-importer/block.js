@@ -43,7 +43,7 @@ import { useInstanceId } from '@wordpress/compose';
 import SendCommand from '../utils/SendCommand';
 
 // Image RegEx.
-const imageUrlRegex = /(http(?:s?):)([\/|.|@|\w|\s|-])*\.(?:jpg|gif|png|jpeg|webp)/gi;
+const imageUrlRegex = /(http(?:s?):)([\/|.|@|\w|\s|-])*\.(?:jpg|gif|png|jpeg|webp|avif)/gi;
 const uniqueIdRegex = /\"uniqueId\"\:\"([^"]+)\"/gi;
 
 // Unique ID storing.
