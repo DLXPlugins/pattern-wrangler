@@ -20,7 +20,7 @@ class Admin {
 		$options = Options::get_options();
 
 		// Init the admin menu.
-		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
+		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 100 );
 
 		// Enqueue scripts for the admin page.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -167,7 +167,7 @@ class Admin {
 		// Get latest options.
 		$options                = Options::get_options( true );
 		$options['licenseKey']  = $license_key;
-		$options['licenseData'] = get_site_transient( 'dlxgbhacks_core_license_check', array() );
+		$options['licenseData'] = get_site_transient( 'dlxpw_core_license_check', array() );
 		wp_send_json_success( $options );
 	}
 
@@ -218,7 +218,7 @@ class Admin {
 			);
 		}
 		$options                = Options::get_options( true );
-		$options['licenseData'] = get_site_transient( 'dlxgbhacks_core_license_check', array() );
+		$options['licenseData'] = get_site_transient( 'dlxpw_core_license_check', array() );
 		wp_send_json_success( $options );
 	}
 
@@ -401,6 +401,9 @@ class Admin {
 		$hide_all_patterns  = (bool) $options['hideAllPatterns'] ?? false;
 		$hide_patterns_menu = (bool) $options['hidePatternsMenu'] ?? false;
 
+		remove_submenu_page( 'themes.php', 'edit.php?post_type=wp_block' ); // Remove from Appearance in WP 6.5.
+		remove_submenu_page( 'generateblocks', 'edit.php?post_type=wp_block' ); // Remove from GenerateBlocks screen.
+
 		if ( $hide_all_patterns && $hide_patterns_menu ) {
 			add_submenu_page(
 				'themes.php',
@@ -432,6 +435,8 @@ class Admin {
 			array( $this, 'admin_page' ),
 			10
 		);
+
+		
 	}
 
 	/**

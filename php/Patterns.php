@@ -45,6 +45,9 @@ class Patterns {
 		// Add a featured image to the wp_block post type.
 		add_action( 'init', array( $this, 'add_featured_image_support' ) );
 
+		// Add an author to the wp_block post type.
+		add_action( 'init', array( $this, 'add_post_author_support' ) );
+
 		// Change post type label for featured image.
 		add_filter( 'post_type_labels_wp_block', array( $this, 'change_featured_image_label' ) );
 
@@ -218,6 +221,13 @@ class Patterns {
 	 */
 	public function add_featured_image_support() {
 		add_post_type_support( 'wp_block', 'thumbnail' );
+	}
+
+	/**
+	 * Add post author support to wp_block post type.
+	 */
+	public function add_post_author_support() {
+		add_post_type_support( 'wp_block', 'author' );
 	}
 
 	/**

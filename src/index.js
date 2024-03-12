@@ -1,1 +1,1 @@
-import './js/blocks/plugins/pattern-preview';
+import './js/blocks/pattern-importer/index';

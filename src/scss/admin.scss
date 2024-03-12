@@ -173,6 +173,20 @@ html {
 	scroll-behavior: smooth;
 }
 
+/* Lucide React Icons Styles */
+svg.lucide {
+	color: inherit;
+	fill: none !important;
+	
+	path,
+	circle,
+	rect,
+	line {
+		fill: unset !important;
+		color: currentColor !important;
+	}
+}
+
 /* Table Styles when rows are sections */
 .form-table-row-sections {
 	tr {
@@ -498,8 +512,11 @@ html {
 			border-left-color: var(--dlx-pw-admin--color-notice--warning-alt);
 		}
 
-		svg path {
+		svg:not(.lucide) path {
 			fill: var(--dlx-pw-admin--color-notice--warning-alt);
+		}
+		svg.lucide {
+			color: var(--dlx-pw-admin--color-notice--warning-alt);
 		}
 	}
 }

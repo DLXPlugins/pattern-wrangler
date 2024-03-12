@@ -20,7 +20,7 @@ namespace DLXPlugins\PatternWrangler;
 
 define( 'DLX_PATTERN_WRANGLER_VERSION', '1.0.0' );
 define( 'DLX_PATTERN_WRANGLER_FILE', __FILE__ );
-define( 'DLX_PATTERN_WRANGLER_PRODUCT_ID', 36631 );
+define( 'DLX_PATTERN_WRANGLER_PRODUCT_ID', 37029 );
 
 // Support for site-level autoloading.
 if ( file_exists( __DIR__ . '/lib/autoload.php' ) ) {
@@ -76,6 +76,14 @@ class PatternWrangler {
 
 		$preview = new Preview();
 		$preview->run();
+
+		// Determine if blocks can run or not.
+		$options            = Options::get_options();
+		$can_disable_blocks = (bool) $options['disablePatternImporterBlock'];
+		if ( ! $can_disable_blocks ) {
+			$blocks = new Blocks();
+			$blocks->run();
+		}
 
 		/**
 		 * When PatternWrangler can be extended.
