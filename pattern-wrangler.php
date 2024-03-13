@@ -10,7 +10,7 @@
  * Author URI:        https://dlxplugins.com
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       dlx-pattern-wrangler
+ * Text Domain:       pattern-wrangler
  * Domain Path:       /languages
  *
  * @package PatternWrangler
