@@ -63,6 +63,9 @@ class Patterns {
 		// Handle bulk actions for making patterns a draft.
 		add_action( 'handle_bulk_actions-edit-wp_block', array( $this, 'handle_bulk_actions' ), 10, 3 );
 
+		// Add the wp_block shortcode.
+		add_shortcode( 'wp_block', array( $this, 'shortcode_pattern_callback' ) );
+
 		// Show the customizer UI if enabled.
 		$show_customizer_ui = (bool) $options['showCustomizerUI'];
 		if ( $show_customizer_ui ) {
@@ -93,6 +96,38 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
+	}
+
+	/**
+	 * Callback for the shortcode for displaying block patterns.
+	 *
+	 * @param array $atts Shortcode defaults.
+	 *
+	 * @return string shortcode output.
+	 */
+	public function shortcode_pattern_callback( $atts = array() ) {
+		// Set default attributes.
+		$atts = shortcode_atts(
+			array(
+				'slug' => '',
+			),
+			$atts,
+			'wp_block'
+		);
+
+		// Get the post by slug.
+		$post = get_page_by_path( $atts['slug'], OBJECT, 'wp_block' );
+
+		// If no post is found, return nothing.
+		if ( ! $post ) {
+			return '';
+		}
+
+		// Get the post content.
+		$content = do_blocks( $post->post_content );
+
+		// Return the post content.
+		return $content;
 	}
 
 	/**
@@ -171,7 +206,7 @@ class Patterns {
 				// Generate the shortcode for the readonly input.
 				$shortcode .= sprintf(
 					'<input type="text" value="%s" readonly>',
-					esc_attr( sprintf( '[block slug="%s"]', $post->post_name ) )
+					esc_attr( sprintf( '[wp_block slug="%s"]', $post->post_name ) )
 				);
 
 				// Generate the shortcode for the button with dashicon.
