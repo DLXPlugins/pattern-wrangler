@@ -3,10 +3,11 @@ module.exports = function( grunt ) {
 		compress: {
 			main: {
 				options: {
-					archive: 'dlx-pattern-wrangler.zip',
+					archive: 'pattern-wrangler.zip',
 				},
 				files: [
 					{ src: [ 'pattern-wrangler.php' ], dest: '/', filter: 'isFile' },
+					{ src: [ 'readme.txt' ], dest: '/', filter: 'isFile' },
 					{ src: [ 'assets/**' ], dest: '/' },
 					{ src: [ 'build/**' ], dest: '/' },
 					{ src: [ 'dist/**' ], dest: '/' },

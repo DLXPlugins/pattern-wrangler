@@ -29,7 +29,7 @@ if ( ! $pattern || 'wp_block' !== get_post_type( $pattern ) ) {
 if ( ! wp_is_block_theme() ) {
 	get_header();
 	$blocks = do_blocks( $pattern->post_content );
-	echo $blocks;
+	echo wp_kses_post( $blocks );
 } else {
 	?>
 	<!doctype html>
@@ -49,7 +49,7 @@ if ( ! wp_is_block_theme() ) {
 		<?php block_header_area(); ?>
 	</header>
 	<?php
-	echo $blocks;
+	echo wp_kses_post( $blocks );
 	?>
 	<?php
 }

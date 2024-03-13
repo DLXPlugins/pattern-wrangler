@@ -56,7 +56,7 @@ class Blocks {
 			$extension = preg_replace( '/\?.*/', '', $extension );
 
 			// Get current domain.
-			$domain = parse_url( $image_url, PHP_URL_HOST );
+			$domain = wp_parse_url( $image_url, PHP_URL_HOST );
 
 			// If we're on same domain, bail successfully.
 			if ( $domain === $_SERVER['HTTP_HOST'] ) {
