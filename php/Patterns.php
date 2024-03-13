@@ -174,7 +174,7 @@ class Patterns {
 	 * @return array Updated actions.
 	 */
 	public function add_draft_bulk_actions( $actions ) {
-		$actions['draft_pattern'] = __( 'Set as Draft', 'dlx-pattern-wrangler' );
+		$actions['draft_pattern'] = __( 'Set as Draft', 'pattern-wrangler' );
 		return $actions;
 	}
 
@@ -212,7 +212,7 @@ class Patterns {
 				// Generate the shortcode for the button with dashicon.
 				$shortcode .= sprintf(
 					'<button type="button" aria-label="%1$s" class="dlxpw-copy-shortcode dlx-copy-shortcode-hidden" title="%1$s">%2$s</button>',
-					esc_attr__( 'Copy shortcode', 'dlx-pattern-wrangler' ),
+					esc_attr__( 'Copy shortcode', 'pattern-wrangler' ),
 					'<span class="dashicons dashicons-clipboard"></span>'
 				);
 
@@ -233,10 +233,10 @@ class Patterns {
 	 */
 	public function add_post_type_columns( $columns ) {
 		// Add featured image to 2nd column.
-		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'dlx-pattern-wrangler' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
+		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'pattern-wrangler' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
 
 		// Add shortcode to 3rd column.
-		$columns = array_slice( $columns, 0, 3, true ) + array( 'shortcode' => __( 'Shortcode', 'dlx-pattern-wrangler' ) ) + array_slice( $columns, 2, count( $columns ) - 1, true );
+		$columns = array_slice( $columns, 0, 3, true ) + array( 'shortcode' => __( 'Shortcode', 'pattern-wrangler' ) ) + array_slice( $columns, 2, count( $columns ) - 1, true );
 		return $columns;
 	}
 
@@ -248,8 +248,8 @@ class Patterns {
 	 * @return object Updated labels.
 	 */
 	public function change_featured_image_label( $labels ) {
-		$labels->featured_image     = __( 'Pattern Preview', 'dlx-pattern-wrangler' );
-		$labels->set_featured_image = __( 'Set pattern preview', 'dlx-pattern-wrangler' );
+		$labels->featured_image     = __( 'Pattern Preview', 'pattern-wrangler' );
+		$labels->set_featured_image = __( 'Set pattern preview', 'pattern-wrangler' );
 		return $labels;
 	}
 

@@ -20,7 +20,6 @@ namespace DLXPlugins\PatternWrangler;
 
 define( 'DLX_PATTERN_WRANGLER_VERSION', '1.0.0' );
 define( 'DLX_PATTERN_WRANGLER_FILE', __FILE__ );
-define( 'DLX_PATTERN_WRANGLER_PRODUCT_ID', 37029 );
 
 // Support for site-level autoloading.
 if ( file_exists( __DIR__ . '/lib/autoload.php' ) ) {
@@ -60,7 +59,7 @@ class PatternWrangler {
 	 */
 	public function plugins_loaded() {
 		load_plugin_textdomain(
-			'dlx-pattern-wrangler',
+			'pattern-wrangler',
 			false,
 			basename( __DIR__ ) . '/languages'
 		);

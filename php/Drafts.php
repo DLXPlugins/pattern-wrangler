@@ -40,10 +40,10 @@ class Drafts {
 		$notice_message = '';
 		switch ( $notice_action ) {
 			case 'draft_pattern':
-				$notice_message = esc_html__( 'Pattern unpublished.', 'dlx-pattern-wrangler' );
+				$notice_message = esc_html__( 'Pattern unpublished.', 'pattern-wrangler' );
 				break;
 			case 'publish_pattern':
-				$notice_message = esc_html__( 'Pattern published.', 'dlx-pattern-wrangler' );
+				$notice_message = esc_html__( 'Pattern published.', 'pattern-wrangler' );
 				break;
 		}
 		printf(
@@ -142,14 +142,14 @@ class Drafts {
 			$actions['draft_pattern'] = sprintf(
 				'<a href="%s">%s</a>',
 				esc_url_raw( $draft_publish_url ),
-				esc_html__( 'Publish', 'dlx-pattern-wrangler' )
+				esc_html__( 'Publish', 'pattern-wrangler' )
 			);
 		}
 		if ( 'publish' === $post->post_status ) {
 			$actions['preview_pattern'] = sprintf(
 				'<a href="%s">%s</a>',
 				esc_url_raw( $draft_disable_url ),
-				esc_html__( 'Switch to Draft', 'dlx-pattern-wrangler' )
+				esc_html__( 'Switch to Draft', 'pattern-wrangler' )
 			);
 		}
 		return $actions;

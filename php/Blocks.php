@@ -71,7 +71,7 @@ class Blocks {
 			if ( ! $extension ) {
 				\wp_send_json_error(
 					array(
-						'message' => __( 'File extension not found.', 'dlx-pattern-wrangler' ),
+						'message' => __( 'File extension not found.', 'pattern-wrangler' ),
 					),
 					400
 				);
@@ -80,7 +80,7 @@ class Blocks {
 			if ( ! in_array( $extension, $valid_extensions, true ) ) {
 				\wp_send_json_error(
 					array(
-						'message' => __( 'Invalid file extension.', 'dlx-pattern-wrangler' ),
+						'message' => __( 'Invalid file extension.', 'pattern-wrangler' ),
 					),
 					400
 				);
@@ -122,7 +122,7 @@ class Blocks {
 		}
 		\wp_send_json_error(
 			array(
-				'message' => __( 'Invalid image URL.', 'dlx-pattern-wrangler' ),
+				'message' => __( 'Invalid image URL.', 'pattern-wrangler' ),
 			),
 			400
 		);

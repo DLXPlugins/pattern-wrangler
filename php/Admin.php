@@ -43,9 +43,6 @@ class Admin {
 		// For saving a license.
 		add_action( 'wp_ajax_dlx_pw_save_license', array( $this, 'ajax_save_license' ) );
 
-		// For initializing EDD license.
-		add_action( 'admin_init', array( $this, 'init_license_system' ) );
-
 		// For initializing settings links on the plugins screen.
 		add_action( 'admin_init', array( $this, 'init_settings_links' ) );
 
@@ -83,9 +80,9 @@ class Admin {
 	 */
 	public function plugin_settings_link( $settings ) {
 		$setting_links = array(
-			'settings' => sprintf( '<a href="%s">%s</a>', esc_url( Functions::get_settings_url() ), esc_html__( 'Settings', 'dlx-pattern-wrangler' ) ),
-			'docs'     => sprintf( '<a href="%s">%s</a>', esc_url( 'https://docs.dlxplugins.com/v/dlx-pw/' ), esc_html__( 'Docs', 'dlx-pattern-wrangler' ) ),
-			'site'     => sprintf( '<a href="%s" style="color: #f60098;">%s</a>', esc_url( 'https://dlxplugins.com/plugins/dlx-pw/' ), esc_html__( 'Plugin Home', 'dlx-pattern-wrangler' ) ),
+			'settings' => sprintf( '<a href="%s">%s</a>', esc_url( Functions::get_settings_url() ), esc_html__( 'Settings', 'pattern-wrangler' ) ),
+			'docs'     => sprintf( '<a href="%s">%s</a>', esc_url( 'https://docs.dlxplugins.com/v/dlx-pw/' ), esc_html__( 'Docs', 'pattern-wrangler' ) ),
+			'site'     => sprintf( '<a href="%s" style="color: #f60098;">%s</a>', esc_url( 'https://dlxplugins.com/plugins/dlx-pw/' ), esc_html__( 'Plugin Home', 'pattern-wrangler' ) ),
 		);
 		if ( ! is_array( $settings ) ) {
 			return $setting_links;
@@ -141,88 +138,6 @@ class Admin {
 	}
 
 	/**
-	 * Save/Check a license key.
-	 */
-	public function ajax_save_license() {
-		if ( ! wp_verify_nonce( filter_input( INPUT_POST, 'nonce', FILTER_DEFAULT ), 'dlx-pw-admin-license-save' ) || ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array() );
-		}
-
-		$form_data = filter_input( INPUT_POST, 'formData', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
-		if ( ! $form_data ) {
-			wp_send_json_error( array() );
-		}
-		$form_data = Functions::sanitize_array_recursive( $form_data );
-
-		// Get license.
-		$license_key    = $form_data['licenseKey'] ?? '';
-		$license_helper = new Plugin_License( $license_key );
-		$response       = $license_helper->perform_action( 'activate_license', $license_key, true );
-
-		if ( $response['license_errors'] ) {
-			$license_helper->set_activated_status( false );
-			wp_send_json_error( $response );
-		}
-
-		// Get latest options.
-		$options                = Options::get_options( true );
-		$options['licenseKey']  = $license_key;
-		$options['licenseData'] = get_site_transient( 'dlxpw_core_license_check', array() );
-		wp_send_json_success( $options );
-	}
-
-	/**
-	 * Allow for automatic updates.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 */
-	public function init_license_system() {
-		$options = Options::get_options();
-
-		$license_valid = $options['licenseValid'] ?? '';
-		if ( isset( $options['licenseKey'] ) && 'valid' === $license_valid ) {
-			// setup the updater.
-			$edd_updater = new Plugin_Updater(
-				'https://dlxplugins.com',
-				DLX_PATTERN_WRANGLER_FILE,
-				array(
-					'version' => Functions::get_plugin_version(),
-					'license' => $options['licenseKey'],
-					'item_id' => DLX_PATTERN_WRANGLER_PRODUCT_ID,
-					'author'  => 'Ronald Huereca',
-					'beta'    => true,
-					'url'     => home_url(),
-				)
-			);
-		}
-	}
-
-	/**
-	 * Get license options via Ajax.
-	 */
-	public function ajax_license_get_options() {
-		// Get nonce.
-		$nonce = sanitize_text_field( filter_input( INPUT_POST, 'nonce', FILTER_DEFAULT ) );
-
-		// Verify nonce.
-		$nonce_action = 'dlx-pw-admin-license-get';
-		if ( ! wp_verify_nonce( $nonce, $nonce_action ) || ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error(
-				array(
-					'message'     => __( 'Nonce or permission verification failed.', 'dlx-pattern-wrangler' ),
-					'type'        => 'error',
-					'dismissable' => true,
-					'title'       => __( 'Error', 'dlx-pattern-wrangler' ),
-				)
-			);
-		}
-		$options                = Options::get_options( true );
-		$options['licenseData'] = get_site_transient( 'dlxpw_core_license_check', array() );
-		wp_send_json_success( $options );
-	}
-
-	/**
 	 * Save the options via Ajax.
 	 */
 	public function ajax_save_options() {
@@ -233,10 +148,10 @@ class Admin {
 		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-admin-save-options' ) || ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
-					'message'     => __( 'Nonce or permission verification failed.', 'dlx-pattern-wrangler' ),
+					'message'     => __( 'Nonce or permission verification failed.', 'pattern-wrangler' ),
 					'type'        => 'critical',
 					'dismissable' => true,
-					'title'       => __( 'Error', 'dlx-pattern-wrangler' ),
+					'title'       => __( 'Error', 'pattern-wrangler' ),
 				)
 			);
 		}
@@ -270,7 +185,7 @@ class Admin {
 		// Send success message.
 		wp_send_json_success(
 			array(
-				'message'     => __( 'Options saved.', 'dlx-pattern-wrangler' ),
+				'message'     => __( 'Options saved.', 'pattern-wrangler' ),
 				'type'        => 'success',
 				'dismissable' => true,
 			)
@@ -288,10 +203,10 @@ class Admin {
 		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-admin-reset-options' ) || ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
-					'message'     => __( 'Nonce or permission verification failed.', 'dlx-pattern-wrangler' ),
+					'message'     => __( 'Nonce or permission verification failed.', 'pattern-wrangler' ),
 					'type'        => 'error',
 					'dismissable' => true,
-					'title'       => __( 'Error', 'dlx-pattern-wrangler' ),
+					'title'       => __( 'Error', 'pattern-wrangler' ),
 				)
 			);
 		}
@@ -301,17 +216,6 @@ class Admin {
 
 		// Get defaults and reset.
 		$default_options = Options::get_defaults();
-
-		// Don't reset license.
-		$license_keys = array(
-			'licenseKey',
-			'licenseValid',
-			'licenseActivated',
-			'licenseData',
-		);
-		foreach ( $license_keys as $license_key ) {
-			$default_options[ $license_key ] = $options[ $license_key ];
-		}
 
 		Options::update_options( $default_options );
 
@@ -326,7 +230,7 @@ class Admin {
 		// Send success message.
 		wp_send_json_success(
 			array(
-				'message'     => __( 'Options reset.', 'dlx-pattern-wrangler' ),
+				'message'     => __( 'Options reset.', 'pattern-wrangler' ),
 				'type'        => 'success',
 				'dismissable' => true,
 				'formData'    => $default_options,
@@ -346,10 +250,10 @@ class Admin {
 		if ( ! wp_verify_nonce( $nonce, $nonce_action ) || ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
-					'message'     => __( 'Nonce or permission verification failed.', 'dlx-pattern-wrangler' ),
+					'message'     => __( 'Nonce or permission verification failed.', 'pattern-wrangler' ),
 					'type'        => 'error',
 					'dismissable' => true,
-					'title'       => __( 'Error', 'dlx-pattern-wrangler' ),
+					'title'       => __( 'Error', 'pattern-wrangler' ),
 				)
 			);
 		}
@@ -368,7 +272,7 @@ class Admin {
 	 * @return array Updated columns.
 	 */
 	public function add_pattern_sync_column( $columns ) {
-		$new_column['pattern_sync'] = __( 'Synced', 'dlx-pattern-wrangler' );
+		$new_column['pattern_sync'] = __( 'Synced', 'pattern-wrangler' );
 
 		// Add new column before last item of array.
 		$columns = array_slice( $columns, 0, -1, true ) + $new_column + array_slice( $columns, -1, null, true );
@@ -386,9 +290,9 @@ class Admin {
 			$synced = get_post_meta( $post_id, 'wp_pattern_sync_status', true );
 			if ( 'unsynced' === $synced ) {
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
-				echo '<span class="dashicons dashicons-editor-unlink"></span> ' . esc_html__( 'Unsynced Pattern', 'dlx-pattern-wrangler' );
+				echo '<span class="dashicons dashicons-editor-unlink"></span> ' . esc_html__( 'Unsynced Pattern', 'pattern-wrangler' );
 			} else {
-				echo '<span class="dashicons dashicons-admin-links"></span> ' . esc_html__( 'Synced Pattern', 'dlx-pattern-wrangler' );
+				echo '<span class="dashicons dashicons-admin-links"></span> ' . esc_html__( 'Synced Pattern', 'pattern-wrangler' );
 			}
 		}
 	}
@@ -407,18 +311,18 @@ class Admin {
 		if ( $hide_all_patterns && $hide_patterns_menu ) {
 			add_submenu_page(
 				'themes.php',
-				__( 'Patterns', 'dlx-pattern-wrangler' ),
-				__( 'Patterns', 'dlx-pattern-wrangler' ),
+				__( 'Patterns', 'pattern-wrangler' ),
+				__( 'Patterns', 'pattern-wrangler' ),
 				'manage_options',
-				'dlx-pattern-wrangler',
+				'pattern-wrangler',
 				array( $this, 'admin_page' ),
 				4
 			);
 			return;
 		}
 		add_menu_page(
-			__( 'Patterns', 'dlx-pattern-wrangler' ),
-			__( 'Patterns', 'dlx-pattern-wrangler' ),
+			__( 'Patterns', 'pattern-wrangler' ),
+			__( 'Patterns', 'pattern-wrangler' ),
 			'manage_options',
 			'edit.php?post_type=wp_block',
 			'',
@@ -428,10 +332,10 @@ class Admin {
 
 		add_submenu_page(
 			'edit.php?post_type=wp_block',
-			__( 'Settings', 'dlx-pattern-wrangler' ),
-			__( 'Settings', 'dlx-pattern-wrangler' ),
+			__( 'Settings', 'pattern-wrangler' ),
+			__( 'Settings', 'pattern-wrangler' ),
 			'edit_posts',
-			'dlx-pattern-wrangler',
+			'pattern-wrangler',
 			array( $this, 'admin_page' ),
 			10
 		);
@@ -445,7 +349,7 @@ class Admin {
 	 * @param string $hook The current admin page.
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( 'patterns_page_dlx-pattern-wrangler' !== $hook && 'appearance_page_dlx-pattern-wrangler' !== $hook ) {
+		if ( 'patterns_page_pattern-wrangler' !== $hook && 'appearance_page_pattern-wrangler' !== $hook ) {
 			return;
 		}
 
@@ -517,8 +421,8 @@ class Admin {
 						</h2>
 					</div>
 					<div class="header__btn-wrap">
-						<a href="<?php echo esc_url( 'https://docs.dlxplugins.com/v/dlx-pw/' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Docs', 'dlx-pattern-wrangler' ); ?></a>
-						<a href="<?php echo esc_url( 'https://dlxplugins.com/support/' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Support', 'dlx-pattern-wrangler' ); ?></a>
+						<a href="<?php echo esc_url( 'https://docs.dlxplugins.com/v/dlx-pw/' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Docs', 'pattern-wrangler' ); ?></a>
+						<a href="<?php echo esc_url( 'https://dlxplugins.com/support/' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Support', 'pattern-wrangler' ); ?></a>
 					</div>
 				</div>
 			</header>
@@ -538,21 +442,11 @@ class Admin {
 			}
 			?>
 			<main class="dlx-pw-admin-body-wrapper">
-				<div class="has-admin-container-body">
-					<nav class="nav-tab-wrapper">
-						<a  class="<?php echo esc_attr( implode( ' ', $settings_tab_class ) ); ?>" href="<?php echo esc_url( Functions::get_settings_url() ); ?>"><?php esc_html_e( 'Settings', 'dlx-pattern-wrangler' ); ?></a>
-						<a  class="<?php echo esc_attr( implode( ' ', $license_tab_class ) ); ?>" href="<?php echo esc_url( Functions::get_settings_url( 'license' ) ); ?>"><?php esc_html_e( 'License', 'dlx-pattern-wrangler' ); ?></a>
-					</nav>
-				</div>
 				<div class="dlx-pw-body__content">
 					<?php
 					if ( null === $current_tab || 'settings' === $current_tab ) {
 						?>
 							<div id="dlx-pattern-wrangler"></div>
-						<?php
-					} elseif ( 'license' === $current_tab ) {
-						?>
-							<div id="dlx-pw-license"></div>
 						<?php
 					}
 					?>

@@ -100,7 +100,7 @@ class Preview {
 			$actions['preview_pattern'] = sprintf(
 				'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
 				esc_url_raw( Functions::get_pattern_preview_url( $post->ID ) ),
-				esc_html__( 'Preview', 'dlx-pattern-wrangler' )
+				esc_html__( 'Preview', 'pattern-wrangler' )
 			);
 		}
 		return $actions;
