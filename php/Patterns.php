@@ -160,29 +160,31 @@ class Patterns {
 		if ( 'featured_image' === $column_name ) {
 			$thumbnail = get_the_post_thumbnail( $post_id, array( 125, 125 ) );
 			echo wp_kses_post( $thumbnail );
+			return;
 		}
 		if ( 'shortcode' === $column_name ) {
 			$post = get_post( $post_id );
 			if ( 'publish' === $post->post_status ) {
 
+				$shortcode = '<div class="dlxpw-copy-shortcode-container">';
+
 				// Generate the shortcode for the readonly input.
-				$shortcode = sprintf(
+				$shortcode .= sprintf(
 					'<input type="text" value="%s" readonly>',
 					esc_attr( sprintf( '[block slug="%s"]', $post->post_name ) )
 				);
 
 				// Generate the shortcode for the button with dashicon.
-				$button_shortcode = sprintf(
-					'<button type="button" class="pw-copy-clipboard" title="Copy to Clipboard">%s</button>',
+				$shortcode .= sprintf(
+					'<button type="button" aria-label="%1$s" class="dlxpw-copy-shortcode dlx-copy-shortcode-hidden" title="%1$s">%2$s</button>',
+					esc_attr__( 'Copy shortcode', 'dlx-pattern-wrangler' ),
 					'<span class="dashicons dashicons-clipboard"></span>'
 				);
 
-				// Concatenate both shortcodes.
-				$combined_shortcodes = wp_kses( $shortcode, Functions::get_kses_allowed_html( false ) ) . $button_shortcode;
+				$shortcode .= '</div>';
 
 				// Output the combined shortcode with allowed HTML tags.
-				echo $combined_shortcodes;
-
+				echo wp_kses( $shortcode, Functions::get_kses_allowed_html( false ) );
 			}
 		}
 	}
