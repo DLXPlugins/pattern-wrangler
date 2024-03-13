@@ -18,6 +18,9 @@ class Patterns {
 	public function run() {
 		$options = Options::get_options();
 
+		// Enqueue scripts for the wp_block post_type.
+		add_action( 'admin_enqueue_scripts', array( $this, 'add_post_type_enqueue_scripts' ) );
+
 		// Deregister any disabled pattern categories.
 		add_action( 'init', array( $this, 'maybe_deregister_pattern_categories' ), 999 );
 
@@ -48,11 +51,11 @@ class Patterns {
 		// Change post type label for featured image.
 		add_filter( 'post_type_labels_wp_block', array( $this, 'change_featured_image_label' ) );
 
-		// Add post type column for featured image.
-		add_filter( 'manage_wp_block_posts_columns', array( $this, 'add_featured_image_column' ) );
+		// Add post type column for shortcode.
+		add_filter( 'manage_wp_block_posts_columns', array( $this, 'add_post_type_columns' ) );
 
 		// Add a featured image to the wp_block post type column.
-		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_featured_image_column_content' ), 10, 2 );
+		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'add_post_type_columns_content' ), 10, 2 );
 
 		// Add bulk action for making patterns a draft.
 		add_filter( 'bulk_actions-edit-wp_block', array( $this, 'add_draft_bulk_actions' ) );
@@ -153,10 +156,36 @@ class Patterns {
 	 * @param string $column_name Column name.
 	 * @param int    $post_id Post ID.
 	 */
-	public function add_featured_image_column_content( $column_name, $post_id ) {
+	public function add_post_type_columns_content( $column_name, $post_id ) {
 		if ( 'featured_image' === $column_name ) {
 			$thumbnail = get_the_post_thumbnail( $post_id, array( 125, 125 ) );
 			echo wp_kses_post( $thumbnail );
+			return;
+		}
+		if ( 'shortcode' === $column_name ) {
+			$post = get_post( $post_id );
+			if ( 'publish' === $post->post_status ) {
+
+				$shortcode = '<div class="dlxpw-copy-shortcode-container">';
+
+				// Generate the shortcode for the readonly input.
+				$shortcode .= sprintf(
+					'<input type="text" value="%s" readonly>',
+					esc_attr( sprintf( '[block slug="%s"]', $post->post_name ) )
+				);
+
+				// Generate the shortcode for the button with dashicon.
+				$shortcode .= sprintf(
+					'<button type="button" aria-label="%1$s" class="dlxpw-copy-shortcode dlx-copy-shortcode-hidden" title="%1$s">%2$s</button>',
+					esc_attr__( 'Copy shortcode', 'dlx-pattern-wrangler' ),
+					'<span class="dashicons dashicons-clipboard"></span>'
+				);
+
+				$shortcode .= '</div>';
+
+				// Output the combined shortcode with allowed HTML tags.
+				echo wp_kses( $shortcode, Functions::get_kses_allowed_html( false ) );
+			}
 		}
 	}
 
@@ -167,9 +196,12 @@ class Patterns {
 	 *
 	 * @return array Updated columns.
 	 */
-	public function add_featured_image_column( $columns ) {
+	public function add_post_type_columns( $columns ) {
 		// Add featured image to 2nd column.
 		$columns = array_slice( $columns, 0, 2, true ) + array( 'featured_image' => __( 'Pattern Preview', 'dlx-pattern-wrangler' ) ) + array_slice( $columns, 1, count( $columns ) - 1, true );
+
+		// Add shortcode to 3rd column.
+		$columns = array_slice( $columns, 0, 3, true ) + array( 'shortcode' => __( 'Shortcode', 'dlx-pattern-wrangler' ) ) + array_slice( $columns, 2, count( $columns ) - 1, true );
 		return $columns;
 	}
 
@@ -451,6 +483,49 @@ class Patterns {
 					unregister_block_pattern_category( $category_slug );
 				}
 			}
+		}
+	}
+
+	/**
+	 * Enqueue scripts for the wp_block post type.
+	 *
+	 * @param string $hook The current post type page.
+	 */
+	public function add_post_type_enqueue_scripts( $hook ) {
+		$post = get_post();
+		// Only proceed if we are on a valid page and the current post is not null.
+		if ( 'edit.php' !== $hook || ! $post ) {
+			return;
+		}
+
+		// Check if the current post type is wp_block.
+		if ( 'wp_block' === $post->post_type ) {
+			// Load asset file to get dependencies and version.
+			$asset_file = Functions::get_plugin_dir( 'dist/dlx-pw-admin.asset.php' );
+
+			// Check if asset file exists and is readable.
+			if ( file_exists( $asset_file ) && is_readable( $asset_file ) ) {
+				// Retrieve dependencies and version from asset file.
+				$deps = require $asset_file;
+
+				// Enqueue script with retrieved dependencies and version.
+				wp_enqueue_script(
+					'dlx-pw-post-utilities',
+					Functions::get_plugin_url( 'dist/dlx-pw-post-utilities.js' ),
+					$deps['dependencies'],
+					$deps['version'],
+					true
+				);
+			}
+
+			// Enqueue admin styles.
+			wp_enqueue_style(
+				'dlx-pw-admin-css',
+				Functions::get_plugin_url( 'dist/dlx-pw-admin-utils-css.css' ),
+				array(),
+				Functions::get_plugin_version(),
+				'all'
+			);
 		}
 	}
 }

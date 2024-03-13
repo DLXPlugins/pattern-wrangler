@@ -329,6 +329,26 @@ class Functions {
 			'class' => array(),
 		);
 		$allowed_tags['a']['class'] = array();
+		$allowed_tags['input']      = array(
+			'type'     => array(),
+			'name'     => array(),
+			'value'    => array(),
+			'class'    => array(),
+			'readonly' => array(),
+		);
+		$allowed_tags['button']     = array(
+			'type'  => array(),
+			'name'  => array(),
+			'value' => array(),
+			'class' => array(),
+			'title' => array(),
+		);
+		$allowed_tags['div']        = array(
+			'class' => array(),
+		);
+		$allowed_tags['span']       = array(
+			'class' => array(),
+		);
 
 		if ( ! $svg ) {
 			return $allowed_tags;
