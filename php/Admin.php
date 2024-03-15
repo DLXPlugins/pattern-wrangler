@@ -339,8 +339,6 @@ class Admin {
 			array( $this, 'admin_page' ),
 			10
 		);
-
-		
 	}
 
 	/**

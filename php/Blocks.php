@@ -170,8 +170,8 @@ class Blocks {
 			'dlx-pw-pattern-inserter-block',
 			'dlxPWPatternInserter',
 			array(
-				'restUrl'                     => rest_url( 'dlxplugins/pattern-wrangler/v1' ),
-				'restNonce'                   => wp_create_nonce( 'wp_rest' ),
+				'restUrl'   => rest_url( 'dlxplugins/pattern-wrangler/v1' ),
+				'restNonce' => wp_create_nonce( 'wp_rest' ),
 			)
 		);
 	}
