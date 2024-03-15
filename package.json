@@ -9,18 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dlxplugins/dlx-pattern-wrangler.git"
+    "url": "git+https://github.com/dlxplugins/pattern-wrangler.git"
   },
   "keywords": [
-    "generateblocks",
-    "hacks"
+    "pattern",
+    "wrangler"
   ],
   "author": "Ronald Huereca",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/dlxplugins/dlx-pattern-wrangler/issues"
+    "url": "https://github.com/dlxplugins/pattern-wrangler/issues"
   },
-  "homepage": "https://dlxplugins.com/plugins/dlx-pattern-wrangler/",
+  "homepage": "https://dlxplugins.com/plugins/pattern-wrangler/",
   "devDependencies": {
     "@babel/eslint-parser": "^7.18.2",
     "@babel/plugin-transform-arrow-functions": "^7.17.12",

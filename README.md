@@ -1,6 +1,6 @@
 # Welcome to Pattern Wrangler
 
-Pattern Wrangler is a tool to get your WordPress patterns under control, whether that means hiding core and remote patterns or mapping pattern categories.
+<a href="https://dlxplugins.com/plugins/pattern-wrangler">Pattern Wrangler</a> is a tool to get your WordPress patterns under control, whether that means hiding core and remote patterns or mapping pattern categories.
 
 ![Pattern Wrangler Featured](https://github.com/DLXPlugins/dlx-pattern-wrangler/assets/636521/02e6b011-9c63-495f-b65c-ee4824b859de)
 
@@ -8,7 +8,7 @@ Pattern Wrangler is a tool to get your WordPress patterns under control, whether
 
 ## Quick Links
 
-* <a href="https://github.com/DLXPlugins/dlx-pattern-wrangler/issues/new">Create an Issue or Feature Request</a>.
+* <a href="https://github.com/DLXPlugins/pattern-wrangler/issues/new">Create an Issue or Feature Request</a>.
 * <a href="https://dlxplugins.com/support/">Leave a Support Request</a>.
 * <a href="https://dlxplugins.com/plugins/pattern-wrangler">Visit the Plugin Download and Pricing Page</a>.
 
