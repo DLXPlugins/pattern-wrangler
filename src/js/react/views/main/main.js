@@ -493,7 +493,7 @@ const Interface = ( props ) => {
 									</div>
 								</td>
 							</tr>
-							<tr>
+							<tr className="dlx-table-row-categories">
 								<th scope="row">
 									{ __( 'Pattern Categories', 'dlx-pattern-wrangler' ) }
 								</th>

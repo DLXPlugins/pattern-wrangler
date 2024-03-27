@@ -951,3 +951,9 @@ div.can-revoke {
 .fancybox__container {
 	z-index: 9999; /* so we're over the admin menus */
 }
+
+.dlx-table-row-categories {
+	td {
+		padding-top: 0;
+	}
+}
