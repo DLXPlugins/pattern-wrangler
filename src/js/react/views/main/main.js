@@ -200,8 +200,6 @@ const Interface = ( props ) => {
 	const response = defaults();
 	const { data } = response.data;
 
-	const [ licenseValid ] = useState( data.licenseValid );
-
 	const {
 		control,
 		handleSubmit,
@@ -233,33 +231,6 @@ const Interface = ( props ) => {
 		control,
 	} );
 
-	// Retrieve a prompt based on the license status.
-	const getPrompt = () => {
-		// Check to see if the license nag is disabled.
-		if ( 'valid' === licenseValid && ! getValues( 'enableLicenseAlerts' ) ) {
-			return null;
-		}
-		if ( 'valid' === licenseValid ) {
-			return (
-				<Notice
-					message={ __( 'Thank you for supporting this plugin. Your license key is active and you are receiving updates and support.', 'dlx-pattern-wrangler' ) }
-					status="success"
-					politeness="assertive"
-					inline={ false }
-					icon={ () => () => <CheckCircle style={ { fill: 'none' } } /> }
-				/>
-			);
-		}
-		return (
-			<Notice
-				message={ __( 'Your license key is not active. Please activate your license key to receive updates and support.', 'dlx-pattern-wrangler' ) }
-				status="warning"
-				politeness="assertive"
-				inline={ false }
-				icon={ () => <AlertTriangle style={ { fill: 'none' } } /> }
-			/>
-		);
-	};
 	const getCategories = () => {
 		const categories = getValues( 'categories' );
 
@@ -285,9 +256,6 @@ const Interface = ( props ) => {
 						__( 'Configure which patterns are displayed and adjust settings and categories.', 'dlx-pattern-wrangler' )
 					}
 				</p>
-				{
-					getPrompt()
-				}
 			</div>
 			{ /* eslint-disable-next-line no-unused-vars */ }
 			<form onSubmit={ handleSubmit( ( formData ) => { } ) }>
