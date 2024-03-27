@@ -193,7 +193,7 @@ class Patterns {
 	 */
 	public function add_post_type_columns_content( $column_name, $post_id ) {
 		if ( 'featured_image' === $column_name ) {
-			$thumbnail = get_the_post_thumbnail( $post_id, array( 125, 125 ) );
+			$thumbnail = get_the_post_thumbnail( $post_id, array( 150, 0 ) );
 			echo wp_kses_post( $thumbnail );
 			return;
 		}
