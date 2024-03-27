@@ -21,7 +21,24 @@ class Blocks {
 		$self = new self();
 		add_action( 'init', array( $self, 'init' ) );
 		add_action( 'rest_api_init', array( $self, 'init_rest_api' ) );
+
+		add_filter( 'use_block_editor_for_post', array( $self, 'maybe_enable_blocks' ), 500, 2 ); // Priority at 500 to override classic editor plugin.
+
 		return $self;
+	}
+
+	/**
+	 * Check if we should enable blocks for a post.
+	 *
+	 * @param bool    $use_block_editor Whether to use the block editor.
+	 * @param WP_Post $post The post object.
+	 * @return bool
+	 */
+	public function maybe_enable_blocks( $use_block_editor, $post ) {
+		if ( 'wp_block' === $post->post_type ) {
+			return true;
+		}
+		return $use_block_editor;
 	}
 
 	/**
