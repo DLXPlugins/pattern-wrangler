@@ -332,6 +332,16 @@ class Admin {
 
 		add_submenu_page(
 			'edit.php?post_type=wp_block',
+			__( 'Categories', 'pattern-wrangler' ),
+			__( 'Categories', 'pattern-wrangler' ),
+			'edit_posts',
+			'edit-tags.php?taxonomy=wp_pattern_category&post_type=wp_block',
+			'',
+			5
+		);
+
+		add_submenu_page(
+			'edit.php?post_type=wp_block',
 			__( 'Settings', 'pattern-wrangler' ),
 			__( 'Settings', 'pattern-wrangler' ),
 			'edit_posts',
