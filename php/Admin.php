@@ -34,15 +34,6 @@ class Admin {
 		// For resetting the options.
 		add_action( 'wp_ajax_dlx_pw_reset_options', array( $this, 'ajax_reset_options' ) );
 
-		// For getting license options.
-		add_action( 'wp_ajax_dlx_pw_license_get_options', array( $this, 'ajax_license_get_options' ) );
-
-		// For revoking a license.
-		add_action( 'wp_ajax_dlx_pw_revoke_license', array( $this, 'ajax_revoke_license' ) );
-
-		// For saving a license.
-		add_action( 'wp_ajax_dlx_pw_save_license', array( $this, 'ajax_save_license' ) );
-
 		// For initializing settings links on the plugins screen.
 		add_action( 'admin_init', array( $this, 'init_settings_links' ) );
 
@@ -89,52 +80,6 @@ class Admin {
 		} else {
 			return array_merge( $setting_links, $settings );
 		}
-	}
-
-	/**
-	 * Ajax revoke license.
-	 */
-	public function ajax_revoke_license() {
-		if ( ! wp_verify_nonce( filter_input( INPUT_POST, 'nonce', FILTER_DEFAULT ), 'dlx-pw-admin-license-revoke' ) || ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array() );
-		}
-
-		$form_data = filter_input( INPUT_POST, 'formData', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
-		if ( ! $form_data ) {
-			wp_send_json_error( array() );
-		}
-		$form_data = Functions::sanitize_array_recursive( $form_data );
-
-		// Get license.
-		$license_key    = $form_data['licenseKey'] ?? '';
-		$license_helper = new Plugin_License( $license_key );
-		$response       = $license_helper->perform_action( 'deactivate_license', $license_key, true );
-
-		// Overrride options.
-		$options = Options::get_options();
-
-		// Clear options.
-		$options['licenseValid']     = false;
-		$options['licenseActivated'] = false;
-		$options['licenseKey']       = '';
-		$options['licenseData']      = false;
-
-		Options::update_options( $options );
-		if ( $response['license_errors'] ) {
-			$license_helper->set_activated_status( false );
-			wp_send_json_error( $response );
-		}
-
-		$license_helper->set_activated_status( false );
-		$options['licenseValid']     = false;
-		$options['licenseActivated'] = false;
-		$options['licenseKey']       = '';
-		$options['licenseData']      = false;
-
-		// Update options (force).
-		Options::update_options( $options );
-
-		wp_send_json_success( $options );
 	}
 
 	/**
@@ -385,24 +330,6 @@ class Admin {
 					'ajaxurl'      => admin_url( 'admin-ajax.php' ),
 				)
 			);
-		} elseif ( 'license' === $current_tab ) {
-			$deps = require_once Functions::get_plugin_dir( 'dist/dlx-pw-admin-license.asset.php' );
-			wp_enqueue_script(
-				'dlx-pw-admin-license',
-				Functions::get_plugin_url( 'dist/dlx-pw-admin-license.js' ),
-				$deps['dependencies'],
-				$deps['version'],
-				true
-			);
-			wp_localize_script(
-				'dlx-pw-admin-license',
-				'dlxPatternWranglerLicense',
-				array(
-					'getNonce'    => wp_create_nonce( 'dlx-pw-admin-license-get' ),
-					'saveNonce'   => wp_create_nonce( 'dlx-pw-admin-license-save' ),
-					'revokeNonce' => wp_create_nonce( 'dlx-pw-admin-license-revoke' ),
-				)
-			);
 		}
 
 		// Enqueue admin styles.
@@ -435,19 +362,7 @@ class Admin {
 				</div>
 			</header>
 			<?php
-			$current_tab        = Functions::get_admin_tab();
-			$settings_tab_class = array( 'nav-tab' );
-			if ( null === $current_tab || 'settings' === $current_tab ) {
-				$settings_tab_class[] = 'nav-tab-active';
-			}
-			$license_tab_class = array( 'nav-tab' );
-			if ( 'license' === $current_tab ) {
-				$license_tab_class[] = 'nav-tab-active';
-			}
-			$help_tab_class = array( 'nav-tab' );
-			if ( 'help' === $current_tab ) {
-				$help_tab_class[] = 'nav-tab-active';
-			}
+			$current_tab = Functions::get_admin_tab();
 			?>
 			<main class="dlx-pw-admin-body-wrapper">
 				<div class="dlx-pw-body__content">
