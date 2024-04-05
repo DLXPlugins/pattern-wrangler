@@ -22,6 +22,8 @@ class Admin {
 		// Init the admin menu.
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 100 );
 
+		add_action( 'current_screen', array( $this, 'set_category_submenu_current' ) );
+
 		// Enqueue scripts for the admin page.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
@@ -294,6 +296,38 @@ class Admin {
 			array( $this, 'admin_page' ),
 			10
 		);
+	}
+
+	/**
+	 * Set the category submenu as current.
+	 *
+	 * @param WP_Screen $screen The current screen.
+	 */
+	public function set_category_submenu_current( $screen ) {
+		if ( ! is_admin() ) {
+			return;
+		}
+		// Check if current page is pattern categories and mark categories as curent if slug matches.
+		$current_screen = get_current_screen();
+		if ( 'edit-wp_pattern_category' === $current_screen->id ) {
+			// Doing JS here because there are no filters for marking submenus as current.
+			?>
+			<script>
+				document.addEventListener('DOMContentLoaded', function() {
+					const patternMenuLIs = document.querySelectorAll( '#toplevel_page_edit-post_type-wp_block.wp-has-current-submenu li' );
+
+					// Set the menu after .wp-first-item as the category is the third item.
+					if ( null !== patternMenuLIs ) {
+						const patternCategoryLI = patternMenuLIs[2] || null;
+						if ( null === patternCategoryLI ) {
+							return;
+						}
+						patternCategoryLI.classList.add( 'current' );
+					}
+				});
+			</script>
+			<?php
+		}
 	}
 
 	/**
