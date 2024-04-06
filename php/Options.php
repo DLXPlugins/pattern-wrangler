@@ -104,6 +104,8 @@ class Options {
 			'hidePatternsMenu'             => false, /* only if hideAllPatterns is true, place in the Appearance menu */
 			'hideCorePatterns'             => false,
 			'hideRemotePatterns'           => false,
+			'hideThemePatterns'            => false,
+			'hidePluginPatterns'           => false,
 			'disablePatternImporterBlock'  => false,
 			'categories'                   => array(),
 			'allowFrontendPatternPreview'  => true,
@@ -112,7 +114,6 @@ class Options {
 			'showMenusUI'                  => true,
 			'loadCustomizerCSSBlockEditor' => false,
 			'loadCustomizerCSSFrontend'    => true,
-			'licenseValid'                 => false,
 		);
 		return $defaults;
 	}

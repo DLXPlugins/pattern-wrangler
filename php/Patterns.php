@@ -24,17 +24,23 @@ class Patterns {
 		// Deregister any disabled pattern categories.
 		add_action( 'init', array( $this, 'maybe_deregister_pattern_categories' ), 999 );
 
+		// Deregister any patterns from the active or child theme.
+		add_action( 'init', array( $this, 'maybe_deregister_theme_patterns' ), 1000 );
+
+		// Deregister any patterns from active plugins.
+		add_action( 'init', array( $this, 'maybe_deregister_plugin_patterns' ), 1000 );
+
 		// Map any disabled patterns to uncategorized or custom category.
-		add_action( 'init', array( $this, 'maybe_deregister_and_map_patterns' ), 1000 );
+		add_action( 'init', array( $this, 'maybe_deregister_and_map_patterns' ), 1001 );
 
 		// Change pattern category labels.
-		add_action( 'init', array( $this, 'change_pattern_category_labels' ), 1001 );
+		add_action( 'init', array( $this, 'change_pattern_category_labels' ), 1002 );
 
 		// Deregister any patterns that are uncategorized.
-		add_action( 'init', array( $this, 'maybe_deregister_uncategorized_patterns' ), 1002 );
+		add_action( 'init', array( $this, 'maybe_deregister_uncategorized_patterns' ), 1003 );
 
 		// Deregister all pattenrs if all patterns are disabled.
-		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 1003 );
+		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 2000 );
 
 		// Modify term query in REST to disable any deactivated terms.
 		add_filter( 'rest_wp_pattern_category_query', array( $this, 'modify_term_query' ), 10, 2 );
@@ -95,6 +101,79 @@ class Patterns {
 		if ( $hide_core_patterns ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
+		}
+	}
+
+	/**
+	 * Attempt to deregister any patterns from the active or child theme.
+	 */
+	public function maybe_deregister_theme_patterns() {
+		$options = Options::get_options();
+
+		$hide_theme_patterns = (bool) $options['hideThemePatterns'];
+		if ( $hide_theme_patterns ) {
+			// Get the active theme.
+			$theme = wp_get_theme();
+
+			// Let's get some theme data.
+			$paths_to_search = array(
+				$theme->stylesheet,
+			);
+
+			// Check if this is a child theme.
+			if ( $theme->parent() ) {
+				$parent_theme      = wp_get_theme( $theme->parent()->template );
+				$paths_to_search[] = $parent_theme->template;
+			}
+			$paths_to_search = array_unique( $paths_to_search );
+
+			// Get all registered patterns.
+			$patterns     = \WP_Block_Patterns_Registry::get_instance();
+			$all_patterns = $patterns->get_all_registered();
+
+			// Loop through all patterns and deregister any that are from the active or child theme.
+			foreach ( $all_patterns as $index => $pattern ) {
+				$file_path = $pattern['filePath'] ?? '';
+				if ( empty( $file_path ) ) {
+					continue;
+				}
+
+				// Check if the pattern is from the active or child theme.
+				foreach ( $paths_to_search as $path ) {
+					if ( false !== strpos( $file_path, 'themes/' . $path ) ) {
+						unregister_block_pattern( $pattern['name'] );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Attempt to deregister any patterns from active plugins.
+	 */
+	public function maybe_deregister_plugin_patterns() {
+		$options = Options::get_options();
+
+		$hide_plugin_patterns = (bool) $options['hidePluginPatterns'];
+		if ( $hide_plugin_patterns ) {
+
+			// Get all registered patterns.
+			$patterns     = \WP_Block_Patterns_Registry::get_instance();
+			$all_patterns = $patterns->get_all_registered();
+
+			// Loop through all patterns and deregister any that are from active plugins.
+			foreach ( $all_patterns as $index => $pattern ) {
+				// Check the path for the `plugins` folder.
+				$file_path = $pattern['filePath'] ?? '';
+				if ( empty( $file_path ) ) {
+					continue;
+				}
+
+				// Deregister any with the plugin in their path.
+				if ( false !== strpos( $file_path, '/plugins' ) ) {
+					unregister_block_pattern( $pattern['name'] );
+				}
+			}
 		}
 	}
 
@@ -313,12 +392,10 @@ class Patterns {
 		$hide_all_patterns = (bool) $options['hideAllPatterns'];
 
 		// Exit early if not enabled.
-		if ( ! $hide_all_patterns ) {
-			return $args;
+		if ( $hide_all_patterns ) {
+			$args['post__in'] = array( -1 ); // -1 so no patterns are returned.
 		}
 
-		// Return empty array.
-		$args['post__in'] = array( -1 );
 		return $args;
 	}
 
@@ -375,7 +452,7 @@ class Patterns {
 		// Loop through all patterns and deregister any that are uncategorized.
 		foreach ( $all_patterns as $index => $pattern ) {
 			if ( ! isset( $pattern['categories'] ) || empty( $pattern['categories'] ) ) {
-				unregister_block_pattern( $pattern['slug'] );
+				unregister_block_pattern( $pattern['name'] );
 			} else {
 				$found            = false;
 				$block_categories = $pattern['categories'] ?? array();

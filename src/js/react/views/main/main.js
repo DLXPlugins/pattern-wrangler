@@ -94,6 +94,7 @@ const Category = ( props ) => {
 
 	/**
 	 * Get the label to display.
+	 *
 	 * @return {string} The label to display.
 	 */
 	const getLabel = () => {
@@ -220,6 +221,8 @@ const Interface = ( props ) => {
 			showCustomizerUI: data.showCustomizerUI,
 			loadCustomizerCSSBlockEditor: data.loadCustomizerCSSBlockEditor,
 			loadCustomizerCSSFrontend: data.loadCustomizerCSSFrontend,
+			hideThemePatterns: data.hideThemePatterns,
+			hidePluginPatterns: data.hidePluginPatterns,
 			showMenusUI: data.showMenusUI,
 			categories: data.categories ?? [],
 			saveNonce: dlxPatternWranglerAdmin.saveNonce,
@@ -244,9 +247,8 @@ const Interface = ( props ) => {
 					);
 				} ) }
 			</ul>
-		)
-
-	}
+		);
+	};
 	return (
 		<>
 			<div className="dlx-pw-admin-content-heading">
@@ -329,6 +331,38 @@ const Interface = ( props ) => {
 														onChange( boolValue );
 													} }
 													help={ __( 'Prevent users from searching for remote patterns in the pattern selector.', 'dlx-pattern-wrangler' ) }
+												/>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											name="hideThemePatterns"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __( 'Hide Theme Patterns', 'dlx-pattern-wrangler' ) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __( 'Prevent patterns registered by the active theme from displaying in the patterns list.', 'dlx-pattern-wrangler' ) }
+												/>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											name="hidePluginPatterns"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __( 'Hide Plugin Patterns', 'dlx-pattern-wrangler' ) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __( 'Prevent patterns registered by active plugins from displaying in the patterns list.', 'dlx-pattern-wrangler' ) }
 												/>
 											) }
 										/>
