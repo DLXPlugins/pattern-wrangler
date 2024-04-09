@@ -4,7 +4,7 @@ Tags: block patterns, manage, export, patterns
 Requires at least: 6.4
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,8 +32,9 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Changelog ==
 
-= 1.0.2 =
-* Released 2024-04-05
+= 1.0.3 =
+* Released 2024-04-09
+* Refactored categories so only registed categories can be mapped to terms.
 
 = 1.0.1 =
 * Added variable height preview image to Patterns screen.
@@ -45,6 +46,6 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Upgrade Notice ==
 
-= 1.0.2 =
-Added ability to remove theme and plugin patterns.
+= 1.0.3 =
+Refactored categories so only registed categories can be mapped to terms.
 
