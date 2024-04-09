@@ -116,15 +116,6 @@ class Functions {
 		// Get all pattern categories from the built-in WP taxonomy.
 		$pattern_categories_taxonomy = self::get_pattern_categories_from_taxonomy();
 
-		// Merge taxonomy categories with registered categories.
-		foreach ( $pattern_categories_taxonomy as $category ) {
-			$pattern_categories[] = array(
-				'name'  => $category->slug,
-				'label' => $category->name,
-				'count' => $category->count,
-			);
-		}
-
 		// Get saved category data.
 		$custom_pattern_categories = $options['categories'];
 
@@ -179,7 +170,10 @@ class Functions {
 			}
 		}
 
-		return $all_categories;
+		return array(
+			'registered' => $all_categories,
+			'categories' => $pattern_categories_taxonomy,
+		);
 	}
 
 	/**

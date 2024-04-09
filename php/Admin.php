@@ -206,9 +206,9 @@ class Admin {
 		}
 		$options = Options::get_options();
 
-		$options['categories'] = Functions::get_pattern_categories();
+		$categories = Functions::get_pattern_categories();
 
-		wp_send_json_success( $options );
+		wp_send_json_success( $categories );
 	}
 
 	/**

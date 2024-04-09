@@ -224,11 +224,12 @@ const Interface = ( props ) => {
 			hideThemePatterns: data.hideThemePatterns,
 			hidePluginPatterns: data.hidePluginPatterns,
 			showMenusUI: data.showMenusUI,
-			categories: data.categories ?? [],
+			categories: data.categories.registered ?? [],
 			saveNonce: dlxPatternWranglerAdmin.saveNonce,
 			resetNonce: dlxPatternWranglerAdmin.resetNonce,
 		},
 	} );
+	console.log( data.categories );
 	const formValues = useWatch( { control } );
 	const { errors, isDirty, dirtyFields } = useFormState( {
 		control,
