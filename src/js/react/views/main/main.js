@@ -66,13 +66,13 @@ const usePatternCategories = ( props ) => {
 const Category = ( props ) => {
 	const [ showLabelPopover, setShowLabelPopover ] = useState( false );
 	const [ labelEditButton, setLabelEditButton ] = useState( false );
-	const { category, control, getValues, setValue } = props;
+	const { category, control, getValues, setValue, taxCategories } = props;
 	const { enabledCategories } = usePatternCategories( { getValues } );
 
 	const getCategories = () => {
-		const localCategories = enabledCategories.map( ( cat ) => {
+		const localCategories = taxCategories.map( ( cat ) => {
 			return {
-				label: cat.label + ' (' + cat.slug + ')',
+				label: cat.name + ' (' + cat.slug + ')',
 				value: cat.slug,
 			};
 		} );
@@ -224,12 +224,11 @@ const Interface = ( props ) => {
 			hideThemePatterns: data.hideThemePatterns,
 			hidePluginPatterns: data.hidePluginPatterns,
 			showMenusUI: data.showMenusUI,
-			categories: data.categories.registered ?? [],
+			categories: data.registered ?? [],
 			saveNonce: dlxPatternWranglerAdmin.saveNonce,
 			resetNonce: dlxPatternWranglerAdmin.resetNonce,
 		},
 	} );
-	console.log( data.categories );
 	const formValues = useWatch( { control } );
 	const { errors, isDirty, dirtyFields } = useFormState( {
 		control,
@@ -243,7 +242,7 @@ const Interface = ( props ) => {
 				{ Object.values( categories ).map( ( category ) => {
 					return (
 						<li key={ category.slug }>
-							<Category category={ category } control={ control } getValues={ getValues } setValue={ setValue } />
+							<Category category={ category } control={ control } getValues={ getValues } setValue={ setValue } taxCategories={ data.categories } />
 						</li>
 					);
 				} ) }

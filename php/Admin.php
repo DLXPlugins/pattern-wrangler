@@ -206,9 +206,11 @@ class Admin {
 		}
 		$options = Options::get_options();
 
-		$categories = Functions::get_pattern_categories();
+		$categories            = Functions::get_pattern_categories();
+		$options['registered'] = $categories['registered'];
+		$options['categories'] = $categories['categories'];
 
-		wp_send_json_success( $categories );
+		wp_send_json_success( $options );
 	}
 
 	/**
