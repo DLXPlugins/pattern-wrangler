@@ -45,6 +45,9 @@ class Admin {
 		// Output synced vs. unsynced.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'output_pattern_sync_column' ), 10, 2 );
 
+		// Modify the template if is not a block theme.
+		add_filter( 'theme_file_path', array( $this, 'theme_file_path' ), 10, 2 );
+
 		if ( (bool) $options['loadCustomizerCSSBlockEditor'] ) {
 			add_action( 'enqueue_block_assets', array( $this, 'enqueue_customizer_css_block_editor' ), PHP_INT_MAX );
 		}
@@ -52,6 +55,32 @@ class Admin {
 		if ( ! (bool) $options['loadCustomizerCSSFrontend'] ) {
 			remove_action( 'wp_head', 'wp_custom_css_cb', 101 );
 		}
+	}
+
+	/**
+	 * Modify the template if is not a block theme.
+	 *
+	 * @param string $template Template.
+	 * @param string $template_name Template name.
+	 *
+	 * @return string
+	 */
+	public function theme_file_path( $template, $file ) {
+		$is_block_theme = false;
+		$file_paths = array(
+			'/templates/index.html',
+			'/block-templates/index.html',
+		);
+		foreach ( $file_paths as $file_path ) {
+			if ( \file_exists( $template ) && strstr( $template, $file_path ) ) {
+				$is_block_theme = true;
+				break;
+			}
+		}
+		if ( ! $is_block_theme ) {
+			$template = Functions::get_plugin_dir( 'templates/index.html' );
+		}
+		return $template;
 	}
 
 
@@ -206,9 +235,11 @@ class Admin {
 		}
 		$options = Options::get_options();
 
-		$categories = Functions::get_pattern_categories();
+		$categories            = Functions::get_pattern_categories();
+		$options['registered'] = $categories['registered'];
+		$options['categories'] = $categories['categories'];
 
-		wp_send_json_success( $categories );
+		wp_send_json_success( $options );
 	}
 
 	/**
