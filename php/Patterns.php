@@ -25,6 +25,9 @@ class Patterns {
 		// Enqueue scripts for the wp_block post_type.
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_post_type_enqueue_scripts' ) );
 
+		// Enqueue scripts for the wp_block post type admin archive screen.
+		add_action( 'admin_enqueue_scripts', array( $this, 'add_pattern_list_view_scripts' ) );
+
 		// Deregister any disabled pattern categories.
 		add_action( 'init', array( $this, 'maybe_deregister_pattern_categories' ), 999 );
 
@@ -106,6 +109,37 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
+	}
+
+	/**
+	 * Enqueue scripts for the wp_block list view screen.
+	 */
+	public function add_pattern_list_view_scripts() {
+		global $current_screen;
+		if ( 'edit-wp_block' !== $current_screen->id ) {
+			return;
+		}
+
+		// Enqueue Fancybox and styles.
+		$deps = require_once Functions::get_plugin_dir( 'build/dlx-pw-fancybox.asset.php' );
+		wp_enqueue_script(
+			'fancybox',
+			Functions::get_plugin_url( 'build/dlx-pw-fancybox.js' ),
+			$deps['dependencies'],
+			$deps['version'],
+			true
+		);
+		wp_enqueue_style(
+			'fancybox',
+			Functions::get_plugin_url( 'build/dlx-pw-fancybox.css' ),
+			array(),
+			$deps['version'],
+			'all'
+		);
+		wp_add_inline_style(
+			'fancybox',
+			'.fancybox__container { z-index: 100000; }'
+		);
 	}
 
 	/**
@@ -276,7 +310,16 @@ class Patterns {
 	 */
 	public function add_post_type_columns_content( $column_name, $post_id ) {
 		if ( 'featured_image' === $column_name ) {
-			$thumbnail = get_the_post_thumbnail( $post_id, array( 150, 0 ) );
+			$thumbnail = get_the_post_thumbnail(
+				$post_id,
+				array( 150, 0 )
+			);
+			$thumbnail = sprintf(
+				'<a href="%s" class="admin-fancybox" title="%s">%s</a>',
+				esc_url( \wp_get_attachment_image_url( get_post_thumbnail_id( $post_id ), 'full' ) ),
+				esc_attr( get_the_title( $post_id ) ),
+				$thumbnail
+			);
 			echo wp_kses_post( $thumbnail );
 			return;
 		}

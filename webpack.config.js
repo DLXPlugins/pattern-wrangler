@@ -16,6 +16,7 @@ module.exports = ( env ) => {
 			entry: {
 				index: '/src/index.js',
 				'dlx-pw-preview': './src/js/blocks/plugins/pattern-preview.js',
+				'dlx-pw-fancybox': './src/js/fancybox/index.js',
 			},
 		},
 		{

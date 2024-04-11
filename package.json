@@ -68,6 +68,7 @@
     "webpack-remove-empty-scripts": "^0.8.1"
   },
   "dependencies": {
+    "@fancyapps/ui": "^5.0.36",
     "@wordpress/a11y": "^3.11.0",
     "grunt-cli": "^1.4.3",
     "html-to-react": "^1.4.8"
