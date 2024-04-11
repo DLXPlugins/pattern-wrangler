@@ -4,7 +4,7 @@ Tags: block patterns, manage, export, patterns
 Requires at least: 6.4
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.0.4
+Stable tag: 1.0.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,7 +34,7 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Changelog ==
 
-= 1.0.6 =
+= 1.0.7 =
 * Released 2024-04-11
 * Fixing sanitization issues.
 
