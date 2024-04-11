@@ -30,7 +30,7 @@ class Drafts {
 	 * Add an admin notice when a pattern is unpublished or published.
 	 */
 	public function add_admin_notice() {
-		$notice_action = sanitize_text_field( filter_input( INPUT_GET, 'notice_action', FILTER_DEFAULT ) );
+		$notice_action = sanitize_text_field( filter_input( INPUT_GET, 'notice_action', FILTER_SANITIZE_SPECIAL_CHARS ) );
 		if ( ! $notice_action ) {
 			return;
 		}

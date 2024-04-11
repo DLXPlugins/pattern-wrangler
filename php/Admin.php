@@ -45,9 +45,6 @@ class Admin {
 		// Output synced vs. unsynced.
 		add_action( 'manage_wp_block_posts_custom_column', array( $this, 'output_pattern_sync_column' ), 10, 2 );
 
-		// Modify the template if is not a block theme.
-		add_filter( 'theme_file_path', array( $this, 'theme_file_path' ), 10, 2 );
-
 		if ( (bool) $options['loadCustomizerCSSBlockEditor'] ) {
 			add_action( 'enqueue_block_assets', array( $this, 'enqueue_customizer_css_block_editor' ), PHP_INT_MAX );
 		}
@@ -56,33 +53,6 @@ class Admin {
 			remove_action( 'wp_head', 'wp_custom_css_cb', 101 );
 		}
 	}
-
-	/**
-	 * Modify the template if is not a block theme.
-	 *
-	 * @param string $template Template.
-	 * @param string $template_name Template name.
-	 *
-	 * @return string
-	 */
-	public function theme_file_path( $template, $file ) {
-		$is_block_theme = false;
-		$file_paths = array(
-			'/templates/index.html',
-			'/block-templates/index.html',
-		);
-		foreach ( $file_paths as $file_path ) {
-			if ( \file_exists( $template ) && strstr( $template, $file_path ) ) {
-				$is_block_theme = true;
-				break;
-			}
-		}
-		if ( ! $is_block_theme ) {
-			$template = Functions::get_plugin_dir( 'templates/index.html' );
-		}
-		return $template;
-	}
-
 
 	/**
 	 * Initialize the setting links for the plugin page.
@@ -118,7 +88,7 @@ class Admin {
 	 */
 	public function ajax_save_options() {
 		// Get form data.
-		$form_data = filter_input( INPUT_POST, 'formData', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		$form_data = filter_input( INPUT_POST, 'formData', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY );
 
 		$nonce = $form_data['saveNonce'] ?? false;
 		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-admin-save-options' ) || ! current_user_can( 'manage_options' ) ) {
@@ -173,7 +143,7 @@ class Admin {
 	 */
 	public function ajax_reset_options() {
 		// Get form data.
-		$form_data = filter_input( INPUT_POST, 'formData', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		$form_data = filter_input( INPUT_POST, 'formData', FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY );
 
 		$nonce = $form_data['resetNonce'] ?? false;
 		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-admin-reset-options' ) || ! current_user_can( 'manage_options' ) ) {
@@ -219,7 +189,7 @@ class Admin {
 	 */
 	public function ajax_get_options() {
 		// Get nonce.
-		$nonce = sanitize_text_field( filter_input( INPUT_POST, 'nonce', FILTER_DEFAULT ) );
+		$nonce = sanitize_text_field( filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_SPECIAL_CHARS ) );
 
 		// Verify nonce.
 		$nonce_action = 'dlx-pw-admin-get-options';

@@ -227,7 +227,7 @@ class Functions {
 	 * @return null|string Current admin tab.
 	 */
 	public static function get_admin_tab() {
-		$tab = filter_input( INPUT_GET, 'tab', FILTER_DEFAULT );
+		$tab = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_SPECIAL_CHARS );
 		if ( $tab && is_string( $tab ) ) {
 			return sanitize_text_field( sanitize_title( $tab ) );
 		}
