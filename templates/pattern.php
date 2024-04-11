@@ -13,8 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! current_user_can( 'edit_posts' ) ) {
 	die( 'You do not have permissioni to preview this pattern.' );
 }
-$nonce      = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ) );
-$pattern_id = absint( filter_input( INPUT_GET, 'pattern', FILTER_DEFAULT ) );
+$nonce      = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_SPECIAL_CHARS ) );
+$pattern_id = absint( filter_input( INPUT_GET, 'pattern', FILTER_SANITIZE_SPECIAL_CHARS ) );
 if ( ! wp_verify_nonce( $nonce, 'preview-pattern_' . $pattern_id ) ) {
 	die( 'Invalid nonce.' );
 }
