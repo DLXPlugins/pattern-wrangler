@@ -20,16 +20,25 @@ if ( ! wp_verify_nonce( $nonce, 'preview-pattern_' . $pattern_id ) ) {
 }
 
 // Perform query.
-$pattern = get_post( $pattern_id );
-if ( ! $pattern || 'wp_block' !== get_post_type( $pattern ) ) {
+global $wp_query;
+$temp     = $wp_query;
+$wp_query = new \WP_Query(
+	array(
+		'p'         => $pattern_id,
+		'post_type' => 'wp_block',
+	)
+);
+if ( ! $wp_query->have_posts() ) {
 	die( 'Pattern not found.' );
+} else {
+	$wp_query->the_post();
 }
 
 // Get header if theme is not FSE theme.
 if ( ! wp_is_block_theme() ) {
 	get_header();
-	$blocks = do_blocks( $pattern->post_content );
-	echo apply_filters( 'the_content', $blocks );
+	$blocks = do_blocks( $wp_query->post->post_content );
+	the_content();
 } else {
 	?>
 	<!doctype html>
@@ -38,7 +47,7 @@ if ( ! wp_is_block_theme() ) {
 		<meta charset="<?php bloginfo( 'charset' ); ?>">
 		<?php
 		// Need to do blocks in head tag for block styles to be output.
-		$blocks = do_blocks( $pattern->post_content );
+		$blocks = do_blocks( $wp_query->post->post_content );
 		?>
 		<?php wp_head(); ?>
 	</head>
@@ -49,7 +58,7 @@ if ( ! wp_is_block_theme() ) {
 		<?php block_header_area(); ?>
 	</header>
 	<?php
-	echo apply_filters( 'the_content', $blocks );
+	the_content();
 	?>
 	<?php
 }
@@ -70,3 +79,5 @@ if ( ! wp_is_block_theme() ) {
 	</html>
 	<?php
 }
+$wp_query = $temp;
+wp_reset_postdata();
