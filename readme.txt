@@ -18,6 +18,8 @@ Pattern Wrangler enhances your experience with WordPress block patterns by addin
 * Map and rename categories
 * Output patterns with a shortcode
 
+> Source code is available on <a href="https://github.com/DLXPlugins/pattern-wrangler">GitHub</a>.
+
 == Installation ==
 
 1. Upload the plugin files to the `/wp-content/plugins/pattern-wrangler` directory, or install the plugin through the WordPress plugins screen directly.
