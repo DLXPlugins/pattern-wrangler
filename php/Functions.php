@@ -217,7 +217,7 @@ class Functions {
 		 *
 		 * @param array $file_extensions The valid mime types.
 		 */
-		$file_extensions = apply_filters( 'dlxplugins_pw_block_file_extensions', $file_extensions );
+		$file_extensions = apply_filters( 'dlxpw_block_file_extensions', $file_extensions );
 
 		return $file_extensions;
 	}
@@ -291,7 +291,7 @@ class Functions {
 	 * @return string plugin slug.
 	 */
 	public static function get_plugin_slug() {
-		return dirname( plugin_basename( DLXPLUGINS_PATTERN_WRANGLER_FILE ) );
+		return dirname( plugin_basename( DLXPW_PATTERN_WRANGLER_FILE ) );
 	}
 
 	/**
@@ -300,7 +300,7 @@ class Functions {
 	 * @return string base file for the plugin.
 	 */
 	public static function get_plugin_file() {
-		return plugin_basename( DLXPLUGINS_PATTERN_WRANGLER_FILE );
+		return plugin_basename( DLXPW_PATTERN_WRANGLER_FILE );
 	}
 
 	/**
@@ -309,7 +309,7 @@ class Functions {
 	 * @return float version for the plugin.
 	 */
 	public static function get_plugin_version() {
-		return DLXPLUGINS_PATTERN_WRANGLER_VERSION;
+		return DLXPW_PATTERN_WRANGLER_VERSION;
 	}
 
 	/**
@@ -427,7 +427,7 @@ class Functions {
 	 * @return string The new path.
 	 */
 	public static function get_plugin_dir( $path = '' ) {
-		$dir = rtrim( plugin_dir_path( DLXPLUGINS_PATTERN_WRANGLER_FILE ), '/' );
+		$dir = rtrim( plugin_dir_path( DLXPW_PATTERN_WRANGLER_FILE ), '/' );
 		if ( ! empty( $path ) && is_string( $path ) ) {
 			$dir .= '/' . ltrim( $path, '/' );
 		}
@@ -442,7 +442,7 @@ class Functions {
 	 * @return string URL to to the file.
 	 */
 	public static function get_plugin_url( $path = '' ) {
-		$dir = rtrim( plugin_dir_url( DLXPLUGINS_PATTERN_WRANGLER_FILE ), '/' );
+		$dir = rtrim( plugin_dir_url( DLXPW_PATTERN_WRANGLER_FILE ), '/' );
 		if ( ! empty( $path ) && is_string( $path ) ) {
 			$dir .= '/' . ltrim( $path, '/' );
 		}

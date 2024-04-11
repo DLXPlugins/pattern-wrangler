@@ -59,7 +59,7 @@ class Admin {
 	 */
 	public function init_settings_links() {
 		$prefix = Functions::is_multisite() ? 'network_admin_' : '';
-		add_action( $prefix . 'plugin_action_links_' . plugin_basename( DLXPLUGINS_PATTERN_WRANGLER_FILE ), array( $this, 'plugin_settings_link' ) );
+		add_action( $prefix . 'plugin_action_links_' . plugin_basename( DLXPW_PATTERN_WRANGLER_FILE ), array( $this, 'plugin_settings_link' ) );
 	}
 
 	/**
