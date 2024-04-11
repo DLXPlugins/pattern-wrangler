@@ -18,8 +18,8 @@
 
 namespace DLXPlugins\PatternWrangler;
 
-define( 'DLX_PATTERN_WRANGLER_VERSION', '1.0.3' );
-define( 'DLX_PATTERN_WRANGLER_FILE', __FILE__ );
+define( 'DLXPLUGINS_PATTERN_WRANGLER_VERSION', '1.0.3' );
+define( 'DLXPLUGINS_PATTERN_WRANGLER_FILE', __FILE__ );
 
 // Support for site-level autoloading.
 if ( file_exists( __DIR__ . '/lib/autoload.php' ) ) {

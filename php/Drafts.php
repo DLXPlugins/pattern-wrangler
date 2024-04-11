@@ -56,9 +56,9 @@ class Drafts {
 	 * Intercept draft/publish actions.
 	 */
 	public function intercept_draft_publish() {
-		$action  = sanitize_text_field( filter_input( INPUT_GET, 'action', FILTER_DEFAULT ) );
-		$nonce   = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ) );
-		$post_id = absint( filter_input( INPUT_GET, 'post', FILTER_DEFAULT ) );
+		$action  = sanitize_text_field( filter_input( INPUT_GET, 'action', FILTER_SANITIZE_SPECIAL_CHARS ) );
+		$nonce   = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_SPECIAL_CHARS ) );
+		$post_id = absint( filter_input( INPUT_GET, 'post', \FILTER_SANITIZE_NUMBER_INT ) );
 
 		if ( ! $action ) {
 			return;
