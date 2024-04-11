@@ -7,6 +7,10 @@
 
 namespace DLXPlugins\PatternWrangler;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'No direct access.' );
+}
+
 /**
  * Patterns class.
  */
