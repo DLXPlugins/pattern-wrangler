@@ -49,6 +49,9 @@ class Patterns {
 		// Deregister all pattenrs if all patterns are disabled.
 		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 2000 );
 
+		// Register tax terms as categories.
+		add_action( 'rest_api_init', array( $this, 'register_terms_as_pattern_categories' ) );
+
 		// Modify term query in REST to disable any deactivated terms.
 		add_filter( 'rest_wp_pattern_category_query', array( $this, 'modify_term_query' ), 10, 2 );
 
@@ -108,6 +111,36 @@ class Patterns {
 		if ( $hide_core_patterns ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
+		}
+	}
+
+	/**
+	 * Register terms as pattern categories.
+	 */
+	public function register_terms_as_pattern_categories() {
+		// If not on the REST API, return.
+		if ( ! is_admin() ) {
+			return;
+		}
+		if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) {
+			return;
+		}
+		$categories = get_terms(
+			array(
+				'taxonomy'   => 'wp_pattern_category',
+				'hide_empty' => false,
+			)
+		);
+
+		if ( is_wp_error( $categories ) ) {
+			return;
+		}
+
+		foreach ( $categories as $category ) {
+			$categories = \WP_Block_Pattern_Categories_Registry::get_instance();
+			if ( ! $categories->is_registered( $category->slug ) ) {
+				register_block_pattern_category( $category->slug, array( 'label' => $category->name ) );
+			}
 		}
 	}
 
