@@ -34,7 +34,7 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Changelog ==
 
-= 1.0.4 =
+= 1.0.6 =
 * Released 2024-04-11
 * Fixing sanitization issues.
 
@@ -52,6 +52,6 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Upgrade Notice ==
 
-= 1.0.4 =
+= 1.0.6 =
 Fixing sanitization issues.
 
