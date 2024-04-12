@@ -12,7 +12,7 @@ module.exports = ( env ) => {
 				rules: [ ...defaultConfig.module.rules ],
 			},
 			mode: env.mode,
-			devtool: 'production' === env.mode ? 'source-map' : false,
+			devtool: 'production' === env.mode ? false : 'source-map',
 			entry: {
 				index: '/src/index.js',
 				'dlx-pw-preview': './src/js/blocks/plugins/pattern-preview.js',
