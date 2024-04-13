@@ -11,6 +11,7 @@ The latest version is [v1.0.7](https://github.com/DLXPlugins/pattern-wrangler/re
 
 ## Quick Links
 
+* <a href="https://docs.dlxplugins.com/v/pattern-wrangler">Docs and Features</a>.
 * <a href="https://github.com/DLXPlugins/pattern-wrangler/issues/new">Create an Issue or Feature Request</a>.
 * <a href="https://dlxplugins.com/support/">Leave a Support Request</a>.
 * <a href="https://dlxplugins.com/plugins/pattern-wrangler">Visit the Plugin's Marketing Page</a>.
