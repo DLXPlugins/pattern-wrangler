@@ -77,8 +77,8 @@ class Admin {
 	public function plugin_settings_link( $settings ) {
 		$setting_links = array(
 			'settings' => sprintf( '<a href="%s">%s</a>', esc_url( Functions::get_settings_url() ), esc_html__( 'Settings', 'pattern-wrangler' ) ),
-			'docs'     => sprintf( '<a href="%s">%s</a>', esc_url( 'https://docs.dlxplugins.com/v/dlx-pw/' ), esc_html__( 'Docs', 'pattern-wrangler' ) ),
-			'site'     => sprintf( '<a href="%s" style="color: #f60098;">%s</a>', esc_url( 'https://dlxplugins.com/plugins/dlx-pw/' ), esc_html__( 'Plugin Home', 'pattern-wrangler' ) ),
+			'docs'     => sprintf( '<a href="%s">%s</a>', esc_url( 'https://docs.dlxplugins.com/v/pattern-wrangler' ), esc_html__( 'Docs', 'pattern-wrangler' ) ),
+			'site'     => sprintf( '<a href="%s" style="color: #f60098;">%s</a>', esc_url( 'https://dlxplugins.com/plugins/pattern-wrangler/' ), esc_html__( 'Plugin Home', 'pattern-wrangler' ) ),
 		);
 		if ( ! is_array( $settings ) ) {
 			return $setting_links;
@@ -105,26 +105,6 @@ class Admin {
 				)
 			);
 		}
-
-		// If no font data, assume empty array.
-		if ( ! isset( $form_data['allowedGoogleFonts'] ) ) {
-			$form_data['allowedGoogleFonts'] = array();
-		}
-
-		$form_enabled_post_types = $form_data['enabledPostTypes'] ?? array();
-		$enabled_post_types      = array();
-
-		// Loop through enabled post types to save them in the right format.
-		foreach ( $form_enabled_post_types as $post_type => $enabled ) {
-			$post_type = trim( sanitize_text_field( $post_type ) );
-			if ( is_numeric( $post_type ) ) {
-				continue;
-			}
-			$enabled_post_types[ $post_type ] = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN );
-		}
-
-		// Assign back.
-		$form_data['enabledPostTypes'] = $enabled_post_types;
 
 		// Get array values.
 		$form_data = Functions::sanitize_array_recursive( $form_data );
@@ -172,10 +152,6 @@ class Admin {
 		// Pull in nonces to default options before returning.
 		$default_options['saveNonce']  = $options['saveNonce'];
 		$default_options['resetNonce'] = $options['resetNonce'];
-
-		// Format empty arrays into false. This is so they can be reset at the form level.
-		$default_options['membershipLevelsToExclude'] = false;
-		$default_options['checkoutLevelsToExclude']   = false;
 
 		// Send success message.
 		wp_send_json_success(
@@ -395,7 +371,7 @@ class Admin {
 						</h2>
 					</div>
 					<div class="header__btn-wrap">
-						<a href="<?php echo esc_url( 'https://docs.dlxplugins.com/v/dlx-pw/' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Docs', 'pattern-wrangler' ); ?></a>
+						<a href="<?php echo esc_url( 'https://docs.dlxplugins.com/v/pattern-wrangler' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Docs', 'pattern-wrangler' ); ?></a>
 						<a href="<?php echo esc_url( 'https://dlxplugins.com/support/' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Support', 'pattern-wrangler' ); ?></a>
 					</div>
 				</div>

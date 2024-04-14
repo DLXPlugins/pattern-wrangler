@@ -248,7 +248,14 @@ class Functions {
 	 * @return string URL to admin screen. Output is not escaped.
 	 */
 	public static function get_settings_url( $tab = '', $sub_tab = '' ) {
-		$options_url = admin_url( 'admin.php?page=dlx-pattern-wrangler' );
+		$options            = Options::get_options();
+		$hide_all_patterns  = (bool) $options['hideAllPatterns'] ?? false;
+		$hide_patterns_menu = (bool) $options['hidePatternsMenu'] ?? false;
+		$options_url        = admin_url( 'edit.php?post_type=wp_block&page=pattern-wrangler' );
+		if ( $hide_all_patterns && $hide_patterns_menu ) {
+			$options_url = admin_url( 'themes.php?page=pattern-wrangler' );
+		}
+
 		if ( ! empty( $tab ) ) {
 			$options_url = add_query_arg( array( 'tab' => sanitize_title( $tab ) ), $options_url );
 			if ( ! empty( $sub_tab ) ) {
