@@ -7,13 +7,14 @@
 <img src="https://img.shields.io/badge/node-18.12.1-green" /> <img src="https://img.shields.io/badge/NPM-8.19.2-blue" /> <img src="https://img.shields.io/badge/Webpack-5.74.0-orange" /> <img src="https://img.shields.io/badge/webpack--cli-4.10.0-orange" /> <img src="https://img.shields.io/badge/%40wordpress%2Fscripts-%5E23.3.0-green" />
 
 ## Download Zip
-The latest version is [Version 1.0.3](https://github.com/DLXPlugins/pattern-wrangler/releases/download/1.0.3/pattern-wrangler.zip).
+The latest version is [v1.0.7](https://github.com/DLXPlugins/pattern-wrangler/releases/download/1.0.7/pattern-wrangler.zip).
 
 ## Quick Links
 
+* <a href="https://docs.dlxplugins.com/v/pattern-wrangler">Docs and Features</a>.
 * <a href="https://github.com/DLXPlugins/pattern-wrangler/issues/new">Create an Issue or Feature Request</a>.
 * <a href="https://dlxplugins.com/support/">Leave a Support Request</a>.
-* <a href="https://dlxplugins.com/plugins/pattern-wrangler">Visit the Plugin Download and Pricing Page</a>.
+* <a href="https://dlxplugins.com/plugins/pattern-wrangler">Visit the Plugin's Marketing Page</a>.
 
 ## Developers
 
