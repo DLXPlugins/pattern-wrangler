@@ -4,7 +4,7 @@ Tags: block patterns, manage, export, patterns
 Requires at least: 6.5
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.0.7
+Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,11 +14,24 @@ Manage your block patterns efficiently with Pattern Wrangler.
 
 Pattern Wrangler enhances your experience with WordPress block patterns by adding a few features that let you:
 
-* Hide all patterns
-* Map and rename categories
-* Output patterns with a shortcode
+* Hide All Patterns - If you need to hide patterns completely from the block editor, you can do so with a single click.
+* Hide Core and Remote Patterns - If you only want to show patterns you've created, you can hide all core and remote patterns.
+* Hide Theme and Plugin Patterns - If you only want to show patterns you've created, you can hide all patterns from themes and plugins.
+* Map and Rename Registered Categories - If you have a lot of patterns, you can map them to categories and rename the categories to something more meaningful.
+* Output Patterns With a Shortcode - If you want to output a pattern in a page builder or widget, you can do so with a shortcode. This is compatible with most block plugins.
+* Copy Patterns From Site to Site - If you have a post on one site, you can copy it over, including the images, using the Pattern Importer block.
+
+=== Quick Links ===
+
+<a href="https://docs.dlxplugins.com/v/pattern-wrangler">All Features and Documentation</a> | <a href="https://github.com/sponsors/DLXPlugins">Sponsor Us</a> | <a href="https://dlxplugins.com/plugins/pattern-wrangler/">Pattern Wrangler Home</a>
 
 > Source code is available on <a href="https://github.com/DLXPlugins/pattern-wrangler">GitHub</a>.
+
+=== Requirements and Compatibility ===
+
+Requires WordPress 6.5 or higher.
+
+Compatible with most themes, including block themes.
 
 == Installation ==
 
@@ -33,6 +46,12 @@ Pattern Wrangler enhances your experience with WordPress block patterns by addin
 Yes, as long as you have the pattern's code, Pattern Wrangler can import it and localize any images found within.
 
 == Changelog ==
+
+= 1.0.9 =
+* Released 2024-04-14
+* Removed old dead code.
+* Fixing settings and docs links.
+* Initial WordPress.org release!
 
 = 1.0.7 =
 * Released 2024-04-12
@@ -54,6 +73,6 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Upgrade Notice ==
 
-= 1.0.6 =
-Fixing sanitization issues.
+= 1.0.9 =
+Initial .org release!
 
