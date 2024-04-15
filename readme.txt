@@ -45,6 +45,15 @@ Compatible with most themes, including block themes.
 
 Yes, as long as you have the pattern's code, Pattern Wrangler can import it and localize any images found within.
 
+== Screenshots ==
+
+1. An example of an organized Patterns screen.
+2. Enhanced Patterns List View with shortcode and category/sync columns.
+3. Map registered categories to terms, or rename for better organization or translations.
+4. Enable the Customizer UI, and load Additional CSS in the block editor.
+5. Hide all patterns, or hide them from core, remote, themes, or plugins.
+6. Preview a Pattern on the frontend.
+
 == Changelog ==
 
 = 1.0.9 =
