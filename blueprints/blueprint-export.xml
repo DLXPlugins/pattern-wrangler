@@ -16,7 +16,7 @@
 <!-- 7. WordPress will then import each of the posts, pages, comments, categories, etc. -->
 <!--    contained in this file into your site. -->
 
-	<!-- generator="WordPress/6.5.2" created="2024-04-18 12:48" -->
+	<!-- generator="WordPress/6.5.2" created="2024-04-18 13:45" -->
 <rss version="2.0"
 	xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
 	xmlns:content="http://purl.org/rss/1.0/modules/content/"
@@ -29,7 +29,7 @@
 	<title>My Great Blog</title>
 	<link>https://patternwrangler.local</link>
 	<description></description>
-	<pubDate>Thu, 18 Apr 2024 12:48:31 +0000</pubDate>
+	<pubDate>Thu, 18 Apr 2024 13:45:42 +0000</pubDate>
 	<language>en-US</language>
 	<wp:wxr_version>1.2</wp:wxr_version>
 	<wp:base_site_url>https://patternwrangler.local</wp:base_site_url>
@@ -41,365 +41,13 @@
 	<generator>https://wordpress.org/?v=6.5.2</generator>
 
 		<item>
-		<title><![CDATA[Testimonials for Services]]></title>
-		<link>https://patternwrangler.local/?wp_block=testimonials-for-services</link>
-		<pubDate>Thu, 18 Apr 2024 11:50:31 +0000</pubDate>
-		<dc:creator><![CDATA[ronalfy]]></dc:creator>
-		<guid isPermaLink="false">https://patternwrangler.local/?p=7</guid>
-		<description></description>
-		<content:encoded><![CDATA[<!-- wp:generateblocks/container {"uniqueId":"b14a8e1","backgroundColor":"var(\u002d\u002dtheme-palette-color-8, #ffffff)","bgImage":{"id":3326,"image":{"url":"https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/white-gradient-bg.webp","height":900,"width":1600,"orientation":"landscape"}},"bgOptions":{"selector":"pseudo-element","opacity":0.15,"overlay":false,"position":"center center","size":"cover","repeat":"no-repeat","attachment":""},"align":"full","isDynamic":true,"blockVersion":4,"blockLabel":"Homepage Testimonials","position":"relative","overflowX":"hidden","overflowY":"hidden","order":1,"spacing":{"paddingTop":"72px","paddingBottom":"72px","marginBottom":"0px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"2b94a92","align":"full","isDynamic":true,"blockVersion":4,"order":2,"spacing":{"marginBottom":"0px"}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"8e1e133","blockVersion":3,"typography":{"lineHeight":"1em","textAlign":"center"},"spacing":{"marginBottom":"17px","marginTop":"0px","paddingTop":"0px","paddingBottom":"0px"}} -->
-<h2 class="gb-headline gb-headline-8e1e133 gb-headline-text">Testimonials for Keiter Mediation Services</h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"9587b64","element":"p","blockVersion":3,"typography":{"fontSize":"24px","textAlign":"center"},"spacing":{"marginTop":"0px","marginBottom":"32px"}} -->
-<p class="gb-headline gb-headline-9587b64 gb-headline-text">We've received rave reviews from our clients.</p>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/grid {"uniqueId":"3cae5f5","columns":2,"horizontalGap":60,"verticalGap":60,"horizontalGapTablet":16,"verticalGapTablet":16,"isDynamic":true,"blockVersion":3} -->
-<!-- wp:generateblocks/container {"uniqueId":"a0d79a6","isGrid":true,"gridId":"3cae5f5","isDynamic":true,"blockVersion":4,"sizing":{"width":"50%","widthMobile":"100%","height":"100%"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"6236457","isDynamic":true,"blockVersion":4,"blockLabel":"Testimonial Wrapper","display":"block","sizing":{"width":"100%","height":"100%"},"spacing":{"paddingTop":"125px","paddingBottom":"75px","paddingLeft":"25px","paddingRight":"25px","paddingBottomMobile":"0px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"f073ea8","backgroundColor":"#f0f5ff","isDynamic":true,"blockVersion":4,"display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"flex-start","position":"relative","sizing":{"width":"100%","maxWidth":"450px","minHeight":"","widthTablet":"100%","maxWidthTablet":"100%","maxWidthMobile":"100%","height":"100%"},"typography":{"textAlign":"center"},"spacing":{"marginLeft":"auto","marginRight":"auto"},"borders":{"borderTopWidth":"1px","borderRightWidth":"1px","borderBottomWidth":"1px","borderLeftWidth":"1px","borderTopStyle":"solid","borderRightStyle":"solid","borderBottomStyle":"solid","borderLeftStyle":"solid","borderTopColor":"var(\u002d\u002dbase)","borderRightColor":"var(\u002d\u002dbase)","borderBottomColor":"var(\u002d\u002dbase)","borderLeftColor":"var(\u002d\u002dbase)","borderTopLeftRadius":"3px","borderTopRightRadius":"3px","borderBottomLeftRadius":"3px","borderBottomRightRadius":"3px","borderRightLeftRadius":"1px","borderLeftLeftRadius":"1px","borderRightRightRadius":"1px","borderLeftRightRadius":"1px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"b971e79","isDynamic":true,"blockVersion":4,"display":"flex","alignItems":"flex-start","justifyContent":"flex-start","position":"relative","overflowX":"visible","overflowY":"visible","sizing":{"width":"","height":"","maxWidth":"","maxHeight":"auto"},"spacing":{"marginTop":"-50px"},"borders":{"borderTopLeftRadius":"","borderTopRightRadius":"","borderBottomLeftRadius":"","borderBottomRightRadius":""}} -->
-<!-- wp:generateblocks/image {"uniqueId":"e2c67d10","mediaId":3785,"sizeSlug":"large","width":"100px","height":"100px","objectFit":"cover","blockVersion":2,"borders":{"borderTopLeftRadius":"100%","borderTopRightRadius":"100%","borderBottomLeftRadius":"100%","borderBottomRightRadius":"100%"},"className":"is-style-rounded"} -->
-<figure class="gb-block-image gb-block-image-e2c67d10"><img class="gb-image gb-image-e2c67d10 is-style-rounded" src="https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/pam.png" alt="Pam A M" title="Pam A M"/></figure>
-<!-- /wp:generateblocks/image -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/container {"uniqueId":"a556ef11","textColor":"#242323","linkColor":"#3c43d2","linkColorHover":"#e07415","isDynamic":true,"blockVersion":4,"flexDirection":"column","alignItems":"center","justifyContent":"space-around","sizing":{"maxWidth":""},"typography":{"textAlign":"center"},"spacing":{"paddingTop":"30px","paddingLeft":"20px","paddingRight":"20px","paddingBottom":"30px"}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"4712ce12","blockVersion":3,"typography":{"fontSize":"24px","fontWeight":"700","lineHeight":"1.25em","letterSpacing":"0.02em"},"spacing":{"marginBottom":"20px","marginTop":"0px","paddingTop":"0px","paddingBottom":"0px"}} -->
-<h2 class="gb-headline gb-headline-4712ce12 gb-headline-text">Pam A M</h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/container {"uniqueId":"0c286d13","isDynamic":true,"blockVersion":4,"blockLabel":"Star Rating","display":"flex","alignItems":"center","justifyContent":"center","columnGap":"3px","spacing":{"paddingTop":""}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"8a2fd914","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-8a2fd914"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"2b322915","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-2b322915"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"23075016","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-23075016"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"a66fd717","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-a66fd717"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"33d59c18","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-33d59c18"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"7fe12019","element":"p","blockVersion":3,"typography":{"fontSize":"1.2rem","lineHeight":"1.5em"},"spacing":{"marginTopTablet":"20px","marginBottomTablet":"0px","marginBottom":"0px","paddingBottom":"0px","paddingTop":"0px","marginTop":"20px"}} -->
-<p class="gb-headline gb-headline-7fe12019 gb-headline-text">Rob is a wonderful person to work with! He is very thorough, informative, and quick to respond to questions or concerns. I highly recommend him!</p>
-<!-- /wp:generateblocks/headline -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/container {"uniqueId":"6b0ab720","isGrid":true,"gridId":"3cae5f5","isDynamic":true,"blockVersion":4,"sizing":{"width":"50%","widthMobile":"100%","height":"100%"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"ea0ff921","isDynamic":true,"blockVersion":4,"blockLabel":"Testimonial Wrapper","display":"block","sizing":{"width":"100%","height":"100%"},"spacing":{"paddingTop":"125px","paddingBottom":"75px","paddingLeft":"25px","paddingRight":"25px","paddingBottomMobile":"0px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"e67d5a22","backgroundColor":"#f0f5ff","isDynamic":true,"blockVersion":4,"display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"flex-start","position":"relative","sizing":{"width":"100%","maxWidth":"450px","minHeight":"","widthTablet":"100%","maxWidthTablet":"100%","maxWidthMobile":"100%","height":"100%"},"typography":{"textAlign":"center"},"spacing":{"marginLeft":"auto","marginRight":"auto"},"borders":{"borderTopWidth":"1px","borderRightWidth":"1px","borderBottomWidth":"1px","borderLeftWidth":"1px","borderTopStyle":"solid","borderRightStyle":"solid","borderBottomStyle":"solid","borderLeftStyle":"solid","borderTopColor":"var(\u002d\u002dbase)","borderRightColor":"var(\u002d\u002dbase)","borderBottomColor":"var(\u002d\u002dbase)","borderLeftColor":"var(\u002d\u002dbase)","borderTopLeftRadius":"3px","borderTopRightRadius":"3px","borderBottomLeftRadius":"3px","borderBottomRightRadius":"3px","borderRightLeftRadius":"1px","borderLeftLeftRadius":"1px","borderRightRightRadius":"1px","borderLeftRightRadius":"1px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"5e0ee723","isDynamic":true,"blockVersion":4,"display":"flex","alignItems":"flex-start","justifyContent":"flex-start","position":"relative","overflowX":"visible","overflowY":"visible","sizing":{"width":"","height":"","maxWidth":"","maxHeight":"auto"},"spacing":{"marginTop":"-50px"},"borders":{"borderTopLeftRadius":"","borderTopRightRadius":"","borderBottomLeftRadius":"","borderBottomRightRadius":""}} -->
-<!-- wp:generateblocks/image {"uniqueId":"da734924","mediaId":3786,"sizeSlug":"large","width":"100px","height":"100px","objectFit":"cover","blockVersion":2,"borders":{"borderTopLeftRadius":"100%","borderTopRightRadius":"100%","borderBottomLeftRadius":"100%","borderBottomRightRadius":"100%"},"className":"is-style-rounded"} -->
-<figure class="gb-block-image gb-block-image-da734924"><img class="gb-image gb-image-da734924 is-style-rounded" src="https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/scott.png" alt="Scott Beyea" title="Scott Beyea"/></figure>
-<!-- /wp:generateblocks/image -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/container {"uniqueId":"93639325","textColor":"#242323","linkColor":"#3c43d2","linkColorHover":"#e07415","isDynamic":true,"blockVersion":4,"flexDirection":"column","alignItems":"center","justifyContent":"space-around","sizing":{"maxWidth":""},"typography":{"textAlign":"center"},"spacing":{"paddingTop":"30px","paddingLeft":"20px","paddingRight":"20px","paddingBottom":"30px"}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"650e8126","blockVersion":3,"typography":{"fontSize":"24px","fontWeight":"700","lineHeight":"1.25em","letterSpacing":"0.02em"},"spacing":{"marginBottom":"20px","marginTop":"0px","paddingTop":"0px","paddingBottom":"0px"}} -->
-<h2 class="gb-headline gb-headline-650e8126 gb-headline-text">Scott Beyea</h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/container {"uniqueId":"2c237727","isDynamic":true,"blockVersion":4,"blockLabel":"Star Rating","display":"flex","alignItems":"center","justifyContent":"center","columnGap":"3px","spacing":{"paddingTop":""}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"da96a428","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-da96a428"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"53ba0a29","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-53ba0a29"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"3fa62430","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-3fa62430"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"ff22ed31","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-ff22ed31"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"9b271b32","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-9b271b32"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"ac120033","element":"p","blockVersion":3,"typography":{"fontSize":"1.2rem","lineHeight":"1.5em"},"spacing":{"marginTopTablet":"20px","marginBottomTablet":"0px","marginBottom":"0px","paddingBottom":"0px","paddingTop":"0px","marginTop":"20px"}} -->
-<p class="gb-headline gb-headline-ac120033 gb-headline-text">Rob Keiter is an excellent mediator that is very knowledgeable. I am a licensed attorney who took his course and have nothing but positives to say about this man and his dedication to ADR.</p>
-<!-- /wp:generateblocks/headline -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/grid -->
-
-<!-- wp:generateblocks/container {"uniqueId":"51990434","isDynamic":true,"blockVersion":4,"display":"flex","alignItems":"center","justifyContent":"center","spacing":{"marginTop":"64px"}} -->
-<!-- wp:generateblocks/button {"uniqueId":"7ec71035","hasUrl":true,"blockVersion":4,"display":"inline-flex","alignItems":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"ButtonServices"} -->
-<a class="gb-button gb-button-7ec71035 ButtonServices" href="https://keiter.local/consultation/"><span class="gb-icon"><svg viewBox="0 0 640 512" width="20" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M128 32C92.7 32 64 60.7 64 96V352h64V96H512V352h64V96c0-35.3-28.7-64-64-64H128zM19.2 384C8.6 384 0 392.6 0 403.2C0 445.6 34.4 480 76.8 480H563.2c42.4 0 76.8-34.4 76.8-76.8c0-10.6-8.6-19.2-19.2-19.2H19.2z"></path></svg></span><span class="gb-button-text">Schedule a Consultation Online</span></a>
-<!-- /wp:generateblocks/button -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->]]></content:encoded>
-		<excerpt:encoded><![CDATA[]]></excerpt:encoded>
-		<wp:post_id>7</wp:post_id>
-		<wp:post_date><![CDATA[2024-04-18 11:50:31]]></wp:post_date>
-		<wp:post_date_gmt><![CDATA[2024-04-18 11:50:31]]></wp:post_date_gmt>
-		<wp:post_modified><![CDATA[2024-04-18 11:54:16]]></wp:post_modified>
-		<wp:post_modified_gmt><![CDATA[2024-04-18 11:54:16]]></wp:post_modified_gmt>
-		<wp:comment_status><![CDATA[closed]]></wp:comment_status>
-		<wp:ping_status><![CDATA[closed]]></wp:ping_status>
-		<wp:post_name><![CDATA[testimonials-for-services]]></wp:post_name>
-		<wp:status><![CDATA[publish]]></wp:status>
-		<wp:post_parent>0</wp:post_parent>
-		<wp:menu_order>0</wp:menu_order>
-		<wp:post_type><![CDATA[wp_block]]></wp:post_type>
-		<wp:post_password><![CDATA[]]></wp:post_password>
-		<wp:is_sticky>0</wp:is_sticky>
-										<category domain="wp_pattern_category" nicename="testimonials"><![CDATA[Testimonials]]></category>
-						<wp:postmeta>
-		<wp:meta_key><![CDATA[_generateblocks_dynamic_css_version]]></wp:meta_key>
-		<wp:meta_value><![CDATA[1.8.3]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[footnotes]]></wp:meta_key>
-		<wp:meta_value><![CDATA[]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[_thumbnail_id]]></wp:meta_key>
-		<wp:meta_value><![CDATA[13]]></wp:meta_value>
-		</wp:postmeta>
-							</item>
-					<item>
-		<title><![CDATA[dlx-000442@2x]]></title>
-		<link>https://patternwrangler.local/?attachment_id=13</link>
-		<pubDate>Thu, 18 Apr 2024 11:52:30 +0000</pubDate>
-		<dc:creator><![CDATA[ronalfy]]></dc:creator>
-		<guid isPermaLink="false">https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/dlx-000442@2x.png</guid>
-		<description></description>
-		<content:encoded><![CDATA[]]></content:encoded>
-		<excerpt:encoded><![CDATA[]]></excerpt:encoded>
-		<wp:post_id>13</wp:post_id>
-		<wp:post_date><![CDATA[2024-04-18 11:52:30]]></wp:post_date>
-		<wp:post_date_gmt><![CDATA[2024-04-18 11:52:30]]></wp:post_date_gmt>
-		<wp:post_modified><![CDATA[2024-04-18 11:52:30]]></wp:post_modified>
-		<wp:post_modified_gmt><![CDATA[2024-04-18 11:52:30]]></wp:post_modified_gmt>
-		<wp:comment_status><![CDATA[open]]></wp:comment_status>
-		<wp:ping_status><![CDATA[closed]]></wp:ping_status>
-		<wp:post_name><![CDATA[dlx-0004422x]]></wp:post_name>
-		<wp:status><![CDATA[inherit]]></wp:status>
-		<wp:post_parent>7</wp:post_parent>
-		<wp:menu_order>0</wp:menu_order>
-		<wp:post_type><![CDATA[attachment]]></wp:post_type>
-		<wp:post_password><![CDATA[]]></wp:post_password>
-		<wp:is_sticky>0</wp:is_sticky>
-						<wp:attachment_url><![CDATA[https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/dlx-000442@2x.png]]></wp:attachment_url>
-											<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
-		<wp:meta_value><![CDATA[2024/04/dlx-000442@2x.png]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_attachment_metadata]]></wp:meta_key>
-		<wp:meta_value><![CDATA[a:6:{s:5:"width";i:1586;s:6:"height";i:1024;s:4:"file";s:25:"2024/04/dlx-000442@2x.png";s:8:"filesize";i:289763;s:5:"sizes";a:5:{s:6:"medium";a:5:{s:4:"file";s:25:"dlx-000442@2x-300x194.png";s:5:"width";i:300;s:6:"height";i:194;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:30132;}s:5:"large";a:5:{s:4:"file";s:26:"dlx-000442@2x-1024x661.png";s:5:"width";i:1024;s:6:"height";i:661;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:190654;}s:9:"thumbnail";a:5:{s:4:"file";s:25:"dlx-000442@2x-150x150.png";s:5:"width";i:150;s:6:"height";i:150;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:14541;}s:12:"medium_large";a:5:{s:4:"file";s:25:"dlx-000442@2x-768x496.png";s:5:"width";i:768;s:6:"height";i:496;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:125530;}s:9:"1536x1536";a:5:{s:4:"file";s:26:"dlx-000442@2x-1536x992.png";s:5:"width";i:1536;s:6:"height";i:992;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:335903;}}s:10:"image_meta";a:12:{s:8:"aperture";s:1:"0";s:6:"credit";s:0:"";s:6:"camera";s:0:"";s:7:"caption";s:0:"";s:17:"created_timestamp";s:1:"0";s:9:"copyright";s:0:"";s:12:"focal_length";s:1:"0";s:3:"iso";s:1:"0";s:13:"shutter_speed";s:1:"0";s:5:"title";s:0:"";s:11:"orientation";s:1:"0";s:8:"keywords";a:0:{}}}]]></wp:meta_value>
-		</wp:postmeta>
-							</item>
-					<item>
-		<title><![CDATA[Training Testimonials]]></title>
-		<link>https://patternwrangler.local/?wp_block=training-testimonials</link>
-		<pubDate>Thu, 18 Apr 2024 11:54:02 +0000</pubDate>
-		<dc:creator><![CDATA[ronalfy]]></dc:creator>
-		<guid isPermaLink="false">https://patternwrangler.local/?p=14</guid>
-		<description></description>
-		<content:encoded><![CDATA[<!-- wp:generateblocks/container {"uniqueId":"d6b24774","backgroundColor":"var(\u002d\u002dtheme-palette-color-8, #ffffff)","bgImage":{"id":3326,"image":{"url":"https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/white-gradient-bg-1.webp","height":900,"width":1600,"orientation":"landscape"}},"bgOptions":{"selector":"pseudo-element","opacity":0.15,"overlay":false,"position":"center center","size":"cover","repeat":"no-repeat","attachment":""},"align":"full","isDynamic":true,"blockVersion":4,"blockLabel":"Homepage Testimonials","position":"relative","overflowX":"hidden","overflowY":"hidden","order":1,"spacing":{"paddingTop":"72px","paddingBottom":"72px","marginBottom":"0px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"41ddbacc","align":"full","isDynamic":true,"blockVersion":4,"order":2,"spacing":{"marginBottom":"0px"}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"c167ec8a","blockVersion":3,"typography":{"lineHeight":"1em","textAlign":"center"},"spacing":{"marginBottom":"17px","marginTop":"0px","paddingTop":"0px","paddingBottom":"0px"}} -->
-<h2 class="gb-headline gb-headline-c167ec8a gb-headline-text">Testimonials for Keiter Mediation Training</h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"739a71d9","element":"p","blockVersion":3,"typography":{"fontSize":"24px","textAlign":"center"},"spacing":{"marginTop":"0px","marginBottom":"32px"}} -->
-<p class="gb-headline gb-headline-739a71d9 gb-headline-text">We've received rave reviews from our students.</p>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/grid {"uniqueId":"528ed9a2","columns":2,"horizontalGap":60,"verticalGap":60,"horizontalGapTablet":16,"verticalGapTablet":16,"isDynamic":true,"blockVersion":3} -->
-<!-- wp:generateblocks/container {"uniqueId":"a3c7fd41","isGrid":true,"gridId":"528ed9a2","isDynamic":true,"blockVersion":4,"sizing":{"width":"50%","widthMobile":"100%","height":"100%"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"464cc112","isDynamic":true,"blockVersion":4,"blockLabel":"Testimonial Wrapper","display":"block","sizing":{"width":"100%","height":"100%"},"spacing":{"paddingTop":"125px","paddingBottom":"75px","paddingLeft":"25px","paddingRight":"25px","paddingBottomMobile":"0px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"0492f09a","backgroundColor":"#f0f5ff","isDynamic":true,"blockVersion":4,"display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"flex-start","position":"relative","sizing":{"width":"100%","maxWidth":"450px","minHeight":"","widthTablet":"100%","maxWidthTablet":"100%","maxWidthMobile":"100%","height":"100%"},"typography":{"textAlign":"center"},"spacing":{"marginLeft":"auto","marginRight":"auto"},"borders":{"borderTopWidth":"1px","borderRightWidth":"1px","borderBottomWidth":"1px","borderLeftWidth":"1px","borderTopStyle":"solid","borderRightStyle":"solid","borderBottomStyle":"solid","borderLeftStyle":"solid","borderTopColor":"var(\u002d\u002dbase)","borderRightColor":"var(\u002d\u002dbase)","borderBottomColor":"var(\u002d\u002dbase)","borderLeftColor":"var(\u002d\u002dbase)","borderTopLeftRadius":"3px","borderTopRightRadius":"3px","borderBottomLeftRadius":"3px","borderBottomRightRadius":"3px","borderRightLeftRadius":"1px","borderLeftLeftRadius":"1px","borderRightRightRadius":"1px","borderLeftRightRadius":"1px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"50b7b45d","isDynamic":true,"blockVersion":4,"display":"flex","alignItems":"flex-start","justifyContent":"flex-start","position":"relative","overflowX":"visible","overflowY":"visible","sizing":{"width":"","height":"","maxWidth":"","maxHeight":"auto"},"spacing":{"marginTop":"-50px"},"borders":{"borderTopLeftRadius":"","borderTopRightRadius":"","borderBottomLeftRadius":"","borderBottomRightRadius":""}} -->
-<!-- wp:generateblocks/image {"uniqueId":"602af836","mediaId":3164,"sizeSlug":"large","width":"100px","height":"100px","objectFit":"cover","blockVersion":2,"borders":{"borderTopLeftRadius":"100%","borderTopRightRadius":"100%","borderBottomLeftRadius":"100%","borderBottomRightRadius":"100%"},"className":"is-style-rounded"} -->
-<figure class="gb-block-image gb-block-image-602af836"><img class="gb-image gb-image-602af836 is-style-rounded" src="https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/tia.png" alt="Tia Ebarb Matt" title="tia"/></figure>
-<!-- /wp:generateblocks/image -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/container {"uniqueId":"afed8ca5","textColor":"#242323","linkColor":"#3c43d2","linkColorHover":"#e07415","isDynamic":true,"blockVersion":4,"flexDirection":"column","alignItems":"center","justifyContent":"space-around","sizing":{"maxWidth":""},"typography":{"textAlign":"center"},"spacing":{"paddingTop":"30px","paddingLeft":"20px","paddingRight":"20px","paddingBottom":"30px"}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"46af76ec","blockVersion":3,"typography":{"fontSize":"24px","fontWeight":"700","lineHeight":"1.25em","letterSpacing":"0.02em"},"spacing":{"marginBottom":"20px","marginTop":"0px","paddingTop":"0px","paddingBottom":"0px"}} -->
-<h2 class="gb-headline gb-headline-46af76ec gb-headline-text">Tia Ebarb Matt</h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/container {"uniqueId":"6c1a62b5","isDynamic":true,"blockVersion":4,"blockLabel":"Star Rating","display":"flex","alignItems":"center","justifyContent":"center","columnGap":"3px","spacing":{"paddingTop":""}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"2467d710","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-2467d710"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"68a57608","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-68a57608"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"4c73c591","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-4c73c591"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"2f524c66","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-2f524c66"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"14acb1a7","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-14acb1a7"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"053e7b88","element":"p","blockVersion":3,"typography":{"fontSize":"1.2rem","lineHeight":"1.5em"},"spacing":{"marginTopTablet":"20px","marginBottomTablet":"0px","marginBottom":"0px","paddingBottom":"0px","paddingTop":"0px","marginTop":"20px"}} -->
-<p class="gb-headline gb-headline-053e7b88 gb-headline-text">Excellent and thoughtful mediation training. A very well-structured course. I feel more confident after learning from Rob!</p>
-<!-- /wp:generateblocks/headline -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/container {"uniqueId":"4405eef8","isGrid":true,"gridId":"528ed9a2","isDynamic":true,"blockVersion":4,"sizing":{"width":"50%","widthMobile":"100%","height":"100%"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"6dc56458","isDynamic":true,"blockVersion":4,"blockLabel":"Testimonial Wrapper","display":"block","sizing":{"width":"100%","height":"100%"},"spacing":{"paddingTop":"125px","paddingBottom":"75px","paddingLeft":"25px","paddingRight":"25px","paddingBottomMobile":"0px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"9c73a914","backgroundColor":"#f0f5ff","isDynamic":true,"blockVersion":4,"display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"flex-start","position":"relative","sizing":{"width":"100%","maxWidth":"450px","minHeight":"","widthTablet":"100%","maxWidthTablet":"100%","maxWidthMobile":"100%","height":"100%"},"typography":{"textAlign":"center"},"spacing":{"marginLeft":"auto","marginRight":"auto"},"borders":{"borderTopWidth":"1px","borderRightWidth":"1px","borderBottomWidth":"1px","borderLeftWidth":"1px","borderTopStyle":"solid","borderRightStyle":"solid","borderBottomStyle":"solid","borderLeftStyle":"solid","borderTopColor":"var(\u002d\u002dbase)","borderRightColor":"var(\u002d\u002dbase)","borderBottomColor":"var(\u002d\u002dbase)","borderLeftColor":"var(\u002d\u002dbase)","borderTopLeftRadius":"3px","borderTopRightRadius":"3px","borderBottomLeftRadius":"3px","borderBottomRightRadius":"3px","borderRightLeftRadius":"1px","borderLeftLeftRadius":"1px","borderRightRightRadius":"1px","borderLeftRightRadius":"1px"}} -->
-<!-- wp:generateblocks/container {"uniqueId":"562f5722","isDynamic":true,"blockVersion":4,"display":"flex","alignItems":"flex-start","justifyContent":"flex-start","position":"relative","overflowX":"visible","overflowY":"visible","sizing":{"width":"","height":"","maxWidth":"","maxHeight":"auto"},"spacing":{"marginTop":"-50px"},"borders":{"borderTopLeftRadius":"","borderTopRightRadius":"","borderBottomLeftRadius":"","borderBottomRightRadius":""}} -->
-<!-- wp:generateblocks/image {"uniqueId":"638f0fe5","mediaId":3168,"sizeSlug":"large","width":"100px","height":"100px","objectFit":"cover","blockVersion":2,"borders":{"borderTopLeftRadius":"100%","borderTopRightRadius":"100%","borderBottomLeftRadius":"100%","borderBottomRightRadius":"100%"},"className":"is-style-rounded"} -->
-<figure class="gb-block-image gb-block-image-638f0fe5"><img class="gb-image gb-image-638f0fe5 is-style-rounded" src="https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/christina.png" alt="Christina Billington" title="christina"/></figure>
-<!-- /wp:generateblocks/image -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/container {"uniqueId":"fa8df3d8","textColor":"#242323","linkColor":"#3c43d2","linkColorHover":"#e07415","isDynamic":true,"blockVersion":4,"flexDirection":"column","alignItems":"center","justifyContent":"space-around","sizing":{"maxWidth":""},"typography":{"textAlign":"center"},"spacing":{"paddingTop":"30px","paddingLeft":"20px","paddingRight":"20px","paddingBottom":"30px"}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"f6124f39","blockVersion":3,"typography":{"fontSize":"24px","fontWeight":"700","lineHeight":"1.25em","letterSpacing":"0.02em"},"spacing":{"marginBottom":"20px","marginTop":"0px","paddingTop":"0px","paddingBottom":"0px"}} -->
-<h2 class="gb-headline gb-headline-f6124f39 gb-headline-text">Christina Billington</h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/container {"uniqueId":"935aab83","isDynamic":true,"blockVersion":4,"blockLabel":"Star Rating","display":"flex","alignItems":"center","justifyContent":"center","columnGap":"3px","spacing":{"paddingTop":""}} -->
-<!-- wp:generateblocks/headline {"uniqueId":"38eff060","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-38eff060"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"f8bdecec","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-f8bdecec"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"3d4e8275","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-3d4e8275"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"afb4639e","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-afb4639e"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"4065bf5b","blockVersion":3,"display":"flex","alignItems":"center","columnGap":"0.5em","spacing":{"marginBottom":"0px","marginTop":"0px"},"hasIcon":true,"iconColor":"var(\u002d\u002dtheme-palette-color-2, #507DBC)","removeText":true,"iconStyles":{"height":"24px","width":"24px"}} -->
-<h2 class="gb-headline gb-headline-4065bf5b"><span class="gb-icon"><svg xml:space="preserve" style="enable-background:new 0 0 49.94 49.94;" viewBox="0 0 49.94 49.94" y="0px" x="0px" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" id="Capa_1" version="1.1"> <path d="M48.856,22.73c0.983-0.958,1.33-2.364,0.906-3.671c-0.425-1.307-1.532-2.24-2.892-2.438l-12.092-1.757 	c-0.515-0.075-0.96-0.398-1.19-0.865L28.182,3.043c-0.607-1.231-1.839-1.996-3.212-1.996c-1.372,0-2.604,0.765-3.211,1.996 	L16.352,14c-0.23,0.467-0.676,0.79-1.191,0.865L3.069,16.622c-1.359,0.197-2.467,1.131-2.892,2.438 	c-0.424,1.307-0.077,2.713,0.906,3.671l8.749,8.528c0.373,0.364,0.544,0.888,0.456,1.4L8.224,44.701 	c-0.183,1.06,0.095,2.091,0.781,2.904c1.066,1.267,2.927,1.653,4.415,0.871l10.814-5.686c0.452-0.237,1.021-0.235,1.472,0 	l10.815,5.686c0.526,0.277,1.087,0.417,1.666,0.417c1.057,0,2.059-0.47,2.748-1.288c0.687-0.813,0.964-1.846,0.781-2.904 	l-2.065-12.042c-0.088-0.513,0.083-1.036,0.456-1.4L48.856,22.73z"></path> </svg></span></h2>
-<!-- /wp:generateblocks/headline -->
-<!-- /wp:generateblocks/container -->
-
-<!-- wp:generateblocks/headline {"uniqueId":"1c75435a","element":"p","blockVersion":3,"typography":{"fontSize":"1.2rem","lineHeight":"1.5em"},"spacing":{"marginTopTablet":"20px","marginBottomTablet":"0px","marginBottom":"0px","paddingBottom":"0px","paddingTop":"0px","marginTop":"20px"}} -->
-<p class="gb-headline gb-headline-1c75435a gb-headline-text">I have had several different types of mediation training courses over the years. Of all of them, I think Rob Keiter's family and divorce mediation training was the best!</p>
-<!-- /wp:generateblocks/headline -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/grid -->
-
-<!-- wp:generateblocks/container {"uniqueId":"3772be77","isDynamic":true,"blockVersion":4,"display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center","spacing":{"marginTop":"64px"}} -->
-<!-- wp:generateblocks/button {"uniqueId":"d9f966d1","hasUrl":true,"blockVersion":4,"display":"inline-flex","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"className":"gb-button-training"} -->
-<a class="gb-button gb-button-d9f966d1 gb-button-text gb-button-training" href="https://keiter.local/mediation-training/register-for-mediation-training/">Register for Online Training Today</a>
-<!-- /wp:generateblocks/button -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->
-<!-- /wp:generateblocks/container -->]]></content:encoded>
-		<excerpt:encoded><![CDATA[]]></excerpt:encoded>
-		<wp:post_id>14</wp:post_id>
-		<wp:post_date><![CDATA[2024-04-18 11:54:02]]></wp:post_date>
-		<wp:post_date_gmt><![CDATA[2024-04-18 11:54:02]]></wp:post_date_gmt>
-		<wp:post_modified><![CDATA[2024-04-18 11:54:02]]></wp:post_modified>
-		<wp:post_modified_gmt><![CDATA[2024-04-18 11:54:02]]></wp:post_modified_gmt>
-		<wp:comment_status><![CDATA[closed]]></wp:comment_status>
-		<wp:ping_status><![CDATA[closed]]></wp:ping_status>
-		<wp:post_name><![CDATA[training-testimonials]]></wp:post_name>
-		<wp:status><![CDATA[publish]]></wp:status>
-		<wp:post_parent>0</wp:post_parent>
-		<wp:menu_order>0</wp:menu_order>
-		<wp:post_type><![CDATA[wp_block]]></wp:post_type>
-		<wp:post_password><![CDATA[]]></wp:post_password>
-		<wp:is_sticky>0</wp:is_sticky>
-										<category domain="wp_pattern_category" nicename="testimonials"><![CDATA[Testimonials]]></category>
-						<wp:postmeta>
-		<wp:meta_key><![CDATA[_generateblocks_dynamic_css_version]]></wp:meta_key>
-		<wp:meta_value><![CDATA[1.8.3]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[_thumbnail_id]]></wp:meta_key>
-		<wp:meta_value><![CDATA[18]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[footnotes]]></wp:meta_key>
-		<wp:meta_value><![CDATA[]]></wp:meta_value>
-		</wp:postmeta>
-							</item>
-					<item>
-		<title><![CDATA[dlx-000443@2x]]></title>
-		<link>https://patternwrangler.local/?attachment_id=18</link>
-		<pubDate>Thu, 18 Apr 2024 11:53:49 +0000</pubDate>
-		<dc:creator><![CDATA[ronalfy]]></dc:creator>
-		<guid isPermaLink="false">https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/dlx-000443@2x.png</guid>
-		<description></description>
-		<content:encoded><![CDATA[]]></content:encoded>
-		<excerpt:encoded><![CDATA[]]></excerpt:encoded>
-		<wp:post_id>18</wp:post_id>
-		<wp:post_date><![CDATA[2024-04-18 11:53:49]]></wp:post_date>
-		<wp:post_date_gmt><![CDATA[2024-04-18 11:53:49]]></wp:post_date_gmt>
-		<wp:post_modified><![CDATA[2024-04-18 11:53:49]]></wp:post_modified>
-		<wp:post_modified_gmt><![CDATA[2024-04-18 11:53:49]]></wp:post_modified_gmt>
-		<wp:comment_status><![CDATA[open]]></wp:comment_status>
-		<wp:ping_status><![CDATA[closed]]></wp:ping_status>
-		<wp:post_name><![CDATA[dlx-0004432x]]></wp:post_name>
-		<wp:status><![CDATA[inherit]]></wp:status>
-		<wp:post_parent>14</wp:post_parent>
-		<wp:menu_order>0</wp:menu_order>
-		<wp:post_type><![CDATA[attachment]]></wp:post_type>
-		<wp:post_password><![CDATA[]]></wp:post_password>
-		<wp:is_sticky>0</wp:is_sticky>
-						<wp:attachment_url><![CDATA[https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/dlx-000443@2x.png]]></wp:attachment_url>
-											<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
-		<wp:meta_value><![CDATA[2024/04/dlx-000443@2x.png]]></wp:meta_value>
-		</wp:postmeta>
-							<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_attachment_metadata]]></wp:meta_key>
-		<wp:meta_value><![CDATA[a:6:{s:5:"width";i:1570;s:6:"height";i:958;s:4:"file";s:25:"2024/04/dlx-000443@2x.png";s:8:"filesize";i:268825;s:5:"sizes";a:5:{s:6:"medium";a:5:{s:4:"file";s:25:"dlx-000443@2x-300x183.png";s:5:"width";i:300;s:6:"height";i:183;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:28344;}s:5:"large";a:5:{s:4:"file";s:26:"dlx-000443@2x-1024x625.png";s:5:"width";i:1024;s:6:"height";i:625;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:174965;}s:9:"thumbnail";a:5:{s:4:"file";s:25:"dlx-000443@2x-150x150.png";s:5:"width";i:150;s:6:"height";i:150;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:12814;}s:12:"medium_large";a:5:{s:4:"file";s:25:"dlx-000443@2x-768x469.png";s:5:"width";i:768;s:6:"height";i:469;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:116456;}s:9:"1536x1536";a:5:{s:4:"file";s:26:"dlx-000443@2x-1536x937.png";s:5:"width";i:1536;s:6:"height";i:937;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:310386;}}s:10:"image_meta";a:12:{s:8:"aperture";s:1:"0";s:6:"credit";s:0:"";s:6:"camera";s:0:"";s:7:"caption";s:0:"";s:17:"created_timestamp";s:1:"0";s:9:"copyright";s:0:"";s:12:"focal_length";s:1:"0";s:3:"iso";s:1:"0";s:13:"shutter_speed";s:1:"0";s:5:"title";s:0:"";s:11:"orientation";s:1:"0";s:8:"keywords";a:0:{}}}]]></wp:meta_value>
-		</wp:postmeta>
-							</item>
-					<item>
 		<title><![CDATA[Services Cards]]></title>
 		<link>https://patternwrangler.local/?wp_block=services-cards</link>
 		<pubDate>Thu, 18 Apr 2024 11:56:20 +0000</pubDate>
 		<dc:creator><![CDATA[ronalfy]]></dc:creator>
 		<guid isPermaLink="false">https://patternwrangler.local/?p=21</guid>
 		<description></description>
-		<content:encoded><![CDATA[<!-- wp:generateblocks/container {"uniqueId":"6b515c1","backgroundColor":"#f0f5ff","bgImage":{"id":3337,"image":{"url":"https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/tall-white-gradient-scaled-1.webp","height":2560,"width":1747,"orientation":"portrait"}},"bgOptions":{"selector":"pseudo-element","opacity":0.25,"overlay":false,"position":"center center","size":"cover","repeat":"no-repeat","attachment":""},"align":"full","isDynamic":true,"blockVersion":4,"blockLabel":"Mediation Services Cards and CTA","position":"relative","overflowX":"hidden","overflowY":"hidden","zindex":1,"spacing":{"paddingTop":"72px","paddingBottom":"72px"}} -->
+		<content:encoded><![CDATA[<!-- wp:generateblocks/container {"uniqueId":"6b515c1","backgroundColor":"#f0f5ff","bgImage":{"id":3337,"image":{"url":"","height":2560,"width":1747,"orientation":"portrait"}},"bgOptions":{"selector":"pseudo-element","opacity":0.25,"overlay":false,"position":"center center","size":"cover","repeat":"no-repeat","attachment":""},"align":"full","isDynamic":true,"blockVersion":4,"blockLabel":"Mediation Services Cards and CTA","position":"relative","overflowX":"hidden","overflowY":"hidden","zindex":1,"spacing":{"paddingTop":"72px","paddingBottom":"72px"}} -->
 <!-- wp:generateblocks/container {"uniqueId":"9ddc672","isDynamic":true,"blockVersion":4,"position":"relative","zindex":2,"order":2} -->
 <!-- wp:generateblocks/headline {"uniqueId":"e08c5e3","blockVersion":3,"typography":{"textAlign":"center"},"spacing":{"marginTop":"0px","marginBottom":"12px","paddingBottom":"0px","paddingTop":"0px"}} -->
 <h2 class="gb-headline gb-headline-e08c5e3 gb-headline-text">Available Mediation Services</h2>
@@ -419,7 +67,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"d298a1d0","isDynamic":true,"blockVersion":4} -->
 <!-- wp:generateblocks/headline {"uniqueId":"3bfc9e87","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-3bfc9e87 gb-headline-text"><a href="https://keiter.local/oklahoma-mediation-services/oklahoma-divorce-mediation-frequently-asked-questions/" data-type="page" data-id="152">Divorce Mediation</a></h3>
+<h3 class="gb-headline gb-headline-3bfc9e87 gb-headline-text"><a href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-divorce-mediation-frequently-asked-questions/" data-type="page" data-id="152">Divorce Mediation</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"84cdf6b4","element":"p","blockVersion":3,"flexGrow":1,"order":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -427,7 +75,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"31cb715a","hasUrl":true,"blockVersion":4,"display":"inline-flex","displayTablet":"flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"ButtonServices gb-button-services"} -->
-<a class="gb-button gb-button-31cb715a ButtonServices gb-button-services" href="https://keiter.local/oklahoma-mediation-services/oklahoma-divorce-mediation-frequently-asked-questions/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
+<a class="gb-button gb-button-31cb715a ButtonServices gb-button-services" href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-divorce-mediation-frequently-asked-questions/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -439,7 +87,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"1856ddb0","isDynamic":true,"blockVersion":4} -->
 <!-- wp:generateblocks/headline {"uniqueId":"470ab784","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-470ab784 gb-headline-text"><a href="https://keiter.local/oklahoma-mediation-services/oklahoma-post-divorce-mediation/" data-type="page" data-id="141">Post-Divorce Mediation</a></h3>
+<h3 class="gb-headline gb-headline-470ab784 gb-headline-text"><a href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-post-divorce-mediation/" data-type="page" data-id="141">Post-Divorce Mediation</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"387d7267","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -447,7 +95,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"e5620af8","hasUrl":true,"blockVersion":4,"display":"inline-flex","displayTablet":"flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"ButtonServices gb-button-services"} -->
-<a class="gb-button gb-button-e5620af8 ButtonServices gb-button-services" href="https://keiter.local/oklahoma-mediation-services/oklahoma-post-divorce-mediation/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
+<a class="gb-button gb-button-e5620af8 ButtonServices gb-button-services" href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-post-divorce-mediation/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -459,7 +107,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"9882adcc","isDynamic":true,"blockVersion":4} -->
 <!-- wp:generateblocks/headline {"uniqueId":"ab4b61a4","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-ab4b61a4 gb-headline-text"><a href="https://keiter.local/oklahoma-mediation-services/oklahoma-paternity-mediation/" data-type="page" data-id="582">Custody Mediation</a></h3>
+<h3 class="gb-headline gb-headline-ab4b61a4 gb-headline-text"><a href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-paternity-mediation/" data-type="page" data-id="582">Custody Mediation</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"3fbf7146","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -467,7 +115,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"1bfbdeff","hasUrl":true,"blockVersion":4,"display":"inline-flex","displayTablet":"flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"ButtonServices gb-button-services"} -->
-<a class="gb-button gb-button-1bfbdeff ButtonServices gb-button-services" href="https://keiter.local/oklahoma-mediation-services/oklahoma-paternity-mediation/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
+<a class="gb-button gb-button-1bfbdeff ButtonServices gb-button-services" href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-paternity-mediation/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -479,7 +127,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"370a3e9","isDynamic":true,"blockVersion":4} -->
 <!-- wp:generateblocks/headline {"uniqueId":"4ba6e510","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-4ba6e510 gb-headline-text"><a href="https://keiter.local/oklahoma-mediation-services/oklahoma-couples-mediation/" data-type="page" data-id="599">Couples Mediation</a></h3>
+<h3 class="gb-headline gb-headline-4ba6e510 gb-headline-text"><a href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-couples-mediation/" data-type="page" data-id="599">Couples Mediation</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"de0b7311","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -487,7 +135,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"ee2dc712","hasUrl":true,"blockVersion":4,"display":"inline-flex","displayTablet":"flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"ButtonServices gb-button-services"} -->
-<a class="gb-button gb-button-ee2dc712 ButtonServices gb-button-services" href="https://keiter.local/oklahoma-mediation-services/oklahoma-couples-mediation/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
+<a class="gb-button gb-button-ee2dc712 ButtonServices gb-button-services" href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-couples-mediation/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -499,7 +147,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"d79c66ec","isDynamic":true,"blockVersion":4} -->
 <!-- wp:generateblocks/headline {"uniqueId":"ced80a54","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-ced80a54 gb-headline-text"><a href="https://keiter.local/oklahoma-mediation-services/oklahoma-family-mediation/">Family Mediation</a></h3>
+<h3 class="gb-headline gb-headline-ced80a54 gb-headline-text"><a href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-family-mediation/">Family Mediation</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"f69ddeab","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -507,7 +155,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"6f58d31f","hasUrl":true,"blockVersion":4,"display":"inline-flex","displayTablet":"flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"ButtonServices gb-button-services"} -->
-<a class="gb-button gb-button-6f58d31f ButtonServices gb-button-services" href="https://keiter.local/oklahoma-mediation-services/oklahoma-family-mediation/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
+<a class="gb-button gb-button-6f58d31f ButtonServices gb-button-services" href="https://okcmediator.com/oklahoma-mediation-services/oklahoma-family-mediation/"><span class="gb-icon"><svg viewBox="0 0 512 512" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M96 64c0-17.7 14.3-32 32-32h32c17.7 0 32 14.3 32 32V80H96V64zM59.6 158c4.8-26.6 28-46 55.1-46H200c13.3 0 24 10.7 24 24v24h64V136c0-13.3 10.7-24 24-24h85.3c27.1 0 50.3 19.4 55.1 46l5 27.3c3.6 19.9 10.8 39 21.2 56.4l2.6 4.4c20.1 33.6 30.8 72 30.8 111.1V424c0 30.9-25.1 56-56 56H344c-30.9 0-56-25.1-56-56V288H224V424c0 30.9-25.1 56-56 56H56c-30.9 0-56-25.1-56-56V357.2C0 318 10.6 279.6 30.8 246l2.6-4.4c10.4-17.4 17.6-36.5 21.2-56.4l5-27.3zm55.1 2c-3.9 0-7.2 2.8-7.9 6.6l-5 27.3C97.2 219.5 88 244 74.6 266.4l-2.6 4.4C56.3 296.9 48 326.7 48 357.2V424c0 4.4 3.6 8 8 8H168c4.4 0 8-3.6 8-8V160H114.7zm282.6 0H336V424c0 4.4 3.6 8 8 8H456c4.4 0 8-3.6 8-8V357.2c0-30.4-8.3-60.3-23.9-86.4l-2.6-4.4c-13.4-22.3-22.6-46.9-27.3-72.5l-5-27.3c-.7-3.8-4-6.6-7.9-6.6zM352 32h32c17.7 0 32 14.3 32 32V80H320V64c0-17.7 14.3-32 32-32z"></path></svg></span><span class="gb-button-text">Learn More</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -515,7 +163,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"e4ba595f","isDynamic":true,"blockVersion":4,"display":"flex","alignItems":"center","justifyContent":"center","spacing":{"marginTop":"64px"}} -->
 <!-- wp:generateblocks/button {"uniqueId":"8ad573c4","hasUrl":true,"blockVersion":4,"display":"inline-flex","alignItems":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"ButtonServices"} -->
-<a class="gb-button gb-button-8ad573c4 ButtonServices" href="https://keiter.local/consultation/"><span class="gb-icon"><svg viewBox="0 0 640 512" width="20" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M128 32C92.7 32 64 60.7 64 96V352h64V96H512V352h64V96c0-35.3-28.7-64-64-64H128zM19.2 384C8.6 384 0 392.6 0 403.2C0 445.6 34.4 480 76.8 480H563.2c42.4 0 76.8-34.4 76.8-76.8c0-10.6-8.6-19.2-19.2-19.2H19.2z"></path></svg></span><span class="gb-button-text">Schedule a Consultation Online</span></a>
+<a class="gb-button gb-button-8ad573c4 ButtonServices" href="https://okcmediator.com/consultation/"><span class="gb-icon"><svg viewBox="0 0 640 512" width="20" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M128 32C92.7 32 64 60.7 64 96V352h64V96H512V352h64V96c0-35.3-28.7-64-64-64H128zM19.2 384C8.6 384 0 392.6 0 403.2C0 445.6 34.4 480 76.8 480H563.2c42.4 0 76.8-34.4 76.8-76.8c0-10.6-8.6-19.2-19.2-19.2H19.2z"></path></svg></span><span class="gb-button-text">Schedule a Consultation Online</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -554,7 +202,7 @@
 		<link>https://patternwrangler.local/?attachment_id=24</link>
 		<pubDate>Thu, 18 Apr 2024 11:56:40 +0000</pubDate>
 		<dc:creator><![CDATA[ronalfy]]></dc:creator>
-		<guid isPermaLink="false">https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/dlx-000444@2x.png</guid>
+		<guid isPermaLink="false">https://patternwrangler.local/wp-content/uploads/2024/04/dlx-000444@2x.png</guid>
 		<description></description>
 		<content:encoded><![CDATA[]]></content:encoded>
 		<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -572,10 +220,7 @@
 		<wp:post_type><![CDATA[attachment]]></wp:post_type>
 		<wp:post_password><![CDATA[]]></wp:post_password>
 		<wp:is_sticky>0</wp:is_sticky>
-						<wp:attachment_url><![CDATA[https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/dlx-000444@2x.png]]></wp:attachment_url>
 											<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
-		<wp:meta_value><![CDATA[2024/04/dlx-000444@2x.png]]></wp:meta_value>
 		</wp:postmeta>
 							<wp:postmeta>
 		<wp:meta_key><![CDATA[_wp_attachment_metadata]]></wp:meta_key>
@@ -589,7 +234,7 @@
 		<dc:creator><![CDATA[ronalfy]]></dc:creator>
 		<guid isPermaLink="false">https://patternwrangler.local/?p=25</guid>
 		<description></description>
-		<content:encoded><![CDATA[<!-- wp:generateblocks/container {"uniqueId":"a955b7b1","backgroundColor":"#f0f5ff","bgImage":{"id":3337,"image":{"url":"https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/tall-white-gradient-scaled-2.webp","height":2560,"width":1747,"orientation":"portrait"}},"bgOptions":{"selector":"pseudo-element","opacity":0.25,"overlay":false,"position":"center center","size":"cover","repeat":"no-repeat","attachment":""},"align":"full","isDynamic":true,"blockVersion":4,"blockLabel":"Mediation Training Cards and CTA","position":"relative","overflowX":"hidden","overflowY":"hidden","zindex":1,"order":0,"spacing":{"paddingTop":"72px","paddingBottom":"72px"}} -->
+		<content:encoded><![CDATA[<!-- wp:generateblocks/container {"uniqueId":"a955b7b1","backgroundColor":"#f0f5ff","bgImage":{"id":3337,"image":{"url":"","height":2560,"width":1747,"orientation":"portrait"}},"bgOptions":{"selector":"pseudo-element","opacity":0.25,"overlay":false,"position":"center center","size":"cover","repeat":"no-repeat","attachment":""},"align":"full","isDynamic":true,"blockVersion":4,"blockLabel":"Mediation Training Cards and CTA","position":"relative","overflowX":"hidden","overflowY":"hidden","zindex":1,"order":0,"spacing":{"paddingTop":"72px","paddingBottom":"72px"}} -->
 <!-- wp:generateblocks/container {"uniqueId":"48566791","isDynamic":true,"blockVersion":4,"position":"relative","zindex":2,"order":0} -->
 <!-- wp:generateblocks/headline {"uniqueId":"68991128","blockVersion":3,"typography":{"textAlign":"center","lineHeight":"1.25em"},"spacing":{"marginTop":"0px","marginBottom":"12px","paddingBottom":"0px","paddingTop":"0px"}} -->
 <h2 class="gb-headline gb-headline-68991128 gb-headline-text">Available Online Mediation Training and Certifications</h2>
@@ -601,7 +246,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"5231c10f","element":"p","blockVersion":3,"typography":{"fontSize":"24px","textAlign":"center"},"spacing":{"marginTop":"0px","marginBottom":"32px"}} -->
-<p class="gb-headline gb-headline-5231c10f gb-headline-text"><a data-type="page" data-id="339" href="https://keiter.local/mediation-training/register-for-mediation-training/">Register early</a> for an early-bird discount.</p>
+<p class="gb-headline gb-headline-5231c10f gb-headline-text"><a data-type="page" data-id="339" href="https://okcmediator.com/mediation-training/register-for-mediation-training/">Register early</a> for an early-bird discount.</p>
 <!-- /wp:generateblocks/headline -->
 <!-- /wp:generateblocks/container -->
 
@@ -613,7 +258,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"08a833c2","isDynamic":true,"blockVersion":4,"displayTablet":"flex","displayMobile":"flex","flexDirectionTablet":"column","flexDirectionMobile":"column","alignItemsTablet":"center","alignItemsMobile":"center","justifyContentMobile":"center"} -->
 <!-- wp:generateblocks/headline {"uniqueId":"669140c7","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-669140c7 gb-headline-text"><a href="https://keiter.local/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://keiter.local/family-mediation-training/">Family And Divorce</a></h3>
+<h3 class="gb-headline gb-headline-669140c7 gb-headline-text"><a href="https://okcmediator.com/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://okcmediator.com/family-mediation-training/">Family And Divorce</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"b131dd42","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -621,7 +266,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"b5da7f4e","hasUrl":true,"blockVersion":4,"display":"inline-flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400","textAlign":"center"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"gb-button-black"} -->
-<a class="gb-button gb-button-b5da7f4e gb-button-black" href="https://keiter.local/family-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
+<a class="gb-button gb-button-b5da7f4e gb-button-black" href="https://okcmediator.com/family-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -633,7 +278,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"f0ec2343","isDynamic":true,"blockVersion":4,"displayTablet":"flex","displayMobile":"flex","flexDirectionTablet":"column","flexDirectionMobile":"column","alignItemsTablet":"center","alignItemsMobile":"center","justifyContentMobile":"center"} -->
 <!-- wp:generateblocks/headline {"uniqueId":"5a0eaadc","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-5a0eaadc gb-headline-text"><a href="https://keiter.local/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://keiter.local/family-mediation-training/"></a><a href="https://keiter.local/mediation-training/civil-commercial-and-employment-mediation-training/">Civil, Commercial, And Employment</a></h3>
+<h3 class="gb-headline gb-headline-5a0eaadc gb-headline-text"><a href="https://okcmediator.com/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://okcmediator.com/family-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/civil-commercial-and-employment-mediation-training/">Civil, Commercial, And Employment</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"af78d585","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px","paddingTop":"0px"}} -->
@@ -641,7 +286,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"52f0de63","hasUrl":true,"blockVersion":4,"display":"inline-flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400","textAlign":"center"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"gb-button-black"} -->
-<a class="gb-button gb-button-52f0de63 gb-button-black" href="https://keiter.local/mediation-training/civil-commercial-and-employment-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
+<a class="gb-button gb-button-52f0de63 gb-button-black" href="https://okcmediator.com/mediation-training/civil-commercial-and-employment-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -653,7 +298,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"31507a36","isDynamic":true,"blockVersion":4,"displayTablet":"flex","displayMobile":"flex","flexDirectionTablet":"column","flexDirectionMobile":"column","alignItemsTablet":"center","alignItemsMobile":"center","justifyContentMobile":"center"} -->
 <!-- wp:generateblocks/headline {"uniqueId":"e4b1dfdc","element":"h3","blockVersion":3,"typography":{"textAlignMobile":"center","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-e4b1dfdc gb-headline-text"><a href="https://keiter.local/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995">Special Education Mediation</a></h3>
+<h3 class="gb-headline gb-headline-e4b1dfdc gb-headline-text"><a href="https://okcmediator.com/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995">Special Education Mediation</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"8c9c928b","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignMobile":"center","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -661,7 +306,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"ad431c1","hasUrl":true,"blockVersion":4,"display":"inline-flex","alignItems":"center","justifyContent":"center","justifyContentTablet":"center","justifyContentMobile":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400","textAlign":"center"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"gb-button-black"} -->
-<a class="gb-button gb-button-ad431c1 gb-button-black" href="https://keiter.local/mediation-training/special-education-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
+<a class="gb-button gb-button-ad431c1 gb-button-black" href="https://okcmediator.com/mediation-training/special-education-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -673,7 +318,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"bc749662","isDynamic":true,"blockVersion":4,"displayTablet":"flex","displayMobile":"flex","flexDirectionTablet":"column","flexDirectionMobile":"column","alignItemsTablet":"center","alignItemsMobile":"center","justifyContentMobile":"center"} -->
 <!-- wp:generateblocks/headline {"uniqueId":"8cc680af","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-8cc680af gb-headline-text"><a href="https://keiter.local/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://keiter.local/family-mediation-training/"></a><a href="https://keiter.local/mediation-training/civil-commercial-and-employment-mediation-training/"></a><a href="https://keiter.local/mediation-training/workplace-and-employment-mediation-training/">Workplace And Employment Mediation Training</a></h3>
+<h3 class="gb-headline gb-headline-8cc680af gb-headline-text"><a href="https://okcmediator.com/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://okcmediator.com/family-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/civil-commercial-and-employment-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/workplace-and-employment-mediation-training/">Workplace And Employment Mediation Training</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"6966a76d","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -681,7 +326,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"3a5fa822","hasUrl":true,"blockVersion":4,"display":"inline-flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400","textAlign":"center"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"gb-button-black"} -->
-<a class="gb-button gb-button-3a5fa822 gb-button-black" href="https://keiter.local/mediation-training/workplace-and-employment-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
+<a class="gb-button gb-button-3a5fa822 gb-button-black" href="https://okcmediator.com/mediation-training/workplace-and-employment-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -693,7 +338,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"a1ba8207","isDynamic":true,"blockVersion":4,"displayTablet":"flex","displayMobile":"flex","flexDirectionTablet":"column","flexDirectionMobile":"column","alignItemsTablet":"center","alignItemsMobile":"center","justifyContentMobile":"center"} -->
 <!-- wp:generateblocks/headline {"uniqueId":"077b4fdc","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-077b4fdc gb-headline-text"><a href="https://keiter.local/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://keiter.local/family-mediation-training/"></a><a href="https://keiter.local/mediation-training/civil-commercial-and-employment-mediation-training/"></a><a href="https://keiter.local/mediation-training/workplace-and-employment-mediation-training/"></a><a href="https://keiter.local/mediation-training/advanced-mediation-training/">Advanced Mediation Training</a></h3>
+<h3 class="gb-headline gb-headline-077b4fdc gb-headline-text"><a href="https://okcmediator.com/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://okcmediator.com/family-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/civil-commercial-and-employment-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/workplace-and-employment-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/advanced-mediation-training/">Advanced Mediation Training</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"10ace77b","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -701,7 +346,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"21a1d5e9","hasUrl":true,"blockVersion":4,"display":"inline-flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400","textAlign":"center"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"gb-button-black"} -->
-<a class="gb-button gb-button-21a1d5e9 gb-button-black" href="https://keiter.local/mediation-training/advanced-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
+<a class="gb-button gb-button-21a1d5e9 gb-button-black" href="https://okcmediator.com/mediation-training/advanced-mediation-training/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -713,7 +358,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"c642804f","isDynamic":true,"blockVersion":4,"displayTablet":"flex","displayMobile":"flex","flexDirectionTablet":"column","flexDirectionMobile":"column","alignItemsTablet":"center","alignItemsMobile":"center","justifyContentMobile":"center"} -->
 <!-- wp:generateblocks/headline {"uniqueId":"7cfec21b","element":"h3","blockVersion":3,"typography":{"textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"0px","paddingBottom":"12px","paddingTop":"0px"},"linkColor":"var(\u002d\u002dtheme-palette-color-4, #172121)","linkColorHover":"var(\u002d\u002dtheme-palette-color-5, #984a00)"} -->
-<h3 class="gb-headline gb-headline-7cfec21b gb-headline-text"><a href="https://keiter.local/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://keiter.local/family-mediation-training/"></a><a href="https://keiter.local/mediation-training/civil-commercial-and-employment-mediation-training/"></a><a href="https://keiter.local/mediation-training/workplace-and-employment-mediation-training/"></a><a href="https://keiter.local/mediation-training/advanced-mediation-training/"></a><a href="https://keiter.local/mediation-training/intro-to-online-mediation/">Intro To Online Mediation</a></h3>
+<h3 class="gb-headline gb-headline-7cfec21b gb-headline-text"><a href="https://okcmediator.com/mediation-training/special-education-mediation-training/" data-type="page" data-id="2995"></a><a href="https://okcmediator.com/family-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/civil-commercial-and-employment-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/workplace-and-employment-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/advanced-mediation-training/"></a><a href="https://okcmediator.com/mediation-training/intro-to-online-mediation/">Intro To Online Mediation</a></h3>
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/headline {"uniqueId":"532728af","element":"p","blockVersion":3,"flexGrow":1,"typography":{"textAlign":"left","fontSize":"24px","fontFamily":"degular","lineHeight":"1.5em","textAlignTablet":"center"},"spacing":{"marginTop":"0px","marginBottom":"20px"}} -->
@@ -721,7 +366,7 @@
 <!-- /wp:generateblocks/headline -->
 
 <!-- wp:generateblocks/button {"uniqueId":"f7327ee5","hasUrl":true,"blockVersion":4,"display":"inline-flex","alignItems":"center","justifyContentTablet":"center","columnGap":"0.5em","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400","textAlign":"center"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"hasIcon":true,"iconStyles":{"height":"1em","width":"1em"},"className":"gb-button-black"} -->
-<a class="gb-button gb-button-f7327ee5 gb-button-black" href="https://keiter.local/mediation-training/intro-to-online-mediation/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
+<a class="gb-button gb-button-f7327ee5 gb-button-black" href="https://okcmediator.com/mediation-training/intro-to-online-mediation/"><span class="gb-icon"><svg viewBox="0 0 448 512" width="14" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M112 0c8.8 0 16 7.2 16 16V64H320V16c0-8.8 7.2-16 16-16s16 7.2 16 16V64h32c35.3 0 64 28.7 64 64v32 32V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V192 160 128C0 92.7 28.7 64 64 64H96V16c0-8.8 7.2-16 16-16zM416 192H312v72H416V192zm0 104H312v80H416V296zm0 112H312v72h72c17.7 0 32-14.3 32-32V408zM280 376V296H168v80H280zM168 408v72H280V408H168zm-32-32V296H32v80H136zM32 408v40c0 17.7 14.3 32 32 32h72V408H32zm0-144H136V192H32v72zm136 0H280V192H168v72zM384 96H64c-17.7 0-32 14.3-32 32v32H416V128c0-17.7-14.3-32-32-32z"></path></svg></span><span class="gb-button-text">View Class Schedule</span></a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -729,7 +374,7 @@
 
 <!-- wp:generateblocks/container {"uniqueId":"3772be77","isDynamic":true,"blockVersion":4,"display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center","spacing":{"marginTop":"64px"}} -->
 <!-- wp:generateblocks/button {"uniqueId":"d9f966d1","hasUrl":true,"blockVersion":4,"display":"inline-flex","typography":{"fontSize":"20px","fontFamily":"brother-1816","fontWeight":"400"},"spacing":{"paddingTop":"15px","paddingRight":"20px","paddingBottom":"15px","paddingLeft":"20px"},"borders":{"borderTopLeftRadius":"5px","borderTopRightRadius":"5px","borderBottomRightRadius":"5px","borderBottomLeftRadius":"5px"},"className":"gb-button-training"} -->
-<a class="gb-button gb-button-d9f966d1 gb-button-text gb-button-training" href="https://keiter.local/mediation-training/register-for-mediation-training/">Register for Online Training Today</a>
+<a class="gb-button gb-button-d9f966d1 gb-button-text gb-button-training" href="https://okcmediator.com/mediation-training/register-for-mediation-training/">Register for Online Training Today</a>
 <!-- /wp:generateblocks/button -->
 <!-- /wp:generateblocks/container -->
 <!-- /wp:generateblocks/container -->
@@ -768,7 +413,7 @@
 		<link>https://patternwrangler.local/?attachment_id=28</link>
 		<pubDate>Thu, 18 Apr 2024 11:58:28 +0000</pubDate>
 		<dc:creator><![CDATA[ronalfy]]></dc:creator>
-		<guid isPermaLink="false">https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/dlx-000445@2x.png</guid>
+		<guid isPermaLink="false">https://patternwrangler.local/wp-content/uploads/2024/04/dlx-000445@2x.png</guid>
 		<description></description>
 		<content:encoded><![CDATA[]]></content:encoded>
 		<excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -786,10 +431,7 @@
 		<wp:post_type><![CDATA[attachment]]></wp:post_type>
 		<wp:post_password><![CDATA[]]></wp:post_password>
 		<wp:is_sticky>0</wp:is_sticky>
-						<wp:attachment_url><![CDATA[https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/files/dlx-000445@2x.png]]></wp:attachment_url>
 											<wp:postmeta>
-		<wp:meta_key><![CDATA[_wp_attached_file]]></wp:meta_key>
-		<wp:meta_value><![CDATA[2024/04/dlx-000445@2x.png]]></wp:meta_value>
 		</wp:postmeta>
 							<wp:postmeta>
 		<wp:meta_key><![CDATA[_wp_attachment_metadata]]></wp:meta_key>
