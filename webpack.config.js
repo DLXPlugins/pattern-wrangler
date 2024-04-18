@@ -33,7 +33,7 @@ module.exports = ( env ) => {
 				},
 			},
 			mode: env.mode,
-			devtool: 'production' === env.mode ? 'source-map' : false,
+			devtool: 'production' === env.mode ? false : 'source-map',
 			output: {
 				filename: '[name].js',
 				sourceMapFilename: '[file].map[query]',
