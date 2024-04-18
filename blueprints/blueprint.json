@@ -110,7 +110,7 @@
 			"code": "<?php require_once 'wordpress/wp-load.php'; update_option( 'generateblocks_do_activation_redirect', '0' ); ?>"
 		},
 		{
-            "step": "importFile",
+            "step": "importWxr",
             "file": {
                 "resource": "url",
                 "url": "https://raw.githubusercontent.com/DLXPlugins/pattern-wrangler/main/blueprints/blueprint-export.xml"
