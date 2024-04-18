@@ -107,7 +107,7 @@
 		},
 		{
 			"step": "runPHP",
-			"code": "<?php require_once 'wordpress/wp-load.php'; update_option( 'generateblocks_do_activation_redirect', false ); ?>"
+			"code": "<?php require_once 'wordpress/wp-load.php'; update_option( 'generateblocks_do_activation_redirect', '0' ); ?>"
 		},
 		{
             "step": "importFile",
