@@ -211,18 +211,18 @@ const PatternImporter = ( props ) => {
 		<>
 			<Card className="dlx-pattern-inserter">
 				<CardHeader>
-					{ __( 'Pattern Importer', 'dlx-pattern-wrangler' ) }
+					{ __( 'Pattern Importer', 'pattern-wrangler' ) }
 				</CardHeader>
 				<CardBody>
 					<TextareaControl
-						label={ __( 'Paste your pattern here', 'dlx-pattern-wrangler' ) }
-						placeholder={ __( 'Paste your pattern here', 'dlx-pattern-wrangler' ) }
+						label={ __( 'Paste your pattern here', 'pattern-wrangler' ) }
+						placeholder={ __( 'Paste your pattern here', 'pattern-wrangler' ) }
 						value={ patternText }
 						onChange={ ( value ) => setPatternText( value ) }
 						disabled={ importing }
 					/>
 					<CheckboxControl
-						label={ __( 'Do not import remote images', 'dlx-pattern-wrangler' ) }
+						label={ __( 'Do not import remote images', 'pattern-wrangler' ) }
 						checked={ doNotImportRemoteImages }
 						onChange={ ( value ) => setDoNotImportRemoteImages( value ) }
 						disabled={ importing }
@@ -234,7 +234,7 @@ const PatternImporter = ( props ) => {
 						disabled={ ! patternText || importing }
 						onClick={ onPatternSubmit }
 					>
-						{ __( 'Import', 'dlx-pattern-wrangler' ) }
+						{ __( 'Import', 'pattern-wrangler' ) }
 					</Button>
 					{ importing && (
 						<span className="gb-pattern-importer-image">

@@ -4,7 +4,7 @@ Tags: block patterns, manage, export, patterns
 Requires at least: 6.5
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.0.9
+Stable tag: 1.0.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,11 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Changelog ==
 
+= 1.0.10 =
+* Released 2024-04-18
+* Added miscelleanous option to make Patterns exportable via the WP exporter.
+* Fixed categories not showing when resetting options.
+
 = 1.0.9 =
 * Released 2024-04-14
 * Removed old dead code.
@@ -82,6 +87,6 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Upgrade Notice ==
 
-= 1.0.9 =
-Initial .org release!
+= 1.0.10 =
+You can now make patterns exportable via the WP exporter. Fixed category bug when resetting options.
 

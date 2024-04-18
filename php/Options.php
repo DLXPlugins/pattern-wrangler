@@ -114,6 +114,7 @@ class Options {
 			'showMenusUI'                  => true,
 			'loadCustomizerCSSBlockEditor' => false,
 			'loadCustomizerCSSFrontend'    => true,
+			'makePatternsExportable'       => false,
 		);
 		return $defaults;
 	}

@@ -23,7 +23,7 @@ const PatternPreviewButton = () => {
 		// Create the button.
 		const button = document.createElement( 'a' );
 		button.className = 'dlx-button-preview components-button has-icon';
-		button.ariaLabel = __( 'Preview', 'dlx-pattern-wrangler' );
+		button.ariaLabel = __( 'Preview', 'pattern-wrangler' );
 		button.href = dlxPatternWranglerPreview.previewUrl;
 		button.target = '_blank';
 		button.rel = 'noopener noreferrer';

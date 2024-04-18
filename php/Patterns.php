@@ -49,6 +49,9 @@ class Patterns {
 		// Deregister all pattenrs if all patterns are disabled.
 		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 2000 );
 
+		// Make patterns exportable.
+		add_filter( 'register_post_type_args', array( $this, 'make_patterns_post_type_exportable' ), 5, 2 );
+
 		// Register tax terms as categories.
 		add_action( 'rest_api_init', array( $this, 'register_terms_as_pattern_categories' ) );
 
@@ -112,6 +115,26 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
+	}
+
+	/**
+	 * Make patterns exportable.
+	 *
+	 * @param array  $args     Array of arguments for the post type.
+	 * @param string $post_type The post type.
+	 *
+	 * @return array
+	 */
+	public function make_patterns_post_type_exportable( $args, $post_type ) {
+		$options       = Options::get_options();
+		$is_exportable = (bool) $options['makePatternsExportable'];
+		if ( 'wp_block' === $post_type && $is_exportable ) {
+			// Export file in WP requires post types to have can_export set to true and _builtin set to false.
+			// This option is not recommended to be turned on all the time.
+			$args['can_export'] = true;
+			$args['_builtin']   = false;
+		}
+		return $args;
 	}
 
 	/**

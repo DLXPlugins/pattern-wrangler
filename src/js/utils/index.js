@@ -40,7 +40,7 @@
 						// Logs success message  in console.
 
 						// a11y text here.
-						speak( __( 'Shortcode copied to clipboard', 'dlx-pattern-wrangler' ), 'assertive' );
+						speak( __( 'Shortcode copied to clipboard', 'pattern-wrangler' ), 'assertive' );
 
 						const buttonIcon = button.querySelector( 'span' );
 

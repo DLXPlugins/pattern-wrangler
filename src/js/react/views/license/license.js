@@ -29,7 +29,7 @@ const License = ( props ) => {
 		<Suspense
 			fallback={
 				<>
-					<h2>{ __( 'Loading…', 'dlx-pattern-wrangler' ) }</h2>
+					<h2>{ __( 'Loading…', 'pattern-wrangler' ) }</h2>
 				</>
 			}
 		>
@@ -141,7 +141,7 @@ const Interface = ( props ) => {
 						type: 'validate',
 						message: __(
 							'Revoking the license resulted in an error and could not be deactivated. Please reactivate the license and try again.',
-							'dlx-pattern-wrangler'
+							'pattern-wrangler'
 						),
 					} );
 				}
@@ -181,7 +181,7 @@ const Interface = ( props ) => {
 		if ( getValues( 'licenseValid' ) ) {
 			return (
 				<Notice
-					message={ __( 'Your license is valid. Thank you so much for purchasing a license.', 'dlx-pattern-wrangler' ) }
+					message={ __( 'Your license is valid. Thank you so much for purchasing a license.', 'pattern-wrangler' ) }
 					status="success"
 					politeness="polite"
 					icon={ () => <CheckCircle /> }
@@ -192,7 +192,7 @@ const Interface = ( props ) => {
 			<Notice
 				message={ __(
 					'Please enter a valid license to receive support and updates.',
-					'dlx-pattern-wrangler'
+					'pattern-wrangler'
 				) }
 				status="warning"
 				politeness="polite"
@@ -202,12 +202,12 @@ const Interface = ( props ) => {
 	};
 
 	const getSaveButton = () => {
-		let saveText = __( 'Save License', 'dlx-pattern-wrangler' );
-		let saveTextLoading = __( 'Saving…', 'dlx-pattern-wrangler' );
+		let saveText = __( 'Save License', 'pattern-wrangler' );
+		let saveTextLoading = __( 'Saving…', 'pattern-wrangler' );
 
 		if ( ! getValues( 'licenseValid' ) ) {
-			saveText = __( 'Activate License', 'dlx-pattern-wrangler' );
-			saveTextLoading = __( 'Activating…', 'dlx-pattern-wrangler' );
+			saveText = __( 'Activate License', 'pattern-wrangler' );
+			saveTextLoading = __( 'Activating…', 'pattern-wrangler' );
 		}
 		return (
 			<>
@@ -233,7 +233,7 @@ const Interface = ( props ) => {
 	return (
 		<>
 			<div className="dlx-pw-admin-content-heading">
-				<h1><span className="dlx-pw-content-heading-text">{ __( 'License', 'dlx-pattern-wrangler' ) }</span></h1>
+				<h1><span className="dlx-pw-content-heading-text">{ __( 'License', 'pattern-wrangler' ) }</span></h1>
 				{
 					getLicenseNotice()
 				}
@@ -253,7 +253,7 @@ const Interface = ( props ) => {
 							render={ ( { field: { onChange, value } } ) => (
 								<TextControl
 									value={ value }
-									label={ __( 'License Key', 'dlx-pattern-wrangler' ) }
+									label={ __( 'License Key', 'pattern-wrangler' ) }
 									id="search-dlx-pw-license-secret"
 									className={ classNames(
 										'dlx-admin__text-control-license',
@@ -269,7 +269,7 @@ const Interface = ( props ) => {
 									aria-required="true"
 									help={ __(
 										'Entering a license will enable support and updates.',
-										'dlx-pattern-wrangler'
+										'pattern-wrangler'
 									) }
 									type={ showSecret ? 'text' : 'password' }
 								/>
@@ -281,7 +281,7 @@ const Interface = ( props ) => {
 								type="checkbox"
 								aria-label={ __(
 									'Click to Show or Hide the License',
-									'dlx-pattern-wrangler'
+									'pattern-wrangler'
 								) }
 								onClick={ () => {
 									if ( showSecret ) {
@@ -292,25 +292,25 @@ const Interface = ( props ) => {
 								} }
 								title={
 									showSecret
-										? __( 'Hide License', 'dlx-pattern-wrangler' )
-										: __( 'Show License', 'dlx-pattern-wrangler' )
+										? __( 'Hide License', 'pattern-wrangler' )
+										: __( 'Show License', 'pattern-wrangler' )
 								}
 							/>
 							<label htmlFor="dlx-pw-license-show-hide not-is-required">
 								<span className="dlx-pw-license-show-hide--label">
-									{ __( 'Click to Show or Hide the License', 'dlx-pattern-wrangler' ) }
+									{ __( 'Click to Show or Hide the License', 'pattern-wrangler' ) }
 								</span>
 								<span className="dlx-pw-license-show-hide--icon">
 									{ ! showSecret ? (
 										<Button
-											label={ __( 'Show License', 'dlx-pattern-wrangler' ) }
+											label={ __( 'Show License', 'pattern-wrangler' ) }
 											size={ 20 }
 											icon={ () => <Eye /> }
 											className="button-reset"
 										/>
 									) : (
 										<Button
-											label={ __( 'Hide License', 'dlx-pattern-wrangler' ) }
+											label={ __( 'Hide License', 'pattern-wrangler' ) }
 											size={ 20 }
 											icon={ () => <EyeOff /> }
 											className="button-reset"
@@ -368,8 +368,8 @@ const Interface = ( props ) => {
 								type="button"
 								text={
 									revokingLicense
-										? __( 'Revoking License…', 'dlx-pattern-wrangler' )
-										: __( 'Revoke License', 'dlx-pattern-wrangler' )
+										? __( 'Revoking License…', 'pattern-wrangler' )
+										: __( 'Revoke License', 'pattern-wrangler' )
 								}
 								icon={ revokingLicense ? () => <Loader2 /> : false }
 								iconSize="1x"
@@ -388,7 +388,7 @@ const Interface = ( props ) => {
 						<Notice
 							message={ __(
 								'There are form validation errors. Please correct them above.',
-								'dlx-pattern-wrangler'
+								'pattern-wrangler'
 							) }
 							status="error"
 							politeness="polite"
@@ -396,7 +396,7 @@ const Interface = ( props ) => {
 					) }
 					{ isSaved && (
 						<Notice
-							message={ __( 'Your settings have been saved.', 'dlx-pattern-wrangler' ) }
+							message={ __( 'Your settings have been saved.', 'pattern-wrangler' ) }
 							status="success"
 							politeness="assertive"
 						/>
@@ -405,7 +405,7 @@ const Interface = ( props ) => {
 						<Notice
 							message={ __(
 								'Your license has been deactivated for this site.',
-								'dlx-pattern-wrangler'
+								'pattern-wrangler'
 							) }
 							status="success"
 							politeness="assertive"
@@ -421,7 +421,7 @@ const Interface = ( props ) => {
 										<div className="dlx-admin-admin__tabs--content-heading">
 											<h1>
 												<span className="dlx-admin-admin__heading--text">
-													{ __( 'License Information', 'dlx-pattern-wrangler' ) }
+													{ __( 'License Information', 'pattern-wrangler' ) }
 												</span>
 											</h1>
 										</div>
@@ -429,13 +429,13 @@ const Interface = ( props ) => {
 											<table className="dlx-pw-table dlx-pw-table--responsive dlx-pw-table--license-ui">
 												<thead>
 													<tr>
-														<th scope="col">{ __( 'Item Name', 'dlx-pattern-wrangler' ) }</th>
-														<th scope="col">{ __( 'License Type', 'dlx-pattern-wrangler' ) }</th>
+														<th scope="col">{ __( 'Item Name', 'pattern-wrangler' ) }</th>
+														<th scope="col">{ __( 'License Type', 'pattern-wrangler' ) }</th>
 														<th scope="col">
-															{ __( 'License Activations', 'dlx-pattern-wrangler' ) }
+															{ __( 'License Activations', 'pattern-wrangler' ) }
 														</th>
-														<th scope="col">{ __( 'Expires On', 'dlx-pattern-wrangler' ) }</th>
-														<th scope="col">{ __( 'Days Left', 'dlx-pattern-wrangler' ) }</th>
+														<th scope="col">{ __( 'Expires On', 'pattern-wrangler' ) }</th>
+														<th scope="col">{ __( 'Days Left', 'pattern-wrangler' ) }</th>
 													</tr>
 												</thead>
 												<tbody>
@@ -451,7 +451,7 @@ const Interface = ( props ) => {
 																<span className="">
 																	{ licenseData.site_count } of{ ' ' }
 																	{ licenseData.license_limit === 0
-																		? __( 'Unlimited', 'dlx-pattern-wrangler' )
+																		? __( 'Unlimited', 'pattern-wrangler' )
 																		: licenseData.license_limit }
 																</span>
 															</p>

@@ -98,7 +98,7 @@ const SnackPop = ( props ) => {
 				setNotificationOptions( {
 					type: 'critical',
 					message: error.message,
-					title: __( 'An Error Has Occurred', 'dlx-pattern-wrangler' ),
+					title: __( 'An Error Has Occurred', 'pattern-wrangler' ),
 					isDismissable: false,
 					isBusy: false,
 					isPersistent: true,
@@ -140,7 +140,7 @@ const SnackPop = ( props ) => {
 		const actions = [];
 		if ( notificationOptions.type === 'success' ) {
 			actions.push( {
-				label: __( 'Back to Top', 'dlx-pattern-wrangler' ),
+				label: __( 'Back to Top', 'pattern-wrangler' ),
 				url: '#dlx-pw-admin-header',
 				variant: 'link',
 				className: 'dlx-pw-admin__notice-action dlx-pw-admin__notice-action--to-top',
@@ -206,7 +206,7 @@ const SnackPop = ( props ) => {
 								setIsModalVisible( false );
 							} }
 						>
-							{ __( 'OK', 'dlx-pattern-wrangler' ) }
+							{ __( 'OK', 'pattern-wrangler' ) }
 						</Button>
 					</div>
 				</Modal>

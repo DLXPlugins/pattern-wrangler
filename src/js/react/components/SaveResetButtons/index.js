@@ -79,22 +79,22 @@ const SaveResetButtons = ( props ) => {
 
 	const getSaveText = () => {
 		if ( saving ) {
-			return __( 'Saving…', 'dlx-pattern-wrangler' );
+			return __( 'Saving…', 'pattern-wrangler' );
 		}
 		if ( isSaved ) {
-			return __( 'Saved', 'dlx-pattern-wrangler' );
+			return __( 'Saved', 'pattern-wrangler' );
 		}
-		return __( 'Save Options', 'dlx-pattern-wrangler' );
+		return __( 'Save Options', 'pattern-wrangler' );
 	};
 
 	const getResetText = () => {
 		if ( resetting ) {
-			return __( 'Resetting to Defaults…', 'dlx-pattern-wrangler' );
+			return __( 'Resetting to Defaults…', 'pattern-wrangler' );
 		}
 		if ( isReset ) {
-			return __( 'Options Restored to Defaults', 'dlx-pattern-wrangler' );
+			return __( 'Options Restored to Defaults', 'pattern-wrangler' );
 		}
-		return __( 'Reset to Defaults', 'dlx-pattern-wrangler' );
+		return __( 'Reset to Defaults', 'pattern-wrangler' );
 	};
 
 	return (
@@ -146,17 +146,17 @@ const SaveResetButtons = ( props ) => {
 			<div className="dlx-pw-admin-notices-bottom">
 				<SnackPop
 					ajaxOptions={ savePromise }
-					loadingMessage={ __( 'Saving Options…', 'dlx-pattern-wrangler' ) }
+					loadingMessage={ __( 'Saving Options…', 'pattern-wrangler' ) }
 				/>
 				<SnackPop
 					ajaxOptions={ resetPromise }
-					loadingMessage={ __( 'Resetting to defaults…', 'dlx-pattern-wrangler' ) }
+					loadingMessage={ __( 'Resetting to defaults…', 'pattern-wrangler' ) }
 				/>
 				{ hasErrors() && (
 					<Notice
 						message={ __(
 							'There are form validation errors. Please correct them above.',
-							'dlx-pattern-wrangler',
+							'pattern-wrangler',
 						) }
 						status="error"
 						politeness="polite"
