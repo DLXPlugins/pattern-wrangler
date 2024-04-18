@@ -195,7 +195,7 @@ class Functions {
 				'pattern'       => $post_id,
 				'nonce'         => wp_create_nonce( 'preview-pattern_' . $post_id ),
 			),
-			home_url(),
+			home_url()
 		);
 		return $preview_url;
 	}
