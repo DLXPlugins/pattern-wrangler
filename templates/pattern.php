@@ -34,10 +34,31 @@ if ( ! $wp_query->have_posts() ) {
 	$wp_query->the_post();
 }
 
+/**
+ * Action to output custom actions.
+ */
+do_action( 'dlxpw_preview_actions' );
+
 // Get header if theme is not FSE theme.
 if ( ! wp_is_block_theme() ) {
-	get_header();
-	$blocks = do_blocks( $wp_query->post->post_content );
+	$blocks       = do_blocks( $wp_query->post->post_content );
+	$current_post = $wp_query->post;
+
+	/**
+	 * Filter to use default header or not.
+	 *
+	 * @since 1.1.0
+	 */
+	$use_default_header = apply_filters( 'dlxpw_use_default_header', true );
+	if ( ! $use_default_header ) {
+		/**
+		 * Action to output custom header.
+		 */
+		do_action( 'dlxpw_default_header' );
+	} else {
+		get_header();
+	}
+	\setup_postdata( $current_post );
 	the_content();
 } else {
 	?>
@@ -67,7 +88,21 @@ if ( ! wp_is_block_theme() ) {
 
 // Get footer if theme is not FSE theme.
 if ( ! wp_is_block_theme() ) {
-	get_footer();
+	/**
+	 * Filter to use default footer or not.
+	 *
+	 * @since 1.1.0
+	 */
+	$use_default_footer = apply_filters( 'dlxpw_use_default_footer', true );
+
+	if ( ! $use_default_header ) {
+		/**
+		 * Action to output custom footer.
+		 */
+		do_action( 'dlxpw_default_footer' );
+	} else {
+		get_footer();
+	}
 } else {
 	?>
 	<footer class="wp-block-template-part site-footer">
