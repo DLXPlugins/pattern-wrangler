@@ -1,10 +1,10 @@
 === Pattern Wrangler ===
 Contributors: ronalfy
-Tags: block patterns, manage, export, patterns
+Tags: patterns, manage, shortcode, reusable, block
 Requires at least: 6.5
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.0.10
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,11 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Changelog ==
 
+= 1.1.0 =
+* Released 2024-05-22
+* Updated Pattern Importer icon.
+* Added hooks to load custom headers/footers for the preview.
+
 = 1.0.10 =
 * Released 2024-04-18
 * Added miscelleanous option to make Patterns exportable via the WP exporter.
@@ -87,6 +92,5 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Upgrade Notice ==
 
-= 1.0.10 =
-You can now make patterns exportable via the WP exporter. Fixed category bug when resetting options.
-
+= 1.1.0 =
+Added hooks to load custom headers/footers for the preview.
