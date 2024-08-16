@@ -2,9 +2,9 @@
 Contributors: ronalfy
 Tags: patterns, manage, shortcode, reusable, block
 Requires at least: 6.5
-Tested up to: 6.5
+Tested up to: 6.6
 Requires PHP: 7.2
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,10 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Changelog ==
 
+= 1.1.1 =
+* Released 2024-08-16
+* Fixing admin script enqueueing for other language support.
+
 = 1.1.0 =
 * Released 2024-05-22
 * Updated Pattern Importer icon.
@@ -92,5 +96,5 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Upgrade Notice ==
 
-= 1.1.0 =
-Added hooks to load custom headers/footers for the preview.
+= 1.1.1 =
+Fixing admin script enqueueing for other language support.
