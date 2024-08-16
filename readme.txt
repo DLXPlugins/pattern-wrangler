@@ -1,4 +1,4 @@
-=== Pattern Wrangler ===
+=== Pattern Wrangler - Manage Reusable Blocks and Patterns ===
 Contributors: ronalfy
 Tags: patterns, manage, shortcode, reusable, block
 Requires at least: 6.5
