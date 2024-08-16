@@ -28,9 +28,6 @@ class Admin {
 
 		add_action( 'current_screen', array( $this, 'set_category_submenu_current' ) );
 
-		// Enqueue scripts for the admin page.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-
 		// For retrieving the options.
 		add_action( 'wp_ajax_dlx_pw_get_options', array( $this, 'ajax_get_options' ) );
 
@@ -237,7 +234,7 @@ class Admin {
 		remove_submenu_page( 'generateblocks', 'edit.php?post_type=wp_block' ); // Remove from GenerateBlocks screen.
 
 		if ( $hide_all_patterns && $hide_patterns_menu ) {
-			add_submenu_page(
+			$hook = add_submenu_page(
 				'themes.php',
 				__( 'Patterns', 'pattern-wrangler' ),
 				__( 'Patterns', 'pattern-wrangler' ),
@@ -246,6 +243,7 @@ class Admin {
 				array( $this, 'admin_page' ),
 				4
 			);
+			add_action( 'admin_print_scripts-' . $hook, array( $this, 'enqueue_scripts' ) );
 			return;
 		}
 		add_menu_page(
@@ -268,7 +266,7 @@ class Admin {
 			5
 		);
 
-		add_submenu_page(
+		$hook = add_submenu_page(
 			'edit.php?post_type=wp_block',
 			__( 'Settings', 'pattern-wrangler' ),
 			__( 'Settings', 'pattern-wrangler' ),
@@ -277,6 +275,7 @@ class Admin {
 			array( $this, 'admin_page' ),
 			10
 		);
+		add_action( 'admin_print_scripts-' . $hook, array( $this, 'enqueue_scripts' ) );
 	}
 
 	/**
@@ -313,14 +312,8 @@ class Admin {
 
 	/**
 	 * Enqueue scripts for the admin page.
-	 *
-	 * @param string $hook The current admin page.
 	 */
-	public function enqueue_scripts( $hook ) {
-		if ( 'patterns_page_pattern-wrangler' !== $hook && 'appearance_page_pattern-wrangler' !== $hook ) {
-			return;
-		}
-
+	public function enqueue_scripts() {
 		$options     = Options::get_options();
 		$current_tab = Functions::get_admin_tab();
 		if ( null === $current_tab || 'settings' === $current_tab ) {
