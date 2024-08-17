@@ -338,6 +338,7 @@ class Admin {
 					'ajaxurl'      => admin_url( 'admin-ajax.php' ),
 				)
 			);
+			\wp_set_script_translations( 'dlx-pw-admin', 'pattern-wrangler' );
 		}
 
 		// Enqueue admin styles.

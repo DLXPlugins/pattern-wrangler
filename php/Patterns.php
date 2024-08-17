@@ -731,6 +731,7 @@ class Patterns {
 					$deps['version'],
 					true
 				);
+				\wp_set_script_translations( 'dlx-pw-post-utilities', 'pattern-wrangler' );
 			}
 
 			// Enqueue admin styles.
