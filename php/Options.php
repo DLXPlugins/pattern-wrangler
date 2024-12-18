@@ -106,6 +106,8 @@ class Options {
 			'hideRemotePatterns'           => false,
 			'hideThemePatterns'            => false,
 			'hidePluginPatterns'           => false,
+			'hideCoreSyncedPatterns'       => false,
+			'hideCoreUnsyncedPatterns'     => false,
 			'disablePatternImporterBlock'  => false,
 			'categories'                   => array(),
 			'allowFrontendPatternPreview'  => true,

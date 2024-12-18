@@ -46,6 +46,9 @@ class Patterns {
 		// Deregister any patterns that are uncategorized.
 		add_action( 'init', array( $this, 'maybe_deregister_uncategorized_patterns' ), 1003 );
 
+		// Deregister any patterns that are not synced.
+		add_action( 'init', array( $this, 'maybe_deregister_unsynced_patterns' ), 1004 );
+
 		// Deregister all pattenrs if all patterns are disabled.
 		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 2000 );
 
@@ -115,6 +118,47 @@ class Patterns {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
+
+		// Add any admin notices to the patterns post type list view.
+		add_action( 'admin_notices', array( $this, 'add_admin_notices' ) );
+	}
+
+	/**
+	 * Add admin notices to the patterns post type list view.
+	 */
+	public function add_admin_notices() {
+		$options                     = Options::get_options();
+		$hide_core_synced_patterns   = (bool) $options['hideCoreSyncedPatterns'];
+		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
+		if ( $hide_core_synced_patterns && $hide_core_unsynced_patterns ) {
+			?>
+			<div class="notice notice-warning">
+				<p><?php esc_html_e( 'Both synced and unsynced patterns are hidden. Users will not be able to use any of these patterns in the block editor.', 'pattern-wrangler' ); ?></p>
+			</div>
+			<?php
+			return;
+		} elseif ( $hide_core_synced_patterns ) {
+			?>
+			<div class="notice notice-warning">
+				<p><?php esc_html_e( 'Synced patterns are hidden. Users will not be able to use synced patterns in the block editor.', 'pattern-wrangler' ); ?></p>
+			</div>
+			<?php
+		}
+		if ( $hide_core_unsynced_patterns ) {
+			?>
+			<div class="notice notice-warning">
+				<p><?php esc_html_e( 'Unsynced patterns are hidden. Users will not be able to use unsynced patterns in the block editor.', 'pattern-wrangler' ); ?></p>
+			</div>
+			<?php
+		}
+	}
+
+	/**
+	 * Deregister any patterns that are not synced.
+	 */
+	public function maybe_deregister_unsynced_patterns() {
+		$options                     = Options::get_options();
+		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
 	}
 
 	/**
@@ -492,13 +536,55 @@ class Patterns {
 		// Get options.
 		$options = Options::get_options();
 
-		$hide_all_patterns = (bool) $options['hideAllPatterns'];
+		$hide_all_patterns           = (bool) $options['hideAllPatterns'];
+		$hide_core_synced_patterns   = (bool) $options['hideCoreSyncedPatterns'];
+		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
 
 		// Exit early if not enabled.
 		if ( $hide_all_patterns ) {
 			$args['post__in'] = array( -1 ); // -1 so no patterns are returned.
+			return $args;
 		}
 
+		// Hide all synced patterns.
+		if ( $hide_core_synced_patterns ) {
+			if ( ! isset( $args['meta_query'] ) ) {
+				$args['meta_query'] = array();
+			}
+			$args['meta_query'] = array(
+				'relation' => 'AND',
+				array(
+					'key'     => 'wp_pattern_sync_status',
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => 'wp_pattern_sync_status',
+					'value'   => 'unsynced',
+					'compare' => '=',
+				),
+			);
+		}
+
+		// Hide all unsynced patterns.
+		if ( $hide_core_unsynced_patterns ) {
+			$args['meta_query'] = array(
+				'relation' => 'OR',
+				array(
+					'key'     => 'wp_pattern_sync_status',
+					'value'   => 'unsynced',
+					'compare' => '!=',
+				),
+				array(
+					'key'     => 'wp_pattern_sync_status',
+					'compare' => 'NOT EXISTS',
+				),
+			);
+		}
+
+		// If both synced and unsynced patterns are hidden, hide all meta key matches.
+		if ( $hide_core_synced_patterns && $hide_core_unsynced_patterns ) {
+			$args['post__in'] = array( -1 );
+		}
 		return $args;
 	}
 
