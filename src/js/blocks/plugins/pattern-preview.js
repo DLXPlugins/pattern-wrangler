@@ -11,8 +11,6 @@ try {
 	// ActionItem not available
 }
 
-console.log( PluginPreviewMenuItem );
-
 /**
  * Render a Preview Button.
  *
