@@ -181,6 +181,21 @@ class Functions {
 	}
 
 	/**
+	 * Check if a pattern is synced.
+	 *
+	 * @param int $pattern_id The pattern ID.
+	 *
+	 * @return bool true if synced, false if not.
+	 */
+	public static function is_pattern_synced( $pattern_id ) {
+		$synced = get_post_meta( $pattern_id, 'wp_pattern_sync_status', true );
+		if ( 'unsynced' === $synced ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Get preview URL for previewing a pattern.
 	 *
 	 * @param int $post_id The post ID.

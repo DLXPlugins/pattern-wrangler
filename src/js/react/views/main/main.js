@@ -3,9 +3,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import {
 	ToggleControl,
 	TextControl,
-	CheckboxControl,
-	ComboboxControl,
-	BaseControl,
+	Tooltip,
 	SelectControl,
 	PanelBody,
 	Popover,
@@ -215,6 +213,8 @@ const Interface = ( props ) => {
 			hideCorePatterns: data.hideCorePatterns,
 			hidePatternsMenu: data.hidePatternsMenu,
 			hideRemotePatterns: data.hideRemotePatterns,
+			hideCoreSyncedPatterns: data.hideCoreSyncedPatterns,
+			hideCoreUnsyncedPatterns: data.hideCoreUnsyncedPatterns,
 			disablePatternImporterBlock: data.disablePatternImporterBlock,
 			allowFrontendPatternPreview: data.allowFrontendPatternPreview,
 			hideUncategorizedPatterns: data.hideUncategorizedPatterns,
@@ -275,14 +275,21 @@ const Interface = ( props ) => {
 											name="hideAllPatterns"
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
-												<ToggleControl
-													label={ __( 'Hide All Patterns', 'pattern-wrangler' ) }
-													checked={ value }
-													onChange={ ( boolValue ) => {
-														onChange( boolValue );
-													} }
-													help={ __( 'Disable all patterns and the pattern selector.', 'pattern-wrangler' ) }
-												/>
+												<div className="dlx-admin__tooltip-toggle">
+													<Tooltip
+														text={ __( 'This option is useful if you want to hide all patterns from the block editor.', 'pattern-wrangler' ) }
+													>
+														<ToggleControl
+															label={ __( 'Hide All Patterns', 'pattern-wrangler' ) }
+															checked={ value }
+															onChange={ ( boolValue ) => {
+																onChange( boolValue );
+															} }
+															help={ __( 'Disable all patterns and the pattern selector.', 'pattern-wrangler' ) }
+															tooltip={ __( 'This option is useful if you want to hide all patterns from the block editor.', 'pattern-wrangler' ) }
+														/>
+													</Tooltip>
+												</div>
 											) }
 										/>
 									</div>
@@ -364,6 +371,38 @@ const Interface = ( props ) => {
 														onChange( boolValue );
 													} }
 													help={ __( 'Prevent patterns registered by active plugins from displaying in the patterns list.', 'pattern-wrangler' ) }
+												/>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											name="hideCoreSyncedPatterns"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __( 'Hide Synced Patterns', 'pattern-wrangler' ) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __( 'Prevent any synced patterns (reusable blocks) from displaying in the patterns selector. This will prevent users from using synced patterns in the block editor.', 'pattern-wrangler' ) }
+												/>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											name="hideCoreUnsyncedPatterns"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __( 'Hide Unsynced Patterns', 'pattern-wrangler' ) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __( 'Prevent any unsynced patterns from displaying in the patterns selector. This is useful if you only want to show synced patterns.', 'pattern-wrangler' ) }
 												/>
 											) }
 										/>
