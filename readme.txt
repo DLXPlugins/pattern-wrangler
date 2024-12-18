@@ -1,10 +1,10 @@
-=== Pattern Wrangler - Manage Reusable Blocks and Patterns ===
+=== Pattern Wrangler - Manage WordPress Block Patterns Effortlessly ===
 Contributors: ronalfy
-Tags: patterns, manage, shortcode, reusable, block
-Requires at least: 6.7
+Tags: patterns, reusable blocks, block editor, shortcode, block management
+Requires at least: 6.5
 Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,14 +12,18 @@ Manage your block patterns efficiently with Pattern Wrangler.
 
 == Description ==
 
-Pattern Wrangler enhances your experience with WordPress block patterns by adding a few features that let you:
+Pattern Wrangler makes managing WordPress block patterns simple and efficient, with features that cater to both beginners and advanced users. Whether you're organizing patterns for a complex site, a hybrid setup, or just hiding ones you don't need, Pattern Wrangler has you covered.
 
-* Hide All Patterns - If you need to hide patterns completely from the block editor, you can do so with a single click.
-* Hide Core and Remote Patterns - If you only want to show patterns you've created, you can hide all core and remote patterns.
-* Hide Theme and Plugin Patterns - If you only want to show patterns you've created, you can hide all patterns from themes and plugins.
-* Map and Rename Registered Categories - If you have a lot of patterns, you can map them to categories and rename the categories to something more meaningful.
-* Output Patterns With a Shortcode - If you want to output a pattern in a page builder or widget, you can do so with a shortcode. This is compatible with most block plugins.
-* Copy Patterns From Site to Site - If you have a post on one site, you can copy it over, including the images, using the Pattern Importer block.
+Here are the major features:
+
+* **Hide All Patterns** - Completely hide patterns from the block editor in one click. This also hides the Patterns menu item.
+* **Selective Hiding** - Hide core, remote, theme, or plugin patterns while keeping your custom patterns visible. You can also hide synced and unsynced patterns together or separately.
+* **Category Management** - Disable, map, and rename registered categories from themes and plugins for better organization. This will help you keep local and registered patterns organized together.
+* **Output Patterns Anywhere** - Use a shortcode to display local patterns in page builders, widgets, your theme,or other blocks.
+* **Pattern Preview** - Preview a pattern on the frontend with shortcuts in the block editor or from the Patterns post list view.
+* **Cross-Site Pattern Copying** - Transfer patterns, including the remote images, between WordPress sites effortlessly. This is useful if you're copying a pattern from one site to another or copying a pattern from a production site to a development site.
+
+> Pattern Wrangler integrates seamlessly with block-based and classic themes offering a hybrid setup with unmatched flexibility.
 
 === Quick Links ===
 
@@ -29,9 +33,9 @@ Pattern Wrangler enhances your experience with WordPress block patterns by addin
 
 === Requirements and Compatibility ===
 
-Requires WordPress 6.5 or higher.
+Requires WordPress 6.5 or higher. 6.7 is recommended.
 
-Compatible with most themes, including block themes.
+Fully compatible with most themes, including block themes. Ideal for hybrid setups.
 
 == Installation ==
 
@@ -41,9 +45,21 @@ Compatible with most themes, including block themes.
 
 == Frequently Asked Questions ==
 
-= Can Pattern Wrangler import patterns from any WordPress site? =
+= Can I import Patterns from any WordPress site? =
 
-Yes, as long as you have the pattern's code, Pattern Wrangler can import it and localize any images found within.
+Yes! If you have the pattern's code, <a href="https://docs.dlxplugins.com/pattern-wrangler/features/the-pattern-importer-block">Pattern Wrangler can import it</a> and localize any associated images.
+
+= Can I use Patterns in page builders like Elementor? =
+
+Yes! You can use the `[wp_block slug="pattern-slug"]` shortcode <a href="https://docs.dlxplugins.com/pattern-wrangler/features/the-pattern-importer-block">to output block patterns anywhere</a> in your theme or other blocks.
+
+= Does this work with Block Themes? =
+
+Yes. Although it is designed for hybrid setups, it works with block themes, allowing you to merge theme and plugin-based patterns with your own local patterns stored in your database.
+
+Pattern Wrangler simply makes visible the default `wp_block` post type and category, which is where local patterns are stored.
+
+The Patterns view of this plugin uses the classic Patterns screen, with plans to eventually modernize it and put it on par with the Patterns viewer in the Full-Site Editor.
 
 == Screenshots ==
 
@@ -55,6 +71,14 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 6. Preview a Pattern on the frontend.
 
 == Changelog ==
+
+= 1.2.0 =
+* Released 2024-12-18
+* New Feature: Show or hide all unsynced (non-reusable) patterns.
+* New Feature: Show or hide all synced (reusable) patterns.
+* New Feature: Disable both unsynced and synced patterns to completely disable all local patterns.
+* Bug fix: Preview button in the block editor has been fixed for WP 6.7.
+* Note: The next major version of Pattern Wrangler (i.e., 1.3.0) will only be compatible with WP 6.7 or higher. The 1.2.x series will involve minor improvements and bug fixes.
 
 = 1.1.2 =
 * Released 2024-08-16
@@ -100,5 +124,5 @@ Yes, as long as you have the pattern's code, Pattern Wrangler can import it and 
 
 == Upgrade Notice ==
 
-= 1.1.2 =
-Loading script translations is now working.
+= 1.2.0 =
+New features: Show or hide all synced or unsynced patterns, or disable both to completely disable all local patterns. Bug fix: Preview has been fixed for WP 6.7. Note: To keep up with the pace of WP development, the nex major version (i.e., 1.3.0) will have WP 6.7 and above as a requirement.
