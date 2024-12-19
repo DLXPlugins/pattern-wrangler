@@ -25,11 +25,25 @@ class Options {
 	protected static $options = false;
 
 	/**
+	 * Array holding the network options.
+	 *
+	 * @var array
+	 */
+	protected static $network_options = false;
+
+	/**
 	 * The key used to store the options.
 	 *
 	 * @var string
 	 */
 	protected static $options_key = 'dlx_pw_options';
+
+	/**
+	 * The key used to store the network options.
+	 *
+	 * @var string
+	 */
+	protected static $network_options_key = 'dlx_pw_network_options';
 
 	/**
 	 * Update options via sanitization
@@ -44,7 +58,21 @@ class Options {
 		$current_options = self::get_options( $force );
 		foreach ( $options as $key => &$option ) {
 			switch ( $key ) {
-				case 'enabled':
+				case 'hideAllPatterns':
+				case 'hidePatternsMenu':
+				case 'hideCorePatterns':
+				case 'hideRemotePatterns':
+				case 'hideThemePatterns':
+				case 'hidePluginPatterns':
+				case 'hideCoreSyncedPatterns':
+				case 'hideCoreUnsyncedPatterns':
+				case 'disablePatternImporterBlock':
+				case 'allowFrontendPatternPreview':
+				case 'hideUncategorizedPatterns':
+				case 'showCustomizerUI':
+				case 'loadCustomizerCSSBlockEditor':
+				case 'loadCustomizerCSSFrontend':
+				case 'makePatternsExportable':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
 				default:
@@ -67,6 +95,38 @@ class Options {
 	}
 
 	/**
+	 * Update network options via sanitization
+	 *
+	 * @since 1.3.0
+	 * @access public
+	 * @param array $options array of options to save.
+	 * @return array $options.
+	 */
+	public static function update_network_options( $options ) {
+		$force           = true;
+		$current_options = self::get_options( $force );
+		foreach ( $options as $key => &$option ) {
+			switch ( $key ) {
+				case 'patternMothershipSiteId':
+				case 'disableAllPatterns':
+					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
+					break;
+				default:
+					if ( is_array( $option ) ) {
+						$option = Functions::sanitize_array_recursive( $option );
+					} else {
+						$option = sanitize_text_field( $options[ $key ] );
+					}
+					break;
+			}
+		}
+		$options = wp_parse_args( $options, $current_options );
+		update_site_option( self::$network_options_key, $options );
+		self::$network_options = $options;
+		return $options;
+	}
+
+	/**
 	 * Return a list of options.
 	 *
 	 * @param bool $force Whether to get options from cache or not.
@@ -77,15 +137,29 @@ class Options {
 		if ( is_array( self::$options ) && ! $force ) {
 			return self::$options;
 		}
-		if ( Functions::is_multisite() ) {
-			$options = get_site_option( self::$options_key, array() );
-		} else {
-			$options = get_option( self::$options_key, array() );
-		}
+		$options = get_option( self::$options_key, array() );
 
 		$defaults      = self::get_defaults();
 		$options       = wp_parse_args( $options, $defaults );
 		self::$options = $options;
+		return $options;
+	}
+
+	/**
+	 * Get network options.
+	 *
+	 * @param bool $force Whether to get options from cache or not.
+	 *
+	 * @return array Array of network options.
+	 */
+	public static function get_network_options( $force = false ) {
+		if ( is_array( self::$network_options ) && ! $force ) {
+			return self::$network_options;
+		}
+		$options               = get_site_option( self::$network_options_key, array() );
+		$defaults              = self::get_network_defaults();
+		$options               = wp_parse_args( $options, $defaults );
+		self::$network_options = $options;
 		return $options;
 	}
 
@@ -118,6 +192,35 @@ class Options {
 			'loadCustomizerCSSFrontend'    => true,
 			'makePatternsExportable'       => false,
 		);
+
+		/**
+		 * Allow options to be extended by plugins.
+		 *
+		 * @param array $defaults Default options.
+		 * @return array Modified options.
+		 */
+		$defaults = apply_filters( 'dlx_pw_options_defaults', $defaults );
+		return $defaults;
+	}
+
+	/**
+	 * Get defaults for network options.
+	 *
+	 * @return array Default network options.
+	 */
+	public static function get_network_defaults() {
+		$defaults = array(
+			'patternMothershipSiteId' => 1,
+			'disableAllPatterns'      => false,
+			'patternConfiguration'    => 'network_only', // Can be `nework_only`, `local_only`, and `hybrid`.
+		);
+		/**
+		 * Allow options to be extended by plugins.
+		 *
+		 * @param array $defaults Default options.
+		 * @return array Modified options.
+		 */
+		$defaults = apply_filters( 'dlx_pw_network_options_defaults', $defaults );
 		return $defaults;
 	}
 }

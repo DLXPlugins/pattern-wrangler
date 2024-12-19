@@ -26,10 +26,16 @@ class Admin {
 		// Init the admin menu.
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 100 );
 
+		// Init the network admin menu.
+		add_action( 'network_admin_menu', array( $this, 'add_network_admin_menu' ), 100 );
+
 		add_action( 'current_screen', array( $this, 'set_category_submenu_current' ) );
 
 		// For retrieving the options.
 		add_action( 'wp_ajax_dlx_pw_get_options', array( $this, 'ajax_get_options' ) );
+
+		// For retrieving the network options.
+		add_action( 'wp_ajax_dlx_pw_get_network_options', array( $this, 'ajax_get_network_options' ) );
 
 		// For saving the options.
 		add_action( 'wp_ajax_dlx_pw_save_options', array( $this, 'ajax_save_options' ) );
@@ -59,7 +65,7 @@ class Admin {
 	 * Initialize the setting links for the plugin page.
 	 */
 	public function init_settings_links() {
-		$prefix = Functions::is_multisite() ? 'network_admin_' : '';
+		$prefix = Functions::is_multisite( true ) ? 'network_admin_' : '';
 		add_action( $prefix . 'plugin_action_links_' . plugin_basename( DLXPW_PATTERN_WRANGLER_FILE ), array( $this, 'plugin_settings_link' ) );
 	}
 
@@ -73,10 +79,16 @@ class Admin {
 	 */
 	public function plugin_settings_link( $settings ) {
 		$setting_links = array(
-			'settings' => sprintf( '<a href="%s">%s</a>', esc_url( Functions::get_settings_url() ), esc_html__( 'Settings', 'pattern-wrangler' ) ),
-			'docs'     => sprintf( '<a href="%s">%s</a>', esc_url( 'https://docs.dlxplugins.com/v/pattern-wrangler' ), esc_html__( 'Docs', 'pattern-wrangler' ) ),
-			'site'     => sprintf( '<a href="%s" style="color: #f60098;">%s</a>', esc_url( 'https://dlxplugins.com/plugins/pattern-wrangler/' ), esc_html__( 'Plugin Home', 'pattern-wrangler' ) ),
+			'docs' => sprintf( '<a href="%s">%s</a>', esc_url( 'https://docs.dlxplugins.com/v/pattern-wrangler' ), esc_html__( 'Docs', 'pattern-wrangler' ) ),
+			'site' => sprintf( '<a href="%s" style="color: #f60098;">%s</a>', esc_url( 'https://dlxplugins.com/plugins/pattern-wrangler/' ), esc_html__( 'Plugin Home', 'pattern-wrangler' ) ),
 		);
+		if ( Functions::is_multisite( true ) ) {
+			$settings_link = sprintf( '<a href="%s">%s</a>', esc_url( Functions::get_network_settings_url() ), esc_html__( 'Settings', 'pattern-wrangler' ) );
+			array_unshift( $setting_links, $settings_link );
+		} else {
+			$settings_link = sprintf( '<a href="%s">%s</a>', esc_url( Functions::get_settings_url() ), esc_html__( 'Settings', 'pattern-wrangler' ) );
+			array_unshift( $setting_links, $settings_link );
+		}
 		if ( ! is_array( $settings ) ) {
 			return $setting_links;
 		} else {
@@ -190,6 +202,30 @@ class Admin {
 	}
 
 	/**
+	 * Retrieve network options via Ajax.
+	 */
+	public function ajax_get_network_options() {
+		// Get nonce.
+		$nonce = sanitize_text_field( filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_SPECIAL_CHARS ) );
+
+		// Verify nonce.
+		$nonce_action = 'dlx-pw-network-admin-get-options';
+		if ( ! wp_verify_nonce( $nonce, $nonce_action ) || ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error(
+				array(
+					'message'     => __( 'Nonce or permission verification failed.', 'pattern-wrangler' ),
+					'type'        => 'error',
+					'dismissable' => true,
+					'title'       => __( 'Error', 'pattern-wrangler' ),
+				)
+			);
+		}
+		$options = Options::get_network_options();
+
+		wp_send_json_success( $options );
+	}
+
+	/**
 	 * Add synced/unsynced status to patterns.
 	 *
 	 * @param array $columns Columns.
@@ -223,6 +259,22 @@ class Admin {
 	}
 
 	/**
+	 * Add the network admin menu.
+	 */
+	public function add_network_admin_menu() {
+		$hook = add_submenu_page(
+			'settings.php',
+			__( 'Patterns', 'pattern-wrangler' ),
+			__( 'Patterns', 'pattern-wrangler' ),
+			'manage_options',
+			'pattern-wrangler',
+			array( $this, 'network_admin_page' ),
+			10
+		);
+		add_action( 'admin_print_scripts-' . $hook, array( $this, 'enqueue_network_admin_scripts' ) );
+	}
+
+	/**
 	 * Add the admin menu.
 	 */
 	public function add_admin_menu() {
@@ -243,7 +295,7 @@ class Admin {
 				array( $this, 'admin_page' ),
 				4
 			);
-			add_action( 'admin_print_scripts-' . $hook, array( $this, 'enqueue_scripts' ) );
+			add_action( 'admin_print_scripts-' . $hook, array( $this, 'enqueue_admin_scripts' ) );
 			return;
 		}
 		add_menu_page(
@@ -275,7 +327,7 @@ class Admin {
 			array( $this, 'admin_page' ),
 			10
 		);
-		add_action( 'admin_print_scripts-' . $hook, array( $this, 'enqueue_scripts' ) );
+		add_action( 'admin_print_scripts-' . $hook, array( $this, 'enqueue_admin_scripts' ) );
 	}
 
 	/**
@@ -313,7 +365,7 @@ class Admin {
 	/**
 	 * Enqueue scripts for the admin page.
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_admin_scripts() {
 		$options     = Options::get_options();
 		$current_tab = Functions::get_admin_tab();
 		if ( null === $current_tab || 'settings' === $current_tab ) {
@@ -352,6 +404,42 @@ class Admin {
 	}
 
 	/**
+	 * Enqueue scripts for the network admin page.
+	 */
+	public function enqueue_network_admin_scripts() {
+		// Enqueue admins scripts.
+		$deps = require_once Functions::get_plugin_dir( 'dist/dlx-pw-network-admin-settings.asset.php' );
+		wp_enqueue_script(
+			'dlx-pw-network-admin-settings',
+			Functions::get_plugin_url( 'dist/dlx-pw-network-admin-settings.js' ),
+			$deps['dependencies'],
+			$deps['version'],
+			true
+		);
+
+		wp_localize_script(
+			'dlx-pw-network-admin-settings',
+			'dlxPatternWranglerNetworkAdminSettings',
+			array(
+				'getNonce'   => wp_create_nonce( 'dlx-pw-network-admin-get-options' ),
+				'saveNonce'  => wp_create_nonce( 'dlx-pw-network-admin-save-options' ),
+				'resetNonce' => wp_create_nonce( 'dlx-pw-network-admin-reset-options' ),
+				'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+			)
+		);
+		\wp_set_script_translations( 'dlx-pw-network-admin-settings', 'pattern-wrangler' );
+
+		// Enqueue admin styles.
+		wp_enqueue_style(
+			'dlx-pw-admin-css',
+			Functions::get_plugin_url( 'dist/dlx-pw-admin-css.css' ),
+			array(),
+			Functions::get_plugin_version(),
+			'all'
+		);
+	}
+
+	/**
 	 * Render the admin page.
 	 */
 	public function admin_page() {
@@ -361,7 +449,7 @@ class Admin {
 				<div class="dlx-pw-logo-wrapper">
 					<div class="dlx-pw-logo">
 						<h2 id="dlx-pw-admin-header">
-							<img src="<?php echo esc_url( Functions::get_plugin_url( 'assets/img/logo.png' ) ); ?>" alt="GenerateBlocks Hacks" />
+							<img src="<?php echo esc_url( Functions::get_plugin_url( 'assets/img/logo.png' ) ); ?>" alt="Pattern Wrangler" />
 						</h2>
 					</div>
 					<div class="header__btn-wrap">
@@ -382,6 +470,37 @@ class Admin {
 						<?php
 					}
 					?>
+				</div>
+			</main>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render the network admin page.
+	 */
+	public function network_admin_page() {
+		?>
+		<div class="dlx-pw-admin-wrap">
+			<header class="dlx-pw-admin-header">
+				<div class="dlx-pw-logo-wrapper">
+					<div class="dlx-pw-logo">
+						<h2 id="dlx-pw-admin-header">
+							<img src="<?php echo esc_url( Functions::get_plugin_url( 'assets/img/logo.png' ) ); ?>" alt="Pattern Wrangler" />
+						</h2>
+					</div>
+					<div class="header__btn-wrap">
+						<a href="<?php echo esc_url( 'https://docs.dlxplugins.com/v/pattern-wrangler' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Docs', 'pattern-wrangler' ); ?></a>
+						<a href="<?php echo esc_url( 'https://dlxplugins.com/support/' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Support', 'pattern-wrangler' ); ?></a>
+					</div>
+				</div>
+			</header>
+			<?php
+			$current_tab = Functions::get_admin_tab();
+			?>
+			<main class="dlx-pw-admin-body-wrapper">
+				<div class="dlx-pw-body__content">
+				<div id="dlx-pattern-wrangler-network-admin"></div>
 				</div>
 			</main>
 		</div>

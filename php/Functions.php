@@ -32,14 +32,14 @@ class Functions {
 		$is_network_admin = false;
 		if ( $network_admin ) {
 			if ( is_network_admin() ) {
-				if ( is_multisite() && is_plugin_active_for_network( self::get_plugin_slug() ) ) {
+				if ( is_multisite() && is_plugin_active_for_network( self::get_plugin_file() ) ) {
 					return true;
 				}
 			} else {
 				return false;
 			}
 		}
-		if ( is_multisite() && is_plugin_active_for_network( self::get_plugin_slug() ) ) {
+		if ( is_multisite() && is_plugin_active_for_network( self::get_plugin_file() ) ) {
 			return true;
 		}
 		return false;
@@ -270,6 +270,26 @@ class Functions {
 		if ( $hide_all_patterns && $hide_patterns_menu ) {
 			$options_url = admin_url( 'themes.php?page=pattern-wrangler' );
 		}
+
+		if ( ! empty( $tab ) ) {
+			$options_url = add_query_arg( array( 'tab' => sanitize_title( $tab ) ), $options_url );
+			if ( ! empty( $sub_tab ) ) {
+				$options_url = add_query_arg( array( 'subtab' => sanitize_title( $sub_tab ) ), $options_url );
+			}
+		}
+		return $options_url;
+	}
+
+	/**
+	 * Return the URL to the admin screen
+	 *
+	 * @param string $tab     Tab path to load.
+	 * @param string $sub_tab Subtab path to load.
+	 *
+	 * @return string URL to admin screen. Output is not escaped.
+	 */
+	public static function get_network_settings_url( $tab = '', $sub_tab = '' ) {
+		$options_url = network_admin_url( 'settings.php?page=pattern-wrangler' );
 
 		if ( ! empty( $tab ) ) {
 			$options_url = add_query_arg( array( 'tab' => sanitize_title( $tab ) ), $options_url );

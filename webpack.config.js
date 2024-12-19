@@ -22,7 +22,7 @@ module.exports = ( env ) => {
 		{
 			entry: {
 				'dlx-pw-admin': './src/js/react/views/main/index.js',
-				'dlx-pw-admin-license': './src/js/react/views/license/index.js',
+				'dlx-pw-network-admin-settings': './src/js/react/views/network-settings/index.js',
 				'dlx-pw-admin-css': './src/scss/admin.scss',
 				'dlx-pw-post-utilities': './src/js/utils/index.js',
 				'dlx-pw-admin-utils-css': './src/scss/admin-utils.scss',
