@@ -8,6 +8,7 @@
 		"dlxPatternWranglerLicense": "readonly",
 		"dlxPatternWranglerAdminUrl": "readonly",
 		"dlxPatternWranglerPreview": "readonly",
+		"dlxPatternWranglerAdmin": "readonly",
 		"dlxPatternWranglerNetworkAdminSettings": "readonly"
 	},
 	"env": {

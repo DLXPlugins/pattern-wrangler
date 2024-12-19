@@ -31,12 +31,6 @@ class Admin {
 
 		add_action( 'current_screen', array( $this, 'set_category_submenu_current' ) );
 
-		// For retrieving the options.
-		add_action( 'wp_ajax_dlx_pw_get_options', array( $this, 'ajax_get_options' ) );
-
-		// For retrieving the network options.
-		add_action( 'wp_ajax_dlx_pw_get_network_options', array( $this, 'ajax_get_network_options' ) );
-
 		// For saving the options.
 		add_action( 'wp_ajax_dlx_pw_save_options', array( $this, 'ajax_save_options' ) );
 
@@ -202,30 +196,6 @@ class Admin {
 	}
 
 	/**
-	 * Retrieve network options via Ajax.
-	 */
-	public function ajax_get_network_options() {
-		// Get nonce.
-		$nonce = sanitize_text_field( filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_SPECIAL_CHARS ) );
-
-		// Verify nonce.
-		$nonce_action = 'dlx-pw-network-admin-get-options';
-		if ( ! wp_verify_nonce( $nonce, $nonce_action ) || ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error(
-				array(
-					'message'     => __( 'Nonce or permission verification failed.', 'pattern-wrangler' ),
-					'type'        => 'error',
-					'dismissable' => true,
-					'title'       => __( 'Error', 'pattern-wrangler' ),
-				)
-			);
-		}
-		$options = Options::get_network_options();
-
-		wp_send_json_success( $options );
-	}
-
-	/**
 	 * Add synced/unsynced status to patterns.
 	 *
 	 * @param array $columns Columns.
@@ -366,7 +336,12 @@ class Admin {
 	 * Enqueue scripts for the admin page.
 	 */
 	public function enqueue_admin_scripts() {
-		$options     = Options::get_options();
+		// Retrieve local options.
+		$options               = Options::get_options();
+		$categories            = Functions::get_pattern_categories();
+		$options['registered'] = $categories['registered'];
+		$options['categories'] = $categories['categories'];
+
 		$current_tab = Functions::get_admin_tab();
 		if ( null === $current_tab || 'settings' === $current_tab ) {
 			// Enqueue main scripts.
@@ -383,11 +358,15 @@ class Admin {
 				'dlx-pw-admin',
 				'dlxPatternWranglerAdmin',
 				array(
-					'getNonce'     => wp_create_nonce( 'dlx-pw-admin-get-options' ),
-					'saveNonce'    => wp_create_nonce( 'dlx-pw-admin-save-options' ),
-					'resetNonce'   => wp_create_nonce( 'dlx-pw-admin-reset-options' ),
-					'previewNonce' => wp_create_nonce( 'dlx-pw-admin-preview' ),
-					'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+					'getNonce'                => wp_create_nonce( 'dlx-pw-admin-get-options' ),
+					'saveNonce'               => wp_create_nonce( 'dlx-pw-admin-save-options' ),
+					'resetNonce'              => wp_create_nonce( 'dlx-pw-admin-reset-options' ),
+					'previewNonce'            => wp_create_nonce( 'dlx-pw-admin-preview' ),
+					'ajaxurl'                 => admin_url( 'admin-ajax.php' ),
+					'options'                 => $options,
+					'isMultisite'             => Functions::is_multisite(),
+					'networkAdminSettingsUrl' => Functions::get_network_settings_url(),
+					'isUserNetworkAdmin'      => current_user_can( 'manage_network' ),
 				)
 			);
 			\wp_set_script_translations( 'dlx-pw-admin', 'pattern-wrangler' );
@@ -407,6 +386,9 @@ class Admin {
 	 * Enqueue scripts for the network admin page.
 	 */
 	public function enqueue_network_admin_scripts() {
+		// Retrieve network options.
+		$options = Options::get_network_options();
+
 		// Enqueue admins scripts.
 		$deps = require_once Functions::get_plugin_dir( 'dist/dlx-pw-network-admin-settings.asset.php' );
 		wp_enqueue_script(
@@ -417,14 +399,25 @@ class Admin {
 			true
 		);
 
+		// Get mothership (default network site) selected data.
+		$mothership_site_id        = absint( $options['patternMothershipSiteId'] );
+		$mothership_site_permalink = get_admin_url( $mothership_site_id );
+		$mothership_site_title     = Functions::get_network_site_name( $mothership_site_id );
+
 		wp_localize_script(
 			'dlx-pw-network-admin-settings',
 			'dlxPatternWranglerNetworkAdminSettings',
 			array(
-				'getNonce'   => wp_create_nonce( 'dlx-pw-network-admin-get-options' ),
-				'saveNonce'  => wp_create_nonce( 'dlx-pw-network-admin-save-options' ),
-				'resetNonce' => wp_create_nonce( 'dlx-pw-network-admin-reset-options' ),
-				'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+				'getNonce'              => wp_create_nonce( 'dlx-pw-network-admin-get-options' ),
+				'saveNonce'             => wp_create_nonce( 'dlx-pw-network-admin-save-options' ),
+				'resetNonce'            => wp_create_nonce( 'dlx-pw-network-admin-reset-options' ),
+				'restEndpoint'          => REST::get_rest_endpoint( 'search/sites' ),
+				'restNonce'             => wp_create_nonce( 'wp_rest' ),
+				'ajaxurl'               => admin_url( 'admin-ajax.php' ),
+				'options'               => $options,
+				'selectedSite'          => $mothership_site_id,
+				'selectedSitePermalink' => $mothership_site_permalink,
+				'selectedSiteTitle'     => $mothership_site_title,
 			)
 		);
 		\wp_set_script_translations( 'dlx-pw-network-admin-settings', 'pattern-wrangler' );

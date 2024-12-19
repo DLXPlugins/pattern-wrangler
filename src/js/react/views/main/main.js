@@ -10,7 +10,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import { useAsyncResource } from 'use-async-resource';
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle, Lightbulb } from 'lucide-react';
 
 import { __, _n } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
@@ -20,30 +20,6 @@ import classNames from 'classnames';
 import SendCommand from '../../utils/SendCommand';
 import Notice from '../../components/Notice';
 import SaveResetButtons from '../../components/SaveResetButtons';
-
-const retrieveOptions = () => {
-	return SendCommand( 'dlx_pw_get_options', {
-		nonce: dlxPatternWranglerAdmin.getNonce,
-	} );
-};
-
-const Main = ( props ) => {
-	const [ defaults ] = useAsyncResource(
-		retrieveOptions,
-		[]
-	);
-	return (
-		<Suspense
-			fallback={
-				<>
-					<h2>{ __( 'Loading…', 'pattern-wrangler' ) }</h2>
-				</>
-			}
-		>
-			<Interface defaults={ defaults } { ...props } />
-		</Suspense>
-	);
-};
 
 const usePatternCategories = ( props ) => {
 	const { getValues } = props;
@@ -194,10 +170,8 @@ const Category = ( props ) => {
 	);
 };
 
-const Interface = ( props ) => {
-	const { defaults } = props;
-	const response = defaults();
-	const { data } = response.data;
+const Main = ( props ) => {
+	const data = dlxPatternWranglerAdmin.options;
 
 	const {
 		control,
@@ -259,6 +233,28 @@ const Interface = ( props ) => {
 						__( 'Configure which patterns are displayed and adjust settings and categories.', 'pattern-wrangler' )
 					}
 				</p>
+				{
+					( dlxPatternWranglerAdmin.isMultisite && dlxPatternWranglerAdmin.isUserNetworkAdmin ) && (
+						<Notice
+							className="dlx-pw-admin-notice"
+							variant="info"
+							icon={ () => <Lightbulb /> }
+						>
+							<div>
+								{ __( 'This is a multisite installation. You can manage network settings by clicking the button below.', 'pattern-wrangler' ) }
+							</div>
+							<div>
+								<Button
+									variant="link"
+									href={ dlxPatternWranglerAdmin.networkAdminSettingsUrl }
+									target="_blank"
+								>
+									{ __( 'Network Settings', 'pattern-wrangler' ) }
+								</Button>
+							</div>
+						</Notice>
+					)
+				}
 			</div>
 			{ /* eslint-disable-next-line no-unused-vars */ }
 			<form onSubmit={ handleSubmit( ( formData ) => { } ) }>

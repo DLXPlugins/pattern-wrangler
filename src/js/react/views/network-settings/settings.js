@@ -7,6 +7,7 @@ import {
 	SelectControl,
 	PanelBody,
 	Popover,
+	BaseControl,
 	Button,
 } from '@wordpress/components';
 import { useAsyncResource } from 'use-async-resource';
@@ -20,35 +21,14 @@ import classNames from 'classnames';
 import SendCommand from '../../utils/SendCommand';
 import Notice from '../../components/Notice';
 import SaveResetButtons from '../../components/SaveResetButtons';
+import SitePicker from '../../components/SitePicker';
 
-const retrieveOptions = () => {
-	return SendCommand( 'dlx_pw_get_network_options', {
-		nonce: dlxPatternWranglerNetworkAdminSettings.getNonce,
-	} );
-};
+const Settings = ( props ) => {
+	const data = dlxPatternWranglerNetworkAdminSettings.options;
 
-const Setings = ( props ) => {
-	const [ defaults ] = useAsyncResource(
-		retrieveOptions,
-		[]
-	);
-	return (
-		<Suspense
-			fallback={
-				<>
-					<h2>{ __( 'Loading…', 'pattern-wrangler' ) }</h2>
-				</>
-			}
-		>
-			<Interface defaults={ defaults } { ...props } />
-		</Suspense>
-	);
-};
-
-const Interface = ( props ) => {
-	const { defaults } = props;
-	const response = defaults();
-	const { data } = response.data;
+	const [ selectedSiteId, setSelectedSiteId ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSite );
+	const [ selectedSitePermalink, setSelectedSitePermalink ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSitePermalink );
+	const [ selectedSiteTitle, setSelectedSiteTitle ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSiteTitle );
 
 	const {
 		control,
@@ -89,7 +69,22 @@ const Interface = ( props ) => {
 								</th>
 								<td>
 									<div className="dlx-admin__row">
-										Test row
+										<BaseControl
+											id="dlx-pw-network-settings-default-patterns-source"
+											label={ __( 'Default Patterns Source', 'pattern-wrangler' ) }
+											help={ __( 'Select the site that will be used as the source of truth for patterns across the network.', 'pattern-wrangler' ) }
+										>
+											<SitePicker
+												restEndpoint={ dlxPatternWranglerNetworkAdminSettings.restEndpoint }
+												restNonce={ dlxPatternWranglerNetworkAdminSettings.restNonce }
+												selectedSite={ selectedSiteId }
+												savedTitle={ selectedSiteTitle }
+												savedPermalink={ selectedSitePermalink }
+												onItemSelect={ ( item ) => {
+													console.log( 'item', item );
+												} }
+											/>
+										</BaseControl>
 									</div>
 								</td>
 							</tr>
@@ -110,4 +105,4 @@ const Interface = ( props ) => {
 	);
 };
 
-export default Setings;
+export default Settings;

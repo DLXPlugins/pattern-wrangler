@@ -321,6 +321,21 @@ class Functions {
 	}
 
 	/**
+	 * Get the name of a network site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return string The site name.
+	 */
+	public static function get_network_site_name( $site_id ) {
+		$site = get_site( $site_id );
+		if ( ! $site ) {
+			return 'Unknown';
+		}
+		return $site->blogname;
+	}
+
+	/**
 	 * Take a _ separated field and convert to camelcase.
 	 *
 	 * @param string $field Field to convert to camelcase.
