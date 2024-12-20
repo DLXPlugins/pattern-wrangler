@@ -182,6 +182,129 @@ class Functions {
 	}
 
 	/**
+	 * Check if paterns are enabled for the current site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return bool true if enabled, false if disabled.
+	 */
+	public static function is_patterns_enabled_for_site( $site_id = 1 ) {
+		$options           = Options::get_options();
+		$hide_all_patterns = (bool) $options['hideAllPatterns'] ?? false;
+		$is_multisite      = Functions::is_multisite( false );
+
+		if ( $is_multisite ) {
+			// Get network values.
+			$network_options   = Options::get_network_options();
+			$hide_all_patterns = 'disabled' === $network_options['patternConfiguration'];
+
+			// Get the site ID. We might need this later.
+			if ( 0 === $site_id ) {
+				$site_id = get_current_blog_id();
+			}
+		}
+
+		/**
+		 * Allow plugin authors to override the network setting.
+		 *
+		 * @param bool $hide_all_patterns The network setting.
+		 * @param int  $site_id         The site ID.
+		 * @param bool $is_multisite    Whether the site is on a multisite install.
+		 *
+		 * @return bool true if hiding patterns, false if not.
+		 */
+		$hide_all_patterns = apply_filters( 'dlxpw_hide_all_patterns', $hide_all_patterns, $site_id, true );
+
+		// Return the value.
+		if ( $hide_all_patterns ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Check if core patterns are enabled for the current site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return bool true if enabled, false if disabled.
+	 */
+	public static function is_core_patterns_enabled_for_site( $site_id = 1 ) {
+		$options            = Options::get_options();
+		$hide_core_patterns = (bool) $options['hideCorePatterns'] ?? false;
+		$is_multisite       = Functions::is_multisite( false );
+
+		if ( $is_multisite ) {
+			// Get network values.
+			$network_options = Options::get_network_options();
+			$hide_core       = (bool) $network_options['hideCorePatterns'] ?? false;
+
+			// Get the site ID. We might need this later.
+			if ( 0 === $site_id ) {
+				$site_id = get_current_blog_id();
+			}
+		}
+
+		/**
+		 * Allow plugin authors to override the local/network setting.
+		 *
+		 * @param bool $hide_core_patterns The network setting.
+		 * @param int  $site_id         The site ID.
+		 * @param bool $is_multisite    Whether the site is on a multisite install.
+		 *
+		 * @return bool true if hiding patterns, false if not.
+		 */
+		$hide_core_patterns = apply_filters( 'dlxpw_hide_core_patterns', $hide_core_patterns, $site_id, true );
+
+		// Return the value.
+		if ( $hide_core_patterns ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Check if remote patterns are enabled for the current site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return bool true if enabled, false if disabled.
+	 */
+	public static function is_remote_patterns_enabled_for_site( $site_id = 1 ) {
+		$options              = Options::get_options();
+		$hide_remote_patterns = (bool) $options['hideRemotePatterns'] ?? false;
+		$is_multisite         = Functions::is_multisite( false );
+
+		if ( $is_multisite ) {
+			// Get network values.
+			$network_options      = Options::get_network_options();
+			$hide_remote_patterns = (bool) $network_options['hideRemotePatterns'] ?? false;
+
+			// Get the site ID. We might need this later.
+			if ( 0 === $site_id ) {
+				$site_id = get_current_blog_id();
+			}
+		}
+
+		/**
+		 * Allow plugin authors to override the local/network setting.
+		 *
+		 * @param bool $hide_remote_patterns The network setting.
+		 * @param int  $site_id         The site ID.
+		 * @param bool $is_multisite    Whether the site is on a multisite install.
+		 *
+		 * @return bool true if hiding patterns, false if not.
+		 */
+		$hide_remote_patterns = apply_filters( 'dlxpw_hide_remote_patterns', $hide_remote_patterns, $site_id, true );
+
+		// Return the value.
+		if ( $hide_remote_patterns ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Check if a pattern is synced.
 	 *
 	 * @param int $pattern_id The pattern ID.

@@ -85,11 +85,7 @@ class Options {
 			}
 		}
 		$options = wp_parse_args( $options, $current_options );
-		if ( Functions::is_multisite() ) {
-			update_site_option( self::$options_key, $options );
-		} else {
-			update_option( self::$options_key, $options );
-		}
+		update_option( self::$options_key, $options );
 		self::$options = $options;
 		return $options;
 	}
@@ -107,7 +103,12 @@ class Options {
 		$current_options = self::get_network_options( $force );
 		foreach ( $options as $key => &$option ) {
 			switch ( $key ) {
-				case 'disableAllPatterns':
+				case 'hideCorePatterns':
+				case 'hideRemotePatterns':
+				case 'hideSyncedPatternsForNetwork':
+				case 'hideUnsyncedPatternsForNetwork':
+				case 'disablePatternsImporterBlock':
+				case 'disablePatternExporterForNetwork':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
 				default:
@@ -210,12 +211,13 @@ class Options {
 	public static function get_network_defaults() {
 		$defaults = array(
 			'patternMothershipSiteId'          => 1,
-			'disableAllPatterns'               => false,
-			'patternConfiguration'             => 'hybrid', // Can be `nework_only`, `local_only`, and `hybrid`.
-			'allowSyncedPatternsForNetwork'    => true, // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
-			'allowUnsyncedPatternsForNetwork'  => true, // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.
+			'patternConfiguration'             => 'hybrid', // Can be `nework_only`, `local_only`, `hybrid`, or `disabled`.
+			'hideSyncedPatternsForNetwork'     => false, // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
+			'hideUnsyncedPatternsForNetwork'   => false, // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.
 			'disablePatternsImporterBlock'     => false, // If false, site admins can still configure this option per site.
-			'disablePatternExporterForNetwork' => true, // If true, site admins will not see a pattern exporter option.
+			'disablePatternExporterForNetwork' => false, // If true, site admins will not see a pattern exporter option.
+			'hideCorePatterns'                 => false,
+			'hideRemotePatterns'               => false,
 		);
 		/**
 		 * Allow options to be extended by plugins.

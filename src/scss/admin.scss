@@ -350,6 +350,9 @@ svg.lucide {
 		bottom: auto;
 		line-height: 0;
 	}
+	.components-snackbar__content-with-icon {
+		padding-left: 50px;
+	}
 
 	&.dlx-pw-snackbar-loading {
 		svg {

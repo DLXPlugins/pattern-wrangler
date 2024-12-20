@@ -353,7 +353,7 @@ class Admin {
 		remove_submenu_page( 'themes.php', 'edit.php?post_type=wp_block' ); // Remove from Appearance in WP 6.5.
 		remove_submenu_page( 'generateblocks', 'edit.php?post_type=wp_block' ); // Remove from GenerateBlocks screen.
 
-		if ( $hide_all_patterns && $hide_patterns_menu ) {
+		if ( ! Functions::is_patterns_enabled_for_site() && ( $hide_patterns_menu || Functions::is_multisite() ) ) {
 			$hook = add_submenu_page(
 				'themes.php',
 				__( 'Patterns', 'pattern-wrangler' ),
@@ -462,6 +462,7 @@ class Admin {
 					'previewNonce'            => wp_create_nonce( 'dlx-pw-admin-preview' ),
 					'ajaxurl'                 => admin_url( 'admin-ajax.php' ),
 					'options'                 => $options,
+					'networkOptions'          => Options::get_network_options(),
 					'isMultisite'             => Functions::is_multisite(),
 					'networkAdminSettingsUrl' => Functions::get_network_settings_url(),
 					'isUserNetworkAdmin'      => current_user_can( 'manage_network' ),

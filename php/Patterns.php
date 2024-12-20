@@ -100,21 +100,19 @@ class Patterns {
 			add_action( 'after_setup_theme', array( $this, 'enable_menus_ui' ), 100 );
 		}
 
-		$hide_all_patterns = (bool) $options['hideAllPatterns'];
+		$hide_all_patterns = Functions::is_patterns_enabled_for_site() ? false : true;
 		if ( $hide_all_patterns ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			add_filter( 'should_load_remote_block_patterns', '__return_false' );
 		}
 
 		// Check if remote patterns is disabled.
-		$hide_remote_patterns = (bool) $options['hideRemotePatterns'];
-		if ( $hide_remote_patterns ) {
+		if ( ! Functions::is_remote_patterns_enabled_for_site() ) {
 			add_filter( 'should_load_remote_block_patterns', '__return_false' );
 		}
 
 		// Check if core patterns is disabled.
-		$hide_core_patterns = (bool) $options['hideCorePatterns'];
-		if ( $hide_core_patterns ) {
+		if ( Functions::is_core_patterns_enabled_for_site() ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
@@ -507,10 +505,8 @@ class Patterns {
 		// Get options.
 		$options = Options::get_options();
 
-		$hide_all_patterns = (bool) $options['hideAllPatterns'];
-
-		// Exit early if not enabled.
-		if ( ! $hide_all_patterns ) {
+		// Check if patterns are enabled for the current site. If not, deregister all patterns.
+		if ( Functions::is_patterns_enabled_for_site() ) {
 			return;
 		}
 
@@ -536,7 +532,7 @@ class Patterns {
 		// Get options.
 		$options = Options::get_options();
 
-		$hide_all_patterns           = (bool) $options['hideAllPatterns'];
+		$hide_all_patterns           = Functions::is_patterns_enabled_for_site() ? false : true;
 		$hide_core_synced_patterns   = (bool) $options['hideCoreSyncedPatterns'];
 		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
 
