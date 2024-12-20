@@ -388,9 +388,12 @@ class Functions {
 	 */
 	public static function get_settings_url( $tab = '', $sub_tab = '' ) {
 		$options            = Options::get_options();
-		$hide_all_patterns  = (bool) $options['hideAllPatterns'] ?? false;
+		$hide_all_patterns  = ! Functions::is_patterns_enabled_for_site();
 		$hide_patterns_menu = (bool) $options['hidePatternsMenu'] ?? false;
-		$options_url        = admin_url( 'edit.php?post_type=wp_block&page=pattern-wrangler' );
+		if ( Functions::is_multisite( false ) && $hide_all_patterns ) {
+			$hide_patterns_menu = true;
+		}
+		$options_url = admin_url( 'edit.php?post_type=wp_block&page=pattern-wrangler' );
 		if ( $hide_all_patterns && $hide_patterns_menu ) {
 			$options_url = admin_url( 'themes.php?page=pattern-wrangler' );
 		}

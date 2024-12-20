@@ -368,10 +368,10 @@ const Main = ( props ) => {
 					unsyncedPatternData.localHidden = getValues( 'hideCoreUnsyncedPatterns' );
 					unsyncedPatternData.networkHidden = false;
 				}
-			} else {
-				unsyncedPatternData.localHidden = getValues( 'hideCoreUnsyncedPatterns' );
-				unsyncedPatternData.networkHidden = getValues( 'hideCoreUnsyncedPatterns' );
 			}
+		} else {
+			unsyncedPatternData.localHidden = getValues( 'hideCoreUnsyncedPatterns' );
+			unsyncedPatternData.networkHidden = getValues( 'hideCoreUnsyncedPatterns' );
 		}
 		return (
 			<div className="dlx-admin__row">
@@ -424,15 +424,15 @@ const Main = ( props ) => {
 					syncedPatternData.localHidden = getValues( 'hideCoreSyncedPatterns' );
 					syncedPatternData.networkHidden = false;
 				}
-			} else {
-				syncedPatternData.localHidden = getValues( 'hideCoreSyncedPatterns' );
-				syncedPatternData.networkHidden = getValues( 'hideCoreSyncedPatterns' );
 			}
+		} else {
+			syncedPatternData.localHidden = getValues( 'hideCoreSyncedPatterns' );
+			syncedPatternData.networkHidden = getValues( 'hideCoreSyncedPatterns' );
 		}
 		return (
 			<div className="dlx-admin__row">
 				<Controller
-					name="hideCoreUnsyncedPatterns"
+					name="hideCoreSyncedPatterns"
 					control={ control }
 					render={ ( { field: { onChange, value } } ) => (
 						<ToggleControl
@@ -461,62 +461,7 @@ const Main = ( props ) => {
 		);
 	};
 
-	/**
-	 * Get the show patterns importer toggle control.
-	 *
-	 * @return {React.Component} The patterns importer toggle control.
-	 */
-	const getShowPatternsImporterToggleControl = () => {
-		const patternsImporterData = {
-			localHidden: false,
-			networkHidden: false,
-		};
-		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only' ) {
-				if ( networkOptions.disablePatternsImporterBlock ) {
-					patternsImporterData.localHidden = true;
-					patternsImporterData.networkHidden = true;
-				} else {
-					patternsImporterData.localHidden = getValues( 'makePatternsExportable' );
-					patternsImporterData.networkHidden = false;
-				}
-			} else {
-				patternsImporterData.localHidden = getValues( 'disablePatternsImporterBlock' );
-				patternsImporterData.networkHidden = getValues( 'disablePatternsImporterBlock' );
-			}
-		}
-		return (
-			<div className="dlx-admin__row">
-				<Controller
-					name="disablePatternsImporterBlock"
-					control={ control }
-					render={ ( { field: { onChange, value } } ) => (
-						<ToggleControl
-							label={ __( 'Disable Patterns Importer Block', 'pattern-wrangler' ) }
-							checked={ patternsImporterData.localHidden }
-							disabled={ patternsImporterData.networkHidden }
-							help={ __( 'Disable the patterns importer block, which helps load in remote images.', 'pattern-wrangler' ) }
-							onChange={ ( boolValue ) => {
-								onChange( boolValue );
-							} }
-						/>
-					) }
-				/>
-				{
-					( dlxPatternWranglerAdmin.isMultisite && patternsImporterData.networkHidden ) && (
-						<Notice
-							className="dlx-pw-admin-notice"
-							variant="info"
-							icon={ () => <Info /> }
-						>
-							{ __( 'This setting is overridden by the network settings.', 'pattern-wrangler' ) }
-						</Notice>
-					)
-				}
-			</div>
-		);
-	};
-
+	
 	/**
 	 * Get the show patterns exporter toggle control.
 	 *
@@ -544,7 +489,7 @@ const Main = ( props ) => {
 		return (
 			<div className="dlx-admin__row">
 				<Controller
-					name="allowPatternsExport"
+					name="makePatternsExportable"
 					control={ control }
 					render={ ( { field: { onChange, value } } ) => (
 						<ToggleControl
@@ -574,6 +519,62 @@ const Main = ( props ) => {
 	};
 
 	/**
+	 * Get the permissions for the pattern importer block.
+	 *
+	 * @return {React.Component} The patterns exporter toggle control.
+	 */
+	const getShowPatternsImporterBlock = () => {
+		const patternsBlockData = {
+			canUseBlock: false,
+			networkCanUseBlock: false,
+		};
+		if ( dlxPatternWranglerAdmin.isMultisite ) {
+			if ( networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only' ) {
+				if ( networkOptions.disablePatternImporterBlock ) {
+					patternsBlockData.canUseBlock = false;
+					patternsBlockData.networkCanUseBlock = false;
+				} else {
+					patternsBlockData.canUseBlock = true;
+					patternsBlockData.networkCanUseBlock = true;
+				}
+			} else {
+				patternsBlockData.canUseBlock = getValues( 'disablePatternImporterBlock' );
+				patternsBlockData.networkCanUseBlock = getValues( 'disablePatternImporterBlock' );
+			}
+		}
+		return (
+			<div className="dlx-admin__row">
+				<Controller
+					name="disablePatternImporterBlock"
+					control={ control }
+					render={ ( { field: { onChange, value } } ) => (
+						<ToggleControl
+							label={ __( 'Allow Patterns to be imported via the Patterns Importer Block', 'pattern-wrangler' ) }
+							checked={ patternsBlockData.canUseBlock }
+							disabled={ ! patternsBlockData.networkCanUseBlock }
+							help={ __( 'Disable the patterns importer block, which helps load in remote images.', 'pattern-wrangler' ) }
+							onChange={ ( boolValue ) => {
+								onChange( boolValue );
+							} }
+						/>
+					) }
+				/>
+				{
+					( dlxPatternWranglerAdmin.isMultisite && ! patternsBlockData.networkCanUseBlock ) && (
+						<Notice
+							className="dlx-pw-admin-notice"
+							variant="info"
+							icon={ () => <Info /> }
+						>
+							{ __( 'This setting is overridden by the network settings.', 'pattern-wrangler' ) }
+						</Notice>
+					)
+				}
+			</div>
+		);
+	};
+
+	/**
 	 * Get the Hide All Patterns togggle control.
 	 *
 	 * @return {React.Component} The patterns exporter toggle control.
@@ -589,19 +590,22 @@ const Main = ( props ) => {
 				hideAllPatternsData.networkAllPatternsDisabled = false;
 			} else {
 				hideAllPatternsData.allPatternsDisabled = getValues( 'hideAllPatterns' );
-				hideAllPatternsData.networkAllPatternsDisabled = true;
+				hideAllPatternsData.networkAllPatternsDisabled = false;
 			}
+		} else {
+			hideAllPatternsData.allPatternsDisabled = getValues( 'hideAllPatterns' );
+			hideAllPatternsData.networkAllPatternsDisabled = false;
 		}
 		return (
 			<div className="dlx-admin__row">
 				<Controller
-					name="allowPatternsExport"
+					name="hideAllPatterns"
 					control={ control }
 					render={ ( { field: { onChange, value } } ) => (
 						<ToggleControl
 							label={ __( 'Hide All Patterns', 'pattern-wrangler' ) }
-							checked={ ! hideAllPatternsData.allPatternsDisabled }
-							disabled={ ! hideAllPatternsData.networkAllPatternsDisabled }
+							checked={ hideAllPatternsData.allPatternsDisabled }
+							disabled={ hideAllPatternsData.networkAllPatternsDisabled }
 							help={ __( 'Disable all patterns and the pattern selector.', 'pattern-wrangler' ) }
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );
@@ -610,7 +614,7 @@ const Main = ( props ) => {
 					) }
 				/>
 				{
-					( dlxPatternWranglerAdmin.isMultisite && ! hideAllPatternsData.networkCanShowPatterns ) && (
+					( dlxPatternWranglerAdmin.isMultisite && hideAllPatternsData.networkAllPatternsDisabled ) && (
 						<Notice
 							className="dlx-pw-admin-notice"
 							variant="info"
@@ -824,7 +828,7 @@ const Main = ( props ) => {
 											) }
 										/>
 									</div>
-									{ getShowPatternsImporterToggleControl() }
+									{ getShowPatternsImporterBlock() }
 									<div className="dlx-admin__row">
 										<Controller
 											name="allowFrontendPatternPreview"

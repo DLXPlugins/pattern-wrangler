@@ -54,7 +54,7 @@ const Settings = ( props ) => {
 			resetNonce: dlxPatternWranglerNetworkAdminSettings.resetNonce,
 			hideSyncedPatternsForNetwork: data.hideSyncedPatternsForNetwork,
 			hideUnsyncedPatternsForNetwork: data.hideUnsyncedPatternsForNetwork,
-			disablePatternsImporterBlock: data.disablePatternsImporterBlock,
+			disablePatternImporterBlock: data.disablePatternImporterBlock,
 			disablePatternExporterForNetwork: data.disablePatternExporterForNetwork,
 			hideCorePatterns: data.hideCorePatterns,
 			hideRemotePatterns: data.hideRemotePatterns,
@@ -252,7 +252,7 @@ const Settings = ( props ) => {
 									<div className="dlx-admin__row">
 										<Controller
 											control={ control }
-											name="disablePatternsImporterBlock"
+											name="disablePatternImporterBlock"
 											render={ ( { field } ) => (
 												<ToggleControl
 													label={ __( 'Disable Patterns Importer Block', 'pattern-wrangler' ) }
