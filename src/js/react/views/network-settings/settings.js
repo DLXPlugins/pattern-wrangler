@@ -26,6 +26,8 @@ import SitePicker from '../../components/SitePicker';
 const Settings = ( props ) => {
 	const data = dlxPatternWranglerNetworkAdminSettings.options;
 
+	console.log( 'data', data );
+
 	const [ selectedSiteId, setSelectedSiteId ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSite );
 	const [ selectedSitePermalink, setSelectedSitePermalink ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSitePermalink );
 	const [ selectedSiteTitle, setSelectedSiteTitle ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSiteTitle );
@@ -40,6 +42,7 @@ const Settings = ( props ) => {
 		setValue,
 	} = useForm( {
 		defaultValues: {
+			patternConfiguration: data.patternConfiguration,
 			patternMothershipSiteId: data.patternMothershipSiteId,
 			saveNonce: dlxPatternWranglerNetworkAdminSettings.saveNonce,
 			resetNonce: dlxPatternWranglerNetworkAdminSettings.resetNonce,
@@ -70,6 +73,26 @@ const Settings = ( props ) => {
 									{ __( 'Network Settings', 'pattern-wrangler' ) }
 								</th>
 								<td>
+									<div className="dlx-admin__row">
+										<Controller
+											control={ control }
+											name="patternConfiguration"
+											render={ ( { field } ) => (
+												<SelectControl
+													label={ __( 'Pattern Configuration', 'pattern-wrangler' ) }
+													help={ __( 'Select the pattern configuration for the network.', 'pattern-wrangler' ) }
+													value={ field.value }
+													onChange={ field.onChange }
+													options={ [
+														{ label: __( 'Network Only', 'pattern-wrangler' ), value: 'network_only' },
+														{ label: __( 'Local Only', 'pattern-wrangler' ), value: 'local_only' },
+														{ label: __( 'Hybrid', 'pattern-wrangler' ), value: 'hybrid' },
+														{ label: __( 'Disabled', 'pattern-wrangler' ), value: 'disabled' },
+													] }
+												/>
+											) }
+										/>
+									</div>
 									<div className="dlx-admin__row">
 										<BaseControl
 											id="dlx-pw-network-settings-default-patterns-source"

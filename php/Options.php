@@ -104,7 +104,7 @@ class Options {
 	 */
 	public static function update_network_options( $options ) {
 		$force           = true;
-		$current_options = self::get_options( $force );
+		$current_options = self::get_network_options( $force );
 		foreach ( $options as $key => &$option ) {
 			switch ( $key ) {
 				case 'disableAllPatterns':
@@ -209,9 +209,13 @@ class Options {
 	 */
 	public static function get_network_defaults() {
 		$defaults = array(
-			'patternMothershipSiteId' => 1,
-			'disableAllPatterns'      => false,
-			'patternConfiguration'    => 'network_only', // Can be `nework_only`, `local_only`, and `hybrid`.
+			'patternMothershipSiteId'          => 1,
+			'disableAllPatterns'               => false,
+			'patternConfiguration'             => 'hybrid', // Can be `nework_only`, `local_only`, and `hybrid`.
+			'allowSyncedPatternsForNetwork'    => true, // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
+			'allowUnsyncedPatternsForNetwork'  => true, // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.
+			'disablePatternsImporterBlock'     => false, // If false, site admins can still configure this option per site.
+			'disablePatternExporterForNetwork' => true, // If true, site admins will not see a pattern exporter option.
 		);
 		/**
 		 * Allow options to be extended by plugins.
