@@ -182,6 +182,49 @@ class Functions {
 	}
 
 	/**
+	 * Check if local patterns are enabled.
+	 *
+	 * This is useful in Multisite to check if local patterns are enabled for a site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return bool true if enabled, false if disabled.
+	 */
+	public static function has_local_patterns_enabled( $site_id = 1 ) {
+		$has_local_patterns = false;
+		if ( Functions::is_multisite( false ) ) {
+			$options = Options::get_network_options();
+
+			// Get local site options for local patterns.
+			$local_site_option = get_blog_option( $site_id, 'dlx_pattern_configuration', 'hybrid' );
+			if ( 'hybrid' === $local_site_option || 'local_only' === $local_site_option ) {
+				$has_local_patterns = true;
+			}
+
+			// Local options take priority over network options when set per site.
+			if ( ! $has_local_patterns && ! Functions::is_patterns_enabled_for_site( $site_id ) && ( 'disabled' === $options['patternConfiguration'] || 'network_only' === $options['patternConfiguration'] ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Get the default site ID for patterns.
+	 *
+	 * @return int The site ID.
+	 */
+	public static function get_network_default_patterns_site_id() {
+		$default_site_id = 1;
+		if ( Functions::is_multisite( false ) ) {
+			$options         = Options::get_network_options();
+			$default_site_id = absint( $options['patternMothershipSiteId'] );
+		}
+
+		return $default_site_id;
+	}
+
+	/**
 	 * Check if paterns are enabled for the current site.
 	 *
 	 * @param int $site_id The site ID.

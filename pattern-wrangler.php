@@ -80,6 +80,11 @@ class PatternWrangler {
 		$rest = new Rest();
 		$rest->run();
 
+		if ( Functions::is_multisite( true ) ) {
+			$network_admin = new Network_Admin();
+			$network_admin->run();
+		}
+
 		// Determine if blocks can run or not.
 		$options            = Options::get_options();
 		$can_disable_blocks = (bool) $options['disablePatternImporterBlock'];

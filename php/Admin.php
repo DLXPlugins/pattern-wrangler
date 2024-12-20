@@ -26,9 +26,6 @@ class Admin {
 		// Init the admin menu.
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 100 );
 
-		// Init the network admin menu.
-		add_action( 'network_admin_menu', array( $this, 'add_network_admin_menu' ), 100 );
-
 		add_action( 'current_screen', array( $this, 'set_category_submenu_current' ) );
 
 		// For saving the options.
@@ -326,23 +323,6 @@ class Admin {
 	}
 
 	/**
-	 * Add the network admin menu.
-	 */
-	public function add_network_admin_menu() {
-		$hook = add_submenu_page(
-			'settings.php',
-			__( 'Pattern Settings', 'pattern-wrangler' ),
-			__( 'Pattern Settings', 'pattern-wrangler' ),
-			'manage_network',
-			'pattern-wrangler',
-			array( $this, 'network_admin_page' ),
-			10
-		);
-
-		add_action( 'admin_print_scripts-' . $hook, array( $this, 'enqueue_network_admin_scripts' ) );
-	}
-
-	/**
 	 * Add the admin menu.
 	 */
 	public function add_admin_menu() {
@@ -482,60 +462,6 @@ class Admin {
 	}
 
 	/**
-	 * Enqueue scripts for the network admin page.
-	 */
-	public function enqueue_network_admin_scripts() {
-		// Retrieve network options.
-		$options = Options::get_network_options();
-
-		// Enqueue admins scripts.
-		$deps = require_once Functions::get_plugin_dir( 'dist/dlx-pw-network-admin-settings.asset.php' );
-		wp_enqueue_script(
-			'dlx-pw-network-admin-settings',
-			Functions::get_plugin_url( 'dist/dlx-pw-network-admin-settings.js' ),
-			$deps['dependencies'],
-			$deps['version'],
-			true
-		);
-
-		// Get mothership (default network site) selected data.
-		$mothership_site_id        = absint( $options['patternMothershipSiteId'] );
-		$mothership_site_permalink = get_admin_url( $mothership_site_id );
-		$mothership_site_title     = Functions::get_network_site_name( $mothership_site_id );
-
-		// Create the patterns URL for the mothership site.
-		$patterns_url = get_admin_url( $mothership_site_id, 'edit.php?post_type=wp_block' );
-
-		wp_localize_script(
-			'dlx-pw-network-admin-settings',
-			'dlxPatternWranglerNetworkAdminSettings',
-			array(
-				'getNonce'              => wp_create_nonce( 'dlx-pw-network-admin-get-options' ),
-				'saveNonce'             => wp_create_nonce( 'dlx-pw-admin-save-options' ),
-				'resetNonce'            => wp_create_nonce( 'dlx-pw-admin-reset-options' ),
-				'restEndpoint'          => REST::get_rest_endpoint( 'search/sites' ),
-				'restNonce'             => wp_create_nonce( 'wp_rest' ),
-				'ajaxurl'               => admin_url( 'admin-ajax.php' ),
-				'options'               => $options,
-				'selectedSite'          => $mothership_site_id,
-				'selectedSitePermalink' => $mothership_site_permalink,
-				'selectedSiteTitle'     => $mothership_site_title,
-				'selectedSitePatternsUrl' => $patterns_url,
-			)
-		);
-		\wp_set_script_translations( 'dlx-pw-network-admin-settings', 'pattern-wrangler' );
-
-		// Enqueue admin styles.
-		wp_enqueue_style(
-			'dlx-pw-admin-css',
-			Functions::get_plugin_url( 'dist/dlx-pw-admin-css.css' ),
-			array(),
-			Functions::get_plugin_version(),
-			'all'
-		);
-	}
-
-	/**
 	 * Render the admin page.
 	 */
 	public function admin_page() {
@@ -566,37 +492,6 @@ class Admin {
 						<?php
 					}
 					?>
-				</div>
-			</main>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render the network admin page.
-	 */
-	public function network_admin_page() {
-		?>
-		<div class="dlx-pw-admin-wrap">
-			<header class="dlx-pw-admin-header">
-				<div class="dlx-pw-logo-wrapper">
-					<div class="dlx-pw-logo">
-						<h2 id="dlx-pw-admin-header">
-							<img src="<?php echo esc_url( Functions::get_plugin_url( 'assets/img/logo.png' ) ); ?>" alt="Pattern Wrangler" />
-						</h2>
-					</div>
-					<div class="header__btn-wrap">
-						<a href="<?php echo esc_url( 'https://docs.dlxplugins.com/v/pattern-wrangler' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Docs', 'pattern-wrangler' ); ?></a>
-						<a href="<?php echo esc_url( 'https://dlxplugins.com/support/' ); ?>" target="_blank" rel="noopener noreferrer" class="has__btn-primary"><?php esc_html_e( 'Support', 'pattern-wrangler' ); ?></a>
-					</div>
-				</div>
-			</header>
-			<?php
-			$current_tab = Functions::get_admin_tab();
-			?>
-			<main class="dlx-pw-admin-body-wrapper">
-				<div class="dlx-pw-body__content">
-				<div id="dlx-pattern-wrangler-network-admin"></div>
 				</div>
 			</main>
 		</div>
