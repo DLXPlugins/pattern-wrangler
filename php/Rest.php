@@ -71,9 +71,10 @@ class Rest {
 		if ( is_array( $sites ) ) {
 			foreach ( $sites as $site ) {
 				$return[] = array(
-					'id'        => $site->blog_id,
-					'name'      => $site->blogname,
-					'permalink' => get_admin_url( $site->blog_id ),
+					'id'          => $site->blog_id,
+					'name'        => $site->blogname,
+					'permalink'   => get_admin_url( $site->blog_id ),
+					'patternsUrl' => get_admin_url( $site->blog_id, 'edit.php?post_type=wp_block' ),
 				);
 			}
 		}

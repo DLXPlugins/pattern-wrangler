@@ -962,9 +962,65 @@ div.can-revoke {
  * Site Picker.
  */
  /* Url Wrapper Input */
-.pw-url-input {
+.pw-pub-url-input__suggestion-table {
+	thead {
+		background: #DDDDDD;
+		th {
+			padding: 10px 10px;
+			font-weight: 600;
+			margin: 0;
+			vertical-align: middle;
+
+		}
+	}
+	tbody td {
+		padding: 10px 10px;
+		margin: 0;
+		vertical-align: middle;
+		border-bottom: 1px solid #ddd;
+		a.components-button.has-icon.has-text.is-link {
+			margin-left: 0;
+			padding-left: 0;
+			padding-right: 0;
+		}
+	}
+}
+.pw-pub-url-input__suggestion-actions {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.pw-url-input__suggestions-close-wrapper {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 10px;
+	margin: 0;
+	color: #FFF;
+	background: #999;
+	border-bottom: 1px solid #CCC;
+
+	.pw-url-input__sugestions-results-count {
+		font-size: 14px;
+		font-weight: 600;
+		color: #FFF;
+	}
+
+	.components-button.button-reset.has-icon {
+		background: #FFF;
+		border-color: #FFF;
+		box-shadow: inset 0 0 0 1px #DDD;
+		padding: 10 15px;
+		&:hover {
+			background: #FFF;
+			color: #999;
+			border-color: #999;
+		}
+	}
+}
+ .pw-url-input {
 	display: inline-block;
-	max-width: 400px;
+	max-width: 520px;
 	width: 100%;
 	flex-wrap: wrap;
 	position: relative;
@@ -1065,16 +1121,6 @@ div.can-revoke {
 	}
 	.pw-pub-url-input__suggestion {
 		
-	}
-	.pw-pub-url-input__suggestion-item {
-		display: inline-flex;
-		align-items: center;
-		justify-content: flex-start;
-		gap: 16px;
-		.components-button {
-			margin-left: 0;
-			padding-left: 0;
-		}
 	}
 	.pw-pub-url-input__input-wrapper {
 		position: relative;

@@ -4,21 +4,20 @@ import axios from 'axios';
  */
 import React, { useState, useEffect, createRef } from 'react';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 import { UP, DOWN, ENTER, TAB } from '@wordpress/keycodes';
 import { speak } from '@wordpress/a11y';
-import { Button, Spinner, Tooltip } from '@wordpress/components';
+import { Button, Spinner } from '@wordpress/components';
 import { useInstanceId, useDebounce } from '@wordpress/compose';
 import { isURL, filterURLForDisplay, addQueryArgs } from '@wordpress/url';
 
 import {
 	Search,
-	CornerDownLeft,
+	Network,
 	XCircle,
 	ExternalLink,
 	Link,
@@ -94,6 +93,7 @@ const SitePicker = ( props ) => {
 				id: savedSuggestionValue,
 				name: props.savedTitle,
 				permalink: props.savedPermalink,
+				selectedSitePatternsUrl: props.selectedSitePatternsUrl,
 			};
 			setSavedSuggestionValue( '' );
 			setCurrentSuggestion( newSuggestion );
@@ -230,7 +230,7 @@ const SitePicker = ( props ) => {
 				event.preventDefault();
 				setShowSuggestions( false );
 				if ( selectedSuggestion !== null ) {
-					props.onItemSelect( event, getSuggestion( selectedSuggestion ) );
+					props.onItemSelect( event, selectedSuggestion );
 					inputRef.current.focus();
 				}
 
@@ -248,7 +248,7 @@ const SitePicker = ( props ) => {
 	 */
 	const getSuggestion = ( value ) => {
 		const foundSuggestion = suggestions.find(
-			( suggestion ) => suggestion.value === value
+			( suggestion ) => suggestion.id === value
 		);
 		if ( null === foundSuggestion || undefined === foundSuggestion ) {
 			return null;
@@ -336,35 +336,76 @@ const SitePicker = ( props ) => {
 					{ null !== currentSuggestion && (
 						<div className="pw-pub-url-input__suggestion">
 							<div className="pw-pub-url-input__suggestion-item">
-								<span className="pw-pub-url-input__suggestion-label">
-									<Button
-										variant="link"
-										icon={ <ExternalLink /> }
-										iconSize={ 18 }
-										iconPosition="right"
-										label={ __( 'Open in new tab', 'pattern-wrangler' ) }
-										href={ currentSuggestion?.permalink || '' }
-										target="_blank"
-										rel="noopener noreferrer"
-									>
-										{ currentSuggestion.name }
-									</Button>
-									<span className="pw-pub-url-input__suggestion-label-id">
-										( { __( 'Site ID:', 'pattern-wrangler' ) } { currentSuggestion.id } )
-									</span>
-								</span>
-								<Button
-									variant="secondary"
-									icon={ <XCircle /> }
-									className="button-reset"
-									iconSize={ 18 }
-									label={ __( 'Remove Current Selection', 'pattern-wrangler' ) }
-									onClick={ ( e ) => {
-										setSuggestionValue( '' );
-										setCurrentSuggestion( null );
-										props.onItemSelect( e, '1' );
-									} }
-								/>
+								<table className="pw-pub-url-input__suggestion-table">
+									<thead>
+										<tr>
+											<th scope="col">
+												{ __( 'Site', 'pattern-wrangler' ) }
+											</th>
+											<th scope="col">
+												{ __( 'Site ID', 'pattern-wrangler' ) }
+											</th>
+											<th scope="col">
+												{ __( 'Actions', 'pattern-wrangler' ) }
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>
+												<Button
+													variant="link"
+													icon={ <ExternalLink /> }
+													iconSize={ 18 }
+													iconPosition="right"
+													label={ __( 'Open in new tab', 'pattern-wrangler' ) }
+													href={ currentSuggestion?.permalink || '' }
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													{ currentSuggestion.name }
+												</Button>
+											</td>
+											<td>
+												<span className="pw-pub-url-input__suggestion-label-id">
+													( { __( 'Site ID:', 'pattern-wrangler' ) } { currentSuggestion.id } )
+												</span>
+											</td>
+											<td className="pw-pub-url-input__suggestion-actions">
+												<Button
+													variant="secondary"
+													icon={ <XCircle /> }
+													className="button-reset"
+													iconSize={ 18 }
+													label={ __( 'Remove Current Selection', 'pattern-wrangler' ) }
+													onClick={ ( e ) => {
+														setSuggestionValue( '' );
+														setCurrentSuggestion( null );
+														props.onItemSelect( e, {
+															id: 0,
+															name: '',
+															permalink: '',
+															selectedSitePatternsUrl: '',
+														} );
+													} }
+												/>
+												<Button
+													variant="secondary"
+													icon={ <ExternalLink /> }
+													className="button-reset"
+													iconSize={ 18 }
+													iconPosition="left"
+													label={ __( 'View Patterns', 'pattern-wrangler' ) }
+													href={ currentSuggestion.selectedSitePatternsUrl }
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													{ __( 'Patterns', 'pattern-wrangler' ) }
+												</Button>
+											</td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					) }
@@ -415,6 +456,9 @@ const SitePicker = ( props ) => {
 						className="pw-url-input__suggestions"
 					>
 						<div className="pw-url-input__suggestions-close-wrapper">
+							<div className="pw-url-input__sugestions-results-count">
+								{ suggestions.length } { _n( 'Result', 'Results', suggestions.length, 'pattern-wrangler' ) }
+							</div>
 							<Button
 								variant="secondary"
 								icon={ <XCircle /> }
@@ -430,29 +474,27 @@ const SitePicker = ( props ) => {
 						</div>
 						<div className="pw-url-input__suggestions-wrapper">
 							{ suggestions.map( ( suggestion, index ) => {
-								const suggestionId = `pw-suggested-value-${ suggestion.value }`;
+								const suggestionId = `pw-suggested-value-${ suggestion.id }`;
 								const suggestionClass = classNames( 'pw-url-input__suggestion', {
-									'is-selected': suggestion.value === selectedSuggestion,
+									'is-selected': suggestion.id === selectedSuggestion,
 								} );
 
 								return (
 									<Button
 										key={ suggestionId }
 										id={ suggestionId }
-										value={ suggestion.value }
+										value={ suggestion.id }
 										role="option"
-										aria-selected={ suggestion.value === selectedSuggestion }
+										aria-selected={ suggestion.id === selectedSuggestion }
 										className={ suggestionClass }
 										onClick={ ( e ) => {
 											setSelectedSuggestion( parseInt( e.target.value ) );
 											setSelectedSuggestionIndex( index );
-											// Add mapped value to suggestion.
-											suggestion.mapped = suggestion.value;
 											setCurrentSuggestion( suggestion );
 											setShowSuggestions( false );
-											props.onItemSelect( e, suggestion.value );
+											props.onItemSelect( e, suggestion );
 										} }
-										icon={ 'post' === suggestion.type ? <FileText /> : <File /> }
+										icon={ <Network /> }
 										iconSize={ 2 }
 										iconPosition="left"
 									>

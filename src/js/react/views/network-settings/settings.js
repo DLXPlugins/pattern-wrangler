@@ -29,7 +29,7 @@ const Settings = ( props ) => {
 	const [ selectedSiteId, setSelectedSiteId ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSite );
 	const [ selectedSitePermalink, setSelectedSitePermalink ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSitePermalink );
 	const [ selectedSiteTitle, setSelectedSiteTitle ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSiteTitle );
-
+	const [ selectedSitePatternsUrl, setSelectedSitePatternsUrl ] = useState( dlxPatternWranglerNetworkAdminSettings.selectedSitePatternsUrl );
 	const {
 		control,
 		handleSubmit,
@@ -41,6 +41,8 @@ const Settings = ( props ) => {
 	} = useForm( {
 		defaultValues: {
 			patternMothershipSiteId: data.patternMothershipSiteId,
+			saveNonce: dlxPatternWranglerNetworkAdminSettings.saveNonce,
+			resetNonce: dlxPatternWranglerNetworkAdminSettings.resetNonce,
 		},
 	} );
 	const formValues = useWatch( { control } );
@@ -80,8 +82,15 @@ const Settings = ( props ) => {
 												selectedSite={ selectedSiteId }
 												savedTitle={ selectedSiteTitle }
 												savedPermalink={ selectedSitePermalink }
-												onItemSelect={ ( item ) => {
-													console.log( 'item', item );
+												selectedSitePatternsUrl={ selectedSitePatternsUrl }
+												onItemSelect={ ( e, valueSuggestion ) => {
+													// If value is not null, parse it as an integer.
+													const newValue = valueSuggestion.id ? parseInt( valueSuggestion.id ) : null;
+													if ( newValue ) {
+														setValue( 'patternMothershipSiteId', newValue );
+														setSelectedSiteId( newValue );
+														setSelectedSitePatternsUrl( valueSuggestion.selectedSitePatternsUrl );
+													}
 												} }
 											/>
 										</BaseControl>
@@ -98,6 +107,8 @@ const Settings = ( props ) => {
 						isDirty={ isDirty }
 						dirtyFields={ dirtyFields }
 						trigger={ trigger }
+						saveAction="dlx_pw_save_network_settings"
+						resetAction="dlx_pw_reset_network_settings"
 					/>
 				</div>
 			</form>

@@ -107,7 +107,6 @@ class Options {
 		$current_options = self::get_options( $force );
 		foreach ( $options as $key => &$option ) {
 			switch ( $key ) {
-				case 'patternMothershipSiteId':
 				case 'disableAllPatterns':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
