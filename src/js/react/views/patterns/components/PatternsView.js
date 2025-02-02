@@ -2,39 +2,9 @@ import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { DataViews } from '@wordpress/dataviews/wp';
 import { Button, Menu } from '@wordpress/components';
+import apiFetch from '@wordpress/api-fetch';
+import { useQuery } from '@tanstack/react-query';
 
-const patterns = [
-	{
-		id: 1,
-		title: 'Pattern 1',
-		description: 'This is a pattern',
-		patternCategories: [
-			{ value: 'header', label: __( 'Header', 'dlx-pattern-wrangler' ) },
-			{ value: 'footer', label: __( 'Footer', 'dlx-pattern-wrangler' ) },
-		],
-		author: 'John Doe',
-		localPattern: true,
-		registered: false,
-		enabled: true,
-		synced: false,
-		previewJson: '',
-	},
-	{
-		id: 2,
-		title: 'Pattern 2',
-		description: 'This is a pattern',
-		patternCategories: [
-			{ value: 'header', label: __( 'Header', 'dlx-pattern-wrangler' ) },
-			{ value: 'footer', label: __( 'Footer', 'dlx-pattern-wrangler' ) },
-		],
-		author: 'Jane Doe',
-		localPattern: false,
-		registered: true,
-		enabled: true,
-		synced: true,
-		previewJson: '',
-	},
-];
 const defaultLayout = {
 	table: {
 		layout: {
@@ -93,7 +63,7 @@ const actions = [
 			console.log( 'Edit', items );
 		},
 		isEligible: ( pattern ) => {
-			return pattern.localPattern;
+			return pattern.isLocal;
 		},
 		isPrimary: true,
 	},
@@ -103,7 +73,7 @@ const actions = [
 		icon: 'trash',
 		isEligible: ( pattern ) => {
 			// Pattern must be local.
-			return pattern.localPattern;
+			return pattern.isLocal;
 		},
 		callback: ( items ) => {
 			console.log( 'Delete', items );
@@ -119,7 +89,7 @@ const actions = [
 			console.log( 'Copy', items );
 		},
 		isEligible: ( pattern ) => {
-			return pattern.localPattern;
+			return true;
 		},
 		isPrimary: false,
 		isDestructive: false,
@@ -142,6 +112,46 @@ const patternCategories = [
 	{ value: 'header', label: __( 'Header', 'dlx-pattern-wrangler' ) },
 	{ value: 'footer', label: __( 'Footer', 'dlx-pattern-wrangler' ) },
 ];
+
+const fetchPatterns = async( { perPage, page, search, sort } ) => {
+	console.log( 'fetchPatterns', perPage, page, search, sort );
+	const response = await apiFetch( {
+		path: '/dlxplugins/pattern-wrangler/v1/patterns',
+		method: 'GET',
+		data: {
+			per_page: perPage,
+			page,
+			search,
+			orderby: sort.field,
+			order: sort.direction,
+		},
+	} );
+
+	console.log( 'response', response );
+
+	// Go through each pattern and get the preview image.
+	// response.patterns.forEach( ( pattern ) => {
+	// 	if ( ! pattern.preview ) {
+	// 		fetchPreviewImage( pattern );
+	// 	}
+	// } );
+	return response;
+};
+
+const fetchPreviewImage = async( pattern ) => {
+	const response = await apiFetch( {
+		path: `/dlxplugins/pattern-wrangler/v1/patterns/get_preview/`,
+		method: 'POST',
+		data: {
+			content: pattern.content,
+			slug: pattern.slug,
+			title: pattern.title,
+			id: pattern.id,
+			...pattern,
+		},
+	} );
+	return response;
+};
 
 const PatternsView = () => {
 	const [ selectedItems, setSelectedItems ] = useState( [] );
@@ -166,6 +176,30 @@ const PatternsView = () => {
 		fields: [ 'pattern-view-json', 'pattern-categories', 'author' ],
 		layout: defaultLayout.grid.layout,
 	} );
+
+	const {
+		data: { patterns = [], categories = [] } = {},
+		isLoading,
+		error,
+	} = useQuery( {
+		queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
+		queryFn: () =>
+			fetchPatterns( {
+				perPage: view.perPage,
+				page: view.page,
+				search: view.search,
+				sort: view.sort,
+			} ),
+	} );
+
+	if ( error ) {
+		return (
+			<div className="dlx-patterns-error">
+				{ __( 'Error loading patterns:', 'dlx-pattern-wrangler' ) } { error.message }
+			</div>
+		);
+	}
+
 	return (
 		<div className="dlx-patterns-view-container">
 			<DataViews
@@ -174,16 +208,14 @@ const PatternsView = () => {
 				actions={ actions }
 				label={ __( 'Patterns', 'dlx-pattern-wrangler' ) }
 				view={ view }
-				onChangeView={ ( newView ) => {
-					setView( newView );
-				} }
+				onChangeView={ setView }
 				paginationInfo={ {
 					totalItems: patterns.length,
-					totalPages: 1,
+					totalPages: 1, // Would come from API headers
 				} }
 				selection={ selectedItems }
 				onChangeSelection={ setSelectedItems }
-				isLoading={ false }
+				isLoading={ isLoading }
 			/>
 		</div>
 	);
