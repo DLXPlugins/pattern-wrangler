@@ -73,6 +73,7 @@ class Options {
 				case 'loadCustomizerCSSBlockEditor':
 				case 'loadCustomizerCSSFrontend':
 				case 'makePatternsExportable':
+				case 'enableEnhancedView':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
 				default:
@@ -109,6 +110,7 @@ class Options {
 				case 'hideUnsyncedPatternsForNetwork':
 				case 'disablePatternImporterBlock':
 				case 'disablePatternExporterForNetwork':
+				case 'enableEnhancedView':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
 				default:
@@ -191,6 +193,7 @@ class Options {
 			'loadCustomizerCSSBlockEditor' => false,
 			'loadCustomizerCSSFrontend'    => true,
 			'makePatternsExportable'       => false,
+			'enableEnhancedView'           => true,
 		);
 
 		/**
@@ -214,10 +217,11 @@ class Options {
 			'patternConfiguration'             => 'hybrid', // Can be `nework_only`, `local_only`, `hybrid`, or `disabled`.
 			'hideSyncedPatternsForNetwork'     => false, // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
 			'hideUnsyncedPatternsForNetwork'   => false, // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.
-			'disablePatternImporterBlock'     => false, // If false, site admins can still configure this option per site.
+			'disablePatternImporterBlock'      => false, // If false, site admins can still configure this option per site.
 			'disablePatternExporterForNetwork' => false, // If true, site admins will not see a pattern exporter option.
 			'hideCorePatterns'                 => false,
 			'hideRemotePatterns'               => false,
+			'enableEnhancedView'               => true,
 		);
 		/**
 		 * Allow options to be extended by plugins.

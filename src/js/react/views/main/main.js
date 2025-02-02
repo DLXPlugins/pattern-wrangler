@@ -61,7 +61,10 @@ const Category = ( props ) => {
 	 * Make sure mapped to category is valid, especially if a mapped category is disabled.
 	 */
 	useEffect( () => {
-		if ( category.mappedTo && ! getCategories().find( ( cat ) => cat.value === category.mappedTo ) ) {
+		if (
+			category.mappedTo &&
+			! getCategories().find( ( cat ) => cat.value === category.mappedTo )
+		) {
 			setValue( `categories.${ category.slug }.mappedTo`, 'none' );
 		}
 	}, [ enabledCategories ] );
@@ -127,8 +130,7 @@ const Category = ( props ) => {
 				</div>
 				<div className="dlx-category-row__label">
 					<div className="dlx-category-row__label-text">
-						{ getLabel() }
-						{ ' ' }
+						{ getLabel() }{ ' ' }
 						<Button
 							variant="link"
 							className="dlx-category-row__label-link"
@@ -138,32 +140,29 @@ const Category = ( props ) => {
 							{ __( 'Edit', 'pattern-wrangler' ) }
 						</Button>
 					</div>
-					<div className="dlx-category-row__slug">
-						{ category.slug }
-					</div>
+					<div className="dlx-category-row__slug">{ category.slug }</div>
 					<div className="dlx-category-row__count">
-						{ category.count } { _n( 'Pattern', 'Patterns', category.count, 'pattern-wrangler' ) }
+						{ category.count }{ ' ' }
+						{ _n( 'Pattern', 'Patterns', category.count, 'pattern-wrangler' ) }
 					</div>
-					{
-						! category.enabled && (
-							<div className="dlx-category-row__map">
-								<Controller
-									name={ `categories.${ category.slug }.mappedTo` }
-									control={ control }
-									render={ ( { field: { onChange, value } } ) => (
-										<SelectControl
-											label={ __( 'Map to Category', 'pattern-wrangler' ) }
-											value={ value }
-											onChange={ ( newValue ) => {
-												onChange( newValue );
-											} }
-											options={ getCategories() }
-										/>
-									) }
-								/>
-							</div>
-						)
-					}
+					{ ! category.enabled && (
+						<div className="dlx-category-row__map">
+							<Controller
+								name={ `categories.${ category.slug }.mappedTo` }
+								control={ control }
+								render={ ( { field: { onChange, value } } ) => (
+									<SelectControl
+										label={ __( 'Map to Category', 'pattern-wrangler' ) }
+										value={ value }
+										onChange={ ( newValue ) => {
+											onChange( newValue );
+										} }
+										options={ getCategories() }
+									/>
+								) }
+							/>
+						</div>
+					) }
 				</div>
 			</div>
 		</>
@@ -198,6 +197,7 @@ const Main = ( props ) => {
 			loadCustomizerCSSFrontend: data.loadCustomizerCSSFrontend,
 			hideThemePatterns: data.hideThemePatterns,
 			hidePluginPatterns: data.hidePluginPatterns,
+			enableEnhancedView: data.enableEnhancedView,
 			showMenusUI: data.showMenusUI,
 			categories: data.registered ?? [],
 			makePatternsExportable: data.makePatternsExportable,
@@ -218,7 +218,13 @@ const Main = ( props ) => {
 				{ Object.values( categories ).map( ( category ) => {
 					return (
 						<li key={ category.slug }>
-							<Category category={ category } control={ control } getValues={ getValues } setValue={ setValue } taxCategories={ data.categories } />
+							<Category
+								category={ category }
+								control={ control }
+								getValues={ getValues }
+								setValue={ setValue }
+								taxCategories={ data.categories }
+							/>
 						</li>
 					);
 				} ) }
@@ -233,7 +239,10 @@ const Main = ( props ) => {
 	 */
 	const canShowLocalPatterns = () => {
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			return ( networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only' );
+			return (
+				networkOptions.patternConfiguration === 'hybrid' ||
+				networkOptions.patternConfiguration === 'network_only'
+			);
 		}
 		return true;
 	};
@@ -249,7 +258,10 @@ const Main = ( props ) => {
 			networkHidden: false,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only' ) {
+			if (
+				networkOptions.patternConfiguration === 'hybrid' ||
+				networkOptions.patternConfiguration === 'network_only'
+			) {
 				if ( networkOptions.hideCorePatterns ) {
 					corePatternData.localHidden = true;
 					corePatternData.networkHidden = true;
@@ -275,21 +287,26 @@ const Main = ( props ) => {
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );
 							} }
-							help={ __( 'Remove all core patterns from the pattern selector by disabling core patterns.', 'pattern-wrangler' ) }
+							help={ __(
+								'Remove all core patterns from the pattern selector by disabling core patterns.',
+								'pattern-wrangler'
+							) }
 						/>
 					) }
 				/>
-				{
-					( dlxPatternWranglerAdmin.isMultisite && corePatternData.networkHidden ) && (
-						<Notice
-							className="dlx-pw-admin-notice"
-							variant="info"
-							icon={ () => <Info /> }
-						>
-							{ __( 'This setting is overridden by the network settings.', 'pattern-wrangler' ) }
-						</Notice>
-					)
-				}
+				{ dlxPatternWranglerAdmin.isMultisite &&
+					corePatternData.networkHidden && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						variant="info"
+						icon={ () => <Info /> }
+					>
+						{ __(
+							'This setting is overridden by the network settings.',
+							'pattern-wrangler'
+						) }
+					</Notice>
+				) }
 			</div>
 		);
 	};
@@ -305,7 +322,10 @@ const Main = ( props ) => {
 			networkHidden: false,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only' ) {
+			if (
+				networkOptions.patternConfiguration === 'hybrid' ||
+				networkOptions.patternConfiguration === 'network_only'
+			) {
 				if ( networkOptions.hideRemotePatterns ) {
 					remotePatternData.localHidden = true;
 					remotePatternData.networkHidden = true;
@@ -334,17 +354,19 @@ const Main = ( props ) => {
 						/>
 					) }
 				/>
-				{
-					( dlxPatternWranglerAdmin.isMultisite && remotePatternData.networkHidden ) && (
-						<Notice
-							className="dlx-pw-admin-notice"
-							variant="info"
-							icon={ () => <Info /> }
-						>
-							{ __( 'This setting is overridden by the network settings.', 'pattern-wrangler' ) }
-						</Notice>
-					)
-				}
+				{ dlxPatternWranglerAdmin.isMultisite &&
+					remotePatternData.networkHidden && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						variant="info"
+						icon={ () => <Info /> }
+					>
+						{ __(
+							'This setting is overridden by the network settings.',
+							'pattern-wrangler'
+						) }
+					</Notice>
+				) }
 			</div>
 		);
 	};
@@ -360,12 +382,17 @@ const Main = ( props ) => {
 			networkHidden: false,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only' ) {
+			if (
+				networkOptions.patternConfiguration === 'hybrid' ||
+				networkOptions.patternConfiguration === 'network_only'
+			) {
 				if ( networkOptions.hideUnsyncedPatternsForNetwork ) {
 					unsyncedPatternData.localHidden = true;
 					unsyncedPatternData.networkHidden = true;
 				} else {
-					unsyncedPatternData.localHidden = getValues( 'hideCoreUnsyncedPatterns' );
+					unsyncedPatternData.localHidden = getValues(
+						'hideCoreUnsyncedPatterns'
+					);
 					unsyncedPatternData.networkHidden = false;
 				}
 			}
@@ -383,24 +410,29 @@ const Main = ( props ) => {
 							label={ __( 'Hide Unsynced Patterns', 'pattern-wrangler' ) }
 							checked={ unsyncedPatternData.localHidden }
 							disabled={ unsyncedPatternData.networkHidden }
-							help={ __( 'Prevent any unsynced patterns from displaying in the patterns selector. This is useful if you only want to show synced patterns.', 'pattern-wrangler' ) }
+							help={ __(
+								'Prevent any unsynced patterns from displaying in the patterns selector. This is useful if you only want to show synced patterns.',
+								'pattern-wrangler'
+							) }
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );
 							} }
 						/>
 					) }
 				/>
-				{
-					( dlxPatternWranglerAdmin.isMultisite && unsyncedPatternData.networkHidden ) && (
-						<Notice
-							className="dlx-pw-admin-notice"
-							variant="info"
-							icon={ () => <Info /> }
-						>
-							{ __( 'This setting is overridden by the network settings.', 'pattern-wrangler' ) }
-						</Notice>
-					)
-				}
+				{ dlxPatternWranglerAdmin.isMultisite &&
+					unsyncedPatternData.networkHidden && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						variant="info"
+						icon={ () => <Info /> }
+					>
+						{ __(
+							'This setting is overridden by the network settings.',
+							'pattern-wrangler'
+						) }
+					</Notice>
+				) }
 			</div>
 		);
 	};
@@ -416,7 +448,10 @@ const Main = ( props ) => {
 			networkHidden: false,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only' ) {
+			if (
+				networkOptions.patternConfiguration === 'hybrid' ||
+				networkOptions.patternConfiguration === 'network_only'
+			) {
 				if ( networkOptions.hideSyncedPatternsForNetwork ) {
 					syncedPatternData.localHidden = true;
 					syncedPatternData.networkHidden = true;
@@ -439,29 +474,33 @@ const Main = ( props ) => {
 							label={ __( 'Hide Synced Patterns', 'pattern-wrangler' ) }
 							checked={ syncedPatternData.localHidden }
 							disabled={ syncedPatternData.networkHidden }
-							help={ __( 'Prevent any synced patterns from displaying in the patterns selector. This is useful if you only want to show unsynced patterns.', 'pattern-wrangler' ) }
+							help={ __(
+								'Prevent any synced patterns from displaying in the patterns selector. This is useful if you only want to show unsynced patterns.',
+								'pattern-wrangler'
+							) }
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );
 							} }
 						/>
 					) }
 				/>
-				{
-					( dlxPatternWranglerAdmin.isMultisite && syncedPatternData.networkHidden ) && (
-						<Notice
-							className="dlx-pw-admin-notice"
-							variant="info"
-							icon={ () => <Info /> }
-						>
-							{ __( 'This setting is overridden by the network settings.', 'pattern-wrangler' ) }
-						</Notice>
-					)
-				}
+				{ dlxPatternWranglerAdmin.isMultisite &&
+					syncedPatternData.networkHidden && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						variant="info"
+						icon={ () => <Info /> }
+					>
+						{ __(
+							'This setting is overridden by the network settings.',
+							'pattern-wrangler'
+						) }
+					</Notice>
+				) }
 			</div>
 		);
 	};
 
-	
 	/**
 	 * Get the show patterns exporter toggle control.
 	 *
@@ -473,7 +512,10 @@ const Main = ( props ) => {
 			networkCanExport: false,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only' ) {
+			if (
+				networkOptions.patternConfiguration === 'hybrid' ||
+				networkOptions.patternConfiguration === 'network_only'
+			) {
 				if ( networkOptions.disablePatternExporterForNetwork ) {
 					patternsExporterData.canExport = false;
 					patternsExporterData.networkCanExport = false;
@@ -482,8 +524,12 @@ const Main = ( props ) => {
 					patternsExporterData.networkCanExport = true;
 				}
 			} else {
-				patternsExporterData.canExport = getValues( 'disablePatternsExporterBlock' );
-				patternsExporterData.networkCanExport = getValues( 'disablePatternsExporterBlock' );
+				patternsExporterData.canExport = getValues(
+					'disablePatternsExporterBlock'
+				);
+				patternsExporterData.networkCanExport = getValues(
+					'disablePatternsExporterBlock'
+				);
 			}
 		}
 		return (
@@ -493,27 +539,35 @@ const Main = ( props ) => {
 					control={ control }
 					render={ ( { field: { onChange, value } } ) => (
 						<ToggleControl
-							label={ __( 'Allow Patterns to be exportable via the WordPress Exporter', 'pattern-wrangler' ) }
+							label={ __(
+								'Allow Patterns to be exportable via the WordPress Exporter',
+								'pattern-wrangler'
+							) }
 							checked={ patternsExporterData.canExport }
 							disabled={ ! patternsExporterData.networkCanExport }
-							help={ __( 'Disable the patterns exporter block, which helps export patterns to other sites.', 'pattern-wrangler' ) }
+							help={ __(
+								'Disable the patterns exporter block, which helps export patterns to other sites.',
+								'pattern-wrangler'
+							) }
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );
 							} }
 						/>
 					) }
 				/>
-				{
-					( dlxPatternWranglerAdmin.isMultisite && ! patternsExporterData.networkCanExport ) && (
-						<Notice
-							className="dlx-pw-admin-notice"
-							variant="info"
-							icon={ () => <Info /> }
-						>
-							{ __( 'This setting is overridden by the network settings.', 'pattern-wrangler' ) }
-						</Notice>
-					)
-				}
+				{ dlxPatternWranglerAdmin.isMultisite &&
+					! patternsExporterData.networkCanExport && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						variant="info"
+						icon={ () => <Info /> }
+					>
+						{ __(
+							'This setting is overridden by the network settings.',
+							'pattern-wrangler'
+						) }
+					</Notice>
+				) }
 			</div>
 		);
 	};
@@ -529,7 +583,10 @@ const Main = ( props ) => {
 			networkCanUseBlock: false,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only' ) {
+			if (
+				networkOptions.patternConfiguration === 'hybrid' ||
+				networkOptions.patternConfiguration === 'network_only'
+			) {
 				if ( networkOptions.disablePatternImporterBlock ) {
 					patternsBlockData.canUseBlock = false;
 					patternsBlockData.networkCanUseBlock = false;
@@ -538,8 +595,12 @@ const Main = ( props ) => {
 					patternsBlockData.networkCanUseBlock = true;
 				}
 			} else {
-				patternsBlockData.canUseBlock = getValues( 'disablePatternImporterBlock' );
-				patternsBlockData.networkCanUseBlock = getValues( 'disablePatternImporterBlock' );
+				patternsBlockData.canUseBlock = getValues(
+					'disablePatternImporterBlock'
+				);
+				patternsBlockData.networkCanUseBlock = getValues(
+					'disablePatternImporterBlock'
+				);
 			}
 		}
 		return (
@@ -549,27 +610,35 @@ const Main = ( props ) => {
 					control={ control }
 					render={ ( { field: { onChange, value } } ) => (
 						<ToggleControl
-							label={ __( 'Allow Patterns to be imported via the Patterns Importer Block', 'pattern-wrangler' ) }
+							label={ __(
+								'Allow Patterns to be imported via the Patterns Importer Block',
+								'pattern-wrangler'
+							) }
 							checked={ patternsBlockData.canUseBlock }
 							disabled={ ! patternsBlockData.networkCanUseBlock }
-							help={ __( 'Disable the patterns importer block, which helps load in remote images.', 'pattern-wrangler' ) }
+							help={ __(
+								'Disable the patterns importer block, which helps load in remote images.',
+								'pattern-wrangler'
+							) }
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );
 							} }
 						/>
 					) }
 				/>
-				{
-					( dlxPatternWranglerAdmin.isMultisite && ! patternsBlockData.networkCanUseBlock ) && (
-						<Notice
-							className="dlx-pw-admin-notice"
-							variant="info"
-							icon={ () => <Info /> }
-						>
-							{ __( 'This setting is overridden by the network settings.', 'pattern-wrangler' ) }
-						</Notice>
-					)
-				}
+				{ dlxPatternWranglerAdmin.isMultisite &&
+					! patternsBlockData.networkCanUseBlock && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						variant="info"
+						icon={ () => <Info /> }
+					>
+						{ __(
+							'This setting is overridden by the network settings.',
+							'pattern-wrangler'
+						) }
+					</Notice>
+				) }
 			</div>
 		);
 	};
@@ -606,156 +675,210 @@ const Main = ( props ) => {
 							label={ __( 'Hide All Patterns', 'pattern-wrangler' ) }
 							checked={ hideAllPatternsData.allPatternsDisabled }
 							disabled={ hideAllPatternsData.networkAllPatternsDisabled }
-							help={ __( 'Disable all patterns and the pattern selector.', 'pattern-wrangler' ) }
+							help={ __(
+								'Disable all patterns and the pattern selector.',
+								'pattern-wrangler'
+							) }
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );
 							} }
 						/>
 					) }
 				/>
-				{
-					( dlxPatternWranglerAdmin.isMultisite && hideAllPatternsData.networkAllPatternsDisabled ) && (
-						<Notice
-							className="dlx-pw-admin-notice"
-							variant="info"
-							icon={ () => <Info /> }
-						>
-							{ __( 'This setting is overridden by the network settings.', 'pattern-wrangler' ) }
-						</Notice>
-					)
-				}
+				{ dlxPatternWranglerAdmin.isMultisite &&
+					hideAllPatternsData.networkAllPatternsDisabled && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						variant="info"
+						icon={ () => <Info /> }
+					>
+						{ __(
+							'This setting is overridden by the network settings.',
+							'pattern-wrangler'
+						) }
+					</Notice>
+				) }
 			</div>
 		);
 	};
 
-
-
-
 	return (
 		<>
 			<div className="dlx-pw-admin-content-heading">
-				<h1><span className="dlx-pw-content-heading-text">{ __( 'Settings for Pattern Wrangler', 'pattern-wrangler' ) }</span></h1>
+				<h1>
+					<span className="dlx-pw-content-heading-text">
+						{ __( 'Settings for Pattern Wrangler', 'pattern-wrangler' ) }
+					</span>
+				</h1>
 				<p className="description">
-					{
-						__( 'Configure which patterns are displayed and adjust settings and categories.', 'pattern-wrangler' )
-					}
+					{ __(
+						'Configure which patterns are displayed and adjust settings and categories.',
+						'pattern-wrangler'
+					) }
 				</p>
-				{
-					( dlxPatternWranglerAdmin.isMultisite && dlxPatternWranglerAdmin.isUserNetworkAdmin ) && (
-						<Notice
-							className="dlx-pw-admin-notice"
-							variant="info"
-							icon={ () => <Info /> }
-						>
-							<div>
-								{ __( 'This is a multisite installation. You can manage network settings by clicking the button below.', 'pattern-wrangler' ) }
-							</div>
-							<div>
-								<Button
-									variant="link"
-									href={ dlxPatternWranglerAdmin.networkAdminSettingsUrl }
-									target="_blank"
-								>
-									{ __( 'Network Settings', 'pattern-wrangler' ) }
-								</Button>
-							</div>
-						</Notice>
-					)
-				}
+				{ dlxPatternWranglerAdmin.isMultisite &&
+					dlxPatternWranglerAdmin.isUserNetworkAdmin && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						variant="info"
+						icon={ () => <Info /> }
+					>
+						<div>
+							{ __(
+								'This is a multisite installation. You can manage network settings by clicking the button below.',
+								'pattern-wrangler'
+							) }
+						</div>
+						<div>
+							<Button
+								variant="link"
+								href={ dlxPatternWranglerAdmin.networkAdminSettingsUrl }
+								target="_blank"
+							>
+								{ __( 'Network Settings', 'pattern-wrangler' ) }
+							</Button>
+						</div>
+					</Notice>
+				) }
 			</div>
 			{ /* eslint-disable-next-line no-unused-vars */ }
-			<form onSubmit={ handleSubmit( ( formData ) => { } ) }>
+			<form onSubmit={ handleSubmit( ( formData ) => {} ) }>
 				<div id="dlx-pw-admin-table">
 					<table className="form-table form-table-row-sections">
 						<tbody>
+							<tr>
+								<th scope="row">{ __( 'Enhanced View', 'pattern-wrangler' ) }</th>
+								<td>
+									<Controller
+										name="enableEnhancedView"
+										control={ control }
+										render={ ( { field: { onChange, value } } ) => (
+											<ToggleControl
+												label={ __(
+													'Enable Enhanced Patterns View',
+													'pattern-wrangler'
+												) }
+												checked={ value }
+												onChange={ ( boolValue ) => {
+													onChange( boolValue );
+												} }
+												help={ __(
+													'This will enable the enhanced patterns view when viewing all patterns rather than showing a classic interface.',
+													'pattern-wrangler'
+												) }
+											/>
+										) }
+									/>
+								</td>
+							</tr>
 							<tr>
 								<th scope="row">
 									{ __( 'Pattern Visibility', 'pattern-wrangler' ) }
 								</th>
 								<td>
 									{ getHideAllPatternsToggleControl() }
-									{
-										canShowLocalPatterns() && (
-											<>
-												{ getValues( 'hideAllPatterns' ) && (
-													<div className="dlx-admin__row">
-														<Controller
-															name="hidePatternsMenu"
-															control={ control }
-															render={ ( { field: { onChange, value } } ) => (
-																<ToggleControl
-																	label={ __( 'Hide Pattern Wrangler Menu Item', 'pattern-wrangler' ) }
-																	checked={ value }
-																	onChange={ ( boolValue ) => {
-																		onChange( boolValue );
-																	} }
-																	help={ __( 'This will disable the top-level menu and move the Patterns menu under Appearance.', 'pattern-wrangler' ) }
-																/>
+									{ canShowLocalPatterns() && (
+										<>
+											{ getValues( 'hideAllPatterns' ) && (
+												<div className="dlx-admin__row">
+													<Controller
+														name="hidePatternsMenu"
+														control={ control }
+														render={ ( { field: { onChange, value } } ) => (
+															<ToggleControl
+																label={ __(
+																	'Hide Pattern Wrangler Menu Item',
+																	'pattern-wrangler'
+																) }
+																checked={ value }
+																onChange={ ( boolValue ) => {
+																	onChange( boolValue );
+																} }
+																help={ __(
+																	'This will disable the top-level menu and move the Patterns menu under Appearance.',
+																	'pattern-wrangler'
+																) }
+															/>
+														) }
+													/>
+												</div>
+											) }
+											{ getShowCoreToggleControl() }
+											{ getShowRemotePatternsToggleControl() }
+											<div className="dlx-admin__row">
+												<Controller
+													name="hideThemePatterns"
+													control={ control }
+													render={ ( { field: { onChange, value } } ) => (
+														<ToggleControl
+															label={ __(
+																'Hide Theme Patterns',
+																'pattern-wrangler'
+															) }
+															checked={ value }
+															onChange={ ( boolValue ) => {
+																onChange( boolValue );
+															} }
+															help={ __(
+																'Prevent patterns registered by the active theme from displaying in the patterns list.',
+																'pattern-wrangler'
 															) }
 														/>
-													</div>
-												) }
-												{ getShowCoreToggleControl() }
-												{ getShowRemotePatternsToggleControl() }
-												<div className="dlx-admin__row">
-													<Controller
-														name="hideThemePatterns"
-														control={ control }
-														render={ ( { field: { onChange, value } } ) => (
-															<ToggleControl
-																label={ __( 'Hide Theme Patterns', 'pattern-wrangler' ) }
-																checked={ value }
-																onChange={ ( boolValue ) => {
-																	onChange( boolValue );
-																} }
-																help={ __( 'Prevent patterns registered by the active theme from displaying in the patterns list.', 'pattern-wrangler' ) }
-															/>
-														) }
-													/>
-												</div>
-												<div className="dlx-admin__row">
-													<Controller
-														name="hidePluginPatterns"
-														control={ control }
-														render={ ( { field: { onChange, value } } ) => (
-															<ToggleControl
-																label={ __( 'Hide Plugin Patterns', 'pattern-wrangler' ) }
-																checked={ value }
-																onChange={ ( boolValue ) => {
-																	onChange( boolValue );
-																} }
-																help={ __( 'Prevent patterns registered by active plugins from displaying in the patterns list.', 'pattern-wrangler' ) }
-															/>
-														) }
-													/>
-												</div>
-												{ getShowUnsyncedPatternsToggleControl() }
-												{ getShowSyncedPatternsToggleControl() }
-												<div className="dlx-admin__row">
-													<Controller
-														name="hideUncategorizedPatterns"
-														control={ control }
-														render={ ( { field: { onChange, value } } ) => (
-															<ToggleControl
-																label={ __( 'Hide Uncategorized Patterns', 'pattern-wrangler' ) }
-																checked={ value }
-																onChange={ ( boolValue ) => {
-																	onChange( boolValue );
-																} }
-																help={ __( 'Prevent any patterns not in any registered categories from displaying.', 'pattern-wrangler' ) }
-															/>
-														) }
-													/>
-												</div>
-											</>
-										)
-									}
+													) }
+												/>
+											</div>
+											<div className="dlx-admin__row">
+												<Controller
+													name="hidePluginPatterns"
+													control={ control }
+													render={ ( { field: { onChange, value } } ) => (
+														<ToggleControl
+															label={ __(
+																'Hide Plugin Patterns',
+																'pattern-wrangler'
+															) }
+															checked={ value }
+															onChange={ ( boolValue ) => {
+																onChange( boolValue );
+															} }
+															help={ __(
+																'Prevent patterns registered by active plugins from displaying in the patterns list.',
+																'pattern-wrangler'
+															) }
+														/>
+													) }
+												/>
+											</div>
+											{ getShowUnsyncedPatternsToggleControl() }
+											{ getShowSyncedPatternsToggleControl() }
+											<div className="dlx-admin__row">
+												<Controller
+													name="hideUncategorizedPatterns"
+													control={ control }
+													render={ ( { field: { onChange, value } } ) => (
+														<ToggleControl
+															label={ __(
+																'Hide Uncategorized Patterns',
+																'pattern-wrangler'
+															) }
+															checked={ value }
+															onChange={ ( boolValue ) => {
+																onChange( boolValue );
+															} }
+															help={ __(
+																'Prevent any patterns not in any registered categories from displaying.',
+																'pattern-wrangler'
+															) }
+														/>
+													) }
+												/>
+											</div>
+										</>
+									) }
 								</td>
 							</tr>
 							<tr>
-								<th scope="row">
-									{ __( 'Customizer', 'pattern-wrangler' ) }
-								</th>
+								<th scope="row">{ __( 'Customizer', 'pattern-wrangler' ) }</th>
 								<td>
 									<div className="dlx-admin__row">
 										<Controller
@@ -768,7 +891,10 @@ const Main = ( props ) => {
 													onChange={ ( boolValue ) => {
 														onChange( boolValue );
 													} }
-													help={ __( 'This will show the customizer UI in the Appearance menu if enabled.', 'pattern-wrangler' ) }
+													help={ __(
+														'This will show the customizer UI in the Appearance menu if enabled.',
+														'pattern-wrangler'
+													) }
 												/>
 											) }
 										/>
@@ -779,12 +905,18 @@ const Main = ( props ) => {
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
 												<ToggleControl
-													label={ __( 'Load Customizer CSS in the Block Editor', 'pattern-wrangler' ) }
+													label={ __(
+														'Load Customizer CSS in the Block Editor',
+														'pattern-wrangler'
+													) }
 													checked={ value }
 													onChange={ ( boolValue ) => {
 														onChange( boolValue );
 													} }
-													help={ __( 'This will load any CSS in the customizer in the block editor as well.', 'pattern-wrangler' ) }
+													help={ __(
+														'This will load any CSS in the customizer in the block editor as well.',
+														'pattern-wrangler'
+													) }
 												/>
 											) }
 										/>
@@ -795,12 +927,18 @@ const Main = ( props ) => {
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
 												<ToggleControl
-													label={ __( 'Load Customizer CSS on the Frontend', 'pattern-wrangler' ) }
+													label={ __(
+														'Load Customizer CSS on the Frontend',
+														'pattern-wrangler'
+													) }
 													checked={ value }
 													onChange={ ( boolValue ) => {
 														onChange( boolValue );
 													} }
-													help={ __( 'By default, WordPress loads customizer CSS on the frontend. Disable this option to prevent any customizer CSS from loading.', 'pattern-wrangler' ) }
+													help={ __(
+														'By default, WordPress loads customizer CSS on the frontend. Disable this option to prevent any customizer CSS from loading.',
+														'pattern-wrangler'
+													) }
 												/>
 											) }
 										/>
@@ -808,9 +946,7 @@ const Main = ( props ) => {
 								</td>
 							</tr>
 							<tr>
-								<th scope="row">
-									{ __( 'Miscellaneous', 'pattern-wrangler' ) }
-								</th>
+								<th scope="row">{ __( 'Miscellaneous', 'pattern-wrangler' ) }</th>
 								<td>
 									<div className="dlx-admin__row">
 										<Controller
@@ -823,7 +959,10 @@ const Main = ( props ) => {
 													onChange={ ( boolValue ) => {
 														onChange( boolValue );
 													} }
-													help={ __( 'This will show the menus UI in the Appearance menu if enabled.', 'pattern-wrangler' ) }
+													help={ __(
+														'This will show the menus UI in the Appearance menu if enabled.',
+														'pattern-wrangler'
+													) }
 												/>
 											) }
 										/>
@@ -835,12 +974,18 @@ const Main = ( props ) => {
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
 												<ToggleControl
-													label={ __( 'Enable a Pattern Preview on the Frontend', 'pattern-wrangler' ) }
+													label={ __(
+														'Enable a Pattern Preview on the Frontend',
+														'pattern-wrangler'
+													) }
 													checked={ value }
 													onChange={ ( boolValue ) => {
 														onChange( boolValue );
 													} }
-													help={ __( 'This will enable previews in the patterns post type so you can preview a pattern as if it were on a page.', 'pattern-wrangler' ) }
+													help={ __(
+														'This will enable previews in the patterns post type so you can preview a pattern as if it were on a page.',
+														'pattern-wrangler'
+													) }
 												/>
 											) }
 										/>
@@ -853,15 +998,18 @@ const Main = ( props ) => {
 									{ __( 'Pattern Categories', 'pattern-wrangler' ) }
 								</th>
 								<td>
-									{ ( Object.values( getValues( 'categories' ) ).length === 0 ) && (
-										<div className="dlx-admin__row dlx-admin__row-full-width" >
+									{ Object.values( getValues( 'categories' ) ).length === 0 && (
+										<div className="dlx-admin__row dlx-admin__row-full-width">
 											<p>
-												{ __( 'No categories have been registered via core, themes or plugins.', 'pattern-wrangler' ) }
+												{ __(
+													'No categories have been registered via core, themes or plugins.',
+													'pattern-wrangler'
+												) }
 											</p>
 										</div>
 									) }
-									{ ( Object.values( getValues( 'categories' ) ).length > 0 ) && (
-										<div className="dlx-admin__row dlx-admin__row-full-width" >
+									{ Object.values( getValues( 'categories' ) ).length > 0 && (
+										<div className="dlx-admin__row dlx-admin__row-full-width">
 											<PanelBody
 												title={ __( 'Pattern Categories', 'pattern-wrangler' ) }
 												initialOpen={ false }

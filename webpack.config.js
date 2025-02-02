@@ -17,19 +17,26 @@ module.exports = ( env ) => {
 				index: '/src/index.js',
 				'dlx-pw-preview': './src/js/blocks/plugins/pattern-preview.js',
 				'dlx-pw-fancybox': './src/js/fancybox/index.js',
+				'dlx-pw-patterns-view': './src/js/react/views/patterns/index.js',
 			},
 		},
 		{
 			entry: {
 				'dlx-pw-admin': './src/js/react/views/main/index.js',
-				'dlx-pw-network-admin-settings': './src/js/react/views/network-settings/index.js',
+				'dlx-pw-network-admin-settings':
+					'./src/js/react/views/network-settings/index.js',
 				'dlx-pw-admin-css': './src/scss/admin.scss',
 				'dlx-pw-post-utilities': './src/js/utils/index.js',
 				'dlx-pw-admin-utils-css': './src/scss/admin-utils.scss',
 			},
 			resolve: {
 				alias: {
-					react: path.resolve( 'node_modules/react' ),
+					react: path.resolve(
+						'node_modules/@wordpress/components/node_modules/react'
+					),
+					'react-dom': path.resolve(
+						'node_modules/@wordpress/components/node_modules/react-dom'
+					),
 				},
 			},
 			mode: env.mode,
@@ -101,7 +108,11 @@ module.exports = ( env ) => {
 					},
 				],
 			},
-			plugins: [ new RemoveEmptyScriptsPlugin(), new MiniCssExtractPlugin(), new DependencyExtractionWebpackPlugin() ],
+			plugins: [
+				new RemoveEmptyScriptsPlugin(),
+				new MiniCssExtractPlugin(),
+				new DependencyExtractionWebpackPlugin(),
+			],
 		},
 	];
 };

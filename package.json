@@ -30,13 +30,14 @@
     "@types/photoswipe": "^4.1.2",
     "@types/react": "^18.0.14",
     "@wordpress/commands": "^0.16.0",
-    "@wordpress/components": "^25.11.0",
+    "@wordpress/components": "^29.3.0",
+    "@wordpress/dataviews": "^4.13.0",
     "@wordpress/element": "^4.9.0",
     "@wordpress/eslint-plugin": "^12.8.0",
     "@wordpress/i18n": "^4.11.0",
     "@wordpress/icons": "^9.36.0",
     "@wordpress/interface": "^8.3.0",
-    "@wordpress/scripts": "^30.7.0",
+    "@wordpress/scripts": "^30.10.0",
     "ajv": "^8.17.1",
     "axios": "^1.6.1",
     "babel-plugin-macros": "^3.1.0",
@@ -56,8 +57,7 @@
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
     "qs": "^6.10.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "^19.0.0",
     "react-hook-form": "^7.48.2",
     "resolve-url-loader": "^5.0.0",
     "sass": "^1.66.1",
@@ -73,6 +73,7 @@
     "@fancyapps/ui": "^5.0.36",
     "@wordpress/a11y": "^3.11.0",
     "grunt-cli": "^1.4.3",
-    "html-to-react": "^1.4.8"
+    "html-to-react": "^1.4.8",
+    "react": "^19.0.0"
   }
 }

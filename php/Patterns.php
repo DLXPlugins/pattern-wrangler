@@ -125,6 +125,13 @@ class Patterns {
 	 * Add admin notices to the patterns post type list view.
 	 */
 	public function add_admin_notices() {
+		$screen = get_current_screen();
+
+		// Make sure the notice only shows on the patterns settings screen page.
+		if ( 'patterns_page_pattern-wrangler' !== $screen->id ) {
+			return;
+		}
+
 		$options                     = Options::get_options();
 		$hide_core_synced_patterns   = (bool) $options['hideCoreSyncedPatterns'];
 		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
