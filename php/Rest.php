@@ -52,7 +52,7 @@ class Rest {
 
 		register_rest_route(
 			'dlxplugins/pattern-wrangler/v1',
-			'/patterns',
+			'/patterns/all',
 			array(
 				array(
 					'methods'             => \WP_REST_Server::READABLE,

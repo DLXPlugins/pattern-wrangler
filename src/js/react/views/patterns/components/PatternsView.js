@@ -4,6 +4,7 @@ import { DataViews } from '@wordpress/dataviews/wp';
 import { Button, Menu } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { useQuery } from '@tanstack/react-query';
+import { addQueryArgs } from '@wordpress/url';
 
 const defaultLayout = {
 	table: {
@@ -114,20 +115,16 @@ const patternCategories = [
 ];
 
 const fetchPatterns = async( { perPage, page, search, sort } ) => {
-	console.log( 'fetchPatterns', perPage, page, search, sort );
 	const response = await apiFetch( {
-		path: '/dlxplugins/pattern-wrangler/v1/patterns',
-		method: 'GET',
-		data: {
-			per_page: perPage,
+		path: addQueryArgs( '/dlxplugins/pattern-wrangler/v1/patterns/all/', {
+			perPage,
 			page,
 			search,
 			orderby: sort.field,
 			order: sort.direction,
-		},
+		} ),
+		method: 'GET',
 	} );
-
-	console.log( 'response', response );
 
 	// Go through each pattern and get the preview image.
 	// response.patterns.forEach( ( pattern ) => {
