@@ -68,7 +68,7 @@ class Rest {
 		// Register route for generating a pattern preview image.
 		register_rest_route(
 			'dlxplugins/pattern-wrangler/v1',
-			'/test/get_preview',
+			'/patterns/get_preview',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_get_pattern_preview' ),
@@ -172,6 +172,9 @@ class Rest {
 
 		// Cache for 1 hour.
 		set_transient( 'dlx_all_patterns_cache', $patterns, HOUR_IN_SECONDS );
+
+		// Only return the first ten patterns.
+		$patterns = array_slice( $patterns, 0, 10 );
 
 		return rest_ensure_response(
 			array(
@@ -310,165 +313,6 @@ class Rest {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * Generate and return a pattern preview image via REST.
-	 *
-	 * @param WP_REST_Request $request The REST request object.
-	 * @return WP_REST_Response The REST response.
-	 */
-	public function rest_get_pattern_preview( $request ) {
-		$params = $this->rest_preview_image_sanitize( $request );
-
-		add_filter(
-			'dlxpw_pattern_preview_id',
-			function () use ( $request ) {
-				return $request->get_param( 'id' );
-			}
-		);
-
-		add_filter(
-			'dlxpw_pattern_preview_nonce',
-			function () use ( $request ) {
-				return wp_create_nonce( 'preview-pattern_' . $request->get_param( 'id' ) );
-			}
-		);
-
-		add_filter(
-			'dlxpw_pattern_preview_content',
-			function () use ( $request ) {
-				$content = $request->get_param( 'content' );
-				// todo - make sure registered and local pattern content is the same.
-				return $content;
-			}
-		);
-
-		// Set up the pattern content with proper HTML structure.
-		$html = sprintf(
-			'<!DOCTYPE html><html><head>%s</head><body class="wp-admin wp-core-ui">%s</body></html>',
-			file_get_contents( Functions::get_plugin_dir( 'templates/pattern-preview.php' ) ),
-		);
-
-		// Get the image from html.
-		// Use WordPress's screenshot generation.
-		if ( class_exists( 'WP_Image_Editor' ) ) {
-			require_once ABSPATH . 'wp-includes/class-wp-image-editor.php';
-
-			// Create temporary file for HTML content.
-			$temp_file = wp_tempnam( 'pattern-preview-' );
-			file_put_contents( $temp_file, $html );
-
-			// Generate the screenshot.
-			try {
-				$editor = WP_Image_Editor::get_image_editor( $temp_file );
-
-				if ( ! is_wp_error( $editor ) ) {
-					$editor->generate_screenshot(
-						$temp_file,
-						$preview_path,
-						array(
-							'width'  => 1200,
-							'height' => 800,
-							'crop'   => true,
-						)
-					);
-				}
-
-				// Clean up temp file.
-				@unlink( $temp_file );
-
-				if ( file_exists( $preview_path ) ) {
-					return rest_ensure_response(
-						array(
-							'preview_url' => $preview_url,
-						)
-					);
-				}
-			} catch ( Exception $e ) {
-				return new WP_Error(
-					'preview_generation_failed',
-					__( 'Failed to generate preview image.', 'pattern-wrangler' ),
-					array( 'status' => 500 )
-				);
-			}
-		}
-
-		// Generate unique filename.
-		$upload_dir  = wp_upload_dir();
-		$preview_dir = $upload_dir['basedir'] . '/pw-pattern-previews';
-
-		// Create directory if it doesn't exist.
-		if ( ! file_exists( $preview_dir ) ) {
-			wp_mkdir_p( $preview_dir );
-		}
-
-		// Generate filename based on pattern details.
-		$filename     = sanitize_file_name(
-			$params['slug'] . '-' .
-			md5( $params['title'] . $params['slug'] . $params['id'] ) .
-			'.png'
-		);
-		$preview_path = $preview_dir . '/' . $filename;
-		$preview_url  = $upload_dir['baseurl'] . '/pw-pattern-previews/' . $filename;
-
-		// If preview already exists, return it.
-		if ( file_exists( $preview_path ) ) {
-			return rest_ensure_response(
-				array(
-					'preview_url' => $preview_url,
-				)
-			);
-		}
-
-		// Use WordPress's screenshot generation.
-		if ( class_exists( 'WP_Image_Editor' ) ) {
-			require_once ABSPATH . 'wp-includes/class-wp-image-editor.php';
-
-			// Create temporary file for HTML content.
-			$temp_file = wp_tempnam( 'pattern-preview-' );
-			file_put_contents( $temp_file, $html );
-
-			// Generate the screenshot.
-			try {
-				$editor = WP_Image_Editor::get_image_editor( $temp_file );
-
-				if ( ! is_wp_error( $editor ) ) {
-					$editor->generate_screenshot(
-						$temp_file,
-						$preview_path,
-						array(
-							'width'  => 1200,
-							'height' => 800,
-							'crop'   => true,
-						)
-					);
-				}
-
-				// Clean up temp file.
-				@unlink( $temp_file );
-
-				if ( file_exists( $preview_path ) ) {
-					return rest_ensure_response(
-						array(
-							'preview_url' => $preview_url,
-						)
-					);
-				}
-			} catch ( Exception $e ) {
-				return new WP_Error(
-					'preview_generation_failed',
-					__( 'Failed to generate preview image.', 'pattern-wrangler' ),
-					array( 'status' => 500 )
-				);
-			}
-		}
-
-		return new WP_Error(
-			'preview_generation_failed',
-			__( 'Image editor not available.', 'pattern-wrangler' ),
-			array( 'status' => 500 )
-		);
 	}
 
 	/**

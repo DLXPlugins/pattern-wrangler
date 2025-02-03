@@ -1,10 +1,18 @@
-import { useState } from '@wordpress/element';
+import { useState, useMemo, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { DataViews } from '@wordpress/dataviews/wp';
-import { Button, Menu } from '@wordpress/components';
+import {
+	BlockPreview,
+	__experimentalUseBlockPreview as useBlockPreview,
+	BlockEditorProvider,
+} from '@wordpress/block-editor';
 import apiFetch from '@wordpress/api-fetch';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { addQueryArgs } from '@wordpress/url';
+import { parse } from '@wordpress/block-serialization-default-parser';
+import { registerCoreBlocks } from '@wordpress/block-library';
+import { store as blocksStore } from '@wordpress/blocks';
+import { useSelect } from '@wordpress/data';
 
 const defaultLayout = {
 	table: {
@@ -15,6 +23,9 @@ const defaultLayout = {
 	grid: {
 		layout: {
 			primaryField: 'pattern-title',
+			columns: 2,
+			columnGap: '24px',
+			rowGap: '24px',
 		},
 	},
 };
@@ -30,9 +41,35 @@ const fields = [
 	{
 		id: 'pattern-view-json',
 		label: __( 'Preview', 'dlx-pattern-wrangler' ),
-		getValue: ( { item } ) => item.previewJson,
+		getValue: ( { item } ) => item.content,
 		render: ( { item } ) => {
-			return <span>{ item.previewJson }</span>;
+			// Generate preview URL instead of using srcDoc
+			const previewUrl = item?.id
+				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${
+					item.id
+				  }&content=${ JSON.stringify( item.content ) }`
+				: '';
+
+			return (
+				<div className="pattern-preview-wrapper">
+					<iframe
+						key={ `preview-${ item.id }` }
+						src={ previewUrl }
+						title={ `Preview: ${ item.title }` }
+						style={ {
+							width: item.viewportWidth + 'px' || '100%',
+							height: '400px',
+							border: '1px solid #ddd',
+							borderRadius: '4px',
+							backgroundColor: '#fff',
+							overflow: 'hidden',
+							scrolling: 'no',
+						} }
+						sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+						loading="lazy"
+					/>
+				</div>
+			);
 		},
 		enableSorting: false,
 	},
@@ -126,12 +163,6 @@ const fetchPatterns = async( { perPage, page, search, sort } ) => {
 		method: 'GET',
 	} );
 
-	// Go through each pattern and get the preview image.
-	// response.patterns.forEach( ( pattern ) => {
-	// 	if ( ! pattern.preview ) {
-	// 		fetchPreviewImage( pattern );
-	// 	}
-	// } );
 	return response;
 };
 
@@ -150,12 +181,51 @@ const fetchPreviewImage = async( pattern ) => {
 	return response;
 };
 
+/**
+ * Transform the block format to the correct format.
+ *
+ * @param {Object} block The block to transform.
+ * @return {Object} The transformed block.
+ */
+const transformBlockFormat = ( block ) => {
+	if ( ! block ) {
+		return null;
+	}
+
+	return {
+		clientId: block.clientId || '',
+		name: block.blockName,
+		attributes: block.attrs || {},
+		innerBlocks: Array.isArray( block.innerBlocks )
+			? block.innerBlocks.map( transformBlockFormat )
+			: [],
+		isValid: true,
+	};
+};
+
+// Add this function to get default settings
+const getDefaultSettings = () => {
+	return {
+		iso: true,
+		styles: [],
+		__experimentalFeatures: {},
+		__experimentalReusableBlocks: [],
+		alignWide: true,
+		supportsLayout: true,
+	};
+};
+
 const PatternsView = () => {
+	const queryClient = useQueryClient();
 	const [ selectedItems, setSelectedItems ] = useState( [] );
+	const [ patterns, setPatterns ] = useState( [] );
+	const [ categories, setCategories ] = useState( [] );
+
 	const [ view, setView ] = useState( {
 		type: 'grid',
 		search: '',
 		perPage: 10,
+		previewSize: 'large',
 		page: 1,
 		filters: [
 			{
@@ -174,11 +244,7 @@ const PatternsView = () => {
 		layout: defaultLayout.grid.layout,
 	} );
 
-	const {
-		data: { patterns = [], categories = [] } = {},
-		isLoading,
-		error,
-	} = useQuery( {
+	const { data, isLoading, error } = useQuery( {
 		queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
 		queryFn: () =>
 			fetchPatterns( {
@@ -188,6 +254,27 @@ const PatternsView = () => {
 				sort: view.sort,
 			} ),
 	} );
+
+	// Memoize patterns that need HTML updates
+	const patternsNeedingHtml = useMemo( () => {
+		if ( ! data?.patterns ) {
+			return [];
+		}
+		return data.patterns.filter( ( pattern ) => ! pattern.html );
+	}, [ data?.patterns ] );
+
+	useEffect( () => {
+		if ( data && data.hasOwnProperty( 'patterns' ) ) {
+			if ( data.patterns ) {
+				if ( data.patterns !== patterns ) {
+					setPatterns( data.patterns );
+				}
+			}
+			if ( data.categories ) {
+				setCategories( data.categories );
+			}
+		}
+	}, [ data ] );
 
 	if ( error ) {
 		return (

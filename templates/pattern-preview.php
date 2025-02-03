@@ -60,10 +60,25 @@ add_action(
 		);
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
-			'header,.header,.site-header,footer,.footer,.site-footer { display: none; }'
+			'header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; }'
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
 	}
+);
+
+add_action(
+	'wp_head',
+	function () {
+		// Add CORS headers for font loading.
+		header( 'Access-Control-Allow-Origin: *' );
+		header( 'Access-Control-Allow-Methods: GET, OPTIONS' );
+		header( 'Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept' );
+
+		// Add CSP and base tag.
+		echo '<meta http-equiv="Content-Security-Policy" content="default-src *; font-src * data:; img-src * data:; style-src * \'unsafe-inline\'; script-src * \'unsafe-inline\' \'unsafe-eval\';">';
+		echo '<base href="' . esc_url( home_url() ) . '">';
+	},
+	1 // Priority 1 to ensure it runs early.
 );
 
 // Get header if theme is not FSE theme.
@@ -86,7 +101,7 @@ if ( ! wp_is_block_theme() ) {
 		get_header();
 	}
 	\setup_postdata( $current_post );
-	the_content();
+	echo wp_kses_post( $pattern_content );
 } else {
 	?>
 	<!doctype html>
@@ -99,14 +114,15 @@ if ( ! wp_is_block_theme() ) {
 		?>
 		<?php wp_head(); ?>
 	</head>
-	<body <?php body_class(); ?>>
+	<body <?php body_class(); ?> style="overflow: hidden; transform: scale(.9) !important;
+	aspect-ratio: 1 / 1 !important;">
 	<?php wp_body_open(); ?>
 	<div class="wp-site-blocks">
 	<header class="wp-block-template-part site-header">
 		<?php block_header_area(); ?>
 	</header>
 	<?php
-	the_content();
+	echo wp_kses_post( $pattern_content );
 	?>
 	<?php
 }

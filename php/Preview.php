@@ -36,6 +36,45 @@ class Preview {
 
 		// Add a preview button to the top toolbar section.
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_preview_toolbar_scripts' ) );
+
+		// Add a preview for the patterns list view.
+		add_action( 'wp_ajax_dlxpw_pattern_preview', array( $this, 'pattern_preview' ) );
+	}
+
+	/**
+	 * Get the pattern preview HTML.
+	 */
+	public function pattern_preview() {
+		$pattern_id = filter_input( INPUT_GET, 'pattern_id', FILTER_SANITIZE_SPECIAL_CHARS );
+		$content    = json_decode( filter_input( INPUT_GET, 'content', FILTER_UNSAFE_RAW ), true );
+		add_filter(
+			'dlxpw_pattern_preview_id',
+			function () use ( $pattern_id ) {
+				return $pattern_id;
+			}
+		);
+
+		add_filter(
+			'dlxpw_pattern_preview_nonce',
+			function () use ( $pattern_id ) {
+				return wp_create_nonce( 'preview-pattern_' . $pattern_id );
+			}
+		);
+
+		add_filter(
+			'dlxpw_pattern_preview_content',
+			function () use ( $content ) {
+				// todo - make sure registered and local pattern content is the same.
+				return $content;
+			}
+		);
+		// Get the pattern preview HTML.
+		ob_start();
+		load_template( Functions::get_plugin_dir( 'templates/pattern-preview.php' ), false );
+		$html = ob_get_clean();
+
+		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		wp_die();
 	}
 
 	/**
