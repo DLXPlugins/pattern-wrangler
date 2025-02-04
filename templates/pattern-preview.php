@@ -19,7 +19,7 @@ if ( ! current_user_can( 'edit_posts' ) ) {
  *
  * @since 1.1.0
  */
-$pattern_id = apply_filters( 'dlxpw_pattern_preview_id', '' );
+$pattern_id = urldecode( apply_filters( 'dlxpw_pattern_preview_id', '' ) );
 
 $nonce = apply_filters( 'dlxpw_pattern_preview_nonce', '' );
 
@@ -29,7 +29,7 @@ if ( ! wp_verify_nonce( $nonce, 'preview-pattern_' . $pattern_id ) ) {
 	die( 'Invalid nonce.' );
 }
 
-if ( '' === $pattern_id || '' === $pattern_content ) {
+if ( '' === $pattern_id ) {
 	die( 'Pattern not found.' );
 }
 
@@ -47,7 +47,21 @@ if ( is_numeric( $pattern_id ) ) {
 		die( 'Pattern not found.' );
 	} else {
 		$wp_query->the_post();
+		$pattern_content = $wp_query->post->post_content;
 	}
+} elseif ( empty( $pattern_content ) && $pattern_id ) {
+	$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+	foreach ( $registered_patterns as $pattern ) {
+		if ( $pattern_id === $pattern['slug'] ) {
+			$pattern_content = $pattern['content'];
+			break;
+		}
+	}
+	if ( ! isset( $pattern_content ) ) {
+		die( 'Pattern not found.' );
+	}
+} else {
+	die( 'Invalid pattern ID.' );
 }
 
 // Add inline styles to try to hide the header and footer.

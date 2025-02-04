@@ -181,6 +181,21 @@ class Functions {
 		);
 	}
 
+
+	/**
+	 * Check if a pattern ID is valid.
+	 *
+	 * @param string $pattern_id The pattern ID.
+	 *
+	 * @return string|int The sanitized pattern ID or 0 if invalid.
+	 */
+	public static function get_sanitized_pattern_id( $pattern_id ) {
+		if ( ! preg_match( '/^(\d+|[a-zA-Z0-9\/_-]+)$/', $pattern_id ) ) {
+			return 0;
+		}
+		return $pattern_id;
+	}
+
 	/**
 	 * Check if local patterns are enabled.
 	 *

@@ -44,10 +44,9 @@ const fields = [
 		label: __( 'Preview', 'dlx-pattern-wrangler' ),
 		getValue: ( { item } ) => {
 			// Generate preview URL instead of using srcDoc
+			// todo: secure with nonce.
 			const previewUrl = item?.id
-				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${
-					item.id
-				  }&content=${ JSON.stringify( item.content ) }`
+				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }`
 				: '';
 			return (
 				<div className="pattern-preview-wrapper">
@@ -57,7 +56,8 @@ const fields = [
 						title={ `Preview: ${ item.title }` }
 						style={ {
 							width: item.viewportWidth + 'px' || '100%',
-							height: '400px',
+							height: '100%',
+							aspectRatio: '16/9',
 							border: '1px solid #ddd',
 							borderRadius: '4px',
 							backgroundColor: '#fff',

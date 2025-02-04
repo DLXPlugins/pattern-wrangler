@@ -45,12 +45,14 @@ class Preview {
 	 * Get the pattern preview HTML.
 	 */
 	public function pattern_preview() {
-		$pattern_id = filter_input( INPUT_GET, 'pattern_id', FILTER_SANITIZE_SPECIAL_CHARS );
-		$content    = json_decode( filter_input( INPUT_GET, 'content', FILTER_UNSAFE_RAW ), true );
+		$pattern_id = Functions::get_sanitized_pattern_id( filter_input( INPUT_GET, 'pattern_id', FILTER_UNSAFE_RAW ) );
+		if ( 0 === $pattern_id ) {
+			die( 'Invalid pattern ID.' );
+		}
 		add_filter(
 			'dlxpw_pattern_preview_id',
 			function () use ( $pattern_id ) {
-				return $pattern_id;
+				return urlencode( $pattern_id );
 			}
 		);
 
@@ -61,13 +63,6 @@ class Preview {
 			}
 		);
 
-		add_filter(
-			'dlxpw_pattern_preview_content',
-			function () use ( $content ) {
-				// todo - make sure registered and local pattern content is the same.
-				return $content;
-			}
-		);
 		// Get the pattern preview HTML.
 		ob_start();
 		load_template( Functions::get_plugin_dir( 'templates/pattern-preview.php' ), false );

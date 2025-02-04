@@ -147,7 +147,7 @@ class Rest {
 		foreach ( $registered_patterns as $pattern ) {
 			$preview_image                 = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
 			$patterns[ $pattern['title'] ] = array(
-				'id'         => sanitize_title( $pattern['name'] ),
+				'id'         => Functions::get_sanitized_pattern_id( $pattern['name'] ),
 				'title'      => $pattern['title'],
 				'slug'       => $pattern['name'],
 				'content'    => $pattern['content'],

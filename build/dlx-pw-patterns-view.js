@@ -20072,7 +20072,8 @@ var fields = [{
   getValue: function getValue(_ref2) {
     var item = _ref2.item;
     // Generate preview URL instead of using srcDoc
-    var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&content=").concat(JSON.stringify(item.content)) : '';
+    // todo: secure with nonce.
+    var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id) : '';
     return /*#__PURE__*/React.createElement("div", {
       className: "pattern-preview-wrapper"
     }, /*#__PURE__*/React.createElement("iframe", {
@@ -20081,7 +20082,8 @@ var fields = [{
       title: "Preview: ".concat(item.title),
       style: {
         width: item.viewportWidth + 'px' || 0,
-        height: '400px',
+        height: '100%',
+        aspectRatio: '16/9',
         border: '1px solid #ddd',
         borderRadius: '4px',
         backgroundColor: '#fff',
