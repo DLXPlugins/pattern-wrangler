@@ -22,8 +22,3 @@
   height: 100%;
   overflow: hidden;
 }
-
-.components-grid.dataviews-view-grid {
-  grid-template-columns: repeat(2, 1fr) !important;
-  gap: 24px;
-}

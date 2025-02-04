@@ -7,6 +7,8 @@
 
 namespace DLXPlugins\PatternWrangler;
 
+use WP_Block_Type_Registry;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'No direct access.' );
 }
@@ -91,8 +93,7 @@ class Rest {
 			return rest_ensure_response( $patterns );
 		}
 		// Get registered patterns.
-		$patterns_rest_controller = new \WP_REST_Block_Patterns_Controller();
-		$registered_patterns      = $patterns_rest_controller->get_items( new \WP_REST_Request() )->data;
+		$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 
 		// Get local/DB patterns.
 		$local_patterns = get_posts(
@@ -144,8 +145,8 @@ class Rest {
 
 		// Process registered patterns.
 		foreach ( $registered_patterns as $pattern ) {
-			$preview_image = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
-			$patterns[]    = array(
+			$preview_image                 = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
+			$patterns[ $pattern['title'] ] = array(
 				'id'         => sanitize_title( $pattern['name'] ),
 				'title'      => $pattern['title'],
 				'slug'       => $pattern['name'],
@@ -158,8 +159,8 @@ class Rest {
 
 		// Process local patterns.
 		foreach ( $local_patterns as $pattern ) {
-			$preview_image = $this->get_pattern_preview( $pattern->post_title, $pattern->post_name, $pattern->ID );
-			$patterns[]    = array(
+			$preview_image                    = $this->get_pattern_preview( $pattern->post_title, $pattern->post_name, $pattern->ID );
+			$patterns[ $pattern->post_title ] = array(
 				'id'         => $pattern->ID,
 				'title'      => $pattern->post_title,
 				'slug'       => $pattern->post_name,
@@ -170,11 +171,17 @@ class Rest {
 			);
 		}
 
+		// Sort patterns by title.
+		ksort( $patterns );
+
+		// Reindex array.
+		$patterns = array_values( $patterns );
+
 		// Cache for 1 hour.
 		set_transient( 'dlx_all_patterns_cache', $patterns, HOUR_IN_SECONDS );
 
 		// Only return the first ten patterns.
-		$patterns = array_slice( $patterns, 0, 10 );
+		// $patterns = array_slice( $patterns, 0, 10 );
 
 		return rest_ensure_response(
 			array(

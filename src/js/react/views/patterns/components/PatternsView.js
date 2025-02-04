@@ -1,31 +1,32 @@
 import { useState, useMemo, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { DataViews } from '@wordpress/dataviews/wp';
-import {
-	BlockPreview,
-	__experimentalUseBlockPreview as useBlockPreview,
-	BlockEditorProvider,
-} from '@wordpress/block-editor';
 import apiFetch from '@wordpress/api-fetch';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { addQueryArgs } from '@wordpress/url';
-import { parse } from '@wordpress/block-serialization-default-parser';
-import { registerCoreBlocks } from '@wordpress/block-library';
-import { store as blocksStore } from '@wordpress/blocks';
-import { useSelect } from '@wordpress/data';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { addQueryArgs, getQueryArgs } from '@wordpress/url';
+import { dispatch, select, useDispatch } from '@wordpress/data';
+import PatternsViewStore from '../store';
 
 const defaultLayout = {
 	table: {
 		layout: {
-			primaryField: 'pattern-title',
+			titleField: 'pattern-title',
+			showMedia: false,
 		},
 	},
 	grid: {
 		layout: {
-			primaryField: 'pattern-title',
+			titleField: 'pattern-title',
+			mediaField: 'pattern-view-json',
 			columns: 2,
 			columnGap: '24px',
 			rowGap: '24px',
+		},
+	},
+	list: {
+		layout: {
+			titleField: 'pattern-title',
+			showMedia: false,
 		},
 	},
 };
@@ -41,15 +42,13 @@ const fields = [
 	{
 		id: 'pattern-view-json',
 		label: __( 'Preview', 'dlx-pattern-wrangler' ),
-		getValue: ( { item } ) => item.content,
-		render: ( { item } ) => {
+		getValue: ( { item } ) => {
 			// Generate preview URL instead of using srcDoc
 			const previewUrl = item?.id
 				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${
 					item.id
 				  }&content=${ JSON.stringify( item.content ) }`
 				: '';
-
 			return (
 				<div className="pattern-preview-wrapper">
 					<iframe
@@ -71,14 +70,32 @@ const fields = [
 				</div>
 			);
 		},
+		isVisible: ( newView ) => {
+			return false;
+		},
 		enableSorting: false,
 	},
 	{
 		id: 'pattern-categories',
 		label: __( 'Categories', 'dlx-pattern-wrangler' ),
-		getValue: ( { item } ) => item.category,
 		render: ( { item } ) => {
-			return <span>{ item.category }</span>;
+			return item?.categories?.map( ( category, index ) => {
+				// If cat is object, get category.name, otherwise just use the category.
+				const catName = typeof category === 'object' ? category.name : category;
+				// Convert to title case.
+				const titleCase = catName
+					.split( ' ' )
+					.map(
+						( word ) => word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase()
+					)
+					.join( ' ' );
+				return (
+					<>
+						<span key={ category }>{ titleCase }</span>
+						{ index < item.categories.length - 1 && ', ' }
+					</>
+				);
+			} );
 		},
 		enableSorting: false,
 	},
@@ -86,9 +103,8 @@ const fields = [
 		id: 'author',
 		label: __( 'Author', 'dlx-pattern-wrangler' ),
 		type: 'text',
-		getValue: ( { item } ) => item.author,
-		render: ( { item } ) => {
-			return <span>{ item.author }</span>;
+		getValue: ( { item } ) => {
+			return item.author;
 		},
 	},
 ];
@@ -146,10 +162,6 @@ const actions = [
 		isDestructive: false,
 	},
 ];
-const patternCategories = [
-	{ value: 'header', label: __( 'Header', 'dlx-pattern-wrangler' ) },
-	{ value: 'footer', label: __( 'Footer', 'dlx-pattern-wrangler' ) },
-];
 
 const fetchPatterns = async( { perPage, page, search, sort } ) => {
 	const response = await apiFetch( {
@@ -166,60 +178,13 @@ const fetchPatterns = async( { perPage, page, search, sort } ) => {
 	return response;
 };
 
-const fetchPreviewImage = async( pattern ) => {
-	const response = await apiFetch( {
-		path: `/dlxplugins/pattern-wrangler/v1/patterns/get_preview/`,
-		method: 'POST',
-		data: {
-			content: pattern.content,
-			slug: pattern.slug,
-			title: pattern.title,
-			id: pattern.id,
-			...pattern,
-		},
-	} );
-	return response;
-};
-
-/**
- * Transform the block format to the correct format.
- *
- * @param {Object} block The block to transform.
- * @return {Object} The transformed block.
- */
-const transformBlockFormat = ( block ) => {
-	if ( ! block ) {
-		return null;
-	}
-
-	return {
-		clientId: block.clientId || '',
-		name: block.blockName,
-		attributes: block.attrs || {},
-		innerBlocks: Array.isArray( block.innerBlocks )
-			? block.innerBlocks.map( transformBlockFormat )
-			: [],
-		isValid: true,
-	};
-};
-
-// Add this function to get default settings
-const getDefaultSettings = () => {
-	return {
-		iso: true,
-		styles: [],
-		__experimentalFeatures: {},
-		__experimentalReusableBlocks: [],
-		alignWide: true,
-		supportsLayout: true,
-	};
-};
-
 const PatternsView = () => {
 	const queryClient = useQueryClient();
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const [ patterns, setPatterns ] = useState( [] );
 	const [ categories, setCategories ] = useState( [] );
+
+	const { setViewType } = useDispatch( PatternsViewStore );
 
 	const [ view, setView ] = useState( {
 		type: 'grid',
@@ -227,20 +192,13 @@ const PatternsView = () => {
 		perPage: 10,
 		previewSize: 'large',
 		page: 1,
-		filters: [
-			{
-				field: 'pattern-categories',
-				operator: 'in',
-				value: patternCategories,
-			},
-		],
 		sort: {
 			field: 'pattern-title',
 			direction: 'asc',
 		},
 		titleField: 'pattern-title',
 		mediaField: 'pattern-view-json',
-		fields: [ 'pattern-view-json', 'pattern-categories', 'author' ],
+		fields: [ 'pattern-categories', 'author' ],
 		layout: defaultLayout.grid.layout,
 	} );
 
@@ -255,13 +213,70 @@ const PatternsView = () => {
 			} ),
 	} );
 
-	// Memoize patterns that need HTML updates
-	const patternsNeedingHtml = useMemo( () => {
-		if ( ! data?.patterns ) {
-			return [];
+	/**
+	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.
+	 *
+	 * @param {Object} newView The new view object.
+	 */
+	const onChangeView = ( newView ) => {
+		// Adjust fields based on view type
+		if ( newView.type === 'grid' ) {
+			newView.fields = [ 'pattern-categories', 'author' ];
+			newView.showMedia = true;
+		} else {
+			newView.fields = [ 'pattern-view-json', 'pattern-categories', 'author' ];
+			newView.showMedia = false;
 		}
-		return data.patterns.filter( ( pattern ) => ! pattern.html );
-	}, [ data?.patterns ] );
+
+		// Create query args object with view state.
+		const queryArgs = {
+			page: getQueryArgs( window.location.href ).page,
+			paged: newView.page,
+			per_page: newView.perPage,
+			view_type: newView.type,
+		};
+
+		// Only add search if it exists.
+		if ( newView.search ) {
+			queryArgs.search = newView.search;
+		}
+
+		// Add sort parameters if they exist.
+		if ( newView.sort?.field ) {
+			queryArgs.orderby = newView.sort.field;
+			queryArgs.order = newView.sort.direction;
+		}
+
+		// Update URL without page reload using addQueryArgs.
+		const newUrl = addQueryArgs( window.location.pathname, queryArgs );
+		window.history.pushState( {}, '', newUrl );
+
+		// Update the view state.
+		setView( newView );
+	};
+
+	// Add effect to initialize view from URL params.
+	useEffect( () => {
+		// Get query args from current URL.
+		const queryArgs = getQueryArgs( window.location.href );
+
+		// Update initial view state from URL parameters.
+		setView( ( prevView ) => ( {
+			...prevView,
+			type: queryArgs.view_type || prevView.type,
+			page: parseInt( queryArgs.page ) || prevView.page,
+			perPage: parseInt( queryArgs.per_page ) || prevView.perPage,
+			search: queryArgs.search || prevView.search,
+			sort: {
+				field: queryArgs.orderby || prevView.sort.field,
+				direction: queryArgs.order || prevView.sort.direction,
+			},
+			showMedia: 'grid' === queryArgs.view_type ? true : false,
+		} ) );
+		if ( queryArgs.view_type ) {
+			setViewType( queryArgs.view_type );
+		}
+	}, [] ); // Run once on component mount.
 
 	useEffect( () => {
 		if ( data && data.hasOwnProperty( 'patterns' ) ) {
@@ -292,7 +307,7 @@ const PatternsView = () => {
 				actions={ actions }
 				label={ __( 'Patterns', 'dlx-pattern-wrangler' ) }
 				view={ view }
-				onChangeView={ setView }
+				onChangeView={ onChangeView }
 				paginationInfo={ {
 					totalItems: patterns.length,
 					totalPages: 1, // Would come from API headers
