@@ -33,6 +33,10 @@ if ( '' === $pattern_id ) {
 	die( 'Pattern not found.' );
 }
 
+$scale = 1;
+$aspect_ratio = 16/9;
+$viewport_width = 1280;
+
 // Perform query.
 if ( is_numeric( $pattern_id ) ) {
 	global $wp_query;
@@ -54,6 +58,7 @@ if ( is_numeric( $pattern_id ) ) {
 	foreach ( $registered_patterns as $pattern ) {
 		if ( $pattern_id === $pattern['slug'] ) {
 			$pattern_content = $pattern['content'];
+			$viewport_width = absint( $pattern['viewportWidth'] );
 			break;
 		}
 	}
@@ -63,6 +68,16 @@ if ( is_numeric( $pattern_id ) ) {
 } else {
 	die( 'Invalid pattern ID.' );
 }
+
+/**
+ * Filter to get the scale.
+ *
+ * @since 1.1.0
+ */
+$scale = apply_filters( 'dlxpw_pattern_preview_scale', 1, $viewport_width );
+
+// Calculate scale as opposed to aspect ratio and viewport width.
+$scale = round( min( $viewport_width, ( $viewport_width / $aspect_ratio ) ) / 1440, 2 );
 
 // Add inline styles to try to hide the header and footer.
 add_action(
@@ -74,7 +89,7 @@ add_action(
 		);
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
-			'header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; }'
+			'header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .wp-site-blocks > .wp-block-group { padding-top: 24px !important; padding-bottom: 24px !important; margin-top: 24px !important; margin-bottom: 24px !important; }'
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
 	}
@@ -94,6 +109,8 @@ add_action(
 	},
 	1 // Priority 1 to ensure it runs early.
 );
+
+// Calculate aspect ratio from pattern viewport..
 
 // Get header if theme is not FSE theme.
 if ( ! wp_is_block_theme() ) {
@@ -128,15 +145,15 @@ if ( ! wp_is_block_theme() ) {
 		?>
 		<?php wp_head(); ?>
 	</head>
-	<body <?php body_class(); ?> style="overflow: hidden; transform: scale(.9) !important;
-	aspect-ratio: 1 / 1 !important;">
+	<body <?php body_class(); ?> style="overflow: hidden; transform: scale(<?php echo esc_attr( $scale ); ?>) !important;
+	aspect-ratio: <?php echo esc_attr( $aspect_ratio ); ?> !important;">
 	<?php wp_body_open(); ?>
 	<div class="wp-site-blocks">
 	<header class="wp-block-template-part site-header">
 		<?php block_header_area(); ?>
 	</header>
 	<?php
-	echo wp_kses_post( $pattern_content );
+	echo wp_kses_post( do_blocks( $pattern_content ) );
 	?>
 	<?php
 }

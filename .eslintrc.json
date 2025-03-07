@@ -10,6 +10,7 @@
 		"dlxPatternWranglerPreview": "readonly",
 		"dlxPatternWranglerAdmin": "readonly",
 		"dlxPatternWranglerNetworkAdminSettings": "readonly",
+		"dlxEnhancedPatternsView": "readonly",
 		"ajaxurl": "readonly"
 	},
 	"env": {

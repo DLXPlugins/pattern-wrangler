@@ -181,7 +181,7 @@ class Rest {
 		set_transient( 'dlx_all_patterns_cache', $patterns, HOUR_IN_SECONDS );
 
 		// Only return the first ten patterns.
-		// $patterns = array_slice( $patterns, 0, 10 );
+		$patterns = array_slice( $patterns, 0, 10 );
 
 		return rest_ensure_response(
 			array(

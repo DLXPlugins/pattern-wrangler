@@ -1,4 +1,6 @@
-import { useState, useMemo, useEffect } from '@wordpress/element';
+/* eslint-disable react/no-unknown-property */
+import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
+import { useResizeObserver, useRefEffect } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { DataViews } from '@wordpress/dataviews/wp';
 import apiFetch from '@wordpress/api-fetch';
@@ -43,21 +45,41 @@ const fields = [
 		id: 'pattern-view-json',
 		label: __( 'Preview', 'dlx-pattern-wrangler' ),
 		getValue: ( { item } ) => {
+			const iframeRef = useRef( null );
 			// Generate preview URL instead of using srcDoc
 			// todo: secure with nonce.
 			const previewUrl = item?.id
 				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }`
 				: '';
+			const [ { width, height } ] = useResizeObserver( iframeRef );
+
+			console.log( width, height );
+			//const scale = containerWidth / viewportWidth;
+			// const aspectRatio = contentHeight
+			// 	? containerWidth / ( contentHeight * scale )
+			// 	: 0;
 			return (
 				<div className="pattern-preview-wrapper">
 					<iframe
 						key={ `preview-${ item.id }` }
 						src={ previewUrl }
 						title={ `Preview: ${ item.title }` }
+						contentRef={ useRefEffect( ( bodyElement ) => {
+							const {
+								ownerDocument: { documentElement },
+							} = bodyElement;
+							documentElement.classList.add(
+								'block-editor-block-preview__content-iframe'
+							);
+							documentElement.style.position = 'absolute';
+							documentElement.style.width = '100%';
+		
+							// Necessary for contentResizeListener to work.
+							bodyElement.style.boxSizing = 'border-box';
+							bodyElement.style.position = 'absolute';
+							bodyElement.style.width = '100%';
+						}, [] ) }
 						style={ {
-							width: item.viewportWidth + 'px' || '100%',
-							height: '100%',
-							aspectRatio: '16/9',
 							border: '1px solid #ddd',
 							borderRadius: '4px',
 							backgroundColor: '#fff',
@@ -66,7 +88,9 @@ const fields = [
 						} }
 						sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
 						loading="lazy"
-					/>
+						ref={ iframeRef }
+					>
+					</iframe>
 				</div>
 			);
 		},

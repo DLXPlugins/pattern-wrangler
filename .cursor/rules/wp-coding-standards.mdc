@@ -1,0 +1,9 @@
+---
+description: For ensuring product meets strict WordPress coding standards
+globs: *.js, *.php
+---
+
+# Your rule content
+
+- Use WordPress coding standards for PHP, inline documentation, and JavaScript files (eslint).
+- All code should be multisite compatible.
