@@ -33,8 +33,8 @@ if ( '' === $pattern_id ) {
 	die( 'Pattern not found.' );
 }
 
-$scale = 1;
-$aspect_ratio = 16/9;
+$scale          = 1;
+$aspect_ratio   = 16 / 9;
 $viewport_width = 1280;
 
 // Perform query.
@@ -58,7 +58,7 @@ if ( is_numeric( $pattern_id ) ) {
 	foreach ( $registered_patterns as $pattern ) {
 		if ( $pattern_id === $pattern['slug'] ) {
 			$pattern_content = $pattern['content'];
-			$viewport_width = absint( $pattern['viewportWidth'] );
+			$viewport_width  = absint( $pattern['viewportWidth'] );
 			break;
 		}
 	}
@@ -83,15 +83,59 @@ $scale = round( min( $viewport_width, ( $viewport_width / $aspect_ratio ) ) / 14
 add_action(
 	'wp_enqueue_scripts',
 	function () {
+		// Enqueue core block styles.
+		wp_enqueue_style( 'wp-block-library' );
+		wp_enqueue_style( 'wp-block-library-theme' );
+
+		// Enqueue block styles.
+		if ( function_exists( 'wp_enqueue_global_styles' ) ) {
+			wp_enqueue_global_styles();
+		}
+
+		// Get theme styles.
+		if ( wp_style_is( 'global-styles', 'registered' ) ) {
+			wp_enqueue_style( 'global-styles' );
+		}
+
+		// Get block styles.
+		if ( function_exists( 'wp_get_global_stylesheet' ) ) {
+			$styles = wp_get_global_stylesheet();
+			if ( ! empty( $styles ) ) {
+				wp_register_style( 'dlxpw-global-styles', false );
+				wp_add_inline_style( 'dlxpw-global-styles', $styles );
+				wp_enqueue_style( 'dlxpw-global-styles' );
+			}
+		}
+
+		// Load dashicons for social icons fallbacks.
+		wp_enqueue_style( 'dashicons' );
+
 		wp_register_style(
 			'dlxpw-pattern-preview',
 			''
 		);
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
-			'header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .wp-site-blocks > .wp-block-group { padding-top: 24px !important; padding-bottom: 24px !important; margin-top: 24px !important; margin-bottom: 24px !important; }'
+			'header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .wp-site-blocks > .wp-block-group { padding-top: 24px !important; padding-bottom: 24px !important; margin-top: 24px !important; margin-bottom: 24px !important; }.wp-site-blocks>.wp-block-group {margin-top: 0 !important;}.wp-site-blocks>.wp-block-cover {margin-top: 0 !important;padding-top: 0 !important;}.wp-site-blocks>.wp-block-query {margin-top: 0 !important;}'
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
+
+		// Output viewport Width from query var.
+		$viewport_width = isset( $_GET['viewport_width'] ) ? absint( $_GET['viewport_width'] ) : 1280;
+		$layout         = isset( $_GET['layout'] ) ? sanitize_text_field( $_GET['layout'] ) : 'grid';
+		wp_register_script(
+			'dlxpw-pattern-preview-js',
+			null
+		);
+		wp_localize_script(
+			'dlxpw-pattern-preview-js',
+			'dlxPatternPreviewVars',
+			array(
+				'viewportWidth' => $viewport_width,
+				'layout'        => $layout,
+			)
+		);
+		wp_print_scripts( 'dlxpw-pattern-preview-js' );
 	}
 );
 
@@ -145,7 +189,7 @@ if ( ! wp_is_block_theme() ) {
 		?>
 		<?php wp_head(); ?>
 	</head>
-	<body <?php body_class(); ?> style="overflow: hidden; transform: scale(<?php echo esc_attr( $scale ); ?>) !important;
+	<body <?php body_class(); ?> style="overflow: hidden;
 	aspect-ratio: <?php echo esc_attr( $aspect_ratio ); ?> !important;">
 	<?php wp_body_open(); ?>
 	<div class="wp-site-blocks">
@@ -153,7 +197,7 @@ if ( ! wp_is_block_theme() ) {
 		<?php block_header_area(); ?>
 	</header>
 	<?php
-	echo wp_kses_post( do_blocks( $pattern_content ) );
+	echo apply_filters( 'the_content', do_blocks( $pattern_content ) );
 	?>
 	<?php
 }
@@ -184,6 +228,65 @@ if ( ! wp_is_block_theme() ) {
 	</footer>
 	<?php wp_footer(); ?>
 	</div>
+	<script>
+		document.addEventListener( 'DOMContentLoaded', () => {
+		// Get the width and height of body content.
+		const containerWidth = document.body.offsetWidth;
+		const contentHeight = Math.max(
+			document.body.scrollHeight,
+			document.documentElement.scrollHeight,
+			document.body.offsetHeight,
+			document.documentElement.offsetHeight,
+			document.body.clientHeight,
+			document.documentElement.clientHeight
+		);
+		const viewportWidth = dlxPatternPreviewVars.viewportWidth;
+		const layout = dlxPatternPreviewVars.layout;
+
+		const scale = 'grid' === layout ? containerWidth / viewportWidth : 96 / viewportWidth; // 96px is the width of the list view.
+		const aspectRatio = contentHeight
+			? containerWidth / ( contentHeight * scale )
+			: 0;
+
+		try {
+			// 1. Get the window.parent (the parent window)
+			const parentWindow = window.parent;
+
+			// 2. Find THIS iframe inside the parent document.
+			const iframes = parentWindow.document.querySelectorAll('iframe');
+			let thisIframe = null;
+
+			for (const iframe of iframes) {
+				if (iframe.contentWindow === window) {
+					thisIframe = iframe;
+					break;
+				}
+			}
+
+			if (!thisIframe) {
+				// No iframe found, so we can't scale.
+				return;
+			}
+
+			// 3. Get the DIRECT parent of the iframe.
+			const iframeScaleContainer = thisIframe.closest('.pattern-preview-iframe-scale-container');
+
+			// 4. (Optional) Ensure it has the expected class if you want.
+			if (iframeScaleContainer) {
+				iframeScaleContainer.style.scale = scale;
+				iframeScaleContainer.style.aspectRatio = aspectRatio;
+			}
+
+			// Set the iframe styles.
+			thisIframe.style.position = 'absolute';
+			thisIframe.style.width = viewportWidth + 'px';
+			thisIframe.style.pointerEvents = 'none';
+			thisIframe.style.height = contentHeight + 'px';
+		} catch (error) {
+			console.error('Error communicating with parent document:', error);
+		}
+	});
+	</script>
 	</body>
 	</html>
 	<?php

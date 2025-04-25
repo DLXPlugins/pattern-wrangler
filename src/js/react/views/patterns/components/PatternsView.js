@@ -2,20 +2,14 @@
 import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
 import { useResizeObserver, useRefEffect } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { DataViews } from '@wordpress/dataviews/wp';
+import { DataViews } from '@wordpress/dataviews';
 import apiFetch from '@wordpress/api-fetch';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 import { dispatch, select, useDispatch } from '@wordpress/data';
 import PatternsViewStore from '../store';
 
-const defaultLayout = {
-	table: {
-		layout: {
-			titleField: 'pattern-title',
-			showMedia: false,
-		},
-	},
+const defaultLayouts = {
 	grid: {
 		layout: {
 			titleField: 'pattern-title',
@@ -23,115 +17,11 @@ const defaultLayout = {
 			columns: 2,
 			columnGap: '24px',
 			rowGap: '24px',
-		},
-	},
-	list: {
-		layout: {
-			titleField: 'pattern-title',
-			showMedia: false,
+			showMedia: true,
 		},
 	},
 };
-const fields = [
-	{
-		id: 'pattern-title',
-		label: __( 'Title', 'dlx-pattern-wrangler' ),
-		render: ( { item } ) => {
-			return <span>{ item.title }</span>;
-		},
-		enableSorting: true,
-	},
-	{
-		id: 'pattern-view-json',
-		label: __( 'Preview', 'dlx-pattern-wrangler' ),
-		getValue: ( { item } ) => {
-			const iframeRef = useRef( null );
-			// Generate preview URL instead of using srcDoc
-			// todo: secure with nonce.
-			const previewUrl = item?.id
-				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }`
-				: '';
-			const [ { width, height } ] = useResizeObserver( iframeRef );
 
-			console.log( width, height );
-			//const scale = containerWidth / viewportWidth;
-			// const aspectRatio = contentHeight
-			// 	? containerWidth / ( contentHeight * scale )
-			// 	: 0;
-			return (
-				<div className="pattern-preview-wrapper">
-					<iframe
-						key={ `preview-${ item.id }` }
-						src={ previewUrl }
-						title={ `Preview: ${ item.title }` }
-						contentRef={ useRefEffect( ( bodyElement ) => {
-							const {
-								ownerDocument: { documentElement },
-							} = bodyElement;
-							documentElement.classList.add(
-								'block-editor-block-preview__content-iframe'
-							);
-							documentElement.style.position = 'absolute';
-							documentElement.style.width = '100%';
-		
-							// Necessary for contentResizeListener to work.
-							bodyElement.style.boxSizing = 'border-box';
-							bodyElement.style.position = 'absolute';
-							bodyElement.style.width = '100%';
-						}, [] ) }
-						style={ {
-							border: '1px solid #ddd',
-							borderRadius: '4px',
-							backgroundColor: '#fff',
-							overflow: 'hidden',
-							scrolling: 'no',
-						} }
-						sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-						loading="lazy"
-						ref={ iframeRef }
-					>
-					</iframe>
-				</div>
-			);
-		},
-		isVisible: ( newView ) => {
-			return false;
-		},
-		enableSorting: false,
-	},
-	{
-		id: 'pattern-categories',
-		label: __( 'Categories', 'dlx-pattern-wrangler' ),
-		render: ( { item } ) => {
-			return item?.categories?.map( ( category, index ) => {
-				// If cat is object, get category.name, otherwise just use the category.
-				const catName = typeof category === 'object' ? category.name : category;
-				// Convert to title case.
-				const titleCase = catName
-					.split( ' ' )
-					.map(
-						( word ) => word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase()
-					)
-					.join( ' ' );
-				return (
-					<>
-						<span key={ category }>{ titleCase }</span>
-						{ index < item.categories.length - 1 && ', ' }
-					</>
-				);
-			} );
-		},
-		enableSorting: false,
-	},
-	{
-		id: 'author',
-		label: __( 'Author', 'dlx-pattern-wrangler' ),
-		type: 'text',
-		getValue: ( { item } ) => {
-			return item.author;
-		},
-	},
-];
 const actions = [
 	{
 		id: 'edit',
@@ -202,6 +92,9 @@ const fetchPatterns = async( { perPage, page, search, sort } ) => {
 	return response;
 };
 
+// Get query args from current URL.
+const queryArgs = getQueryArgs( window.location.href );
+
 const PatternsView = () => {
 	const queryClient = useQueryClient();
 	const [ selectedItems, setSelectedItems ] = useState( [] );
@@ -223,7 +116,7 @@ const PatternsView = () => {
 		titleField: 'pattern-title',
 		mediaField: 'pattern-view-json',
 		fields: [ 'pattern-categories', 'author' ],
-		layout: defaultLayout.grid.layout,
+		layout: defaultLayouts.grid.layout,
 	} );
 
 	const { data, isLoading, error } = useQuery( {
@@ -236,6 +129,127 @@ const PatternsView = () => {
 				sort: view.sort,
 			} ),
 	} );
+
+	const fields = useMemo( () => [
+		{
+			id: 'pattern-title',
+			label: __( 'Title', 'dlx-pattern-wrangler' ),
+			render: ( { item } ) => {
+				return <span>{ item.title }</span>;
+			},
+			enableSorting: true,
+		},
+		{
+			id: 'pattern-title-list-view',
+			label: __( 'Title', 'dlx-pattern-wrangler' ),
+			render: ( { item } ) => {
+				let viewportWidth = item.viewportWidth;
+
+				const previewUrl = item?.id
+					? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }&layout=${ view.type }`
+					: '';
+				return (
+					<>
+						<div className="page-patterns-preview-field">
+							<div className="pattern-preview-wrapper">
+								<div className="pattern-preview-iframe-scale-container">
+									<div className="pattern-preview-iframe-wrapper">
+										<iframe
+											key={ `preview-${ item.id }` }
+											src={ previewUrl }
+											title={ `Preview: ${ item.title }` }
+											style={ {
+												border: '1px solid #ddd',
+												borderRadius: '4px',
+												backgroundColor: '#fff',
+												overflow: 'hidden',
+												scrolling: 'no',
+											} }
+											sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+											loading="lazy"
+										>
+										</iframe>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div className="dataviews-title-field">
+							<span>{ item.title }</span>
+						</div>
+					</>
+				);
+			},
+			enableSorting: true,
+		},
+		{
+			id: 'pattern-view-json',
+			label: __( 'Preview', 'dlx-pattern-wrangler' ),
+			getValue: ( { item } ) => {
+				// Generate preview URL instead of using srcDoc
+				// todo: secure with nonce.
+				const previewUrl = item?.id
+					? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ item.viewportWidth }`
+					: '';
+				return (
+					<div className="pattern-preview-wrapper">
+						<div className="pattern-preview-iframe-scale-container">
+							<div className="pattern-preview-iframe-wrapper">
+								<iframe
+									key={ `preview-${ item.id }` }
+									src={ previewUrl }
+									title={ `Preview: ${ item.title }` }
+									style={ {
+										border: '1px solid #ddd',
+										borderRadius: '4px',
+										backgroundColor: '#fff',
+										overflow: 'hidden',
+										scrolling: 'no',
+									} }
+									sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+									loading="lazy"
+								>
+								</iframe>
+							</div>
+						</div>
+	
+					</div>
+				);
+			},
+			enableSorting: false,
+		},
+		{
+			id: 'pattern-categories',
+			label: __( 'Categories', 'dlx-pattern-wrangler' ),
+			render: ( { item } ) => {
+				return item?.categories?.map( ( category, index ) => {
+					// If cat is object, get category.name, otherwise just use the category.
+					const catName = typeof category === 'object' ? category.name : category;
+					// Convert to title case.
+					const titleCase = catName
+						.split( ' ' )
+						.map(
+							( word ) => word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase()
+						)
+						.join( ' ' );
+					return (
+						<>
+							<span key={ category }>{ titleCase }</span>
+							{ index < item.categories.length - 1 && ', ' }
+						</>
+					);
+				} );
+			},
+			enableSorting: false,
+		},
+		{
+			id: 'author',
+			label: __( 'Author', 'dlx-pattern-wrangler' ),
+			type: 'text',
+			getValue: ( { item } ) => {
+				return item.author;
+			},
+		},
+	], [ view ] );
 
 	/**
 	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.
@@ -281,12 +295,10 @@ const PatternsView = () => {
 
 	// Add effect to initialize view from URL params.
 	useEffect( () => {
-		// Get query args from current URL.
-		const queryArgs = getQueryArgs( window.location.href );
-
 		// Update initial view state from URL parameters.
 		setView( ( prevView ) => ( {
 			...prevView,
+			titleField: 'pattern-title',
 			type: queryArgs.view_type || prevView.type,
 			page: parseInt( queryArgs.page ) || prevView.page,
 			perPage: parseInt( queryArgs.per_page ) || prevView.perPage,
@@ -295,7 +307,7 @@ const PatternsView = () => {
 				field: queryArgs.orderby || prevView.sort.field,
 				direction: queryArgs.order || prevView.sort.direction,
 			},
-			showMedia: 'grid' === queryArgs.view_type ? true : false,
+			showMedia: 'grid' === view.type ? true : false,
 		} ) );
 		if ( queryArgs.view_type ) {
 			setViewType( queryArgs.view_type );
@@ -339,7 +351,8 @@ const PatternsView = () => {
 				selection={ selectedItems }
 				onChangeSelection={ setSelectedItems }
 				isLoading={ isLoading }
-			/>
+				defaultLayouts={ { grid: {} } }
+			/>``
 		</div>
 	);
 };

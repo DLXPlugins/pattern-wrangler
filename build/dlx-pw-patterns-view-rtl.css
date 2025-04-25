@@ -8,17 +8,40 @@
   max-width: 100%;
 }
 
+.pattern-preview-iframe-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
 .pattern-preview-wrapper {
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  background: #FFF;
 }
 .pattern-preview-wrapper iframe {
-  width: 100%;
-  height: 100% !important;
+  position: absolute;
   overflow: hidden;
-}
-.pattern-preview-wrapper iframe body {
-  width: 100%;
+  pointer-events: none;
   height: 100%;
-  overflow: hidden;
+  max-height: 2000px;
+}
+
+.pattern-preview-iframe-scale-container {
+  right: 0;
+  margin: 0;
+  min-height: auto;
+  overflow: visible;
+  text-align: initial;
+  top: 0;
+  transform-origin: top right;
+  width: 100%;
+}
+
+.dataviews-view-list .page-patterns-preview-field {
+  width: 96px;
+}
+
+.dataviews-view-grid .dataviews-view-grid__media {
+  aspect-ratio: 16/9 !important;
 }

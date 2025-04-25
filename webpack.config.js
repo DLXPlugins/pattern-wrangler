@@ -11,13 +11,19 @@ module.exports = ( env ) => {
 				...defaultConfig.module,
 				rules: [ ...defaultConfig.module.rules ],
 			},
+			output: {
+				...defaultConfig.output,
+				clean: true,
+			},
 			mode: env.mode,
 			devtool: 'production' === env.mode ? false : 'source-map',
 			entry: {
 				index: '/src/index.js',
 				'dlx-pw-preview': './src/js/blocks/plugins/pattern-preview.js',
 				'dlx-pw-fancybox': './src/js/fancybox/index.js',
-				'dlx-pw-patterns-view': './src/js/react/views/patterns/index.js',
+				'dlx-pw-patterns-view': [
+					'./src/js/react/views/patterns/index.js',
+				],
 			},
 		},
 		{

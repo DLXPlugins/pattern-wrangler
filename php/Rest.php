@@ -1,4 +1,5 @@
 <?php
+
 /**
  * REST class.
  *
@@ -17,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class Rest
  */
 class Rest {
+
 
 	/**
 	 * Register Rest actions.
@@ -143,17 +145,25 @@ class Rest {
 		// Placeholder for patterns.
 		$patterns = array();
 
+		/**
+		 * Filter the default viewport width for pattern previews.
+		 *
+		 * @param int $default_viewport_width The default viewport width.
+		 */
+		$default_viewport_width = apply_filters( 'dlxpw_pattern_preview_viewport_width', 1200 );
+
 		// Process registered patterns.
 		foreach ( $registered_patterns as $pattern ) {
 			$preview_image                 = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
 			$patterns[ $pattern['title'] ] = array(
-				'id'         => Functions::get_sanitized_pattern_id( $pattern['name'] ),
-				'title'      => $pattern['title'],
-				'slug'       => $pattern['name'],
-				'content'    => $pattern['content'],
-				'categories' => $pattern['categories'] ?? array(),
-				'isLocal'    => false,
-				'preview'    => $preview_image,
+				'id'            => Functions::get_sanitized_pattern_id( $pattern['name'] ),
+				'title'         => $pattern['title'],
+				'slug'          => $pattern['name'],
+				'content'       => $pattern['content'],
+				'categories'    => $pattern['categories'] ?? array(),
+				'isLocal'       => false,
+				'preview'       => $preview_image,
+				'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
 			);
 		}
 
