@@ -261,27 +261,6 @@ const PatternsView = () => {
 		setView( newView );
 	};
 
-	// Add effect to initialize view from URL params.
-	useEffect( () => {
-		// Update initial view state from URL parameters.
-		setView( ( prevView ) => ( {
-			...prevView,
-			titleField: 'pattern-title',
-			type: queryArgs.view_type || prevView.type,
-			page: parseInt( queryArgs.page ) || prevView.page,
-			perPage: parseInt( queryArgs.per_page ) || prevView.perPage,
-			search: queryArgs.search || prevView.search,
-			sort: {
-				field: queryArgs.orderby || prevView.sort.field,
-				direction: queryArgs.order || prevView.sort.direction,
-			},
-			showMedia: 'grid' === view.type ? true : false,
-		} ) );
-		if ( queryArgs.view_type ) {
-			setViewType( queryArgs.view_type );
-		}
-	}, [] ); // Run once on component mount.
-
 	useEffect( () => {
 		if ( data && data.hasOwnProperty( 'patterns' ) ) {
 			if ( data.patterns ) {
