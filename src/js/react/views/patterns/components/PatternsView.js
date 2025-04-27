@@ -18,6 +18,7 @@ const defaultLayouts = {
 			columnGap: '24px',
 			rowGap: '24px',
 			showMedia: true,
+			viewConfigOptions: {},
 		},
 	},
 };
@@ -103,33 +104,6 @@ const PatternsView = () => {
 
 	const { setViewType } = useDispatch( PatternsViewStore );
 
-	const [ view, setView ] = useState( {
-		type: 'grid',
-		search: '',
-		perPage: 10,
-		previewSize: 'large',
-		page: 1,
-		sort: {
-			field: 'pattern-title',
-			direction: 'asc',
-		},
-		titleField: 'pattern-title',
-		mediaField: 'pattern-view-json',
-		fields: [ 'pattern-categories', 'author' ],
-		layout: defaultLayouts.grid.layout,
-	} );
-
-	const { data, isLoading, error } = useQuery( {
-		queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
-		queryFn: () =>
-			fetchPatterns( {
-				perPage: view.perPage,
-				page: view.page,
-				search: view.search,
-				sort: view.sort,
-			} ),
-	} );
-
 	const fields = useMemo( () => [
 		{
 			id: 'pattern-title',
@@ -138,48 +112,8 @@ const PatternsView = () => {
 				return <span>{ item.title }</span>;
 			},
 			enableSorting: true,
-		},
-		{
-			id: 'pattern-title-list-view',
-			label: __( 'Title', 'dlx-pattern-wrangler' ),
-			render: ( { item } ) => {
-				let viewportWidth = item.viewportWidth;
-
-				const previewUrl = item?.id
-					? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }&layout=${ view.type }`
-					: '';
-				return (
-					<>
-						<div className="page-patterns-preview-field">
-							<div className="pattern-preview-wrapper">
-								<div className="pattern-preview-iframe-scale-container">
-									<div className="pattern-preview-iframe-wrapper">
-										<iframe
-											key={ `preview-${ item.id }` }
-											src={ previewUrl }
-											title={ `Preview: ${ item.title }` }
-											style={ {
-												border: '1px solid #ddd',
-												borderRadius: '4px',
-												backgroundColor: '#fff',
-												overflow: 'hidden',
-												scrolling: 'no',
-											} }
-											sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-											loading="lazy"
-										>
-										</iframe>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div className="dataviews-title-field">
-							<span>{ item.title }</span>
-						</div>
-					</>
-				);
-			},
-			enableSorting: true,
+			enableHiding: false,
+			enableGlobalSearch: true,
 		},
 		{
 			id: 'pattern-view-json',
@@ -216,6 +150,7 @@ const PatternsView = () => {
 				);
 			},
 			enableSorting: false,
+			enableHiding: false,
 		},
 		{
 			id: 'pattern-categories',
@@ -240,6 +175,7 @@ const PatternsView = () => {
 				} );
 			},
 			enableSorting: false,
+			enableHiding: true,
 		},
 		{
 			id: 'author',
@@ -248,8 +184,40 @@ const PatternsView = () => {
 			getValue: ( { item } ) => {
 				return item.author;
 			},
+			enableSorting: false,
+			enableHiding: true,
 		},
 	], [ view ] );
+
+	const [ view, setView ] = useState( {
+		type: 'grid',
+		search: '',
+		perPage: 10,
+		previewSize: 'large',
+		page: 1,
+		sort: {
+			field: 'pattern-title',
+			direction: 'asc',
+		},
+		titleField: 'pattern-title',
+		mediaField: 'pattern-view-json',
+		layout: defaultLayouts.grid.layout,
+		fields: [ ...fields ],
+		viewConfigOptions: {},
+	} );
+
+	const { data, isLoading, error } = useQuery( {
+		queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
+		queryFn: () =>
+			fetchPatterns( {
+				perPage: view.perPage,
+				page: view.page,
+				search: view.search,
+				sort: view.sort,
+			} ),
+	} );
+
+	
 
 	/**
 	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.
@@ -351,7 +319,8 @@ const PatternsView = () => {
 				selection={ selectedItems }
 				onChangeSelection={ setSelectedItems }
 				isLoading={ isLoading }
-				defaultLayouts={ { grid: {} } }
+				defaultLayouts={ defaultLayouts }
+				searchLabel={ __( 'Search Patterns', 'dlx-pattern-wrangler' ) }
 			/>``
 		</div>
 	);

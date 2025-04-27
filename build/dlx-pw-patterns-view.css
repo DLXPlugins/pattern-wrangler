@@ -46,4 +46,9 @@
   aspect-ratio: 16/9 !important;
 }
 
+/* Hide the preview toggle slider */
+.dataviews-settings-section__content.components-grid .components-range-control {
+  display: none;
+}
+
 /*# sourceMappingURL=dlx-pw-patterns-view.css.map*/

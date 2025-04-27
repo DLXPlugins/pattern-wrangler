@@ -47,3 +47,8 @@
 .dataviews-view-grid .dataviews-view-grid__media {
 	aspect-ratio: 16 / 9 !important;
 }
+
+/* Hide the preview toggle slider */
+.dataviews-settings-section__content.components-grid .components-range-control {
+	display: none;
+}

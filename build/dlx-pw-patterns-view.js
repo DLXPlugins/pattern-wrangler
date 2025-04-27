@@ -5764,6 +5764,10 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -5792,7 +5796,8 @@ var defaultLayouts = {
       columns: 2,
       columnGap: '24px',
       rowGap: '24px',
-      showMedia: true
+      showMedia: true,
+      viewConfigOptions: {}
     }
   }
 };
@@ -5895,38 +5900,6 @@ var PatternsView = function PatternsView() {
     setCategories = _useState6[1];
   var _useDispatch = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_5__.useDispatch)(_store__WEBPACK_IMPORTED_MODULE_6__["default"]),
     setViewType = _useDispatch.setViewType;
-  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
-      type: 'grid',
-      search: '',
-      perPage: 10,
-      previewSize: 'large',
-      page: 1,
-      sort: {
-        field: 'pattern-title',
-        direction: 'asc'
-      },
-      titleField: 'pattern-title',
-      mediaField: 'pattern-view-json',
-      fields: ['pattern-categories', 'author'],
-      layout: defaultLayouts.grid.layout
-    }),
-    _useState8 = _slicedToArray(_useState7, 2),
-    view = _useState8[0],
-    setView = _useState8[1];
-  var _useQuery = (0,_tanstack_react_query__WEBPACK_IMPORTED_MODULE_8__.useQuery)({
-      queryKey: ['all-patterns', view.perPage, view.page, view.search, view.sort],
-      queryFn: function queryFn() {
-        return fetchPatterns({
-          perPage: view.perPage,
-          page: view.page,
-          search: view.search,
-          sort: view.sort
-        });
-      }
-    }),
-    data = _useQuery.data,
-    isLoading = _useQuery.isLoading,
-    error = _useQuery.error;
   var fields = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return [{
       id: 'pattern-title',
@@ -5935,45 +5908,14 @@ var PatternsView = function PatternsView() {
         var item = _ref3.item;
         return /*#__PURE__*/React.createElement("span", null, item.title);
       },
-      enableSorting: true
-    }, {
-      id: 'pattern-title-list-view',
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Title', 'dlx-pattern-wrangler'),
-      render: function render(_ref4) {
-        var item = _ref4.item;
-        var viewportWidth = item.viewportWidth;
-        var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&viewport_width=").concat(viewportWidth, "&layout=").concat(view.type) : '';
-        return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-          className: "page-patterns-preview-field"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "pattern-preview-wrapper"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "pattern-preview-iframe-scale-container"
-        }, /*#__PURE__*/React.createElement("div", {
-          className: "pattern-preview-iframe-wrapper"
-        }, /*#__PURE__*/React.createElement("iframe", {
-          key: "preview-".concat(item.id),
-          src: previewUrl,
-          title: "Preview: ".concat(item.title),
-          style: {
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            backgroundColor: '#fff',
-            overflow: 'hidden',
-            scrolling: 'no'
-          },
-          sandbox: "allow-same-origin allow-scripts allow-popups allow-forms",
-          loading: "lazy"
-        }))))), /*#__PURE__*/React.createElement("div", {
-          className: "dataviews-title-field"
-        }, /*#__PURE__*/React.createElement("span", null, item.title)));
-      },
-      enableSorting: true
+      enableSorting: true,
+      enableHiding: false,
+      enableGlobalSearch: true
     }, {
       id: 'pattern-view-json',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Preview', 'dlx-pattern-wrangler'),
-      getValue: function getValue(_ref5) {
-        var item = _ref5.item;
+      getValue: function getValue(_ref4) {
+        var item = _ref4.item;
         // Generate preview URL instead of using srcDoc
         // todo: secure with nonce.
         var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&viewport_width=").concat(item.viewportWidth) : '';
@@ -5998,13 +5940,14 @@ var PatternsView = function PatternsView() {
           loading: "lazy"
         }))));
       },
-      enableSorting: false
+      enableSorting: false,
+      enableHiding: false
     }, {
       id: 'pattern-categories',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Categories', 'dlx-pattern-wrangler'),
-      render: function render(_ref6) {
+      render: function render(_ref5) {
         var _item$categories;
-        var item = _ref6.item;
+        var item = _ref5.item;
         return item === null || item === void 0 || (_item$categories = item.categories) === null || _item$categories === void 0 ? void 0 : _item$categories.map(function (category, index) {
           // If cat is object, get category.name, otherwise just use the category.
           var catName = _typeof(category) === 'object' ? category.name : category;
@@ -6017,17 +5960,53 @@ var PatternsView = function PatternsView() {
           }, titleCase), index < item.categories.length - 1 && ', ');
         });
       },
-      enableSorting: false
+      enableSorting: false,
+      enableHiding: true
     }, {
       id: 'author',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Author', 'dlx-pattern-wrangler'),
       type: 'text',
-      getValue: function getValue(_ref7) {
-        var item = _ref7.item;
+      getValue: function getValue(_ref6) {
+        var item = _ref6.item;
         return item.author;
-      }
+      },
+      enableSorting: false,
+      enableHiding: true
     }];
   }, [view]);
+  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      type: 'grid',
+      search: '',
+      perPage: 10,
+      previewSize: 'large',
+      page: 1,
+      sort: {
+        field: 'pattern-title',
+        direction: 'asc'
+      },
+      titleField: 'pattern-title',
+      mediaField: 'pattern-view-json',
+      layout: defaultLayouts.grid.layout,
+      fields: _toConsumableArray(fields),
+      viewConfigOptions: {}
+    }),
+    _useState8 = _slicedToArray(_useState7, 2),
+    view = _useState8[0],
+    setView = _useState8[1];
+  var _useQuery = (0,_tanstack_react_query__WEBPACK_IMPORTED_MODULE_8__.useQuery)({
+      queryKey: ['all-patterns', view.perPage, view.page, view.search, view.sort],
+      queryFn: function queryFn() {
+        return fetchPatterns({
+          perPage: view.perPage,
+          page: view.page,
+          search: view.search,
+          sort: view.sort
+        });
+      }
+    }),
+    data = _useQuery.data,
+    isLoading = _useQuery.isLoading,
+    error = _useQuery.error;
 
   /**
    * When a view is changed, we need to adjust the fields and showMedia based on the view type.
@@ -6127,9 +6106,8 @@ var PatternsView = function PatternsView() {
     selection: selectedItems,
     onChangeSelection: setSelectedItems,
     isLoading: isLoading,
-    defaultLayouts: {
-      grid: {}
-    }
+    defaultLayouts: defaultLayouts,
+    searchLabel: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Search Patterns', 'dlx-pattern-wrangler')
   }), "``");
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PatternsView);
