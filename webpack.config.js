@@ -25,6 +25,16 @@ module.exports = ( env ) => {
 					'./src/js/react/views/patterns/index.js',
 				],
 			},
+			resolve: {
+				alias: {
+					React: path.resolve(
+						'node_modules/@wordpress/components/node_modules/react'
+					),
+					'react-dom': path.resolve(
+						'node_modules/@wordpress/components/node_modules/react-dom'
+					),
+				},
+			},
 		},
 		{
 			entry: {
@@ -37,7 +47,7 @@ module.exports = ( env ) => {
 			},
 			resolve: {
 				alias: {
-					react: path.resolve(
+					React: path.resolve(
 						'node_modules/@wordpress/components/node_modules/react'
 					),
 					'react-dom': path.resolve(

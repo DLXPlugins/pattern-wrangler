@@ -4,7 +4,7 @@ import { useResizeObserver, useRefEffect } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { DataViews } from '@wordpress/dataviews';
 import apiFetch from '@wordpress/api-fetch';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
 import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 import { dispatch, select, useDispatch } from '@wordpress/data';
 import PatternsViewStore from '../store';
@@ -96,7 +96,7 @@ const fetchPatterns = async( { perPage, page, search, sort } ) => {
 // Get query args from current URL.
 const queryArgs = getQueryArgs( window.location.href );
 
-const PatternsView = () => {
+const PatternsLocalView = () => {
 	const queryClient = useQueryClient();
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const [ patterns, setPatterns ] = useState( [] );
@@ -305,4 +305,4 @@ const PatternsView = () => {
 	);
 };
 
-export default PatternsView;
+export default PatternsLocalView;
