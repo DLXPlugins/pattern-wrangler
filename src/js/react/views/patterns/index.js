@@ -11,14 +11,13 @@ import {
 import PatternTabs from './components/PatternTabs';
 import './styles/patterns-view.scss';
 
-const queryClient = new QueryClient();
-
 // Create a hash history instance with the WordPress admin path
-const hashHistory = createHashHistory();
-
+const hashHistory = createHashHistory( {
+	initialEntries: [ '/' ],
+} );
 // Create the root route
 const rootRoute = createRootRoute( {
-	component: () => <Outlet />,
+	component: () => <PatternTabs />,
 } );
 
 // Define your routes with different components or views
@@ -49,16 +48,14 @@ const router = createRouter( {
 	routeTree,
 	history: hashHistory,
 	context: {
-		queryClient,
+		history: hashHistory,
 	},
 } );
 
 const container = document.getElementById( 'dlx-pattern-wrangler-view' );
 if ( container ) {
 	render(
-		<RouterProvider router={ router }>
-			<PatternTabs />
-		</RouterProvider>,
+		<RouterProvider router={ router } />,
 		container
 	);
 }

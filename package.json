@@ -27,7 +27,7 @@
     "@babel/plugin-transform-class-properties": "^7.23.3",
     "@babel/preset-env": "^7.18.2",
     "@babel/preset-react": "^7.17.12",
-    "@tanstack/react-router": "^1.117.1",
+    "@tanstack/react-router": "^1.130.12",
     "@types/photoswipe": "^4.1.2",
     "@types/react": "^18.0.14",
     "@wordpress/commands": "^0.16.0",
