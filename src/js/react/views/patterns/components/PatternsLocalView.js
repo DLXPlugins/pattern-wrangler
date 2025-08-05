@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
 import { useResizeObserver, useRefEffect } from '@wordpress/compose';
+import { useQuery } from '@tanstack/react-query';
 import { __ } from '@wordpress/i18n';
 import { DataViews } from '@wordpress/dataviews';
 import apiFetch from '@wordpress/api-fetch';
@@ -173,7 +174,6 @@ const fetchPatterns = async( { perPage, page, search, sort } ) => {
 const queryArgs = getQueryArgs( window.location.href );
 
 const PatternsLocalView = () => {
-	const queryClient = useQueryClient();
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const [ patterns, setPatterns ] = useState( [] );
 	const [ categories, setCategories ] = useState( [] );

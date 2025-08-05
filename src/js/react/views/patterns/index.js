@@ -1,13 +1,12 @@
 import { render } from '@wordpress/element';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
 	createHashHistory,
 	createRouter,
 	RouterProvider,
-	Outlet,
 	createRoute,
 	createRootRoute,
 } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PatternTabs from './components/PatternTabs';
 import './styles/patterns-view.scss';
 
@@ -53,9 +52,12 @@ const router = createRouter( {
 } );
 
 const container = document.getElementById( 'dlx-pattern-wrangler-view' );
+const queryClient = new QueryClient();
 if ( container ) {
 	render(
-		<RouterProvider router={ router } />,
+		<QueryClientProvider client={ queryClient }>
+			<RouterProvider router={ router } />
+		</QueryClientProvider>,
 		container
 	);
 }
