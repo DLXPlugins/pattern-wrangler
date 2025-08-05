@@ -42,8 +42,161 @@ var TabItem = function TabItem(_ref) {
     className: active ? 'active' : ''
   }, label));
 };
+<<<<<<< Updated upstream
 var PatternTabs = function PatternTabs() {
   var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('local'),
+=======
+var fields = [{
+  id: 'pattern-title',
+  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Title', 'dlx-pattern-wrangler'),
+  render: function render(_ref) {
+    var item = _ref.item;
+    return /*#__PURE__*/React.createElement("span", null, item.title);
+  },
+  enableSorting: true
+}, {
+  id: 'pattern-view-json',
+  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Preview', 'dlx-pattern-wrangler'),
+  getValue: function getValue(_ref2) {
+    var item = _ref2.item;
+    // Generate preview URL instead of using srcDoc
+    // todo: secure with nonce.
+    var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "#pattern-preview-content") : '';
+    return /*#__PURE__*/React.createElement("div", {
+      className: "pattern-preview-wrapper"
+    }, /*#__PURE__*/React.createElement("iframe", {
+      key: "preview-".concat(item.id),
+      src: previewUrl,
+      title: "Preview: ".concat(item.title),
+      style: {
+        width: item.viewportWidth + 'px' || 0,
+        height: '100%',
+        border: '1px solid #ddd',
+        borderRadius: '4px',
+        backgroundColor: '#fff',
+        overflow: 'hidden',
+        scrolling: 'no'
+      },
+      sandbox: "allow-same-origin allow-scripts allow-popups allow-forms",
+      loading: "lazy"
+    }));
+  },
+  isVisible: function isVisible(newView) {
+    return false;
+  },
+  enableSorting: false
+}, {
+  id: 'pattern-categories',
+  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Categories', 'dlx-pattern-wrangler'),
+  render: function render(_ref3) {
+    var _item$categories;
+    var item = _ref3.item;
+    return item === null || item === void 0 || (_item$categories = item.categories) === null || _item$categories === void 0 ? void 0 : _item$categories.map(function (category, index) {
+      // If cat is object, get category.name, otherwise just use the category.
+      var catName = _typeof(category) === 'object' ? category.name : category;
+      // Convert to title case.
+      var titleCase = catName.split(' ').map(function (word) {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }).join(' ');
+      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+        key: category
+      }, titleCase), index < item.categories.length - 1 && ', ');
+    });
+  },
+  enableSorting: false
+}, {
+  id: 'author',
+  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Author', 'dlx-pattern-wrangler'),
+  type: 'text',
+  getValue: function getValue(_ref4) {
+    var item = _ref4.item;
+    return item.author;
+  }
+}];
+var actions = [{
+  id: 'edit',
+  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Edit', 'dlx-pattern-wrangler'),
+  icon: 'edit',
+  callback: function callback(items) {
+    console.log('Edit', items);
+  },
+  isEligible: function isEligible(pattern) {
+    return pattern.isLocal;
+  },
+  isPrimary: true
+}, {
+  id: 'delete',
+  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Delete Pattern', 'dlx-pattern-wrangler'),
+  icon: 'trash',
+  isEligible: function isEligible(pattern) {
+    // Pattern must be local.
+    return pattern.isLocal;
+  },
+  callback: function callback(items) {
+    console.log('Delete', items);
+  },
+  isPrimary: false,
+  isDestructive: true
+}, {
+  id: 'copy',
+  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Copy Pattern', 'dlx-pattern-wrangler'),
+  icon: 'edit',
+  callback: function callback(items) {
+    console.log('Copy', items);
+  },
+  isEligible: function isEligible(pattern) {
+    return true;
+  },
+  isPrimary: false,
+  isDestructive: false
+}, {
+  id: 'export',
+  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Export', 'dlx-pattern-wrangler'),
+  icon: 'edit',
+  callback: function callback(items) {
+    console.log('Export', items);
+  },
+  isEligible: function isEligible() {
+    return true;
+  },
+  isPrimary: false,
+  isDestructive: false
+}];
+var fetchPatterns = /*#__PURE__*/function () {
+  var _ref6 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref5) {
+    var perPage, page, search, sort, response;
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          perPage = _ref5.perPage, page = _ref5.page, search = _ref5.search, sort = _ref5.sort;
+          _context.next = 3;
+          return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
+            path: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_3__.addQueryArgs)('/dlxplugins/pattern-wrangler/v1/patterns/all/', {
+              perPage: perPage,
+              page: page,
+              search: search,
+              orderby: sort.field,
+              order: sort.direction
+            }),
+            method: 'GET'
+          });
+        case 3:
+          response = _context.sent;
+          return _context.abrupt("return", response);
+        case 5:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee);
+  }));
+  return function fetchPatterns(_x) {
+    return _ref6.apply(this, arguments);
+  };
+}();
+var PatternsView = function PatternsView() {
+  var queryClient = (0,_tanstack_react_query__WEBPACK_IMPORTED_MODULE_6__.useQueryClient)();
+  var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+>>>>>>> Stashed changes
     _useState2 = _slicedToArray(_useState, 2),
     activeTab = _useState2[0],
     setActiveTab = _useState2[1];

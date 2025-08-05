@@ -116,7 +116,7 @@ add_action(
 		);
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
-			'header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .wp-site-blocks > .wp-block-group { padding-top: 24px !important; padding-bottom: 24px !important; margin-top: 24px !important; margin-bottom: 24px !important; }.wp-site-blocks>.wp-block-group {margin-top: 0 !important;}.wp-site-blocks>.wp-block-cover {margin-top: 0 !important;padding-top: 0 !important;}.wp-site-blocks>.wp-block-query {margin-top: 0 !important;}'
+			'header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .pattern-preview-wrapper > *:first-child { margin-top: 0 !important; padding-top: 0 !important; } .pattern-preview-wrapper { margin-top: 0 !important; padding-top: 0 !important; } .wp-site-blocks { margin-top: 0 !important; padding-top: 0 !important; }'
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
 
@@ -176,7 +176,13 @@ if ( ! wp_is_block_theme() ) {
 		get_header();
 	}
 	\setup_postdata( $current_post );
-	echo wp_kses_post( $pattern_content );
+	?>
+	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1200px; aspect-ratio: 1/1; transform: scale(.9) !important;">
+		<?php
+		echo wp_kses_post( $pattern_content );
+		?>
+	</div>
+	<?php
 } else {
 	?>
 	<!doctype html>
@@ -189,6 +195,7 @@ if ( ! wp_is_block_theme() ) {
 		?>
 		<?php wp_head(); ?>
 	</head>
+	<body <?php body_class(); ?> style="overflow: hidden;">
 	<body <?php body_class(); ?> style="overflow: hidden;
 	aspect-ratio: <?php echo esc_attr( $aspect_ratio ); ?> !important;">
 	<?php wp_body_open(); ?>
@@ -196,6 +203,11 @@ if ( ! wp_is_block_theme() ) {
 	<header class="wp-block-template-part site-header">
 		<?php block_header_area(); ?>
 	</header>
+	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1200px; aspect-ratio: 1/1; transform: scale(.9) !important;">
+		<?php
+		echo wp_kses_post( $pattern_content );
+		?>
+	</div>
 	<?php
 	echo apply_filters( 'the_content', do_blocks( $pattern_content ) );
 	?>

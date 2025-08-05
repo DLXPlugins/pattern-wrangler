@@ -22,7 +22,83 @@ const defaultLayouts = {
 		},
 	},
 };
-
+const fields = [
+	{
+		id: 'pattern-title',
+		label: __( 'Title', 'dlx-pattern-wrangler' ),
+		render: ( { item } ) => {
+			return <span>{ item.title }</span>;
+		},
+		enableSorting: true,
+	},
+	{
+		id: 'pattern-view-json',
+		label: __( 'Preview', 'dlx-pattern-wrangler' ),
+		getValue: ( { item } ) => {
+			// Generate preview URL instead of using srcDoc
+			// todo: secure with nonce.
+			const previewUrl = item?.id
+				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }#pattern-preview-content`
+				: '';
+			return (
+				<div className="pattern-preview-wrapper">
+					<iframe
+						key={ `preview-${ item.id }` }
+						src={ previewUrl }
+						title={ `Preview: ${ item.title }` }
+						style={ {
+							width: item.viewportWidth + 'px' || '100%',
+							height: '100%',
+							border: '1px solid #ddd',
+							borderRadius: '4px',
+							backgroundColor: '#fff',
+							overflow: 'hidden',
+							scrolling: 'no',
+						} }
+						sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+						loading="lazy"
+					/>
+				</div>
+			);
+		},
+		isVisible: ( newView ) => {
+			return false;
+		},
+		enableSorting: false,
+	},
+	{
+		id: 'pattern-categories',
+		label: __( 'Categories', 'dlx-pattern-wrangler' ),
+		render: ( { item } ) => {
+			return item?.categories?.map( ( category, index ) => {
+				// If cat is object, get category.name, otherwise just use the category.
+				const catName = typeof category === 'object' ? category.name : category;
+				// Convert to title case.
+				const titleCase = catName
+					.split( ' ' )
+					.map(
+						( word ) => word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase()
+					)
+					.join( ' ' );
+				return (
+					<>
+						<span key={ category }>{ titleCase }</span>
+						{ index < item.categories.length - 1 && ', ' }
+					</>
+				);
+			} );
+		},
+		enableSorting: false,
+	},
+	{
+		id: 'author',
+		label: __( 'Author', 'dlx-pattern-wrangler' ),
+		type: 'text',
+		getValue: ( { item } ) => {
+			return item.author;
+		},
+	},
+];
 const actions = [
 	{
 		id: 'edit',
