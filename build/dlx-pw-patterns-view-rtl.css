@@ -62,10 +62,11 @@
 }
 
 .dlx-patterns-view-header {
-  padding-right: 56px;
+  padding-right: 76px;
 }
 .dlx-patterns-view-header h2 {
   font-size: 2.2em;
+  margin-bottom: 0;
 }
 
 /* Hide the preview toggle slider */
