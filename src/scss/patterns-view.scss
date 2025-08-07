@@ -1,3 +1,6 @@
-body {
-	display: none;
+.dataviews-view-grid .dataviews-view-grid__card {
+	aspect-raito: 16 / 9;
+	overflow: hidden;
+	gap: 32px;
+	row-gap: 32px;
 }

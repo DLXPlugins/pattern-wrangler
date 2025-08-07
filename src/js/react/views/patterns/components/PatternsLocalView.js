@@ -195,10 +195,10 @@ const PatternsLocalView = () => {
 			id: 'pattern-view-json',
 			label: __( 'Preview', 'dlx-pattern-wrangler' ),
 			getValue: ( { item } ) => {
-				// Generate preview URL instead of using srcDoc
-				// todo: secure with nonce.
+				const viewportWidth = item.viewportWidth || 1200;
+
 				const previewUrl = item?.id
-					? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ item.viewportWidth }`
+					? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
 					: '';
 				return (
 					<div className="pattern-preview-wrapper">

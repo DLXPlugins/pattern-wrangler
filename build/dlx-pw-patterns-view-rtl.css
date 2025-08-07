@@ -50,3 +50,22 @@
 .dataviews-settings-section__content.components-grid .components-range-control {
   display: none;
 }
+
+.dataviews-view-grid .dataviews-view-grid__card {
+  overflow: hidden;
+}
+
+.dataviews-view-grid .dataviews-view-grid__card {
+  width: 100%;
+}
+
+.dataviews-view-grid.dataviews-view-grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  -moz-column-gap: 32px;
+       column-gap: 32px;
+  gap: 32px;
+}
+
+.pattern-preview-iframe-wrapper iframe {
+  max-width: 1000px;
+}

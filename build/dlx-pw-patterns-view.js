@@ -6082,9 +6082,8 @@ var PatternsLocalView = function PatternsLocalView() {
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Preview', 'dlx-pattern-wrangler'),
       getValue: function getValue(_ref8) {
         var item = _ref8.item;
-        // Generate preview URL instead of using srcDoc
-        // todo: secure with nonce.
-        var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&viewport_width=").concat(item.viewportWidth) : '';
+        var viewportWidth = item.viewportWidth || 1200;
+        var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&viewport_width=").concat(viewportWidth) : '';
         return /*#__PURE__*/React.createElement("div", {
           className: "pattern-preview-wrapper"
         }, /*#__PURE__*/React.createElement("div", {
