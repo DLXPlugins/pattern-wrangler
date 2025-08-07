@@ -52,7 +52,7 @@
 }
 
 .dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__media {
-  aspect-ratio: 16/9 !important;
+  aspect-ratio: 1/1 !important;
   background-color: unset;
   outline: none;
   outline-color: transparent;
@@ -72,18 +72,14 @@
 
 .dataviews-view-grid .dataviews-view-grid__card {
   width: 100%;
-  max-width: 300px;
+  max-width: 400px;
 }
 
 .dataviews-view-grid.dataviews-view-grid {
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   -moz-column-gap: 32px;
        column-gap: 32px;
   gap: 32px;
-}
-
-.pattern-preview-iframe-wrapper iframe {
-  max-width: 1200px;
 }
 
 .dlx-patterns-view-container .dataviews-title-field span {
@@ -103,8 +99,8 @@
 }
 
 .dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__media {
-  max-width: 300px;
-  height: 100%;
+  max-width: 400px;
+  height: 400px;
 }
 
 .fancybox__iframe {

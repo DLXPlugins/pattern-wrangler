@@ -34,8 +34,8 @@ if ( '' === $pattern_id ) {
 }
 
 $scale          = 1;
-$aspect_ratio   = 16 / 9;
-$viewport_width = 1280;
+$aspect_ratio   = 1 / 1;
+$viewport_width = 1600;
 
 // Perform query.
 if ( is_numeric( $pattern_id ) ) {
@@ -77,7 +77,7 @@ if ( is_numeric( $pattern_id ) ) {
 $scale = apply_filters( 'dlxpw_pattern_preview_scale', 1, $viewport_width );
 
 // Calculate scale as opposed to aspect ratio and viewport width.
-$scale = round( min( $viewport_width, ( $viewport_width / $aspect_ratio ) ) / 1440, 2 );
+$scale = round( min( $viewport_width, ( $viewport_width / $aspect_ratio ) ) / 1600, 2 );
 
 // Add inline styles to try to hide the header and footer.
 add_action(
@@ -131,7 +131,7 @@ add_action(
 			'dlxpw-pattern-preview-js',
 			'dlxPatternPreviewVars',
 			array(
-				'viewportWidth' => $viewport_width,
+				'viewportWidth' => 1600,
 				'layout'        => $layout,
 			)
 		);
@@ -177,7 +177,7 @@ if ( ! wp_is_block_theme() ) {
 	}
 	\setup_postdata( $current_post );
 	?>
-	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1200px; aspect-ratio: 1/1; transform: scale(.9) !important;">
+	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1600px;">
 		<?php
 		echo apply_filters( 'the_content', $pattern_content );
 		?>
@@ -203,7 +203,7 @@ if ( ! wp_is_block_theme() ) {
 	<header class="wp-block-template-part site-header">
 		<?php block_header_area(); ?>
 	</header>
-	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1200px; aspect-ratio: 1/1; transform: scale(.9) !important;">
+	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; aspect-ratio: 1/1;">
 		<?php
 		echo apply_filters( 'the_content', $pattern_content );
 		?>
@@ -249,10 +249,10 @@ if ( ! wp_is_block_theme() ) {
 			document.body.clientHeight,
 			document.documentElement.clientHeight
 		);
-		const viewportWidth = dlxPatternPreviewVars.viewportWidth;
+		const viewportWidth = 1000;
 		const layout = dlxPatternPreviewVars.layout;
 
-		const scale = 'grid' === layout ? containerWidth / viewportWidth : 96 / viewportWidth; // 96px is the width of the list view.
+		const scale = 0.4; // 96px is the width of the list view.
 		const aspectRatio = contentHeight
 			? containerWidth / ( contentHeight * scale )
 			: 0;

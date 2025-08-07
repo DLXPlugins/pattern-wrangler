@@ -7475,11 +7475,10 @@ var fields = [{
       src: previewUrl,
       title: "Preview: ".concat(item.title),
       style: {
-        border: '1px solid #ddd',
-        borderRadius: '4px',
         backgroundColor: '#fff',
         overflow: 'hidden',
-        scrolling: 'no'
+        scrolling: 'no',
+        marginTop: '32px'
       },
       sandbox: "allow-same-origin allow-scripts allow-popups allow-forms",
       loading: "lazy"
