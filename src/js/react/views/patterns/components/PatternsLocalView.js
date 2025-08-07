@@ -34,7 +34,7 @@ const popPatternPreview = ( item ) => {
 const defaultLayouts = {
 	grid: {
 		layout: {
-			titleField: 'pattern-title',
+			titleField: 'title',
 			mediaField: 'pattern-view-json',
 			columns: 2,
 			columnGap: '24px',
@@ -46,7 +46,7 @@ const defaultLayouts = {
 };
 const fields = [
 	{
-		id: 'pattern-title',
+		id: 'title',
 		label: __( 'Title', 'pattern-wrangler' ),
 		render: ( { item } ) => {
 			return <span>{ item.title }</span>;
@@ -145,7 +145,10 @@ const fields = [
 				);
 			} );
 		},
+		enableSorting: false,
+		enableHiding: false,
 		enableGlobalSearch: true,
+		type: 'array',
 	},
 	{
 		id: 'author',
@@ -157,14 +160,6 @@ const fields = [
 		enableSorting: false,
 		enableHiding: true,
 		enableGlobalSearch: false,
-	},
-	{
-		id: 'pattern-title',
-		label: __( 'Title', 'pattern-wrangler' ),
-		render: ( { item } ) => {
-			return <span>{ item.title }</span>;
-		},
-		enableSorting: true,
 	},
 	{
 		elements: [
@@ -190,11 +185,13 @@ const fields = [
 			},
 		],
 		enableHiding: false,
+		enableSorting: false,
 		enableGlobalSearch: true,
 		filterBy: {
-			operators: [ 'is', 'isNot' ],
+			operators: [ 'is' ],
 		},
-		type: 'text',
+		default: 'all',
+		type: 'dropdown',
 		id: 'patternType',
 		label: __( 'Pattern Type', 'pattern-wrangler' ),
 	},
@@ -324,14 +321,18 @@ const PatternsLocalView = () => {
 	const [ view, setView ] = useState( {
 		type: 'grid',
 		search: '',
-		perPage: 10,
 		previewSize: 'large',
+		paginationInfo: {
+			totalItems: patterns.length,
+			totalPages: 2,
+		},
 		page: 1,
+		perPage: 10,
 		sort: {
-			field: 'pattern-title',
+			field: 'title',
 			direction: 'asc',
 		},
-		titleField: 'pattern-title',
+		titleField: 'title',
 		mediaField: 'pattern-view-json',
 		layout: defaultLayouts.grid.layout,
 		fields: [ ...fields ],
@@ -447,8 +448,9 @@ const PatternsLocalView = () => {
 				onChangeView={ onChangeView }
 				paginationInfo={ {
 					totalItems: patterns.length,
-					totalPages: 1, // Would come from API headers
+					totalPages: Math.ceil( patterns.length / view.perPage ),
 				} }
+				perPageSizes={ [ 10, 25, 50, 100 ] }
 				selection={ selectedItems }
 				onChangeSelection={ setSelectedItems }
 				isLoading={ isLoading }

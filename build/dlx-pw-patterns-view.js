@@ -7410,7 +7410,7 @@ var popPatternPreview = function popPatternPreview(item) {
 var defaultLayouts = {
   grid: {
     layout: {
-      titleField: 'pattern-title',
+      titleField: 'title',
       mediaField: 'pattern-view-json',
       columns: 2,
       columnGap: '24px',
@@ -7421,7 +7421,7 @@ var defaultLayouts = {
   }
 };
 var fields = [{
-  id: 'pattern-title',
+  id: 'title',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Title', 'pattern-wrangler'),
   render: function render(_ref) {
     var item = _ref.item;
@@ -7504,7 +7504,10 @@ var fields = [{
       }, titleCase), index < item.categories.length - 1 && ', ');
     });
   },
-  enableGlobalSearch: true
+  enableSorting: false,
+  enableHiding: false,
+  enableGlobalSearch: true,
+  type: 'array'
 }, {
   id: 'author',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Author', 'pattern-wrangler'),
@@ -7516,14 +7519,6 @@ var fields = [{
   enableSorting: false,
   enableHiding: true,
   enableGlobalSearch: false
-}, {
-  id: 'pattern-title',
-  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Title', 'pattern-wrangler'),
-  render: function render(_ref5) {
-    var item = _ref5.item;
-    return /*#__PURE__*/React.createElement("span", null, item.title);
-  },
-  enableSorting: true
 }, {
   elements: [{
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('All Patterns', 'pattern-wrangler'),
@@ -7542,11 +7537,13 @@ var fields = [{
     value: 'synced'
   }],
   enableHiding: false,
+  enableSorting: false,
   enableGlobalSearch: true,
   filterBy: {
-    operators: ['is', 'isNot']
+    operators: ['is']
   },
-  type: 'text',
+  "default": 'all',
+  type: 'dropdown',
   id: 'patternType',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Pattern Type', 'pattern-wrangler')
 }];
@@ -7639,12 +7636,12 @@ var actions = [{
   isDestructive: false
 }];
 var fetchPatterns = /*#__PURE__*/function () {
-  var _ref7 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref6) {
+  var _ref6 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref5) {
     var perPage, page, search, sort, response;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          perPage = _ref6.perPage, page = _ref6.page, search = _ref6.search, sort = _ref6.sort;
+          perPage = _ref5.perPage, page = _ref5.page, search = _ref5.search, sort = _ref5.sort;
           _context.next = 3;
           return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_5___default()({
             path: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_6__.addQueryArgs)('/dlxplugins/pattern-wrangler/v1/patterns/all/', {
@@ -7666,7 +7663,7 @@ var fetchPatterns = /*#__PURE__*/function () {
     }, _callee);
   }));
   return function fetchPatterns(_x) {
-    return _ref7.apply(this, arguments);
+    return _ref6.apply(this, arguments);
   };
 }();
 
@@ -7694,14 +7691,18 @@ var PatternsLocalView = function PatternsLocalView() {
   var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
       type: 'grid',
       search: '',
-      perPage: 10,
       previewSize: 'large',
+      paginationInfo: {
+        totalItems: patterns.length,
+        totalPages: 2
+      },
       page: 1,
+      perPage: 10,
       sort: {
-        field: 'pattern-title',
+        field: 'title',
         direction: 'asc'
       },
-      titleField: 'pattern-title',
+      titleField: 'title',
       mediaField: 'pattern-view-json',
       layout: defaultLayouts.grid.layout,
       fields: [].concat(fields)
@@ -7811,8 +7812,9 @@ var PatternsLocalView = function PatternsLocalView() {
     onChangeView: onChangeView,
     paginationInfo: {
       totalItems: patterns.length,
-      totalPages: 1 // Would come from API headers
+      totalPages: Math.ceil(patterns.length / view.perPage)
     },
+    perPageSizes: [10, 25, 50, 100],
     selection: selectedItems,
     onChangeSelection: setSelectedItems,
     isLoading: isLoading,
