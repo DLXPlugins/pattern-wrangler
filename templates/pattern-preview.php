@@ -133,6 +133,7 @@ add_action(
 			array(
 				'viewportWidth' => 1600,
 				'layout'        => $layout,
+				'retrieveNonce' => 'dlx-pattern-wrangler-get-all-patterns',
 			)
 		);
 		wp_print_scripts( 'dlxpw-pattern-preview-js' );

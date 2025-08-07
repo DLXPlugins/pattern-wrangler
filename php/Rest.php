@@ -62,7 +62,7 @@ class Rest {
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'rest_get_all_patterns' ),
 					'permission_callback' => function () {
-						return true; // current_user_can( 'edit_posts' );
+						return current_user_can( 'edit_posts' );
 					},
 
 				),
@@ -89,6 +89,12 @@ class Rest {
 	 * Get all patterns with previews.
 	 */
 	public function rest_get_all_patterns() {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-get-patterns' ) || ! current_user_can( 'edit_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to view patterns.' ) );
+		}
+
 		// Check transient first.
 		$patterns = false; // get_transient( 'dlx_all_patterns_cache' );
 		if ( false !== $patterns ) {

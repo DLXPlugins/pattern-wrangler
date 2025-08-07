@@ -27,20 +27,20 @@ const indexRoute = createRoute( {
 } );
 
 // Local root.
-const localRoute = createRoute( {
+const pagedRoute = createRoute( {
 	getParentRoute: () => rootRoute,
-	path: '/local',
+	path: '/paged',
 	component: PatternsView,
 } );
 
-const registeredPatternsRoute = createRoute( {
+const orderRoute = createRoute( {
 	getParentRoute: () => rootRoute,
-	path: '/registered',
+	path: '/order',
 	component: PatternsView,
 } );
 
 // Include all routes in the route tree
-const routeTree = rootRoute.addChildren( [ indexRoute, localRoute, registeredPatternsRoute ] );
+const routeTree = rootRoute.addChildren( [ indexRoute, pagedRoute, orderRoute ] );
 
 // Create a router instance
 const router = createRouter( {

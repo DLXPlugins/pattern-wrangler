@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unknown-property */
-import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
+import { useState, useMemo, useEffect, useRef, Suspense } from '@wordpress/element';
 import { useResizeObserver, useRefEffect } from '@wordpress/compose';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
@@ -7,10 +7,12 @@ import { useQuery } from '@tanstack/react-query';
 import { __ } from '@wordpress/i18n';
 import { DataViews } from '@wordpress/dataviews';
 import apiFetch from '@wordpress/api-fetch';
+import { useAsyncResource } from 'use-async-resource';
 import { useRouter } from '@tanstack/react-router';
 import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 import { dispatch, select, useDispatch } from '@wordpress/data';
 import PatternsViewStore from '../store';
+import ErrorBoundary from '../../../components/ErrorBoundary';
 
 const popPatternPreview = ( item ) => {
 	const viewportWidth = item.viewportWidth || 1200;
@@ -105,14 +107,14 @@ const fields = [
 										src={ previewUrl }
 										title={ `Preview: ${ item.title }` }
 										style={ {
-											backgroundColor: '#fff',
+											backgroundColor: '#FFF',
 											overflow: 'hidden',
 											scrolling: 'no',
 											marginTop: '32px',
 										} }
 										sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
 										loading="lazy"
-									></iframe>
+									>hi there</iframe>
 								</div>
 							</a>
 						</div>
@@ -293,32 +295,67 @@ const actions = [
 	},
 ];
 
-const fetchPatterns = async( { perPage, page, search, sort } ) => {
-	const response = await apiFetch( {
+/**
+ * Retrieve all the patterns.
+ *
+ * @return {Promise<Object>} The patterns.
+ */
+const retrieveAllPatterns = async() => {
+	return await apiFetch( {
 		path: addQueryArgs( '/dlxplugins/pattern-wrangler/v1/patterns/all/', {
-			perPage,
-			page,
-			search,
-			orderby: sort.field,
-			order: sort.direction,
+			nonce: dlxEnhancedPatternsView.getNonce,
 		} ),
 		method: 'GET',
 	} );
+};
 
-	return response;
+const PatternsGrid = ( props ) => {
+	const [ defaults, getDefaults ] = useAsyncResource( retrieveAllPatterns, [] );
+	return (
+		<ErrorBoundary
+			fallback={
+				<p>
+					{ __( 'Could not load block patterns.', 'quotes-dlx' ) }
+					<br />
+					<a
+						href="https://dlxplugins.com/support/"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						DLX Plugins Support
+					</a>
+				</p>
+			}
+		>
+			<Suspense
+				fallback={
+					<div className="has-admin-container-body__content">
+						loading...
+					</div>
+				}
+			>
+				<Interface defaults={ defaults } { ...props } />
+			</Suspense>
+		</ErrorBoundary>
+	);
 };
 
 // Get query args from current URL.
 const queryArgs = getQueryArgs( window.location.href );
 
-const PatternsGrid = () => {
+const Interface = ( props ) => {
+	const { defaults } = props;
+	const data = defaults();
+
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const [ patterns, setPatterns ] = useState( [] );
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
 	const [ categories, setCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
+	const [ loadingFrame, setLoadingFrame ] = useState( null );
 
 	const { setViewType } = useDispatch( PatternsViewStore );
+
 	const [ view, setView ] = useState( {
 		type: 'grid',
 		search: '',
@@ -339,16 +376,16 @@ const PatternsGrid = () => {
 		fields: [ ...fields ],
 	} );
 
-	const { data, isLoading, error } = useQuery( {
-		queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
-		queryFn: () =>
-			fetchPatterns( {
-				perPage: view.perPage,
-				page: view.page,
-				search: view.search,
-				sort: view.sort,
-			} ),
-	} );
+	// const { data, isLoading, error } = useQuery( {
+	// 	queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
+	// 	queryFn: () =>
+	// 		fetchPatterns( {
+	// 			perPage: view.perPage,
+	// 			page: view.page,
+	// 			search: view.search,
+	// 			sort: view.sort,
+	// 		} ),
+	// } );
 
 	/**
 	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.
@@ -411,7 +448,6 @@ const PatternsGrid = () => {
 
 	useEffect( () => {
 		if ( data && data.hasOwnProperty( 'patterns' ) ) {
-			console.log( 'data', data );
 			if ( data.patterns && ! patternsDisplay.length ) {
 				setPatterns( data.patterns );
 				if ( data.patterns !== patternsDisplay ) {
@@ -446,14 +482,6 @@ const PatternsGrid = () => {
 		}
 	}, [ data ] );
 
-	if ( error ) {
-		return (
-			<div className="dlx-patterns-error">
-				{ __( 'Error loading patterns:', 'pattern-wrangler' ) } { error.message }
-			</div>
-		);
-	}
-
 	if ( loading ) {
 		return <>Loading...</>;
 	}
@@ -474,7 +502,6 @@ const PatternsGrid = () => {
 				perPageSizes={ [ 10, 25, 50 ] }
 				selection={ selectedItems }
 				onChangeSelection={ setSelectedItems }
-				isLoading={ isLoading }
 				defaultLayouts={ defaultLayouts }
 				searchLabel={ __( 'Search Patterns', 'pattern-wrangler' ) }
 			/>

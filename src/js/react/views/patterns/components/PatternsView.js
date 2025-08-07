@@ -1,8 +1,8 @@
 import { useRouter, useNavigate } from '@tanstack/react-router';
-import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
+import { useState, useMemo, useEffect, lazy } from '@wordpress/element';
 import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
-import PatternsGrid from './PatternsGrid';
+const PatternsGrid = /* webpackChunkName: "PatternsGrid-0.0.1" */ lazy( () => import( './PatternsGrid' ) );
 
 const PatternsView = () => {
 	const [ activeTab, setActiveTab ] = useState( 'local' );

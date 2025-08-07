@@ -11,7 +11,8 @@
 		"dlxPatternWranglerAdmin": "readonly",
 		"dlxPatternWranglerNetworkAdminSettings": "readonly",
 		"dlxEnhancedPatternsView": "readonly",
-		"ajaxurl": "readonly"
+		"ajaxurl": "readonly",
+		"dlxPatternPreviewVars": "readonly"
 	},
 	"env": {
 		"browser": true,
