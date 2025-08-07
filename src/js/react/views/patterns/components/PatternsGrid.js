@@ -9,7 +9,7 @@ import { DataViews } from '@wordpress/dataviews';
 import apiFetch from '@wordpress/api-fetch';
 import { useAsyncResource } from 'use-async-resource';
 import { useRouter } from '@tanstack/react-router';
-import { addQueryArgs, getQueryArgs } from '@wordpress/url';
+import { addQueryArgs, getQueryArgs, safeDecodeURI } from '@wordpress/url';
 import { dispatch, select, useDispatch } from '@wordpress/data';
 import PatternsViewStore from '../store';
 import ErrorBoundary from '../../../components/ErrorBoundary';
@@ -358,7 +358,6 @@ const Interface = ( props ) => {
 
 	const [ view, setView ] = useState( {
 		type: 'grid',
-		search: '',
 		previewSize: 'large',
 		paginationInfo: {
 			totalItems: patterns.length,
@@ -368,7 +367,7 @@ const Interface = ( props ) => {
 		perPage: 10,
 		sort: {
 			field: 'title',
-			direction: 'asc',
+			direction: 'desc',
 		},
 		titleField: 'title',
 		mediaField: 'pattern-view-json',
@@ -388,25 +387,56 @@ const Interface = ( props ) => {
 	// } );
 
 	/**
+	 * Retrieve a list of modified patterns based on query vars and the current view.
+	 *
+	 * @param {Object} newView The new view object.
+	 * @return {Array} The patterns for display.
+	 */
+	const getPatternsForDisplay = ( newView ) => {
+		let patternsCopy = [ ...patterns ];
+
+		if ( null === patternsCopy || 0 === patternsCopy.length ) {
+			patternsCopy = [ ...data.patterns ];
+		}
+
+		// Set up order and orderby.
+		const orderBy = getQueryArgs( window.location.href ).orderby;
+		const order = getQueryArgs( window.location.href ).order;
+		if ( 'title' === orderBy ) {
+			if ( 'asc' === order ) {
+				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
+			} else {
+				patternsCopy.sort( ( a, b ) => b.title.localeCompare( a.title ) );
+			}
+		}
+
+		// Do search.
+		const searchField = safeDecodeURI( getQueryArgs( window.location.href ).search );
+		if ( 'undefined' !== searchField && '' !== searchField ) {
+			console.log( 'searchField', searchField );
+			patternsCopy = patternsCopy.filter( ( pattern ) =>
+				pattern.title.toLowerCase().includes( ( newView.search || searchField ).toLowerCase() )
+			);
+			const newViewCopy = {
+				...view,
+				search: searchField,
+			};
+			setView( newViewCopy );
+		}
+
+		// Return the patterns for display with pagination.
+		return patternsCopy.slice(
+			( view.page - 1 ) * newView.perPage,
+			view.page * newView.perPage
+		);
+	};
+
+	/**
 	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.
 	 *
 	 * @param {Object} newView The new view object.
 	 */
 	const onChangeView = ( newView ) => {
-		// Adjust fields based on view type
-		if ( newView.type === 'grid' ) {
-			newView.fields = [ 'pattern-badge', 'pattern-categories', 'author' ];
-			newView.showMedia = true;
-		} else {
-			newView.fields = [
-				'pattern-badge',
-				'pattern-view-json',
-				'pattern-categories',
-				'author',
-			];
-			newView.showMedia = false;
-		}
-
 		// Create query args object with view state.
 		const changeQueryArgs = {
 			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
@@ -414,12 +444,10 @@ const Interface = ( props ) => {
 			view_type: newView.type,
 		};
 
-		// Calculate new patterns based on pagination and current page.
-		const patternsToShow = patterns.slice(
-			( newView.page - 1 ) * changeQueryArgs.per_page,
-			newView.page * changeQueryArgs.per_page
-		);
-		setPatternsDisplay( patternsToShow );
+		// Now adjust for sort order.
+		const patternSortCopy = getPatternsForDisplay( newView );
+
+		setPatternsDisplay( patternSortCopy );
 		setView( { ...newView, paginationInfo: {
 			totalItems: patterns.length,
 			totalPages: Math.ceil( patterns.length / newView.perPage ),
@@ -448,18 +476,6 @@ const Interface = ( props ) => {
 
 	useEffect( () => {
 		if ( data && data.hasOwnProperty( 'patterns' ) ) {
-			if ( data.patterns && ! patternsDisplay.length ) {
-				setPatterns( data.patterns );
-				if ( data.patterns !== patternsDisplay ) {
-					// Calculate which patterns to show based off query and view information.
-					const currentPage = parseInt( getQueryArgs( window.location.href ).page ) || 1;
-					const patternsToShow = data.patterns.slice(
-						( currentPage - 1 ) * view.perPage,
-						currentPage * view.perPage
-					);
-					setPatternsDisplay( patternsToShow );
-				}
-			}
 			if ( data.categories ) {
 				// Find the index of the pattern-categories field.
 				const fieldsIndex = fields.findIndex(
@@ -473,10 +489,22 @@ const Interface = ( props ) => {
 						};
 					}
 				);
-				view.fields = [ ...fields ];
+				const newViewCopy = {
+					...view,
+					fields: [ ...fields ],
+				};
 				// Force view to re-render.
 				setCategories( data.categories );
-				setView( view );
+				setView( newViewCopy );
+
+				// Now filter the patterns.
+				if ( data.patterns && ! patternsDisplay.length ) {
+					setPatterns( data.patterns );
+					if ( data.patterns !== patternsDisplay ) {
+						const patternsToShow = getPatternsForDisplay( view );
+						setPatternsDisplay( patternsToShow );
+					}
+				}
 				setLoading( false );
 			}
 		}
