@@ -56,9 +56,15 @@ const fields = [
 		enableGlobalSearch: true,
 	},
 	{
-		id: 'pattern-badge',
-		label: __( 'Status', 'pattern-wrangler' ),
-		render: ( { item } ) => {
+		id: 'pattern-view-json',
+		label: __( 'Preview', 'pattern-wrangler' ),
+		getValue: ( { item } ) => {
+			const viewportWidth = item.viewportWidth || 1200;
+
+			const previewUrl = item?.id
+				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+				: '';
+
 			// Determine badge type based on pattern properties.
 			let badgeText = __( 'Local', 'pattern-wrangler' );
 			let badgeClass = 'pattern-badge-local';
@@ -74,58 +80,45 @@ const fields = [
 				badgeClass = 'pattern-badge-unsynced';
 			}
 
-			return (
-				<span className={ `pattern-badge ${ badgeClass }` }>
-					{ badgeText }
-				</span>
+			const Badge = (
+				<span className={ `pattern-badge ${ badgeClass }` }>{ badgeText }</span>
 			);
-		},
-		enableSorting: false,
-		enableHiding: false,
-		enableGlobalSearch: false,
-	},
-	{
-		id: 'pattern-view-json',
-		label: __( 'Preview', 'pattern-wrangler' ),
-		getValue: ( { item } ) => {
-			const viewportWidth = item.viewportWidth || 1200;
-
-			const previewUrl = item?.id
-				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
-				: '';
 			return (
-				<div className="pattern-preview-wrapper">
-					<div className="pattern-preview-iframe-wrapper">
-						<a
-							href={ previewUrl }
-							className="pattern-preview-iframe-link"
-							target="_blank"
-							rel="noopener noreferrer"
-							onClick={ ( e ) => {
-								e.preventDefault();
-								popPatternPreview( item );
-							} }
-							aria-hidden="true"
-						>
-							<div className="pattern-preview-iframe-scale-container">
-								<iframe
-									key={ `preview-${ item.id }` }
-									src={ previewUrl }
-									title={ `Preview: ${ item.title }` }
-									style={ {
-										border: '1px solid #ddd',
-										borderRadius: '4px',
-										backgroundColor: '#fff',
-										overflow: 'hidden',
-										scrolling: 'no',
-									} }
-									sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-									loading="lazy"
-								></iframe>
-							</div>
-						</a>
+				<>
+					{ Badge }
+					<div className="pattern-preview-wrapper">
+						<div className="pattern-preview-iframe-wrapper">
+							<a
+								href={ previewUrl }
+								className="pattern-preview-iframe-link"
+								target="_blank"
+								rel="noopener noreferrer"
+								onClick={ ( e ) => {
+									e.preventDefault();
+									popPatternPreview( item );
+								} }
+								aria-hidden="true"
+							>
+								<div className="pattern-preview-iframe-scale-container">
+									<iframe
+										key={ `preview-${ item.id }` }
+										src={ previewUrl }
+										title={ `Preview: ${ item.title }` }
+										style={ {
+											border: '1px solid #ddd',
+											borderRadius: '4px',
+											backgroundColor: '#fff',
+											overflow: 'hidden',
+											scrolling: 'no',
+										} }
+										sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+										loading="lazy"
+									></iframe>
+								</div>
+							</a>
+						</div>
 					</div>
-				</div>
+				</>
 			);
 		},
 		enableSorting: false,
@@ -367,7 +360,12 @@ const PatternsLocalView = () => {
 			newView.fields = [ 'pattern-badge', 'pattern-categories', 'author' ];
 			newView.showMedia = true;
 		} else {
-			newView.fields = [ 'pattern-badge', 'pattern-view-json', 'pattern-categories', 'author' ];
+			newView.fields = [
+				'pattern-badge',
+				'pattern-view-json',
+				'pattern-categories',
+				'author',
+			];
 			newView.showMedia = false;
 		}
 
@@ -407,7 +405,9 @@ const PatternsLocalView = () => {
 			}
 			if ( data.categories ) {
 				// Find the index of the pattern-categories field.
-				const fieldsIndex = fields.findIndex( ( field ) => field.id === 'pattern-categories' );
+				const fieldsIndex = fields.findIndex(
+					( field ) => field.id === 'pattern-categories'
+				);
 				fields[ fieldsIndex ].elements = Object.values( data.categories ).map(
 					( category ) => {
 						return {

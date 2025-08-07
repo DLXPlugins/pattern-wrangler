@@ -51,8 +51,14 @@
   width: 96px;
 }
 
-.dataviews-view-grid .dataviews-view-grid__media {
+.dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__media {
   aspect-ratio: 16/9 !important;
+  background-color: unset;
+  outline: none;
+  outline-color: transparent;
+}
+.dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__media:after {
+  box-shadow: none;
 }
 
 /* Hide the preview toggle slider */
@@ -90,9 +96,15 @@
   display: flex;
 }
 
+.dlx-patterns-view-container .dataviews-view-grid__card {
+  display: grid;
+  grid-template-rows: 1fr;
+  gap: 16px;
+}
+
 .dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__media {
   max-width: 300px;
-  min-height: 225px;
+  height: 100%;
 }
 
 .fancybox__iframe {
@@ -101,6 +113,43 @@
 
 .has-iframe .fancybox__content {
   overflow: scroll;
+}
+
+.pattern-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.pattern-badge-local {
+  background-color: #e7f5ff;
+  color: #0066cc;
+  border-color: #b3d9ff;
+}
+
+.pattern-badge-registered {
+  background-color: #f0f8ff;
+  color: #0066cc;
+  border-color: #cce5ff;
+}
+
+.pattern-badge-synced {
+  background-color: #f0fff0;
+  color: #006600;
+  border-color: #ccffcc;
+}
+
+.pattern-badge-unsynced {
+  background-color: #fff8e7;
+  color: #cc6600;
+  border-color: #ffd9b3;
 }
 
 /*# sourceMappingURL=dlx-pw-patterns-view.css.map*/

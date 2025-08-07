@@ -209,9 +209,6 @@ if ( ! wp_is_block_theme() ) {
 		?>
 	</div>
 	<?php
-	echo apply_filters( 'the_content', do_blocks( $pattern_content ) );
-	?>
-	<?php
 }
 
 // Render block pattern here.
