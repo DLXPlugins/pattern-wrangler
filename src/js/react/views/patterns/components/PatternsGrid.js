@@ -262,10 +262,10 @@ const actions = [
 			console.log( 'Disable Preview', items );
 		},
 		isEligible: ( pattern ) => {
-			return ! pattern.isLocal;
+			return true;
 		},
 		isPrimary: false,
-		isDestructive: false,
+		isDestructive: true,
 	},
 	{
 		id: 'copy',

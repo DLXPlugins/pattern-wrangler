@@ -339,10 +339,10 @@ var actions = [{
     console.log('Disable Preview', items);
   },
   isEligible: function isEligible(pattern) {
-    return !pattern.isLocal;
+    return true;
   },
   isPrimary: false,
-  isDestructive: false
+  isDestructive: true
 }, {
   id: 'copy',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Copy Pattern', 'pattern-wrangler'),
@@ -655,4 +655,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=a54a19e14f5dd589aae5
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=2b085e3fc81aab61cac9
