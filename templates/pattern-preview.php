@@ -179,7 +179,7 @@ if ( ! wp_is_block_theme() ) {
 	?>
 	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1200px; aspect-ratio: 1/1; transform: scale(.9) !important;">
 		<?php
-		echo wp_kses_post( $pattern_content );
+		echo apply_filters( 'the_content', $pattern_content );
 		?>
 	</div>
 	<?php
@@ -205,7 +205,7 @@ if ( ! wp_is_block_theme() ) {
 	</header>
 	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1200px; aspect-ratio: 1/1; transform: scale(.9) !important;">
 		<?php
-		echo wp_kses_post( $pattern_content );
+		echo apply_filters( 'the_content', $pattern_content );
 		?>
 	</div>
 	<?php

@@ -1,6 +1,8 @@
 /* eslint-disable react/no-unknown-property */
 import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
 import { useResizeObserver, useRefEffect } from '@wordpress/compose';
+import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
+import '@fancyapps/ui/dist/fancybox/fancybox.css';
 import { useQuery } from '@tanstack/react-query';
 import { __ } from '@wordpress/i18n';
 import { DataViews } from '@wordpress/dataviews';
@@ -9,6 +11,23 @@ import { useRouter } from '@tanstack/react-router';
 import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 import { dispatch, select, useDispatch } from '@wordpress/data';
 import PatternsViewStore from '../store';
+
+const popPatternPreview = ( item ) => {
+	const viewportWidth = item.viewportWidth || 1200;
+
+	const previewUrl = item?.id
+		? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+		: '';
+
+	Fancybox.show( [ {
+		src: previewUrl,
+		caption: item.title,
+		type: 'iframe',
+		zoom: true,
+		compact: true,
+		width: '80%',
+	} ] );
+};
 
 const defaultLayouts = {
 	grid: {
@@ -128,6 +147,48 @@ const actions = [
 		isDestructive: true,
 	},
 	{
+		id: 'delete',
+		label: __( 'Preview Pattern', 'dlx-pattern-wrangler' ),
+		icon: 'edit',
+		isEligible: ( pattern ) => {
+			// Pattern must be local.
+			return true;
+		},
+		callback: ( items ) => {
+			// Get the first item.
+			const item = items[ 0 ];
+			popPatternPreview( item );
+		},
+		isPrimary: false,
+		isDestructive: true,
+	},
+	{
+		id: 'copy-to-local',
+		label: __( 'Copy to Local Pattern', 'dlx-pattern-wrangler' ),
+		icon: 'edit',
+		callback: ( items ) => {
+			console.log( 'Copy to Local', items );
+		},
+		isEligible: ( pattern ) => {
+			return ! pattern.isLocal;
+		},
+		isPrimary: false,
+		isDestructive: false,
+	},
+	{
+		id: 'disable-preview',
+		label: __( 'Disable Pattern', 'dlx-pattern-wrangler' ),
+		icon: 'edit',
+		callback: ( items ) => {
+			console.log( 'Disable Preview', items );
+		},
+		isEligible: ( pattern ) => {
+			return ! pattern.isLocal;
+		},
+		isPrimary: false,
+		isDestructive: false,
+	},
+	{
 		id: 'copy',
 		label: __( 'Copy Pattern', 'dlx-pattern-wrangler' ),
 		icon: 'edit',
@@ -202,8 +263,17 @@ const PatternsLocalView = () => {
 					: '';
 				return (
 					<div className="pattern-preview-wrapper">
-						<div className="pattern-preview-iframe-scale-container">
-							<div className="pattern-preview-iframe-wrapper">
+						<div className="pattern-preview-iframe-wrapper">
+							<a
+								href={ previewUrl }
+								className="pattern-preview-iframe-link"
+								target="_blank" rel="noopener noreferrer" onClick={ ( e ) => {
+									e.preventDefault();
+									popPatternPreview( item );
+								} }
+								aria-hidden="true"
+							>
+							<div className="pattern-preview-iframe-scale-container">
 								<iframe
 									key={ `preview-${ item.id }` }
 									src={ previewUrl }
@@ -220,8 +290,8 @@ const PatternsLocalView = () => {
 								>
 								</iframe>
 							</div>
+							</a>
 						</div>
-	
 					</div>
 				);
 			},
@@ -292,8 +362,6 @@ const PatternsLocalView = () => {
 				sort: view.sort,
 			} ),
 	} );
-
-	
 
 	/**
 	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.

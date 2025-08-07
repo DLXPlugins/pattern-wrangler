@@ -1,6 +1,9 @@
 @import '../../../../../../node_modules/@wordpress/dataviews/build-style/style.css';
 @import '../../../../../../node_modules/@wordpress/components/build-style/style.css';
 
+.fancybox__container {
+	z-index: 100000;
+}
 .dlx-patterns-view-container {
 	padding: 20px;
 
@@ -12,6 +15,7 @@
 .pattern-preview-iframe-wrapper {
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
 }
 
 .pattern-preview-wrapper {
@@ -65,5 +69,14 @@
 }
 
 .pattern-preview-iframe-wrapper iframe {
-	max-width: 1000px;
+	max-width: 1200px;
+}
+
+.dlx-patterns-view-container .dataviews-title-field span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__title-field {
+	display: flex;
 }

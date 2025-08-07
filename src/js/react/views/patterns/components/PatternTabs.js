@@ -53,6 +53,14 @@ const PatternTabs = () => {
 					sajklf
 				</>
 				<TabItem
+					label={ __( 'All Patterns', 'pattern-wrangler' ) }
+					active={ isTabActive( '/', 'patterns' ) }
+					onClick={ ( e ) => {
+						e.preventDefault();
+						navigate( { to: '/' } );
+					} }
+				/>
+				<TabItem
 					label={ __( 'Local Patterns', 'pattern-wrangler' ) }
 					active={ isTabActive( 'local', 'patterns' ) }
 					onClick={ ( e ) => {

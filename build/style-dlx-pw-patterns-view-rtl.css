@@ -2,16 +2,13 @@
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/@wordpress/dataviews/build-style/style.css ***!
   \*************************************************************************************************************************************************************************************************************/
 /**
-*  Converts a hex value into the rgb equivalent.
-*
-* @param {string} hex - the hexadecimal value to convert
-* @return {string} comma separated rgb values
-*/
-/**
  * Colors
  */
 /**
  * Breakpoints & Media Queries
+ */
+/**
+ * Colors
  */
 /**
  * SCSS Variables.
@@ -19,15 +16,6 @@
  * Please use variables from this sheet to ensure consistency across the UI.
  * Don't add to this sheet unless you're pretty sure the value will be reused in many places.
  * For example, don't add rules to this sheet that affect block visuals. It's purely for UI.
- */
-/**
-*  Converts a hex value into the rgb equivalent.
-*
-* @param {string} hex - the hexadecimal value to convert
-* @return {string} comma separated rgb values
-*/
-/**
- * Colors
  */
 /**
  * Fonts & basic variables.
@@ -63,6 +51,139 @@
 /**
  * React Native specific.
  * These variables do not appear to be used anywhere else.
+ */
+/**
+ * Colors
+ */
+/**
+ * SCSS Variables.
+ *
+ * Please use variables from this sheet to ensure consistency across the UI.
+ * Don't add to this sheet unless you're pretty sure the value will be reused in many places.
+ * For example, don't add rules to this sheet that affect block visuals. It's purely for UI.
+ */
+/**
+ * Fonts & basic variables.
+ */
+/**
+ * Typography
+ */
+/**
+ * Grid System.
+ * https://make.wordpress.org/design/2019/10/31/proposal-a-consistent-spacing-system-for-wordpress/
+ */
+/**
+ * Radius scale.
+ */
+/**
+ * Elevation scale.
+ */
+/**
+ * Dimensions.
+ */
+/**
+ * Mobile specific styles
+ */
+/**
+ * Editor styles.
+ */
+/**
+ * Block & Editor UI.
+ */
+/**
+ * Block paddings.
+ */
+/**
+ * React Native specific.
+ * These variables do not appear to be used anywhere else.
+ */
+/**
+ * Breakpoints & Media Queries
+ */
+/**
+*  Converts a hex value into the rgb equivalent.
+*
+* @param {string} hex - the hexadecimal value to convert
+* @return {string} comma separated rgb values
+*/
+/**
+ * Long content fade mixin
+ *
+ * Creates a fading overlay to signify that the content is longer
+ * than the space allows.
+ */
+/**
+ * Typography
+ */
+/**
+ * Breakpoint mixins
+ */
+/**
+ * Focus styles.
+ */
+/**
+ * Applies editor left position to the selector passed as argument
+ */
+/**
+ * Styles that are reused verbatim in a few places
+ */
+/**
+ * Allows users to opt-out of animations via OS-level preferences.
+ */
+/**
+ * Reset default styles for JavaScript UI based pages.
+ * This is a WP-admin agnostic reset
+ */
+/**
+ * Reset the WP Admin page styles for Gutenberg-like pages.
+ */
+/**
+ * Colors
+ */
+/**
+ * SCSS Variables.
+ *
+ * Please use variables from this sheet to ensure consistency across the UI.
+ * Don't add to this sheet unless you're pretty sure the value will be reused in many places.
+ * For example, don't add rules to this sheet that affect block visuals. It's purely for UI.
+ */
+/**
+ * Fonts & basic variables.
+ */
+/**
+ * Typography
+ */
+/**
+ * Grid System.
+ * https://make.wordpress.org/design/2019/10/31/proposal-a-consistent-spacing-system-for-wordpress/
+ */
+/**
+ * Radius scale.
+ */
+/**
+ * Elevation scale.
+ */
+/**
+ * Dimensions.
+ */
+/**
+ * Mobile specific styles
+ */
+/**
+ * Editor styles.
+ */
+/**
+ * Block & Editor UI.
+ */
+/**
+ * Block paddings.
+ */
+/**
+ * React Native specific.
+ * These variables do not appear to be used anywhere else.
+ */
+/**
+ * Breakpoints & Media Queries
  */
 /**
 *  Converts a hex value into the rgb equivalent.
@@ -102,6 +223,9 @@
  * Reset the WP Admin page styles for Gutenberg-like pages.
  */
 :root {
+  --wp-block-synced-color: #7a00df;
+  --wp-block-synced-color--rgb: 122, 0, 223;
+  --wp-bound-block-color: var(--wp-block-synced-color);
   --wp-admin-theme-color: #007cba;
   --wp-admin-theme-color--rgb: 0, 124, 186;
   --wp-admin-theme-color-darker-10: #006ba1;
@@ -109,11 +233,8 @@
   --wp-admin-theme-color-darker-20: #005a87;
   --wp-admin-theme-color-darker-20--rgb: 0, 90, 135;
   --wp-admin-border-width-focus: 2px;
-  --wp-block-synced-color: #7a00df;
-  --wp-block-synced-color--rgb: 122, 0, 223;
-  --wp-bound-block-color: var(--wp-block-synced-color);
 }
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (min-resolution: 192dpi) {
   :root {
     --wp-admin-border-width-focus: 1.5px;
   }
@@ -225,6 +346,30 @@
   border-radius: 2px;
 }
 
+/**
+ * Applying a consistent 24px padding when DataViews are placed within cards.
+ */
+.components-card__body:has(> .dataviews-wrapper) {
+  padding: 8px 0 0;
+  overflow: hidden;
+}
+.components-card__body:has(> .dataviews-wrapper) .dataviews__view-actions,
+.components-card__body:has(> .dataviews-wrapper) .dataviews-filters__container,
+.components-card__body:has(> .dataviews-wrapper) .dataviews-footer,
+.components-card__body:has(> .dataviews-wrapper) .dataviews-view-grid,
+.components-card__body:has(> .dataviews-wrapper) .dataviews-loading,
+.components-card__body:has(> .dataviews-wrapper) .dataviews-no-results {
+  padding-inline: 24px;
+}
+.components-card__body:has(> .dataviews-wrapper) .dataviews-view-table tr td:first-child,
+.components-card__body:has(> .dataviews-wrapper) .dataviews-view-table tr th:first-child {
+  padding-inline-start: 24px;
+}
+.components-card__body:has(> .dataviews-wrapper) .dataviews-view-table tr td:last-child,
+.components-card__body:has(> .dataviews-wrapper) .dataviews-view-table tr th:last-child {
+  padding-inline-end: 24px;
+}
+
 .dataviews-bulk-actions-footer__item-count {
   color: #1e1e1e;
   font-weight: 500;
@@ -265,17 +410,26 @@
 }
 
 .dataviews-filters__summary-operators-container {
-  padding: 8px 8px 0;
+  padding: 8px 16px;
 }
-.dataviews-filters__summary-operators-container:has(+ .dataviews-filters__search-widget-listbox) {
+.dataviews-filters__summary-operators-container:has(+ .dataviews-filters__search-widget-listbox), .dataviews-filters__summary-operators-container:has(+ .dataviews-filters__user-input-widget) {
   border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 8px;
 }
 .dataviews-filters__summary-operators-container:empty {
   display: none;
 }
 .dataviews-filters__summary-operators-container .dataviews-filters__summary-operators-filter-name {
   color: #757575;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0; /* Prevents this element from shrinking */
+  max-width: calc(100% - 55px);
+}
+.dataviews-filters__summary-operators-container .dataviews-filters__summary-operators-filter-select {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .dataviews-filters__summary-chip-container {
@@ -373,9 +527,13 @@
   gap: 8px;
   border-radius: 2px;
   box-sizing: border-box;
-  padding: 8px 12px;
+  padding: 4px 12px;
   cursor: default;
-  margin-block-end: 2px;
+  min-height: 32px;
+  font-family: -apple-system, "system-ui", "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 20px;
 }
 .dataviews-filters__search-widget-listitem:last-child {
   margin-block-end: 0;
@@ -384,16 +542,23 @@
   background-color: var(--wp-admin-theme-color);
   color: #fff;
 }
-.dataviews-filters__search-widget-listitem:hover .dataviews-filters__search-widget-listitem-check, .dataviews-filters__search-widget-listitem[data-active-item] .dataviews-filters__search-widget-listitem-check, .dataviews-filters__search-widget-listitem:focus .dataviews-filters__search-widget-listitem-check {
-  fill: #fff;
-}
 .dataviews-filters__search-widget-listitem:hover .dataviews-filters__search-widget-listitem-description, .dataviews-filters__search-widget-listitem[data-active-item] .dataviews-filters__search-widget-listitem-description, .dataviews-filters__search-widget-listitem:focus .dataviews-filters__search-widget-listitem-description {
   color: #fff;
 }
-.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-check {
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
+.dataviews-filters__search-widget-listitem:hover .dataviews-filters__search-widget-listitem-single-selection, .dataviews-filters__search-widget-listitem[data-active-item] .dataviews-filters__search-widget-listitem-single-selection, .dataviews-filters__search-widget-listitem:focus .dataviews-filters__search-widget-listitem-single-selection {
+  border-color: var(--wp-admin-theme-color-darker-20, #183ad6);
+  background: #fff;
+}
+.dataviews-filters__search-widget-listitem:hover .dataviews-filters__search-widget-listitem-single-selection.is-selected, .dataviews-filters__search-widget-listitem[data-active-item] .dataviews-filters__search-widget-listitem-single-selection.is-selected, .dataviews-filters__search-widget-listitem:focus .dataviews-filters__search-widget-listitem-single-selection.is-selected {
+  border-color: var(--wp-admin-theme-color-darker-20, #183ad6);
+  background: var(--wp-admin-theme-color-darker-20, #183ad6);
+}
+.dataviews-filters__search-widget-listitem:hover .dataviews-filters__search-widget-listitem-multi-selection, .dataviews-filters__search-widget-listitem[data-active-item] .dataviews-filters__search-widget-listitem-multi-selection, .dataviews-filters__search-widget-listitem:focus .dataviews-filters__search-widget-listitem-multi-selection {
+  border-color: var(--wp-admin-theme-color-darker-20, #183ad6);
+}
+.dataviews-filters__search-widget-listitem:hover .dataviews-filters__search-widget-listitem-multi-selection.is-selected, .dataviews-filters__search-widget-listitem[data-active-item] .dataviews-filters__search-widget-listitem-multi-selection.is-selected, .dataviews-filters__search-widget-listitem:focus .dataviews-filters__search-widget-listitem-multi-selection.is-selected {
+  border-color: var(--wp-admin-theme-color-darker-20, #183ad6);
+  background: var(--wp-admin-theme-color-darker-20, #183ad6);
 }
 .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-description {
   display: block;
@@ -403,6 +568,208 @@
   line-height: 16px;
   color: #757575;
 }
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection {
+  border: 1px solid #1e1e1e;
+  margin-left: 12px;
+  transition: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  max-width: 24px;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+@media not (prefers-reduced-motion) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection {
+    transition: box-shadow 0.1s linear;
+  }
+}
+@media (min-width: 600px) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection {
+    height: 16px;
+    width: 16px;
+    min-width: 16px;
+    max-width: 16px;
+  }
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection:checked::before {
+  box-sizing: inherit;
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+  margin: 0;
+  background-color: #fff;
+  border: 4px solid #fff;
+}
+@media (min-width: 600px) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection:checked::before {
+    width: 8px;
+    height: 8px;
+  }
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection:focus {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--wp-admin-theme-color);
+  outline: 2px solid transparent;
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection:checked {
+  background: var(--wp-admin-theme-color);
+  border: none;
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection.is-selected {
+  background: var(--wp-admin-theme-color, #3858e9);
+  border-color: var(--wp-admin-theme-color, #3858e9);
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection.is-selected::before {
+  content: "";
+  border-radius: 50%;
+  box-sizing: inherit;
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+  margin: 0;
+  background-color: #fff;
+  border: 4px solid #fff;
+}
+@media (min-width: 600px) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-single-selection.is-selected::before {
+    width: 8px;
+    height: 8px;
+  }
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection {
+  --checkbox-size: 24px;
+  border: 1px solid #1e1e1e;
+  margin-left: 12px;
+  transition: none;
+  border-radius: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  padding: 6px 8px;
+  /* Fonts smaller than 16px causes mobile safari to zoom. */
+  font-size: 16px;
+  /* Override core line-height. To be reviewed. */
+  line-height: normal;
+  box-shadow: 0 0 0 transparent;
+  border-radius: 2px;
+  border: 1px solid #949494;
+  position: relative;
+  background: #fff;
+  color: #1e1e1e;
+  margin: 0;
+  padding: 0;
+  width: var(--checkbox-size);
+  height: var(--checkbox-size);
+}
+@media not (prefers-reduced-motion) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection {
+    transition: box-shadow 0.1s linear;
+  }
+}
+@media (min-width: 600px) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection {
+    font-size: 13px;
+    /* Override core line-height. To be reviewed. */
+    line-height: normal;
+  }
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection:focus {
+  border-color: var(--wp-admin-theme-color);
+  box-shadow: 0 0 0 0.5px var(--wp-admin-theme-color);
+  outline: 2px solid transparent;
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection::-webkit-input-placeholder {
+  color: rgba(30, 30, 30, 0.62);
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection::-moz-placeholder {
+  color: rgba(30, 30, 30, 0.62);
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection:-ms-input-placeholder {
+  color: rgba(30, 30, 30, 0.62);
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection:focus {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--wp-admin-theme-color);
+  outline: 2px solid transparent;
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection:checked {
+  background: var(--wp-admin-theme-color);
+  border-color: var(--wp-admin-theme-color);
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection:checked::-ms-check {
+  opacity: 0;
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection:checked::before, .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection[aria-checked=mixed]::before {
+  margin: -3px -5px;
+  color: #fff;
+}
+@media (min-width: 782px) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection:checked::before, .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection[aria-checked=mixed]::before {
+    margin: -4px -5px 0 0;
+  }
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection[aria-checked=mixed] {
+  background: var(--wp-admin-theme-color);
+  border-color: var(--wp-admin-theme-color);
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection[aria-checked=mixed]::before {
+  content: "\f460";
+  float: right;
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword -- dashicons don't need a generic family keyword. */
+  font: normal 30px/1 dashicons;
+  speak: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+@media (min-width: 782px) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection[aria-checked=mixed]::before {
+    float: none;
+    font-size: 21px;
+  }
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection[aria-disabled=true], .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection:disabled {
+  background: #f0f0f0;
+  border-color: #ddd;
+  cursor: default;
+  opacity: 1;
+}
+@media (min-width: 600px) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection {
+    --checkbox-size: 16px;
+  }
+}
+@media not (prefers-reduced-motion) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection {
+    transition: 0.1s border-color ease-in-out;
+  }
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection.is-selected {
+  background: var(--wp-admin-theme-color, #3858e9);
+  border-color: var(--wp-admin-theme-color, #3858e9);
+}
+.dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection.is-selected svg {
+  --checkmark-size: var(--checkbox-size);
+  fill: #fff;
+  position: absolute;
+  right: 50%;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: var(--checkmark-size);
+  height: var(--checkmark-size);
+}
+@media (min-width: 600px) {
+  .dataviews-filters__search-widget-listitem .dataviews-filters__search-widget-listitem-multi-selection.is-selected svg {
+    --checkmark-size: calc(var(--checkbox-size) + 4px);
+  }
+}
 
 .dataviews-filters__search-widget-filter-combobox__wrapper {
   position: relative;
@@ -411,13 +778,13 @@
 .dataviews-filters__search-widget-filter-combobox__wrapper .dataviews-filters__search-widget-filter-combobox__input {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   padding: 6px 8px;
-  box-shadow: 0 0 0 transparent;
-  border-radius: 2px;
-  border: 1px solid #949494;
   /* Fonts smaller than 16px causes mobile safari to zoom. */
   font-size: 16px;
   /* Override core line-height. To be reviewed. */
   line-height: normal;
+  box-shadow: 0 0 0 transparent;
+  border-radius: 2px;
+  border: 1px solid #949494;
   display: block;
   padding: 0 8px 0 32px;
   background: #f0f0f0;
@@ -510,6 +877,13 @@
 .dataviews-search {
   width: -moz-fit-content;
   width: fit-content;
+}
+
+.dataviews-filters__user-input-widget {
+  padding: 16px;
+}
+.dataviews-filters__user-input-widget .components-input-control__prefix {
+  padding-right: 8px;
 }
 
 .dataviews-footer {
@@ -836,6 +1210,14 @@
   cursor: pointer;
 }
 
+.dataviews-view-grid__group-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e1e1e;
+  margin: 0 0 8px 0;
+  padding: 0 48px;
+}
+
 div.dataviews-view-list {
   list-style-type: none;
 }
@@ -1023,6 +1405,23 @@ div.dataviews-view-list {
 .dataviews-view-table th.dataviews-view-table__actions-column {
   text-align: left;
 }
+.dataviews-view-table td.dataviews-view-table__actions-column--sticky,
+.dataviews-view-table th.dataviews-view-table__actions-column--sticky {
+  position: sticky;
+  left: 0;
+  background-color: #fff;
+}
+.dataviews-view-table td.dataviews-view-table__actions-column--stuck::after,
+.dataviews-view-table th.dataviews-view-table__actions-column--stuck::after {
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  background-color: #f0f0f0;
+}
 .dataviews-view-table td.dataviews-view-table__checkbox-column,
 .dataviews-view-table th.dataviews-view-table__checkbox-column {
   padding-left: 0;
@@ -1049,7 +1448,7 @@ div.dataviews-view-list {
 .dataviews-view-table tr:last-child {
   border-bottom: 0;
 }
-.dataviews-view-table tr.is-hovered {
+.dataviews-view-table tr.is-hovered, .dataviews-view-table tr.is-hovered .dataviews-view-table__actions-column--sticky {
   background-color: #f8f8f8;
 }
 .dataviews-view-table tr .components-checkbox-control__input.components-checkbox-control__input {
@@ -1083,6 +1482,12 @@ div.dataviews-view-list {
 .dataviews-view-table tr.is-selected:hover {
   background-color: rgba(var(--wp-admin-theme-color--rgb), 0.08);
 }
+.dataviews-view-table tr.is-selected .dataviews-view-table__actions-column--sticky {
+  background-color: color-mix(in srgb, rgb(var(--wp-admin-theme-color--rgb)) 4%, #fff);
+}
+.dataviews-view-table tr.is-selected:hover .dataviews-view-table__actions-column--sticky {
+  background-color: color-mix(in srgb, rgb(var(--wp-admin-theme-color--rgb)) 8%, #fff);
+}
 .dataviews-view-table thead {
   position: sticky;
   inset-block-start: 0;
@@ -1110,6 +1515,12 @@ div.dataviews-view-list {
   min-height: 32px;
   display: flex;
   align-items: center;
+}
+.dataviews-view-table tbody .dataviews-view-table__cell-content-wrapper.dataviews-view-table__cell-align-end {
+  justify-content: flex-end;
+}
+.dataviews-view-table tbody .dataviews-view-table__cell-content-wrapper.dataviews-view-table__cell-align-center {
+  justify-content: center;
 }
 .dataviews-view-table tbody .components-v-stack > .dataviews-view-table__cell-content-wrapper:not(:first-child) {
   min-height: 0;
@@ -1183,6 +1594,11 @@ div.dataviews-view-list {
   padding: 0;
 }
 
+.dataviews-controls__datetime-number,
+.dataviews-controls__datetime-unit {
+  flex: 1 1 50%;
+}
+
 .dataforms-layouts-panel__field {
   width: 100%;
   min-height: 32px;
@@ -1196,10 +1612,12 @@ div.dataviews-view-list {
   min-height: 32px;
   display: flex;
   align-items: center;
-  padding: 6px 0;
   line-height: 20px;
   -webkit-hyphens: auto;
           hyphens: auto;
+}
+.dataforms-layouts-panel__field-label--label-position-side {
+  align-self: center;
 }
 
 .dataforms-layouts-panel__field-control {
@@ -1215,6 +1633,9 @@ div.dataviews-view-list {
   text-wrap: balance;
   text-wrap: pretty;
   min-height: 32px;
+}
+.dataforms-layouts-panel__field-control.components-button.is-link[aria-disabled=true] {
+  text-decoration: none;
 }
 .dataforms-layouts-panel__field-control .components-dropdown {
   max-width: 100%;
@@ -1252,10 +1673,12 @@ div.dataviews-view-list {
   min-height: 32px;
   display: flex;
   align-items: center;
-  padding: 6px 0;
   line-height: 20px;
   -webkit-hyphens: auto;
           hyphens: auto;
+}
+.dataforms-layouts-regular__field-label--label-position-side {
+  align-self: center;
 }
 
 .dataforms-layouts-regular__field-control {
@@ -1377,7 +1800,7 @@ div.dataviews-view-list {
   --wp-admin-theme-color-darker-20--rgb: 24, 58, 214;
   --wp-admin-border-width-focus: 2px;
 }
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (min-resolution: 192dpi) {
   :root {
     --wp-admin-border-width-focus: 1.5px;
   }
@@ -1779,7 +2202,7 @@ p + .components-button.is-tertiary {
 
 @keyframes components-button__busy-animation {
   0% {
-    background-position: 200px 0;
+    background-position: right 200px top 0;
   }
 }
 .components-checkbox-control {
@@ -3328,7 +3751,7 @@ body.is-dragging-components-draggable {
   flex-grow: 1;
   display: flex;
   flex-direction: row;
-  justify-content: left;
+  justify-content: right;
 }
 
 .components-modal__header-icon-container {
@@ -4191,7 +4614,7 @@ body.rtl .components-panel__body-toggle.components-button .dashicons-arrow-right
 
 /* This CSS is shown only to Safari, which has a bug with table-caption making it jumpy.
 See https://bugs.webkit.org/show_bug.cgi?id=187903. */
-@media not all and (-webkit-min-device-pixel-ratio: 0), not all and (min-resolution: 0.001dpcm) {
+@media not all and (min-resolution: 0.001dpcm) {
   @supports (-webkit-appearance: none) {
     .components-resizable-box__side-handle.components-resizable-box__handle-top:hover::before,
 .components-resizable-box__side-handle.components-resizable-box__handle-bottom:hover::before,
