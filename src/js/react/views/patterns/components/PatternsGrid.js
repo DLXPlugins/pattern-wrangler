@@ -311,7 +311,7 @@ const fetchPatterns = async( { perPage, page, search, sort } ) => {
 // Get query args from current URL.
 const queryArgs = getQueryArgs( window.location.href );
 
-const PatternsLocalView = () => {
+const PatternsGrid = () => {
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const [ patterns, setPatterns ] = useState( [] );
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
@@ -478,9 +478,8 @@ const PatternsLocalView = () => {
 				defaultLayouts={ defaultLayouts }
 				searchLabel={ __( 'Search Patterns', 'pattern-wrangler' ) }
 			/>
-			``
 		</div>
 	);
 };
 
-export default PatternsLocalView;
+export default PatternsGrid;

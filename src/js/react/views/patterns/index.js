@@ -7,7 +7,7 @@ import {
 	createRootRoute,
 } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import PatternTabs from './components/PatternTabs';
+import PatternsView from './components/PatternsView';
 import './styles/patterns-view.scss';
 
 // Create a hash history instance with the WordPress admin path
@@ -16,27 +16,27 @@ const hashHistory = createHashHistory( {
 } );
 // Create the root route
 const rootRoute = createRootRoute( {
-	component: () => <PatternTabs />,
+	component: () => <PatternsView />,
 } );
 
 // Define your routes with different components or views
 const indexRoute = createRoute( {
 	getParentRoute: () => rootRoute,
 	path: '/',
-	component: PatternTabs,
+	component: PatternsView,
 } );
 
 // Local root.
 const localRoute = createRoute( {
 	getParentRoute: () => rootRoute,
 	path: '/local',
-	component: PatternTabs,
+	component: PatternsView,
 } );
 
 const registeredPatternsRoute = createRoute( {
 	getParentRoute: () => rootRoute,
 	path: '/registered',
-	component: PatternTabs,
+	component: PatternsView,
 } );
 
 // Include all routes in the route tree

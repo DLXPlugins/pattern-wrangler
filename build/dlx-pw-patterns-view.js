@@ -7229,124 +7229,10 @@ const unseen = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.js
 
 /***/ }),
 
-/***/ "./src/js/react/views/patterns/components/PatternTabs.js":
-/*!***************************************************************!*\
-  !*** ./src/js/react/views/patterns/components/PatternTabs.js ***!
-  \***************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _tanstack_react_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @tanstack/react-router */ "./node_modules/@tanstack/react-router/dist/esm/useRouter.js");
-/* harmony import */ var _tanstack_react_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @tanstack/react-router */ "./node_modules/@tanstack/react-router/dist/esm/useNavigate.js");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/url */ "@wordpress/url");
-/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_url__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _PatternsLocalView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./PatternsLocalView */ "./src/js/react/views/patterns/components/PatternsLocalView.js");
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-
-
-
-
-
-var TabItem = function TabItem(_ref) {
-  var label = _ref.label,
-    active = _ref.active,
-    onClick = _ref.onClick;
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("a", {
-    href: "#",
-    onClick: onClick,
-    className: active ? 'active' : ''
-  }, label));
-};
-var PatternTabs = function PatternTabs() {
-  var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('local'),
-    _useState2 = _slicedToArray(_useState, 2),
-    activeTab = _useState2[0],
-    setActiveTab = _useState2[1];
-  var currentPath = window.location.pathname;
-  var router = (0,_tanstack_react_router__WEBPACK_IMPORTED_MODULE_4__.useRouter)();
-  var navigate = (0,_tanstack_react_router__WEBPACK_IMPORTED_MODULE_5__.useNavigate)({
-    from: '/'
-  });
-  console.log(router);
-
-  /**
-   * Check if the tab is active.
-   *
-   * @param {string} tabName The tab name.
-   * @param {string} path    The path.
-   * @return {boolean}       True or false.
-   */
-  var isTabActive = function isTabActive(tabName, path) {
-    if (tabName === activeTab) {
-      return true;
-    }
-    var pathOptions = [path, '/' + path];
-    return pathOptions.includes(currentPath);
-  };
-
-  /**
-   * Set the current tab/path.
-   */
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    // const queryArgs = getQueryArgs( window.location.href );
-    // if ( queryArgs.tab ) {
-    // 	setActiveTab( queryArgs.tab );
-    // }
-  }, []);
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("nav", {
-    className: "nav-tab-wrapper"
-  }, /*#__PURE__*/React.createElement(React.Fragment, null, "sajklf"), /*#__PURE__*/React.createElement(TabItem, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('All Patterns', 'pattern-wrangler'),
-    active: isTabActive('/', 'patterns'),
-    onClick: function onClick(e) {
-      e.preventDefault();
-      navigate({
-        to: '/'
-      });
-    }
-  }), /*#__PURE__*/React.createElement(TabItem, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Local Patterns', 'pattern-wrangler'),
-    active: isTabActive('local', 'patterns'),
-    onClick: function onClick(e) {
-      e.preventDefault();
-      navigate({
-        to: '/local'
-      });
-      //setActiveTab( 'local' );
-    }
-  }), /*#__PURE__*/React.createElement(TabItem, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Registered Patterns', 'pattern-wrangler'),
-    active: isTabActive('registered', 'patterns'),
-    onClick: function onClick(e) {
-      e.preventDefault();
-      navigate({
-        to: '/registered'
-      });
-      //setActiveTab( 'registered' );
-    }
-  })), /*#__PURE__*/React.createElement(_PatternsLocalView__WEBPACK_IMPORTED_MODULE_3__["default"], null));
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PatternTabs);
-
-/***/ }),
-
-/***/ "./src/js/react/views/patterns/components/PatternsLocalView.js":
-/*!*********************************************************************!*\
-  !*** ./src/js/react/views/patterns/components/PatternsLocalView.js ***!
-  \*********************************************************************/
+/***/ "./src/js/react/views/patterns/components/PatternsGrid.js":
+/*!****************************************************************!*\
+  !*** ./src/js/react/views/patterns/components/PatternsGrid.js ***!
+  \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -7674,7 +7560,7 @@ var fetchPatterns = /*#__PURE__*/function () {
 
 // Get query args from current URL.
 var queryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_6__.getQueryArgs)(window.location.href);
-var PatternsLocalView = function PatternsLocalView() {
+var PatternsGrid = function PatternsGrid() {
   var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     selectedItems = _useState2[0],
@@ -7845,9 +7731,72 @@ var PatternsLocalView = function PatternsLocalView() {
     isLoading: isLoading,
     defaultLayouts: defaultLayouts,
     searchLabel: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Search Patterns', 'pattern-wrangler')
-  }), "``");
+  }));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PatternsLocalView);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PatternsGrid);
+
+/***/ }),
+
+/***/ "./src/js/react/views/patterns/components/PatternsView.js":
+/*!****************************************************************!*\
+  !*** ./src/js/react/views/patterns/components/PatternsView.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tanstack_react_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @tanstack/react-router */ "./node_modules/@tanstack/react-router/dist/esm/useRouter.js");
+/* harmony import */ var _tanstack_react_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @tanstack/react-router */ "./node_modules/@tanstack/react-router/dist/esm/useNavigate.js");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/url */ "@wordpress/url");
+/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_url__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _PatternsGrid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./PatternsGrid */ "./src/js/react/views/patterns/components/PatternsGrid.js");
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+
+
+
+
+
+var PatternsView = function PatternsView() {
+  var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('local'),
+    _useState2 = _slicedToArray(_useState, 2),
+    activeTab = _useState2[0],
+    setActiveTab = _useState2[1];
+  var currentPath = window.location.pathname;
+  var router = (0,_tanstack_react_router__WEBPACK_IMPORTED_MODULE_4__.useRouter)();
+  var navigate = (0,_tanstack_react_router__WEBPACK_IMPORTED_MODULE_5__.useNavigate)({
+    from: '/'
+  });
+
+  /**
+   * Set the current tab/path.
+   */
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    // const queryArgs = getQueryArgs( window.location.href );
+    // if ( queryArgs.tab ) {
+    // 	setActiveTab( queryArgs.tab );
+    // }
+  }, []);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "dlx-patterns-view-header"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "dlx-patterns-view-title"
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Site Patterns', 'pattern-wrangler'))), /*#__PURE__*/React.createElement(_PatternsGrid__WEBPACK_IMPORTED_MODULE_3__["default"], null)));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PatternsView);
 
 /***/ }),
 
@@ -7867,7 +7816,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _tanstack_react_router__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @tanstack/react-router */ "./node_modules/@tanstack/react-router/dist/esm/RouterProvider.js");
 /* harmony import */ var _tanstack_react_query__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @tanstack/react-query */ "./node_modules/@tanstack/query-core/build/modern/queryClient.js");
 /* harmony import */ var _tanstack_react_query__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @tanstack/react-query */ "./node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js");
-/* harmony import */ var _components_PatternTabs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/PatternTabs */ "./src/js/react/views/patterns/components/PatternTabs.js");
+/* harmony import */ var _components_PatternsView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/PatternsView */ "./src/js/react/views/patterns/components/PatternsView.js");
 /* harmony import */ var _styles_patterns_view_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./styles/patterns-view.scss */ "./src/js/react/views/patterns/styles/patterns-view.scss");
 
 
@@ -7882,7 +7831,7 @@ var hashHistory = (0,_tanstack_react_router__WEBPACK_IMPORTED_MODULE_3__.createH
 // Create the root route
 var rootRoute = (0,_tanstack_react_router__WEBPACK_IMPORTED_MODULE_4__.createRootRoute)({
   component: function component() {
-    return /*#__PURE__*/React.createElement(_components_PatternTabs__WEBPACK_IMPORTED_MODULE_1__["default"], null);
+    return /*#__PURE__*/React.createElement(_components_PatternsView__WEBPACK_IMPORTED_MODULE_1__["default"], null);
   }
 });
 
@@ -7892,7 +7841,7 @@ var indexRoute = (0,_tanstack_react_router__WEBPACK_IMPORTED_MODULE_4__.createRo
     return rootRoute;
   },
   path: '/',
-  component: _components_PatternTabs__WEBPACK_IMPORTED_MODULE_1__["default"]
+  component: _components_PatternsView__WEBPACK_IMPORTED_MODULE_1__["default"]
 });
 
 // Local root.
@@ -7901,14 +7850,14 @@ var localRoute = (0,_tanstack_react_router__WEBPACK_IMPORTED_MODULE_4__.createRo
     return rootRoute;
   },
   path: '/local',
-  component: _components_PatternTabs__WEBPACK_IMPORTED_MODULE_1__["default"]
+  component: _components_PatternsView__WEBPACK_IMPORTED_MODULE_1__["default"]
 });
 var registeredPatternsRoute = (0,_tanstack_react_router__WEBPACK_IMPORTED_MODULE_4__.createRoute)({
   getParentRoute: function getParentRoute() {
     return rootRoute;
   },
   path: '/registered',
-  component: _components_PatternTabs__WEBPACK_IMPORTED_MODULE_1__["default"]
+  component: _components_PatternsView__WEBPACK_IMPORTED_MODULE_1__["default"]
 });
 
 // Include all routes in the route tree
