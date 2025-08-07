@@ -314,6 +314,7 @@ const queryArgs = getQueryArgs( window.location.href );
 const PatternsLocalView = () => {
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const [ patterns, setPatterns ] = useState( [] );
+	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
 	const [ categories, setCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
 
@@ -324,7 +325,7 @@ const PatternsLocalView = () => {
 		previewSize: 'large',
 		paginationInfo: {
 			totalItems: patterns.length,
-			totalPages: 2,
+			totalPages: 0,
 		},
 		page: 1,
 		perPage: 10,
@@ -370,12 +371,24 @@ const PatternsLocalView = () => {
 		}
 
 		// Create query args object with view state.
-		const queryArgs = {
-			page: getQueryArgs( window.location.href ).page,
-			paged: newView.page,
+		const changeQueryArgs = {
+			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
 			per_page: newView.perPage,
 			view_type: newView.type,
 		};
+
+		// Calculate new patterns based on pagination and current page.
+		const patternsToShow = patterns.slice(
+			( newView.page - 1 ) * changeQueryArgs.per_page,
+			newView.page * changeQueryArgs.per_page
+		);
+		setPatternsDisplay( patternsToShow );
+		setView( { ...newView, paginationInfo: {
+			totalItems: patterns.length,
+			totalPages: Math.ceil( patterns.length / newView.perPage ),
+			page: changeQueryArgs.page + 1,
+			perPage: changeQueryArgs.per_page,
+		} } );
 
 		// Only add search if it exists.
 		if ( newView.search ) {
@@ -393,14 +406,22 @@ const PatternsLocalView = () => {
 		window.history.pushState( {}, '', newUrl );
 
 		// Update the view state.
-		setView( newView );
+		//setView( newView );
 	};
 
 	useEffect( () => {
 		if ( data && data.hasOwnProperty( 'patterns' ) ) {
-			if ( data.patterns ) {
-				if ( data.patterns !== patterns ) {
-					setPatterns( data.patterns );
+			console.log( 'data', data );
+			if ( data.patterns && ! patternsDisplay.length ) {
+				setPatterns( data.patterns );
+				if ( data.patterns !== patternsDisplay ) {
+					// Calculate which patterns to show based off query and view information.
+					const currentPage = parseInt( getQueryArgs( window.location.href ).page ) || 1;
+					const patternsToShow = data.patterns.slice(
+						( currentPage - 1 ) * view.perPage,
+						currentPage * view.perPage
+					);
+					setPatternsDisplay( patternsToShow );
 				}
 			}
 			if ( data.categories ) {
@@ -440,7 +461,7 @@ const PatternsLocalView = () => {
 	return (
 		<div className="dlx-patterns-view-container">
 			<DataViews
-				data={ patterns }
+				data={ patternsDisplay }
 				fields={ fields }
 				actions={ actions }
 				label={ __( 'Patterns', 'pattern-wrangler' ) }
@@ -450,7 +471,7 @@ const PatternsLocalView = () => {
 					totalItems: patterns.length,
 					totalPages: Math.ceil( patterns.length / view.perPage ),
 				} }
-				perPageSizes={ [ 10, 25, 50, 100 ] }
+				perPageSizes={ [ 10, 25, 50 ] }
 				selection={ selectedItems }
 				onChangeSelection={ setSelectedItems }
 				isLoading={ isLoading }

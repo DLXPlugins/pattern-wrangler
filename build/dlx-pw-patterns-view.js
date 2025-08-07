@@ -7372,6 +7372,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../store */ "./src/js/react/views/patterns/store/index.js");
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -7680,21 +7685,25 @@ var PatternsLocalView = function PatternsLocalView() {
     setPatterns = _useState4[1];
   var _useState5 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState6 = _slicedToArray(_useState5, 2),
-    categories = _useState6[0],
-    setCategories = _useState6[1];
-  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+    patternsDisplay = _useState6[0],
+    setPatternsDisplay = _useState6[1];
+  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState8 = _slicedToArray(_useState7, 2),
-    loading = _useState8[0],
-    setLoading = _useState8[1];
+    categories = _useState8[0],
+    setCategories = _useState8[1];
+  var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+    _useState10 = _slicedToArray(_useState9, 2),
+    loading = _useState10[0],
+    setLoading = _useState10[1];
   var _useDispatch = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_7__.useDispatch)(_store__WEBPACK_IMPORTED_MODULE_8__["default"]),
     setViewType = _useDispatch.setViewType;
-  var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
       type: 'grid',
       search: '',
       previewSize: 'large',
       paginationInfo: {
         totalItems: patterns.length,
-        totalPages: 2
+        totalPages: 0
       },
       page: 1,
       perPage: 10,
@@ -7707,9 +7716,9 @@ var PatternsLocalView = function PatternsLocalView() {
       layout: defaultLayouts.grid.layout,
       fields: [].concat(fields)
     }),
-    _useState10 = _slicedToArray(_useState9, 2),
-    view = _useState10[0],
-    setView = _useState10[1];
+    _useState12 = _slicedToArray(_useState11, 2),
+    view = _useState12[0],
+    setView = _useState12[1];
   var _useQuery = (0,_tanstack_react_query__WEBPACK_IMPORTED_MODULE_9__.useQuery)({
       queryKey: ['all-patterns', view.perPage, view.page, view.search, view.sort],
       queryFn: function queryFn() {
@@ -7742,12 +7751,23 @@ var PatternsLocalView = function PatternsLocalView() {
     }
 
     // Create query args object with view state.
-    var queryArgs = {
-      page: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_6__.getQueryArgs)(window.location.href).page,
-      paged: newView.page,
+    var changeQueryArgs = {
+      page: parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_6__.getQueryArgs)(window.location.href).paged) || 1,
       per_page: newView.perPage,
       view_type: newView.type
     };
+
+    // Calculate new patterns based on pagination and current page.
+    var patternsToShow = patterns.slice((newView.page - 1) * changeQueryArgs.per_page, newView.page * changeQueryArgs.per_page);
+    setPatternsDisplay(patternsToShow);
+    setView(_objectSpread(_objectSpread({}, newView), {}, {
+      paginationInfo: {
+        totalItems: patterns.length,
+        totalPages: Math.ceil(patterns.length / newView.perPage),
+        page: changeQueryArgs.page + 1,
+        perPage: changeQueryArgs.per_page
+      }
+    }));
 
     // Only add search if it exists.
     if (newView.search) {
@@ -7765,13 +7785,18 @@ var PatternsLocalView = function PatternsLocalView() {
     window.history.pushState({}, '', newUrl);
 
     // Update the view state.
-    setView(newView);
+    //setView( newView );
   };
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (data && data.hasOwnProperty('patterns')) {
-      if (data.patterns) {
-        if (data.patterns !== patterns) {
-          setPatterns(data.patterns);
+      console.log('data', data);
+      if (data.patterns && !patternsDisplay.length) {
+        setPatterns(data.patterns);
+        if (data.patterns !== patternsDisplay) {
+          // Calculate which patterns to show based off query and view information.
+          var currentPage = parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_6__.getQueryArgs)(window.location.href).page) || 1;
+          var patternsToShow = data.patterns.slice((currentPage - 1) * view.perPage, currentPage * view.perPage);
+          setPatternsDisplay(patternsToShow);
         }
       }
       if (data.categories) {
@@ -7804,7 +7829,7 @@ var PatternsLocalView = function PatternsLocalView() {
   return /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-container"
   }, /*#__PURE__*/React.createElement(_wordpress_dataviews__WEBPACK_IMPORTED_MODULE_10__["default"], {
-    data: patterns,
+    data: patternsDisplay,
     fields: fields,
     actions: actions,
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Patterns', 'pattern-wrangler'),
@@ -7814,7 +7839,7 @@ var PatternsLocalView = function PatternsLocalView() {
       totalItems: patterns.length,
       totalPages: Math.ceil(patterns.length / view.perPage)
     },
-    perPageSizes: [10, 25, 50, 100],
+    perPageSizes: [10, 25, 50],
     selection: selectedItems,
     onChangeSelection: setSelectedItems,
     isLoading: isLoading,
