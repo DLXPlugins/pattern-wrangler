@@ -19,14 +19,16 @@ const popPatternPreview = ( item ) => {
 		? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
 		: '';
 
-	Fancybox.show( [ {
-		src: previewUrl,
-		caption: item.title,
-		type: 'iframe',
-		zoom: true,
-		compact: true,
-		width: '80%',
-	} ] );
+	Fancybox.show( [
+		{
+			src: previewUrl,
+			caption: item.title,
+			type: 'iframe',
+			zoom: true,
+			compact: true,
+			width: '80%',
+		},
+	] );
 };
 
 const defaultLayouts = {
@@ -45,50 +47,93 @@ const defaultLayouts = {
 const fields = [
 	{
 		id: 'pattern-title',
-		label: __( 'Title', 'dlx-pattern-wrangler' ),
+		label: __( 'Title', 'pattern-wrangler' ),
 		render: ( { item } ) => {
 			return <span>{ item.title }</span>;
 		},
 		enableSorting: true,
+		enableHiding: false,
+		enableGlobalSearch: true,
+	},
+	{
+		id: 'pattern-badge',
+		label: __( 'Status', 'pattern-wrangler' ),
+		render: ( { item } ) => {
+			// Determine badge type based on pattern properties.
+			let badgeText = __( 'Local', 'pattern-wrangler' );
+			let badgeClass = 'pattern-badge-local';
+
+			if ( ! item.isLocal ) {
+				badgeText = __( 'Registered', 'pattern-wrangler' );
+				badgeClass = 'pattern-badge-registered';
+			} else if ( 'synced' === item.patternType ) {
+				badgeText = __( 'Synced', 'pattern-wrangler' );
+				badgeClass = 'pattern-badge-synced';
+			} else {
+				badgeText = __( 'Unsynced', 'pattern-wrangler' );
+				badgeClass = 'pattern-badge-unsynced';
+			}
+
+			return (
+				<span className={ `pattern-badge ${ badgeClass }` }>
+					{ badgeText }
+				</span>
+			);
+		},
+		enableSorting: false,
+		enableHiding: false,
+		enableGlobalSearch: false,
 	},
 	{
 		id: 'pattern-view-json',
-		label: __( 'Preview', 'dlx-pattern-wrangler' ),
+		label: __( 'Preview', 'pattern-wrangler' ),
 		getValue: ( { item } ) => {
-			// Generate preview URL instead of using srcDoc
-			// todo: secure with nonce.
+			const viewportWidth = item.viewportWidth || 1200;
+
 			const previewUrl = item?.id
-				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }#pattern-preview-content`
+				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
 				: '';
 			return (
 				<div className="pattern-preview-wrapper">
-					<iframe
-						key={ `preview-${ item.id }` }
-						src={ previewUrl }
-						title={ `Preview: ${ item.title }` }
-						style={ {
-							width: item.viewportWidth + 'px' || '100%',
-							height: '100%',
-							border: '1px solid #ddd',
-							borderRadius: '4px',
-							backgroundColor: '#fff',
-							overflow: 'hidden',
-							scrolling: 'no',
-						} }
-						sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-						loading="lazy"
-					/>
+					<div className="pattern-preview-iframe-wrapper">
+						<a
+							href={ previewUrl }
+							className="pattern-preview-iframe-link"
+							target="_blank"
+							rel="noopener noreferrer"
+							onClick={ ( e ) => {
+								e.preventDefault();
+								popPatternPreview( item );
+							} }
+							aria-hidden="true"
+						>
+							<div className="pattern-preview-iframe-scale-container">
+								<iframe
+									key={ `preview-${ item.id }` }
+									src={ previewUrl }
+									title={ `Preview: ${ item.title }` }
+									style={ {
+										border: '1px solid #ddd',
+										borderRadius: '4px',
+										backgroundColor: '#fff',
+										overflow: 'hidden',
+										scrolling: 'no',
+									} }
+									sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+									loading="lazy"
+								></iframe>
+							</div>
+						</a>
+					</div>
 				</div>
 			);
 		},
-		isVisible: ( newView ) => {
-			return false;
-		},
 		enableSorting: false,
+		enableHiding: false,
 	},
 	{
 		id: 'pattern-categories',
-		label: __( 'Categories', 'dlx-pattern-wrangler' ),
+		label: __( 'Categories', 'pattern-wrangler' ),
 		render: ( { item } ) => {
 			return item?.categories?.map( ( category, index ) => {
 				// If cat is object, get category.name, otherwise just use the category.
@@ -108,21 +153,64 @@ const fields = [
 				);
 			} );
 		},
-		enableSorting: false,
+		enableGlobalSearch: true,
 	},
 	{
 		id: 'author',
-		label: __( 'Author', 'dlx-pattern-wrangler' ),
+		label: __( 'Author', 'pattern-wrangler' ),
 		type: 'text',
 		getValue: ( { item } ) => {
 			return item.author;
 		},
+		enableSorting: false,
+		enableHiding: true,
+		enableGlobalSearch: false,
+	},
+	{
+		id: 'pattern-title',
+		label: __( 'Title', 'pattern-wrangler' ),
+		render: ( { item } ) => {
+			return <span>{ item.title }</span>;
+		},
+		enableSorting: true,
+	},
+	{
+		elements: [
+			{
+				label: __( 'All Patterns', 'pattern-wrangler' ),
+				value: 'all',
+			},
+			{
+				label: __( 'Local Patterns', 'pattern-wrangler' ),
+				value: 'local',
+			},
+			{
+				label: __( 'Registered Patterns', 'pattern-wrangler' ),
+				value: 'registered',
+			},
+			{
+				label: __( 'Unsynced Patterns', 'pattern-wrangler' ),
+				value: 'unsynced',
+			},
+			{
+				label: __( 'Synced Patterns', 'pattern-wrangler' ),
+				value: 'synced',
+			},
+		],
+		enableHiding: false,
+		enableGlobalSearch: true,
+		filterBy: {
+			operators: [ 'is', 'isNot' ],
+		},
+		type: 'text',
+		id: 'patternType',
+		label: __( 'Pattern Type', 'pattern-wrangler' ),
 	},
 ];
 const actions = [
 	{
 		id: 'edit',
-		label: __( 'Edit', 'dlx-pattern-wrangler' ),
+		label: __( 'Edit', 'pattern-wrangler' ),
 		icon: 'edit',
 		callback: ( items ) => {
 			console.log( 'Edit', items );
@@ -134,7 +222,7 @@ const actions = [
 	},
 	{
 		id: 'delete',
-		label: __( 'Delete Pattern', 'dlx-pattern-wrangler' ),
+		label: __( 'Delete Pattern', 'pattern-wrangler' ),
 		icon: 'trash',
 		isEligible: ( pattern ) => {
 			// Pattern must be local.
@@ -148,9 +236,9 @@ const actions = [
 	},
 	{
 		id: 'delete',
-		label: __( 'Preview Pattern', 'dlx-pattern-wrangler' ),
+		label: __( 'Preview Pattern', 'pattern-wrangler' ),
 		icon: 'edit',
-		isEligible: ( pattern ) => {
+		isEligible: () => {
 			// Pattern must be local.
 			return true;
 		},
@@ -164,7 +252,7 @@ const actions = [
 	},
 	{
 		id: 'copy-to-local',
-		label: __( 'Copy to Local Pattern', 'dlx-pattern-wrangler' ),
+		label: __( 'Copy to Local Pattern', 'pattern-wrangler' ),
 		icon: 'edit',
 		callback: ( items ) => {
 			console.log( 'Copy to Local', items );
@@ -177,7 +265,7 @@ const actions = [
 	},
 	{
 		id: 'disable-preview',
-		label: __( 'Disable Pattern', 'dlx-pattern-wrangler' ),
+		label: __( 'Disable Pattern', 'pattern-wrangler' ),
 		icon: 'edit',
 		callback: ( items ) => {
 			console.log( 'Disable Preview', items );
@@ -190,7 +278,7 @@ const actions = [
 	},
 	{
 		id: 'copy',
-		label: __( 'Copy Pattern', 'dlx-pattern-wrangler' ),
+		label: __( 'Copy Pattern', 'pattern-wrangler' ),
 		icon: 'edit',
 		callback: ( items ) => {
 			console.log( 'Copy', items );
@@ -203,7 +291,7 @@ const actions = [
 	},
 	{
 		id: 'export',
-		label: __( 'Export', 'dlx-pattern-wrangler' ),
+		label: __( 'Export', 'pattern-wrangler' ),
 		icon: 'edit',
 		callback: ( items ) => {
 			console.log( 'Export', items );
@@ -238,103 +326,9 @@ const PatternsLocalView = () => {
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const [ patterns, setPatterns ] = useState( [] );
 	const [ categories, setCategories ] = useState( [] );
+	const [ loading, setLoading ] = useState( true );
 
 	const { setViewType } = useDispatch( PatternsViewStore );
-
-	const fields = useMemo( () => [
-		{
-			id: 'pattern-title',
-			label: __( 'Title', 'dlx-pattern-wrangler' ),
-			render: ( { item } ) => {
-				return <span>{ item.title }</span>;
-			},
-			enableSorting: true,
-			enableHiding: false,
-			enableGlobalSearch: true,
-		},
-		{
-			id: 'pattern-view-json',
-			label: __( 'Preview', 'dlx-pattern-wrangler' ),
-			getValue: ( { item } ) => {
-				const viewportWidth = item.viewportWidth || 1200;
-
-				const previewUrl = item?.id
-					? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
-					: '';
-				return (
-					<div className="pattern-preview-wrapper">
-						<div className="pattern-preview-iframe-wrapper">
-							<a
-								href={ previewUrl }
-								className="pattern-preview-iframe-link"
-								target="_blank" rel="noopener noreferrer" onClick={ ( e ) => {
-									e.preventDefault();
-									popPatternPreview( item );
-								} }
-								aria-hidden="true"
-							>
-							<div className="pattern-preview-iframe-scale-container">
-								<iframe
-									key={ `preview-${ item.id }` }
-									src={ previewUrl }
-									title={ `Preview: ${ item.title }` }
-									style={ {
-										border: '1px solid #ddd',
-										borderRadius: '4px',
-										backgroundColor: '#fff',
-										overflow: 'hidden',
-										scrolling: 'no',
-									} }
-									sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-									loading="lazy"
-								>
-								</iframe>
-							</div>
-							</a>
-						</div>
-					</div>
-				);
-			},
-			enableSorting: false,
-			enableHiding: false,
-		},
-		{
-			id: 'pattern-categories',
-			label: __( 'Categories', 'dlx-pattern-wrangler' ),
-			render: ( { item } ) => {
-				return item?.categories?.map( ( category, index ) => {
-					// If cat is object, get category.name, otherwise just use the category.
-					const catName = typeof category === 'object' ? category.name : category;
-					// Convert to title case.
-					const titleCase = catName
-						.split( ' ' )
-						.map(
-							( word ) => word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase()
-						)
-						.join( ' ' );
-					return (
-						<>
-							<span key={ category }>{ titleCase }</span>
-							{ index < item.categories.length - 1 && ', ' }
-						</>
-					);
-				} );
-			},
-			enableSorting: false,
-			enableHiding: true,
-		},
-		{
-			id: 'author',
-			label: __( 'Author', 'dlx-pattern-wrangler' ),
-			type: 'text',
-			getValue: ( { item } ) => {
-				return item.author;
-			},
-			enableSorting: false,
-			enableHiding: true,
-		},
-	], [ view ] );
-
 	const [ view, setView ] = useState( {
 		type: 'grid',
 		search: '',
@@ -349,7 +343,6 @@ const PatternsLocalView = () => {
 		mediaField: 'pattern-view-json',
 		layout: defaultLayouts.grid.layout,
 		fields: [ ...fields ],
-		viewConfigOptions: {},
 	} );
 
 	const { data, isLoading, error } = useQuery( {
@@ -371,10 +364,10 @@ const PatternsLocalView = () => {
 	const onChangeView = ( newView ) => {
 		// Adjust fields based on view type
 		if ( newView.type === 'grid' ) {
-			newView.fields = [ 'pattern-categories', 'author' ];
+			newView.fields = [ 'pattern-badge', 'pattern-categories', 'author' ];
 			newView.showMedia = true;
 		} else {
-			newView.fields = [ 'pattern-view-json', 'pattern-categories', 'author' ];
+			newView.fields = [ 'pattern-badge', 'pattern-view-json', 'pattern-categories', 'author' ];
 			newView.showMedia = false;
 		}
 
@@ -413,7 +406,21 @@ const PatternsLocalView = () => {
 				}
 			}
 			if ( data.categories ) {
+				// Find the index of the pattern-categories field.
+				const fieldsIndex = fields.findIndex( ( field ) => field.id === 'pattern-categories' );
+				fields[ fieldsIndex ].elements = Object.values( data.categories ).map(
+					( category ) => {
+						return {
+							label: category.label,
+							value: category.slug,
+						};
+					}
+				);
+				view.fields = [ ...fields ];
+				// Force view to re-render.
 				setCategories( data.categories );
+				setView( view );
+				setLoading( false );
 			}
 		}
 	}, [ data ] );
@@ -421,9 +428,13 @@ const PatternsLocalView = () => {
 	if ( error ) {
 		return (
 			<div className="dlx-patterns-error">
-				{ __( 'Error loading patterns:', 'dlx-pattern-wrangler' ) } { error.message }
+				{ __( 'Error loading patterns:', 'pattern-wrangler' ) } { error.message }
 			</div>
 		);
+	}
+
+	if ( loading ) {
+		return <>Loading...</>;
 	}
 
 	return (
@@ -432,7 +443,7 @@ const PatternsLocalView = () => {
 				data={ patterns }
 				fields={ fields }
 				actions={ actions }
-				label={ __( 'Patterns', 'dlx-pattern-wrangler' ) }
+				label={ __( 'Patterns', 'pattern-wrangler' ) }
 				view={ view }
 				onChangeView={ onChangeView }
 				paginationInfo={ {
@@ -443,8 +454,9 @@ const PatternsLocalView = () => {
 				onChangeSelection={ setSelectedItems }
 				isLoading={ isLoading }
 				defaultLayouts={ defaultLayouts }
-				searchLabel={ __( 'Search Patterns', 'dlx-pattern-wrangler' ) }
-			/>``
+				searchLabel={ __( 'Search Patterns', 'pattern-wrangler' ) }
+			/>
+			``
 		</div>
 	);
 };

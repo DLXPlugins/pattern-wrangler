@@ -164,6 +164,7 @@ class Rest {
 				'isLocal'       => false,
 				'preview'       => $preview_image,
 				'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
+				'patternType'   => 'registered',
 			);
 		}
 
@@ -171,13 +172,14 @@ class Rest {
 		foreach ( $local_patterns as $pattern ) {
 			$preview_image                    = $this->get_pattern_preview( $pattern->post_title, $pattern->post_name, $pattern->ID );
 			$patterns[ $pattern->post_title ] = array(
-				'id'         => $pattern->ID,
-				'title'      => $pattern->post_title,
-				'slug'       => $pattern->post_name,
-				'content'    => $pattern->post_content,
-				'categories' => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
-				'isLocal'    => true,
-				'preview'    => $preview_image,
+				'id'          => $pattern->ID,
+				'title'       => $pattern->post_title,
+				'slug'        => $pattern->post_name,
+				'content'     => $pattern->post_content,
+				'categories'  => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
+				'isLocal'     => true,
+				'preview'     => $preview_image,
+				'patternType' => 'synced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'synced' : 'unsynced',
 			);
 		}
 

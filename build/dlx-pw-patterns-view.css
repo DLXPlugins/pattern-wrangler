@@ -66,6 +66,7 @@
 
 .dataviews-view-grid .dataviews-view-grid__card {
   width: 100%;
+  max-width: 300px;
 }
 
 .dataviews-view-grid.dataviews-view-grid {
@@ -87,6 +88,19 @@
 
 .dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__title-field {
   display: flex;
+}
+
+.dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__media {
+  max-width: 300px;
+  min-height: 225px;
+}
+
+.fancybox__iframe {
+  width: 100% !important;
+}
+
+.has-iframe .fancybox__content {
+  overflow: scroll;
 }
 
 /*# sourceMappingURL=dlx-pw-patterns-view.css.map*/
