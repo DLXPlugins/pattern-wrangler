@@ -1,5 +1,11 @@
 /* eslint-disable react/no-unknown-property */
-import { useState, useMemo, useEffect, useRef, Suspense } from '@wordpress/element';
+import {
+	useState,
+	useMemo,
+	useEffect,
+	useRef,
+	Suspense,
+} from '@wordpress/element';
 import { useResizeObserver, useRefEffect } from '@wordpress/compose';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
@@ -61,6 +67,19 @@ const fields = [
 		id: 'pattern-view-json',
 		label: __( 'Preview', 'pattern-wrangler' ),
 		getValue: ( { item } ) => {
+			const [ resizeListener, { width } ] = useResizeObserver();
+
+			useEffect( () => {
+				if ( typeof width === 'undefined' ) {
+					return;
+				}
+				window.parent.document.dispatchEvent(
+					new CustomEvent( 'dlxPatternPreviewResize', {
+						detail: { width: width },
+					} )
+				);
+			}, [ width ] );
+
 			const viewportWidth = item.viewportWidth || 1200;
 
 			const previewUrl = item?.id
@@ -89,7 +108,8 @@ const fields = [
 				<>
 					{ Badge }
 					<div className="pattern-preview-wrapper">
-						<div className="pattern-preview-iframe-wrapper">
+						{ resizeListener }
+						<div className="pattern-preview-iframe-scale-container">
 							<a
 								href={ previewUrl }
 								className="pattern-preview-iframe-link"
@@ -101,20 +121,24 @@ const fields = [
 								} }
 								aria-hidden="true"
 							>
-								<div className="pattern-preview-iframe-scale-container">
-									<iframe
-										key={ `preview-${ item.id }` }
-										src={ previewUrl }
-										title={ `Preview: ${ item.title }` }
-										style={ {
-											backgroundColor: '#FFF',
-											overflow: 'hidden',
-											scrolling: 'no',
-											marginTop: '32px',
-										} }
-										sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-										loading="lazy"
-									>hi there</iframe>
+								<div className="block-editor-iframe__container">
+									<div className="pattern-preview-iframe-wrapper">
+										<iframe
+											key={ `preview-${ item.id }` }
+											src={ previewUrl }
+											title={ `Preview: ${ item.title }` }
+											style={ {
+												backgroundColor: '#FFF',
+												overflow: 'hidden',
+												scrolling: 'no',
+												marginTop: '32px',
+											} }
+											sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+											loading="lazy"
+										>
+											hi there
+										</iframe>
+									</div>
 								</div>
 							</a>
 						</div>
@@ -329,9 +353,7 @@ const PatternsGrid = ( props ) => {
 		>
 			<Suspense
 				fallback={
-					<div className="has-admin-container-body__content">
-						loading...
-					</div>
+					<div className="has-admin-container-body__content">loading...</div>
 				}
 			>
 				<Interface defaults={ defaults } { ...props } />
@@ -411,11 +433,15 @@ const Interface = ( props ) => {
 		}
 
 		// Do search.
-		const searchField = safeDecodeURI( getQueryArgs( window.location.href ).search );
+		const searchField = safeDecodeURI(
+			getQueryArgs( window.location.href ).search
+		);
 		if ( 'undefined' !== searchField && '' !== searchField ) {
 			console.log( 'searchField', searchField );
 			patternsCopy = patternsCopy.filter( ( pattern ) =>
-				pattern.title.toLowerCase().includes( ( newView.search || searchField ).toLowerCase() )
+				pattern.title
+					.toLowerCase()
+					.includes( ( newView.search || searchField ).toLowerCase() )
 			);
 			const newViewCopy = {
 				...view,
@@ -448,12 +474,15 @@ const Interface = ( props ) => {
 		const patternSortCopy = getPatternsForDisplay( newView );
 
 		setPatternsDisplay( patternSortCopy );
-		setView( { ...newView, paginationInfo: {
-			totalItems: patterns.length,
-			totalPages: Math.ceil( patterns.length / newView.perPage ),
-			page: changeQueryArgs.page + 1,
-			perPage: changeQueryArgs.per_page,
-		} } );
+		setView( {
+			...newView,
+			paginationInfo: {
+				totalItems: patterns.length,
+				totalPages: Math.ceil( patterns.length / newView.perPage ),
+				page: changeQueryArgs.page + 1,
+				perPage: changeQueryArgs.per_page,
+			},
+		} );
 
 		// Only add search if it exists.
 		if ( newView.search ) {
