@@ -20,6 +20,109 @@ import { dispatch, select, useDispatch } from '@wordpress/data';
 import PatternsViewStore from '../store';
 import ErrorBoundary from '../../../components/ErrorBoundary';
 
+// Enhanced iframe component that works with the existing PHP scaling system.
+const ResponsiveIframe = ( { src, title, item } ) => {
+	const iframeRef = useRef( null );
+	const containerRef = useRef( null );
+	const [ isLoaded, setIsLoaded ] = useState( false );
+
+	// Handle iframe load and setup communication with PHP scaling system.
+	useEffect( () => {
+		const iframe = iframeRef.current;
+		if ( ! iframe ) {
+			return;
+		}
+
+		const handleLoad = () => {
+			setIsLoaded( true );
+
+			// The PHP template will handle scaling automatically.
+			// We just need to ensure the container is ready for the scaling calculations.
+		};
+
+		// Listen for messages from the iframe (PHP scaling system).
+		const handleMessage = ( event ) => {
+			if ( event.data.type === 'dlx-iframe-dimensions' && event.data.source === 'pattern-wrangler-iframe' ) {
+				// Handle any dimension updates from the iframe if needed.
+				// The PHP system is now handling the scaling, so we don't need to do much here.
+				//console.log( 'dlx-iframe-dimensions', event.data );
+			}
+		};
+
+		iframe.addEventListener( 'load', handleLoad );
+		window.addEventListener( 'message', handleMessage );
+
+		return () => {
+			iframe.removeEventListener( 'load', handleLoad );
+			window.removeEventListener( 'message', handleMessage );
+		};
+	}, [ src ] );
+
+	// Use ResizeObserver to detect container size changes and trigger PHP scaling recalculation.
+	const [ resizeListener, { width: containerWidth } ] = useResizeObserver();
+
+	useEffect( () => {
+		if ( typeof containerWidth === 'undefined' || ! isLoaded ) {
+			return;
+		}
+
+		console.log( 'containerWidth', containerWidth );
+
+		// Trigger the PHP scaling system to recalculate when container size changes.
+		// Dispatch the event on the current window since React and iframe are in the same context.
+		const event = new CustomEvent( 'dlxPatternPreviewResize', {
+			detail: { width: containerWidth },
+		} );
+
+		window.dispatchEvent( event );
+
+		// Also try dispatching on parent window as fallback
+		try {
+			window.parent.dispatchEvent( event );
+		} catch ( e ) {
+			// Could not dispatch on parent window.
+		}
+	}, [ containerWidth, isLoaded ] );
+
+	return (
+		<div className="pattern-preview-iframe-scale-container" ref={ containerRef }>
+			{ resizeListener }
+			<a
+				href={ src }
+				className="pattern-preview-iframe-link"
+				target="_blank"
+				rel="noopener noreferrer"
+				onClick={ ( e ) => {
+					e.preventDefault();
+					popPatternPreview( item );
+				} }
+				aria-hidden="true"
+			>
+				<div className="pattern-preview-iframe-wrapper">
+					<iframe
+						ref={ iframeRef }
+						key={ `preview-${ item.id }` }
+						src={ src }
+						title={ title }
+						style={ {
+							backgroundColor: '#FFF',
+							overflow: 'hidden',
+							scrolling: 'no',
+							width: '100%',
+							height: '300px', // Set a default height that will be overridden by PHP
+							border: '1px solid #ddd',
+							borderRadius: '4px',
+						} }
+						sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+						loading="lazy"
+					>
+					</iframe>
+				</div>
+			</a>
+		</div>
+	);
+};
+
 const popPatternPreview = ( item ) => {
 	const viewportWidth = item.viewportWidth || 1200;
 
@@ -67,19 +170,6 @@ const fields = [
 		id: 'pattern-view-json',
 		label: __( 'Preview', 'pattern-wrangler' ),
 		getValue: ( { item } ) => {
-			const [ resizeListener, { width } ] = useResizeObserver();
-
-			useEffect( () => {
-				if ( typeof width === 'undefined' ) {
-					return;
-				}
-				window.parent.document.dispatchEvent(
-					new CustomEvent( 'dlxPatternPreviewResize', {
-						detail: { width: width },
-					} )
-				);
-			}, [ width ] );
-
 			const viewportWidth = item.viewportWidth || 1200;
 
 			const previewUrl = item?.id
@@ -108,40 +198,11 @@ const fields = [
 				<>
 					{ Badge }
 					<div className="pattern-preview-wrapper">
-						{ resizeListener }
-						<div className="pattern-preview-iframe-scale-container">
-							<a
-								href={ previewUrl }
-								className="pattern-preview-iframe-link"
-								target="_blank"
-								rel="noopener noreferrer"
-								onClick={ ( e ) => {
-									e.preventDefault();
-									popPatternPreview( item );
-								} }
-								aria-hidden="true"
-							>
-								<div className="block-editor-iframe__container">
-									<div className="pattern-preview-iframe-wrapper">
-										<iframe
-											key={ `preview-${ item.id }` }
-											src={ previewUrl }
-											title={ `Preview: ${ item.title }` }
-											style={ {
-												backgroundColor: '#FFF',
-												overflow: 'hidden',
-												scrolling: 'no',
-												marginTop: '32px',
-											} }
-											sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-											loading="lazy"
-										>
-											hi there
-										</iframe>
-									</div>
-								</div>
-							</a>
-						</div>
+						<ResponsiveIframe
+							src={ previewUrl }
+							title={ `Preview: ${ item.title }` }
+							item={ item }
+						/>
 					</div>
 				</>
 			);
@@ -227,8 +288,8 @@ const actions = [
 		id: 'edit',
 		label: __( 'Edit', 'pattern-wrangler' ),
 		icon: 'edit',
-		callback: ( items ) => {
-			console.log( 'Edit', items );
+		callback: () => {
+			// TODO: Implement edit functionality.
 		},
 		isEligible: ( pattern ) => {
 			return pattern.isLocal;
@@ -243,8 +304,8 @@ const actions = [
 			// Pattern must be local.
 			return pattern.isLocal;
 		},
-		callback: ( items ) => {
-			console.log( 'Delete', items );
+		callback: () => {
+			// TODO: Implement delete functionality.
 		},
 		isPrimary: false,
 		isDestructive: true,
@@ -269,8 +330,8 @@ const actions = [
 		id: 'copy-to-local',
 		label: __( 'Copy to Local Pattern', 'pattern-wrangler' ),
 		icon: 'edit',
-		callback: ( items ) => {
-			console.log( 'Copy to Local', items );
+		callback: () => {
+			// TODO: Implement copy to local functionality.
 		},
 		isEligible: ( pattern ) => {
 			return ! pattern.isLocal;
@@ -282,10 +343,10 @@ const actions = [
 		id: 'disable-preview',
 		label: __( 'Disable Pattern', 'pattern-wrangler' ),
 		icon: 'edit',
-		callback: ( items ) => {
-			console.log( 'Disable Preview', items );
+		callback: () => {
+			// TODO: Implement disable preview functionality.
 		},
-		isEligible: ( pattern ) => {
+		isEligible: () => {
 			return true;
 		},
 		isPrimary: false,
@@ -437,7 +498,6 @@ const Interface = ( props ) => {
 			getQueryArgs( window.location.href ).search
 		);
 		if ( 'undefined' !== searchField && '' !== searchField ) {
-			console.log( 'searchField', searchField );
 			patternsCopy = patternsCopy.filter( ( pattern ) =>
 				pattern.title
 					.toLowerCase()

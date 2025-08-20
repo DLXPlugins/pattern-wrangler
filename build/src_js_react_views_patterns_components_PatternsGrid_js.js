@@ -132,6 +132,109 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
+
+// Enhanced iframe component that works with the existing PHP scaling system.
+var ResponsiveIframe = function ResponsiveIframe(_ref) {
+  var src = _ref.src,
+    title = _ref.title,
+    item = _ref.item;
+  var iframeRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+  var containerRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+  var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState2 = _slicedToArray(_useState, 2),
+    isLoaded = _useState2[0],
+    setIsLoaded = _useState2[1];
+
+  // Handle iframe load and setup communication with PHP scaling system.
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var iframe = iframeRef.current;
+    if (!iframe) {
+      return;
+    }
+    var handleLoad = function handleLoad() {
+      setIsLoaded(true);
+
+      // The PHP template will handle scaling automatically.
+      // We just need to ensure the container is ready for the scaling calculations.
+    };
+
+    // Listen for messages from the iframe (PHP scaling system).
+    var handleMessage = function handleMessage(event) {
+      if (event.data.type === 'dlx-iframe-dimensions' && event.data.source === 'pattern-wrangler-iframe') {
+        // Handle any dimension updates from the iframe if needed.
+        // The PHP system is now handling the scaling, so we don't need to do much here.
+        //console.log( 'dlx-iframe-dimensions', event.data );
+      }
+    };
+    iframe.addEventListener('load', handleLoad);
+    window.addEventListener('message', handleMessage);
+    return function () {
+      iframe.removeEventListener('load', handleLoad);
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [src]);
+
+  // Use ResizeObserver to detect container size changes and trigger PHP scaling recalculation.
+  var _useResizeObserver = (0,_wordpress_compose__WEBPACK_IMPORTED_MODULE_1__.useResizeObserver)(),
+    _useResizeObserver2 = _slicedToArray(_useResizeObserver, 2),
+    resizeListener = _useResizeObserver2[0],
+    containerWidth = _useResizeObserver2[1].width;
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (typeof containerWidth === 'undefined' || !isLoaded) {
+      return;
+    }
+    console.log('containerWidth', containerWidth);
+
+    // Trigger the PHP scaling system to recalculate when container size changes.
+    // Dispatch the event on the current window since React and iframe are in the same context.
+    var event = new CustomEvent('dlxPatternPreviewResize', {
+      detail: {
+        width: containerWidth
+      }
+    });
+    window.dispatchEvent(event);
+
+    // Also try dispatching on parent window as fallback
+    try {
+      window.parent.dispatchEvent(event);
+    } catch (e) {
+      // Could not dispatch on parent window.
+    }
+  }, [containerWidth, isLoaded]);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "pattern-preview-iframe-scale-container",
+    ref: containerRef
+  }, resizeListener, /*#__PURE__*/React.createElement("a", {
+    href: src,
+    className: "pattern-preview-iframe-link",
+    target: "_blank",
+    rel: "noopener noreferrer",
+    onClick: function onClick(e) {
+      e.preventDefault();
+      popPatternPreview(item);
+    },
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pattern-preview-iframe-wrapper"
+  }, /*#__PURE__*/React.createElement("iframe", {
+    ref: iframeRef,
+    key: "preview-".concat(item.id),
+    src: src,
+    title: title,
+    style: {
+      backgroundColor: '#FFF',
+      overflow: 'hidden',
+      scrolling: 'no',
+      width: '100%',
+      height: '300px',
+      // Set a default height that will be overridden by PHP
+      border: '1px solid #ddd',
+      borderRadius: '4px'
+    },
+    sandbox: "allow-same-origin allow-scripts allow-popups allow-forms",
+    loading: "lazy"
+  }))));
+};
 var popPatternPreview = function popPatternPreview(item) {
   var viewportWidth = item.viewportWidth || 1200;
   var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&viewport_width=").concat(viewportWidth) : '';
@@ -160,8 +263,8 @@ var defaultLayouts = {
 var fields = [{
   id: 'title',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Title', 'pattern-wrangler'),
-  render: function render(_ref) {
-    var item = _ref.item;
+  render: function render(_ref2) {
+    var item = _ref2.item;
     return /*#__PURE__*/React.createElement("span", null, item.title);
   },
   enableSorting: true,
@@ -170,22 +273,8 @@ var fields = [{
 }, {
   id: 'pattern-view-json',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Preview', 'pattern-wrangler'),
-  getValue: function getValue(_ref2) {
-    var item = _ref2.item;
-    var _useResizeObserver = (0,_wordpress_compose__WEBPACK_IMPORTED_MODULE_1__.useResizeObserver)(),
-      _useResizeObserver2 = _slicedToArray(_useResizeObserver, 2),
-      resizeListener = _useResizeObserver2[0],
-      width = _useResizeObserver2[1].width;
-    (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-      if (typeof width === 'undefined') {
-        return;
-      }
-      window.parent.document.dispatchEvent(new CustomEvent('dlxPatternPreviewResize', {
-        detail: {
-          width: width
-        }
-      }));
-    }, [width]);
+  getValue: function getValue(_ref3) {
+    var item = _ref3.item;
     var viewportWidth = item.viewportWidth || 1200;
     var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&viewport_width=").concat(viewportWidth) : '';
 
@@ -207,44 +296,20 @@ var fields = [{
     }, badgeText);
     return /*#__PURE__*/React.createElement(React.Fragment, null, Badge, /*#__PURE__*/React.createElement("div", {
       className: "pattern-preview-wrapper"
-    }, resizeListener, /*#__PURE__*/React.createElement("div", {
-      className: "pattern-preview-iframe-scale-container"
-    }, /*#__PURE__*/React.createElement("a", {
-      href: previewUrl,
-      className: "pattern-preview-iframe-link",
-      target: "_blank",
-      rel: "noopener noreferrer",
-      onClick: function onClick(e) {
-        e.preventDefault();
-        popPatternPreview(item);
-      },
-      "aria-hidden": "true"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "block-editor-iframe__container"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "pattern-preview-iframe-wrapper"
-    }, /*#__PURE__*/React.createElement("iframe", {
-      key: "preview-".concat(item.id),
+    }, /*#__PURE__*/React.createElement(ResponsiveIframe, {
       src: previewUrl,
       title: "Preview: ".concat(item.title),
-      style: {
-        backgroundColor: '#FFF',
-        overflow: 'hidden',
-        scrolling: 'no',
-        marginTop: '32px'
-      },
-      sandbox: "allow-same-origin allow-scripts allow-popups allow-forms",
-      loading: "lazy"
-    }, "hi there")))))));
+      item: item
+    })));
   },
   enableSorting: false,
   enableHiding: false
 }, {
   id: 'pattern-categories',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Categories', 'pattern-wrangler'),
-  render: function render(_ref3) {
+  render: function render(_ref4) {
     var _item$categories;
-    var item = _ref3.item;
+    var item = _ref4.item;
     return item === null || item === void 0 || (_item$categories = item.categories) === null || _item$categories === void 0 ? void 0 : _item$categories.map(function (category, index) {
       // If cat is object, get category.name, otherwise just use the category.
       var catName = _typeof(category) === 'object' ? category.name : category;
@@ -265,8 +330,8 @@ var fields = [{
   id: 'author',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Author', 'pattern-wrangler'),
   type: 'text',
-  getValue: function getValue(_ref4) {
-    var item = _ref4.item;
+  getValue: function getValue(_ref5) {
+    var item = _ref5.item;
     return item.author;
   },
   enableSorting: false,
@@ -304,8 +369,8 @@ var actions = [{
   id: 'edit',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Edit', 'pattern-wrangler'),
   icon: 'edit',
-  callback: function callback(items) {
-    console.log('Edit', items);
+  callback: function callback() {
+    // TODO: Implement edit functionality.
   },
   isEligible: function isEligible(pattern) {
     return pattern.isLocal;
@@ -319,8 +384,8 @@ var actions = [{
     // Pattern must be local.
     return pattern.isLocal;
   },
-  callback: function callback(items) {
-    console.log('Delete', items);
+  callback: function callback() {
+    // TODO: Implement delete functionality.
   },
   isPrimary: false,
   isDestructive: true
@@ -343,8 +408,8 @@ var actions = [{
   id: 'copy-to-local',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Copy to Local Pattern', 'pattern-wrangler'),
   icon: 'edit',
-  callback: function callback(items) {
-    console.log('Copy to Local', items);
+  callback: function callback() {
+    // TODO: Implement copy to local functionality.
   },
   isEligible: function isEligible(pattern) {
     return !pattern.isLocal;
@@ -355,10 +420,10 @@ var actions = [{
   id: 'disable-preview',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Disable Pattern', 'pattern-wrangler'),
   icon: 'edit',
-  callback: function callback(items) {
-    console.log('Disable Preview', items);
+  callback: function callback() {
+    // TODO: Implement disable preview functionality.
   },
-  isEligible: function isEligible(pattern) {
+  isEligible: function isEligible() {
     return true;
   },
   isPrimary: false,
@@ -395,7 +460,7 @@ var actions = [{
  * @return {Promise<Object>} The patterns.
  */
 var retrieveAllPatterns = /*#__PURE__*/function () {
-  var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+  var _ref6 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
@@ -415,7 +480,7 @@ var retrieveAllPatterns = /*#__PURE__*/function () {
     }, _callee);
   }));
   return function retrieveAllPatterns() {
-    return _ref5.apply(this, arguments);
+    return _ref6.apply(this, arguments);
   };
 }();
 var PatternsGrid = function PatternsGrid(props) {
@@ -443,33 +508,33 @@ var queryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_7__.getQueryArgs)(win
 var Interface = function Interface(props) {
   var defaults = props.defaults;
   var data = defaults();
-  var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState2 = _slicedToArray(_useState, 2),
-    selectedItems = _useState2[0],
-    setSelectedItems = _useState2[1];
   var _useState3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState4 = _slicedToArray(_useState3, 2),
-    patterns = _useState4[0],
-    setPatterns = _useState4[1];
+    selectedItems = _useState4[0],
+    setSelectedItems = _useState4[1];
   var _useState5 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState6 = _slicedToArray(_useState5, 2),
-    patternsDisplay = _useState6[0],
-    setPatternsDisplay = _useState6[1];
+    patterns = _useState6[0],
+    setPatterns = _useState6[1];
   var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState8 = _slicedToArray(_useState7, 2),
-    categories = _useState8[0],
-    setCategories = _useState8[1];
-  var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+    patternsDisplay = _useState8[0],
+    setPatternsDisplay = _useState8[1];
+  var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState10 = _slicedToArray(_useState9, 2),
-    loading = _useState10[0],
-    setLoading = _useState10[1];
-  var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    categories = _useState10[0],
+    setCategories = _useState10[1];
+  var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
     _useState12 = _slicedToArray(_useState11, 2),
-    loadingFrame = _useState12[0],
-    setLoadingFrame = _useState12[1];
+    loading = _useState12[0],
+    setLoading = _useState12[1];
+  var _useState13 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState14 = _slicedToArray(_useState13, 2),
+    loadingFrame = _useState14[0],
+    setLoadingFrame = _useState14[1];
   var _useDispatch = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_8__.useDispatch)(_store__WEBPACK_IMPORTED_MODULE_9__["default"]),
     setViewType = _useDispatch.setViewType;
-  var _useState13 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState15 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
       type: 'grid',
       previewSize: 'large',
       paginationInfo: {
@@ -487,9 +552,9 @@ var Interface = function Interface(props) {
       layout: defaultLayouts.grid.layout,
       fields: [].concat(fields)
     }),
-    _useState14 = _slicedToArray(_useState13, 2),
-    view = _useState14[0],
-    setView = _useState14[1];
+    _useState16 = _slicedToArray(_useState15, 2),
+    view = _useState16[0],
+    setView = _useState16[1];
 
   // const { data, isLoading, error } = useQuery( {
   // 	queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
@@ -532,7 +597,6 @@ var Interface = function Interface(props) {
     // Do search.
     var searchField = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_7__.safeDecodeURI)((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_7__.getQueryArgs)(window.location.href).search);
     if ('undefined' !== searchField && '' !== searchField) {
-      console.log('searchField', searchField);
       patternsCopy = patternsCopy.filter(function (pattern) {
         return pattern.title.toLowerCase().includes((newView.search || searchField).toLowerCase());
       });
@@ -711,4 +775,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=af2143b26f9855e454a5
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=d4dd686490f3de9fd3e3
