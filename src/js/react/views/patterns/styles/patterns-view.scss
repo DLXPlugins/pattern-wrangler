@@ -151,6 +151,10 @@
 	white-space: nowrap;
 	border: 1px solid transparent;
 }
+.pattern-badge-wrapper {
+	display: flex;
+	justify-content: flex-end;
+}
 
 .pattern-badge-local {
 	background-color: #e7f5ff;

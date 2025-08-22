@@ -309,8 +309,7 @@ var fields = [{
       className: "pattern-categories"
     }, item.categories.map(function (category, index) {
       // If cat is object, get category.name, otherwise just use the category.
-      console.log(category);
-      var catName = _typeof(category) === 'object' ? category.title : category;
+      var catName = _typeof(category) === 'object' ? category.name : category;
       // Convert to title case.
       var titleCase = catName.split(' ').map(function (word) {
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -335,19 +334,22 @@ var fields = [{
     // Determine badge type based on pattern properties.
     var badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Local', 'pattern-wrangler');
     var badgeClass = 'pattern-badge-local';
+    console.log('item', item);
     if (!item.isLocal) {
       badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Registered', 'pattern-wrangler');
       badgeClass = 'pattern-badge-registered';
     } else if ('synced' === item.patternType) {
-      badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Synced', 'pattern-wrangler');
+      badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Local Synced', 'pattern-wrangler');
       badgeClass = 'pattern-badge-synced';
     } else {
-      badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Unsynced', 'pattern-wrangler');
+      badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Local Unsynced', 'pattern-wrangler');
       badgeClass = 'pattern-badge-unsynced';
     }
-    var Badge = /*#__PURE__*/React.createElement("span", {
+    var Badge = /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "pattern-badge-wrapper"
+    }, /*#__PURE__*/React.createElement("span", {
       className: "pattern-badge ".concat(badgeClass)
-    }, badgeText);
+    }, badgeText)));
     return /*#__PURE__*/React.createElement(React.Fragment, null, Badge, /*#__PURE__*/React.createElement("div", {
       className: "pattern-preview-wrapper"
     }, /*#__PURE__*/React.createElement(ResponsiveIframe, {
@@ -368,7 +370,7 @@ var fields = [{
   enableSorting: false,
   enableHiding: false,
   enableGlobalSearch: true,
-  type: 'text',
+  type: 'array',
   getValue: function getValue(_ref5) {
     var item = _ref5.item;
     return item.categories.join(', ');
@@ -455,15 +457,16 @@ var actions = [{
 }, {
   id: 'disable-preview',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Disable Pattern', 'pattern-wrangler'),
-  icon: 'edit',
+  icon: 'controls-pause',
   callback: function callback() {
     // TODO: Implement disable preview functionality.
   },
   isEligible: function isEligible() {
     return true;
   },
-  isPrimary: false,
-  isDestructive: true
+  isDestructive: true,
+  supportsBulk: true,
+  isPrimary: false
 }, {
   id: 'copy',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Copy Pattern', 'pattern-wrangler'),
@@ -811,4 +814,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=ba91a6e6d42abc17ccd3
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=f5da5c401e107260153c

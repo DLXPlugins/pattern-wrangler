@@ -200,7 +200,8 @@ class Rest {
 				'categories'  => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
 				'isLocal'     => true,
 				'preview'     => $preview_image,
-				'patternType' => 'synced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'synced' : 'unsynced',
+				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
+				'patternType' => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 			);
 		}
 

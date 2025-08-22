@@ -197,9 +197,8 @@ const fields = [
 						<div className="pattern-categories">
 							{ item.categories.map( ( category, index ) => {
 								// If cat is object, get category.name, otherwise just use the category.
-								console.log( category );
 								const catName =
-									typeof category === 'object' ? category.title : category;
+									typeof category === 'object' ? category.name : category;
 								// Convert to title case.
 								const titleCase = catName
 									.split( ' ' )
@@ -238,19 +237,24 @@ const fields = [
 			let badgeText = __( 'Local', 'pattern-wrangler' );
 			let badgeClass = 'pattern-badge-local';
 
+			console.log( 'item', item );
 			if ( ! item.isLocal ) {
 				badgeText = __( 'Registered', 'pattern-wrangler' );
 				badgeClass = 'pattern-badge-registered';
 			} else if ( 'synced' === item.patternType ) {
-				badgeText = __( 'Synced', 'pattern-wrangler' );
+				badgeText = __( 'Local Synced', 'pattern-wrangler' );
 				badgeClass = 'pattern-badge-synced';
 			} else {
-				badgeText = __( 'Unsynced', 'pattern-wrangler' );
+				badgeText = __( 'Local Unsynced', 'pattern-wrangler' );
 				badgeClass = 'pattern-badge-unsynced';
 			}
 
 			const Badge = (
-				<span className={ `pattern-badge ${ badgeClass }` }>{ badgeText }</span>
+				<>
+					<div className="pattern-badge-wrapper">
+						<span className={ `pattern-badge ${ badgeClass }` }>{ badgeText }</span>
+					</div>
+				</>
 			);
 			return (
 				<>
@@ -277,7 +281,7 @@ const fields = [
 		enableSorting: false,
 		enableHiding: false,
 		enableGlobalSearch: true,
-		type: 'text',
+		type: 'array',
 		getValue: ( { item } ) => {
 			return item.categories.join( ', ' );
 		},
@@ -376,15 +380,16 @@ const actions = [
 	{
 		id: 'disable-preview',
 		label: __( 'Disable Pattern', 'pattern-wrangler' ),
-		icon: 'edit',
+		icon: 'controls-pause',
 		callback: () => {
 			// TODO: Implement disable preview functionality.
 		},
 		isEligible: () => {
 			return true;
 		},
-		isPrimary: false,
 		isDestructive: true,
+		supportsBulk: true,
+		isPrimary: false,
 	},
 	{
 		id: 'copy',
