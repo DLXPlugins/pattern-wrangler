@@ -7,6 +7,7 @@ import {
 	Suspense,
 } from '@wordpress/element';
 import { useResizeObserver, useRefEffect } from '@wordpress/compose';
+import { downloadBlob } from '@wordpress/blob';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
 import { useQuery } from '@tanstack/react-query';
@@ -393,7 +394,8 @@ const Interface = ( props ) => {
 			totalPages: 0,
 		},
 		page: 1,
-		perPage: 10,
+		perPage: 12,
+		defaultPerPage: 12,
 		sort: {
 			field: 'title',
 			direction: 'desc',
@@ -403,7 +405,6 @@ const Interface = ( props ) => {
 		layout: defaultLayouts.grid.layout,
 		fields: [ 'title', 'pattern-view-json', 'categories' ],
 	} );
-
 
 	const actions = [
 		{
@@ -468,8 +469,22 @@ const Interface = ( props ) => {
 			callback: () => {
 				// TODO: Implement disable preview functionality.
 			},
-			isEligible: () => {
-				return true;
+			isEligible: ( item ) => {
+				return ! item.isLocal;
+			},
+			isDestructive: true,
+			supportsBulk: true,
+			isPrimary: false,
+		},
+		{
+			id: 'delete-pattern',
+			label: __( 'Delete Pattern', 'pattern-wrangler' ),
+			icon: 'trash',
+			callback: () => {
+				// TODO: Implement delete pattern functionality.
+			},
+			isEligible: ( item ) => {
+				return item.isLocal;
 			},
 			isDestructive: true,
 			supportsBulk: true,
@@ -509,10 +524,28 @@ const Interface = ( props ) => {
 		},
 		{
 			id: 'export',
-			label: __( 'Export', 'pattern-wrangler' ),
+			label: __( 'Export to JSON', 'pattern-wrangler' ),
 			icon: 'edit',
 			callback: ( items ) => {
-				console.log( 'Export', items );
+				const isLocal = items[ 0 ].isLocal;
+				const title = items[ 0 ].title;
+				let syncStatus = '';
+				if ( isLocal ) {
+					syncStatus = 'unsynced';
+				} else if ( 'synced' === items[ 0 ].patternType ) {
+					syncStatus = 'synced';
+				}
+				const fileContent = JSON.stringify(
+					{
+						__file: 'wp_block',
+						title,
+						content: items[ 0 ].content,
+						syncStatus,
+					},
+					null,
+					2
+				);
+				downloadBlob( `${ title }.json`, fileContent, 'application/json' );
 			},
 			isEligible: () => {
 				return true;
@@ -521,7 +554,6 @@ const Interface = ( props ) => {
 			isDestructive: false,
 		},
 	];
-
 
 	// const { data, isLoading, error } = useQuery( {
 	// 	queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
@@ -577,8 +609,8 @@ const Interface = ( props ) => {
 
 		// Return the patterns for display with pagination.
 		return patternsCopy.slice(
-			( view.page - 1 ) * newView.perPage,
-			view.page * newView.perPage
+			( newView.page - 1 ) * newView.perPage,
+			newView.page * newView.perPage
 		);
 	};
 
@@ -681,7 +713,7 @@ const Interface = ( props ) => {
 					totalItems: patterns.length,
 					totalPages: Math.ceil( patterns.length / view.perPage ),
 				} }
-				perPageSizes={ [ 10, 25, 50 ] }
+				perPageSizes={ [ 12, 24, 48, 96 ] }
 				selection={ selectedItems }
 				onChangeSelection={ setSelectedItems }
 				defaultLayouts={ defaultLayouts }
@@ -705,4 +737,3 @@ const Interface = ( props ) => {
 };
 
 export default PatternsGrid;
-
