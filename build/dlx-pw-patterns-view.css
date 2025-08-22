@@ -1,6 +1,11 @@
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/@wordpress/scripts/node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/js/react/views/patterns/styles/patterns-view.scss ***!
   \**************************************************************************************************************************************************************************************************************************************************************************************************************/
+@keyframes dlx-pw-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 .fancybox__container {
   z-index: 100000;
 }
@@ -193,6 +198,52 @@
   font-size: 12px;
   font-style: italic;
   color: #666;
+}
+
+/**
+ * Snackbar styles.
+ */
+.dlx-pw-snackbar.components-snackbar {
+  position: fixed;
+  top: 32px;
+  right: 0;
+  z-index: 10000;
+  background: #0D3172;
+  color: #FFF;
+}
+.dlx-pw-snackbar.components-snackbar .components-snackbar__content {
+  display: flex;
+  align-items: center;
+}
+.dlx-pw-snackbar.components-snackbar .components-snackbar__icon {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+  left: 14px;
+  top: auto;
+  bottom: auto;
+  line-height: 0;
+}
+.dlx-pw-snackbar.components-snackbar .components-snackbar__content-with-icon {
+  padding-left: 50px;
+}
+.dlx-pw-snackbar.components-snackbar.dlx-pw-snackbar-loading svg {
+  animation: dlx-pw-rotate;
+  animation-duration: 1.2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+.dlx-pw-snackbar.components-snackbar.dlx-pw-snackbar-success {
+  background: #14720D;
+  color: #FFF;
+}
+.dlx-pw-snackbar.components-snackbar.dlx-pw-snackbar-error, .dlx-pw-snackbar.components-snackbar.dlx-pw-snackbar-critical {
+  background: #820000;
+  color: #FFF;
+}
+.dlx-pw-snackbar.components-snackbar.dlx-pw-snackbar-warning {
+  background: #FFC107;
+  color: #000;
 }
 
 /*# sourceMappingURL=dlx-pw-patterns-view.css.map*/

@@ -19,6 +19,7 @@ import { addQueryArgs, getQueryArgs, safeDecodeURI } from '@wordpress/url';
 import { dispatch, select, useDispatch } from '@wordpress/data';
 import PatternsViewStore from '../store';
 import ErrorBoundary from '../../../components/ErrorBoundary';
+import Snackbar from './Snackbar';
 
 // Enhanced iframe component that works with the existing PHP scaling system.
 const ResponsiveIframe = ( { src, title, item } ) => {
@@ -320,114 +321,6 @@ const fields = [
 		label: __( 'Pattern Type', 'pattern-wrangler' ),
 	},
 ];
-const actions = [
-	{
-		id: 'edit',
-		label: __( 'Edit', 'pattern-wrangler' ),
-		icon: 'edit',
-		callback: () => {
-			// TODO: Implement edit functionality.
-		},
-		isEligible: ( pattern ) => {
-			return pattern.isLocal;
-		},
-		isPrimary: true,
-	},
-	{
-		id: 'delete',
-		label: __( 'Delete Pattern', 'pattern-wrangler' ),
-		icon: 'trash',
-		isEligible: ( pattern ) => {
-			// Pattern must be local.
-			return pattern.isLocal;
-		},
-		callback: () => {
-			// TODO: Implement delete functionality.
-		},
-		isPrimary: false,
-		isDestructive: true,
-	},
-	{
-		id: 'delete',
-		label: __( 'Preview Pattern', 'pattern-wrangler' ),
-		icon: 'edit',
-		isEligible: () => {
-			// Pattern must be local.
-			return true;
-		},
-		callback: ( items ) => {
-			// Get the first item.
-			const item = items[ 0 ];
-			popPatternPreview( item );
-		},
-		isPrimary: false,
-		isDestructive: true,
-	},
-	{
-		id: 'copy-to-local',
-		label: __( 'Copy to Local Pattern', 'pattern-wrangler' ),
-		icon: 'edit',
-		callback: () => {
-			// TODO: Implement copy to local functionality.
-		},
-		isEligible: ( pattern ) => {
-			return ! pattern.isLocal;
-		},
-		isPrimary: false,
-		isDestructive: false,
-	},
-	{
-		id: 'disable-preview',
-		label: __( 'Disable Pattern', 'pattern-wrangler' ),
-		icon: 'controls-pause',
-		callback: () => {
-			// TODO: Implement disable preview functionality.
-		},
-		isEligible: () => {
-			return true;
-		},
-		isDestructive: true,
-		supportsBulk: true,
-		isPrimary: false,
-	},
-	{
-		id: 'copy',
-		label: __( 'Copy Pattern', 'pattern-wrangler' ),
-		icon: 'edit',
-		callback: ( items ) => {
-			const copyContent = items[ 0 ].content.trim();
-			console.log( 'Copying to clipboard:', copyContent );
-			try {
-				const copyBlob = new Blob( [ copyContent ], { type: 'text/html' } );
-				const data = [ new ClipboardItem( { [ copyBlob.type ]: copyBlob } ) ];
-				navigator.clipboard.write( data );
-				console.log( 'Copied to clipboard' );
-			} catch ( e ) {
-				// Copying is not supported on Mozilla (firefox).
-				console.error( 'Error copying pattern to clipboard:', e );
-			}
-		},
-		isEligible: ( pattern ) => {
-			return true;
-		},
-		isPrimary: false,
-		isDestructive: false,
-	},
-	{
-		id: 'export',
-		label: __( 'Export', 'pattern-wrangler' ),
-		icon: 'edit',
-		callback: ( items ) => {
-			console.log( 'Export', items );
-		},
-		isEligible: () => {
-			return true;
-		},
-		isPrimary: false,
-		isDestructive: false,
-	},
-];
-
 /**
  * Retrieve all the patterns.
  *
@@ -483,7 +376,12 @@ const Interface = ( props ) => {
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
 	const [ categories, setCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
-	const [ loadingFrame, setLoadingFrame ] = useState( null );
+	const [ snackbar, setSnackbar ] = useState( {
+		isVisible: false,
+		message: '',
+		title: '',
+		type: '',
+	} );
 
 	const { setViewType } = useDispatch( PatternsViewStore );
 
@@ -505,6 +403,125 @@ const Interface = ( props ) => {
 		layout: defaultLayouts.grid.layout,
 		fields: [ 'title', 'pattern-view-json', 'categories' ],
 	} );
+
+
+	const actions = [
+		{
+			id: 'edit',
+			label: __( 'Edit', 'pattern-wrangler' ),
+			icon: 'edit',
+			callback: () => {
+				// TODO: Implement edit functionality.
+			},
+			isEligible: ( pattern ) => {
+				return pattern.isLocal;
+			},
+			isPrimary: true,
+		},
+		{
+			id: 'delete',
+			label: __( 'Delete Pattern', 'pattern-wrangler' ),
+			icon: 'trash',
+			isEligible: ( pattern ) => {
+				// Pattern must be local.
+				return pattern.isLocal;
+			},
+			callback: () => {
+				// TODO: Implement delete functionality.
+			},
+			isPrimary: false,
+			isDestructive: true,
+		},
+		{
+			id: 'delete',
+			label: __( 'Preview Pattern', 'pattern-wrangler' ),
+			icon: 'edit',
+			isEligible: () => {
+				// Pattern must be local.
+				return true;
+			},
+			callback: ( items ) => {
+				// Get the first item.
+				const item = items[ 0 ];
+				popPatternPreview( item );
+			},
+			isPrimary: false,
+			isDestructive: true,
+		},
+		{
+			id: 'copy-to-local',
+			label: __( 'Copy to Local Pattern', 'pattern-wrangler' ),
+			icon: 'edit',
+			callback: () => {
+				// TODO: Implement copy to local functionality.
+			},
+			isEligible: ( pattern ) => {
+				return ! pattern.isLocal;
+			},
+			isPrimary: false,
+			isDestructive: false,
+		},
+		{
+			id: 'disable-preview',
+			label: __( 'Disable Pattern', 'pattern-wrangler' ),
+			icon: 'controls-pause',
+			callback: () => {
+				// TODO: Implement disable preview functionality.
+			},
+			isEligible: () => {
+				return true;
+			},
+			isDestructive: true,
+			supportsBulk: true,
+			isPrimary: false,
+		},
+		{
+			id: 'copy',
+			label: __( 'Copy Pattern', 'pattern-wrangler' ),
+			icon: 'edit',
+			callback: ( items ) => {
+				const copyContent = items[ 0 ].content.trim();
+				try {
+					const copyBlob = new Blob( [ copyContent ], { type: 'text/html' } );
+					const data = [ new ClipboardItem( { [ copyBlob.type ]: copyBlob } ) ];
+					navigator.clipboard.write( data );
+
+					setSnackbar( {
+						isVisible: true,
+						message: __( 'Pattern copied to clipboard', 'pattern-wrangler' ),
+						title: __( 'Pattern Copied', 'pattern-wrangler' ),
+						type: 'success',
+						onClose: () => {
+							setSnackbar( {
+								isVisible: false,
+							} );
+						},
+					} );
+				} catch ( e ) {
+					// Copying is not supported on Mozilla (firefox).
+				}
+			},
+			isEligible: ( pattern ) => {
+				return true;
+			},
+			isPrimary: false,
+			isDestructive: false,
+		},
+		{
+			id: 'export',
+			label: __( 'Export', 'pattern-wrangler' ),
+			icon: 'edit',
+			callback: ( items ) => {
+				console.log( 'Export', items );
+			},
+			isEligible: () => {
+				return true;
+			},
+			isPrimary: false,
+			isDestructive: false,
+		},
+	];
+
 
 	// const { data, isLoading, error } = useQuery( {
 	// 	queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
@@ -670,6 +687,19 @@ const Interface = ( props ) => {
 				defaultLayouts={ defaultLayouts }
 				searchLabel={ __( 'Search Patterns', 'pattern-wrangler' ) }
 			/>
+			{ snackbar.isVisible && (
+				<Snackbar
+					isVisible={ snackbar.isVisible }
+					message={ snackbar.message }
+					title={ snackbar.title }
+					type={ snackbar.type }
+					onClose={ () => {
+						setSnackbar( {
+							isVisible: false,
+						} );
+					} }
+				/>
+			) }
 		</div>
 	);
 };
