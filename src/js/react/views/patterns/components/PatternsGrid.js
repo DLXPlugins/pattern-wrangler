@@ -67,7 +67,7 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 			return;
 		}
 
-		const newScale = containerWidth / ( item.viewportWidth || 800 );
+		const newScale = containerWidth / ( iframeWidth || 800 );
 		const newAspectRatio = containerWidth / containerHeight;
 		const newIframeMinHeight = Math.max( iframeWidth * newAspectRatio, 100 );
 		setIframeMinHeight( newIframeMinHeight );

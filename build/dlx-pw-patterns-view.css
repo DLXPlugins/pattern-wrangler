@@ -13,9 +13,13 @@
 }
 
 .pattern-preview-iframe-wrapper {
+  position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+}
+
+.dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__media {
+  min-height: 293px;
 }
 
 .pattern-preview-wrapper {
@@ -127,12 +131,12 @@
 }
 
 .dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__media {
-  aspect-ratio: 1/1;
   background-color: #FFFFFF;
   border-radius: 4px;
-  overflow: hidden;
   position: relative;
   width: 100%;
+  aspect-ratio: 1/1;
+  overflow: hidden;
 }
 
 .fancybox__iframe {

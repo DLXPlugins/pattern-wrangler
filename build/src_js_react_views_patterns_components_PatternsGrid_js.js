@@ -196,7 +196,7 @@ var ResponsiveIframe = function ResponsiveIframe(_ref) {
     if (typeof containerWidth === 'undefined' || !isLoaded || iframeWidth === 0) {
       return;
     }
-    var newScale = containerWidth / (item.viewportWidth || 800);
+    var newScale = containerWidth / (iframeWidth || 800);
     var newAspectRatio = containerWidth / containerHeight;
     var newIframeMinHeight = Math.max(iframeWidth * newAspectRatio, 100);
     setIframeMinHeight(newIframeMinHeight);
@@ -806,4 +806,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=7cbff7f54b8351a6edfa
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=6c52f5e1569f86e2e2f3
