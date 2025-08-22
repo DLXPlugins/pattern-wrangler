@@ -116,7 +116,7 @@ add_action(
 		);
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
-			'body { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .pattern-preview-wrapper > *:first-child { margin-top: 0 !important; padding-top: 0 !important; } .pattern-preview-wrapper { margin-top: 0 !important; padding-top: 0 !important; } .wp-site-blocks { margin-top: 0 !important; padding-top: 0 !important; } body { position: relative; display: flex; justify-content: center; box-sizing: border-box; width: 100%;}'
+			'body { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .pattern-preview-wrapper > *:first-child { margin-top: 0 !important; padding-top: 0 !important; } .pattern-preview-wrapper { margin-top: 0 !important; padding-top: 0 !important; } .wp-site-blocks { margin-top: 0 !important; padding-top: 0 !important; }'
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
 
@@ -203,7 +203,7 @@ add_action(
 			}
 
 			// Find the container using the React component structure
-			const container = thisIframe.closest('.block-editor-block-preview__content');
+			const container = thisIframe.closest('.pattern-preview-iframe-scale-wrapper');
 			if (!container) {
 				return;
 			}
@@ -322,7 +322,7 @@ if ( ! wp_is_block_theme() ) {
 } else {
 	?>
 	<!doctype html>
-	<html <?php language_attributes(); ?>>
+	<html <?php language_attributes(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
 
 	<head>
 		<meta charset="<?php bloginfo( 'charset' ); ?>">
@@ -333,21 +333,18 @@ if ( ! wp_is_block_theme() ) {
 		<?php wp_head(); ?>
 	</head>
 
-	<body <?php body_class(); ?> style="overflow: hidden;">
-
-		<body <?php body_class(); ?> style="overflow: hidden;
-	aspect-ratio: <?php echo esc_attr( $aspect_ratio ); ?> !important;">
-			<?php wp_body_open(); ?>
-			<div class="wp-site-blocks">
-				<header class="wp-block-template-part site-header">
-					<?php block_header_area(); ?>
-				</header>
-				<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; aspect-ratio: 1/1;">
-					<?php
-					echo apply_filters( 'the_content', $pattern_content );
-					?>
-				</div>
+	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; display: relative; box-sizing: border-box; width: 100%; padding: 48px;">
+	<?php wp_body_open(); ?>
+	<div class="wp-site-blocks">
+		<header class="wp-block-template-part site-header">
+			<?php block_header_area(); ?>
+		</header>
+		<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; aspect-ratio: 1/1;">
 			<?php
+			echo apply_filters( 'the_content', $pattern_content );
+			?>
+		</div>
+	<?php
 }
 
 		// Render block pattern here.

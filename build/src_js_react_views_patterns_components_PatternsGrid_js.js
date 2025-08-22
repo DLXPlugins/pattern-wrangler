@@ -144,6 +144,26 @@ var ResponsiveIframe = function ResponsiveIframe(_ref) {
     _useState2 = _slicedToArray(_useState, 2),
     isLoaded = _useState2[0],
     setIsLoaded = _useState2[1];
+  var _useState3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+    _useState4 = _slicedToArray(_useState3, 2),
+    scale = _useState4[0],
+    setScale = _useState4[1];
+  var _useState5 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState6 = _slicedToArray(_useState5, 2),
+    iframeWidth = _useState6[0],
+    setIframeWidth = _useState6[1];
+  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState8 = _slicedToArray(_useState7, 2),
+    iframeHeight = _useState8[0],
+    setIframeHeight = _useState8[1];
+  var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState10 = _slicedToArray(_useState9, 2),
+    iframeMinHeight = _useState10[0],
+    setIframeMinHeight = _useState10[1];
+  var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(1),
+    _useState12 = _slicedToArray(_useState11, 2),
+    aspectRatio = _useState12[0],
+    setAspectRatio = _useState12[1];
 
   // Handle iframe load and setup communication with PHP scaling system.
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
@@ -153,24 +173,15 @@ var ResponsiveIframe = function ResponsiveIframe(_ref) {
     }
     var handleLoad = function handleLoad() {
       setIsLoaded(true);
+      setIframeWidth(item.viewportWidth || iframe.offsetWidth);
+      setIframeHeight(iframe.offsetHeight);
 
       // The PHP template will handle scaling automatically.
       // We just need to ensure the container is ready for the scaling calculations.
     };
-
-    // Listen for messages from the iframe (PHP scaling system).
-    var handleMessage = function handleMessage(event) {
-      if (event.data.type === 'dlx-iframe-dimensions' && event.data.source === 'pattern-wrangler-iframe') {
-        // Handle any dimension updates from the iframe if needed.
-        // The PHP system is now handling the scaling, so we don't need to do much here.
-        //console.log( 'dlx-iframe-dimensions', event.data );
-      }
-    };
     iframe.addEventListener('load', handleLoad);
-    window.addEventListener('message', handleMessage);
     return function () {
       iframe.removeEventListener('load', handleLoad);
-      window.removeEventListener('message', handleMessage);
     };
   }, [src]);
 
@@ -178,12 +189,19 @@ var ResponsiveIframe = function ResponsiveIframe(_ref) {
   var _useResizeObserver = (0,_wordpress_compose__WEBPACK_IMPORTED_MODULE_1__.useResizeObserver)(),
     _useResizeObserver2 = _slicedToArray(_useResizeObserver, 2),
     resizeListener = _useResizeObserver2[0],
-    containerWidth = _useResizeObserver2[1].width;
+    _useResizeObserver2$ = _useResizeObserver2[1],
+    containerWidth = _useResizeObserver2$.width,
+    containerHeight = _useResizeObserver2$.height;
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (typeof containerWidth === 'undefined' || !isLoaded) {
+    if (typeof containerWidth === 'undefined' || !isLoaded || iframeWidth === 0) {
       return;
     }
-    console.log('containerWidth', containerWidth);
+    var newScale = containerWidth / (item.viewportWidth || 800);
+    var newAspectRatio = containerWidth / containerHeight;
+    var newIframeMinHeight = Math.max(iframeWidth * newAspectRatio, 100);
+    setIframeMinHeight(newIframeMinHeight);
+    setScale(newScale);
+    setAspectRatio(newAspectRatio);
 
     // Trigger the PHP scaling system to recalculate when container size changes.
     // Dispatch the event on the current window since React and iframe are in the same context.
@@ -201,10 +219,13 @@ var ResponsiveIframe = function ResponsiveIframe(_ref) {
       // Could not dispatch on parent window.
     }
   }, [containerWidth, isLoaded]);
-  return /*#__PURE__*/React.createElement("div", {
-    className: "pattern-preview-iframe-scale-container",
-    ref: containerRef
-  }, resizeListener, /*#__PURE__*/React.createElement("a", {
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (iframeRef.current) {
+      setIframeWidth(iframeRef.current.offsetWidth);
+      setIframeHeight(iframeRef.current.offsetHeight);
+    }
+  }, [iframeRef, iframeMinHeight]);
+  return /*#__PURE__*/React.createElement("a", {
     href: src,
     className: "pattern-preview-iframe-link",
     target: "_blank",
@@ -215,25 +236,35 @@ var ResponsiveIframe = function ResponsiveIframe(_ref) {
     },
     "aria-hidden": "true"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "pattern-preview-iframe-scale-container-wrapper",
+    ref: containerRef,
+    style: {
+      transform: "scale(".concat(scale, ")")
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pattern-preview-iframe-scale-wrapper"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pattern-preview-iframe-scale-container"
+  }, resizeListener, /*#__PURE__*/React.createElement("div", {
     className: "pattern-preview-iframe-wrapper"
   }, /*#__PURE__*/React.createElement("iframe", {
     ref: iframeRef,
     key: "preview-".concat(item.id),
     src: src,
     title: title,
-    style: {
-      backgroundColor: '#FFF',
-      overflow: 'hidden',
-      scrolling: 'no',
-      width: '100%',
-      height: '300px',
-      // Set a default height that will be overridden by PHP
-      border: '1px solid #ddd',
-      borderRadius: '4px'
-    },
     sandbox: "allow-same-origin allow-scripts allow-popups allow-forms",
-    loading: "lazy"
-  }))));
+    loading: "lazy",
+    style: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: item.viewportWidth || 1200,
+      aspectRatio: aspectRatio,
+      height: iframeMinHeight + 'px',
+      maxHeight: '1200px',
+      overflow: 'visible'
+    }
+  }))))));
 };
 var popPatternPreview = function popPatternPreview(item) {
   var viewportWidth = item.viewportWidth || 1200;
@@ -508,33 +539,33 @@ var queryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_7__.getQueryArgs)(win
 var Interface = function Interface(props) {
   var defaults = props.defaults;
   var data = defaults();
-  var _useState3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState4 = _slicedToArray(_useState3, 2),
-    selectedItems = _useState4[0],
-    setSelectedItems = _useState4[1];
-  var _useState5 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState6 = _slicedToArray(_useState5, 2),
-    patterns = _useState6[0],
-    setPatterns = _useState6[1];
-  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState8 = _slicedToArray(_useState7, 2),
-    patternsDisplay = _useState8[0],
-    setPatternsDisplay = _useState8[1];
-  var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState10 = _slicedToArray(_useState9, 2),
-    categories = _useState10[0],
-    setCategories = _useState10[1];
-  var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
-    _useState12 = _slicedToArray(_useState11, 2),
-    loading = _useState12[0],
-    setLoading = _useState12[1];
-  var _useState13 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+  var _useState13 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState14 = _slicedToArray(_useState13, 2),
-    loadingFrame = _useState14[0],
-    setLoadingFrame = _useState14[1];
+    selectedItems = _useState14[0],
+    setSelectedItems = _useState14[1];
+  var _useState15 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState16 = _slicedToArray(_useState15, 2),
+    patterns = _useState16[0],
+    setPatterns = _useState16[1];
+  var _useState17 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState18 = _slicedToArray(_useState17, 2),
+    patternsDisplay = _useState18[0],
+    setPatternsDisplay = _useState18[1];
+  var _useState19 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState20 = _slicedToArray(_useState19, 2),
+    categories = _useState20[0],
+    setCategories = _useState20[1];
+  var _useState21 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+    _useState22 = _slicedToArray(_useState21, 2),
+    loading = _useState22[0],
+    setLoading = _useState22[1];
+  var _useState23 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState24 = _slicedToArray(_useState23, 2),
+    loadingFrame = _useState24[0],
+    setLoadingFrame = _useState24[1];
   var _useDispatch = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_8__.useDispatch)(_store__WEBPACK_IMPORTED_MODULE_9__["default"]),
     setViewType = _useDispatch.setViewType;
-  var _useState15 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState25 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
       type: 'grid',
       previewSize: 'large',
       paginationInfo: {
@@ -552,9 +583,9 @@ var Interface = function Interface(props) {
       layout: defaultLayouts.grid.layout,
       fields: [].concat(fields)
     }),
-    _useState16 = _slicedToArray(_useState15, 2),
-    view = _useState16[0],
-    setView = _useState16[1];
+    _useState26 = _slicedToArray(_useState25, 2),
+    view = _useState26[0],
+    setView = _useState26[1];
 
   // const { data, isLoading, error } = useQuery( {
   // 	queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
@@ -775,4 +806,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=7655db3418e7655c7ddb
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=d6c8306167ba1c7e46b6

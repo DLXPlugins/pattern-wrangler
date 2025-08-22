@@ -25,6 +25,11 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 	const iframeRef = useRef( null );
 	const containerRef = useRef( null );
 	const [ isLoaded, setIsLoaded ] = useState( false );
+	const [ scale, setScale ] = useState( 1 );
+	const [ iframeWidth, setIframeWidth ] = useState( 0 );
+	const [ iframeHeight, setIframeHeight ] = useState( 0 );
+	const [ iframeMinHeight, setIframeMinHeight ] = useState( 0 );
+	const [ aspectRatio, setAspectRatio ] = useState( 1 );
 
 	// Handle iframe load and setup communication with PHP scaling system.
 	useEffect( () => {
@@ -35,38 +40,39 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 
 		const handleLoad = () => {
 			setIsLoaded( true );
+			setIframeWidth( item.viewportWidth || iframe.offsetWidth );
+			setIframeHeight( iframe.offsetHeight );
 
 			// The PHP template will handle scaling automatically.
 			// We just need to ensure the container is ready for the scaling calculations.
 		};
 
-		// Listen for messages from the iframe (PHP scaling system).
-		const handleMessage = ( event ) => {
-			if ( event.data.type === 'dlx-iframe-dimensions' && event.data.source === 'pattern-wrangler-iframe' ) {
-				// Handle any dimension updates from the iframe if needed.
-				// The PHP system is now handling the scaling, so we don't need to do much here.
-				//console.log( 'dlx-iframe-dimensions', event.data );
-			}
-		};
-
 		iframe.addEventListener( 'load', handleLoad );
-		window.addEventListener( 'message', handleMessage );
 
 		return () => {
 			iframe.removeEventListener( 'load', handleLoad );
-			window.removeEventListener( 'message', handleMessage );
 		};
 	}, [ src ] );
 
 	// Use ResizeObserver to detect container size changes and trigger PHP scaling recalculation.
-	const [ resizeListener, { width: containerWidth } ] = useResizeObserver();
+	const [ resizeListener, { width: containerWidth, height: containerHeight } ] =
+		useResizeObserver();
 
 	useEffect( () => {
-		if ( typeof containerWidth === 'undefined' || ! isLoaded ) {
+		if (
+			typeof containerWidth === 'undefined' ||
+			! isLoaded ||
+			iframeWidth === 0
+		) {
 			return;
 		}
 
-		console.log( 'containerWidth', containerWidth );
+		const newScale = containerWidth / ( item.viewportWidth || 800 );
+		const newAspectRatio = containerWidth / containerHeight;
+		const newIframeMinHeight = Math.max( iframeWidth * newAspectRatio, 100 );
+		setIframeMinHeight( newIframeMinHeight );
+		setScale( newScale );
+		setAspectRatio( newAspectRatio );
 
 		// Trigger the PHP scaling system to recalculate when container size changes.
 		// Dispatch the event on the current window since React and iframe are in the same context.
@@ -84,42 +90,58 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 		}
 	}, [ containerWidth, isLoaded ] );
 
+	useEffect( () => {
+		if ( iframeRef.current ) {
+			setIframeWidth( iframeRef.current.offsetWidth );
+			setIframeHeight( iframeRef.current.offsetHeight );
+		}
+	}, [ iframeRef, iframeMinHeight ] );
+
 	return (
-		<div className="pattern-preview-iframe-scale-container" ref={ containerRef }>
-			{ resizeListener }
-			<a
-				href={ src }
-				className="pattern-preview-iframe-link"
-				target="_blank"
-				rel="noopener noreferrer"
-				onClick={ ( e ) => {
-					e.preventDefault();
-					popPatternPreview( item );
-				} }
-				aria-hidden="true"
+		<a
+			href={ src }
+			className="pattern-preview-iframe-link"
+			target="_blank"
+			rel="noopener noreferrer"
+			onClick={ ( e ) => {
+				e.preventDefault();
+				popPatternPreview( item );
+			} }
+			aria-hidden="true"
+		>
+			<div
+				className="pattern-preview-iframe-scale-container-wrapper"
+				ref={ containerRef }
+				style={ { transform: `scale(${ scale })` } }
 			>
-				<div className="pattern-preview-iframe-wrapper">
-					<iframe
-						ref={ iframeRef }
-						key={ `preview-${ item.id }` }
-						src={ src }
-						title={ title }
-						style={ {
-							backgroundColor: '#FFF',
-							overflow: 'hidden',
-							scrolling: 'no',
-							width: '100%',
-							height: '300px', // Set a default height that will be overridden by PHP
-							border: '1px solid #ddd',
-							borderRadius: '4px',
-						} }
-						sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-						loading="lazy"
-					>
-					</iframe>
+				<div className="pattern-preview-iframe-scale-wrapper">
+					<div className="pattern-preview-iframe-scale-container">
+						{ resizeListener }
+
+						<div className="pattern-preview-iframe-wrapper">
+							<iframe
+								ref={ iframeRef }
+								key={ `preview-${ item.id }` }
+								src={ src }
+								title={ title }
+								sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+								loading="lazy"
+								style={ {
+									position: 'absolute',
+									top: 0,
+									left: 0,
+									width: item.viewportWidth || 1200,
+									aspectRatio,
+									height: iframeMinHeight + 'px',
+									maxHeight: '1200px',
+									overflow: 'visible',
+								} }
+							></iframe>
+						</div>
+					</div>
 				</div>
-			</a>
-		</div>
+			</div>
+		</a>
 	);
 };
 

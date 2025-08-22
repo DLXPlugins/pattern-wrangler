@@ -26,6 +26,7 @@
   flex-direction: column;
   height: 100%;
   justify-content: center;
+  overflow: hidden;
 }
 
 .pattern-preview-iframe-scale-container {
@@ -35,6 +36,25 @@
 
 .pattern-preview-iframe-wrapper {
   height: 100%;
+}
+
+.pattern-preview-iframe-scale-container-wrapper {
+  position: relative;
+  left: 0;
+  margin: 0;
+  min-height: auto;
+  overflow: visible;
+  text-align: initial;
+  top: 0;
+  transform-origin: top left;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.pattern-preview-iframe-scale-wrapper {
+  height: 100%;
+  width: 100%;
 }
 
 .pattern-preview-iframe-wrapper iframe {
@@ -108,9 +128,9 @@
 
 .dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__media {
   aspect-ratio: 1/1;
-  background-color: #f0f0f0;
+  background-color: #FFFFFF;
   border-radius: 4px;
-  min-height: 200px;
+  overflow: hidden;
   position: relative;
   width: 100%;
 }
