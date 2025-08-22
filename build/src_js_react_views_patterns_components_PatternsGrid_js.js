@@ -258,7 +258,7 @@ var ResponsiveIframe = function ResponsiveIframe(_ref) {
       position: 'absolute',
       top: 0,
       left: 0,
-      width: item.viewportWidth || 1200,
+      width: item.viewportWidth || 800,
       aspectRatio: aspectRatio,
       height: iframeMinHeight + 'px',
       maxHeight: '1200px',
@@ -806,4 +806,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=d6c8306167ba1c7e46b6
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=7cbff7f54b8351a6edfa

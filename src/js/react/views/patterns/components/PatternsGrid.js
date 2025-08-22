@@ -130,7 +130,7 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 									position: 'absolute',
 									top: 0,
 									left: 0,
-									width: item.viewportWidth || 1200,
+									width: item.viewportWidth || 800,
 									aspectRatio,
 									height: iframeMinHeight + 'px',
 									maxHeight: '1200px',

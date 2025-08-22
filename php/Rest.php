@@ -160,6 +160,11 @@ class Rest {
 
 		// Process registered patterns.
 		foreach ( $registered_patterns as $pattern ) {
+			// If pattern is remote, ignore it.
+			if ( false === $pattern['inserter'] ) {
+				continue;
+			}
+
 			$preview_image                 = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
 			$patterns[ $pattern['title'] ] = array(
 				'id'            => Functions::get_sanitized_pattern_id( $pattern['name'] ),
