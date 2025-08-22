@@ -161,7 +161,7 @@ add_action(
 		?>
 	<script>
 	const calculateScale = () => {
-		
+		return;
 		// Get the actual content dimensions
 		const contentHeight = Math.max(
 			document.body.scrollHeight,
@@ -203,7 +203,7 @@ add_action(
 			}
 
 			// Find the container using the React component structure
-			const container = thisIframe.closest('.pattern-preview-iframe-scale-container');
+			const container = thisIframe.closest('.block-editor-block-preview__content');
 			if (!container) {
 				return;
 			}

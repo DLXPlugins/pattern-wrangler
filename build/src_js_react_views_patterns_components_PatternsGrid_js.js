@@ -775,4 +775,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=d4dd686490f3de9fd3e3
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=7655db3418e7655c7ddb
