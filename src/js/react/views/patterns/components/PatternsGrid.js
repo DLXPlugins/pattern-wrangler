@@ -237,7 +237,6 @@ const fields = [
 			let badgeText = __( 'Local', 'pattern-wrangler' );
 			let badgeClass = 'pattern-badge-local';
 
-			console.log( 'item', item );
 			if ( ! item.isLocal ) {
 				badgeText = __( 'Registered', 'pattern-wrangler' );
 				badgeClass = 'pattern-badge-registered';
@@ -396,7 +395,17 @@ const actions = [
 		label: __( 'Copy Pattern', 'pattern-wrangler' ),
 		icon: 'edit',
 		callback: ( items ) => {
-			console.log( 'Copy', items );
+			const copyContent = items[ 0 ].content.trim();
+			console.log( 'Copying to clipboard:', copyContent );
+			try {
+				const copyBlob = new Blob( [ copyContent ], { type: 'text/html' } );
+				const data = [ new ClipboardItem( { [ copyBlob.type ]: copyBlob } ) ];
+				navigator.clipboard.write( data );
+				console.log( 'Copied to clipboard' );
+			} catch ( e ) {
+				// Copying is not supported on Mozilla (firefox).
+				console.error( 'Error copying pattern to clipboard:', e );
+			}
 		},
 		isEligible: ( pattern ) => {
 			return true;
@@ -666,3 +675,4 @@ const Interface = ( props ) => {
 };
 
 export default PatternsGrid;
+
