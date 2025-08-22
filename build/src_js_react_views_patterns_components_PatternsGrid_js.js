@@ -296,7 +296,30 @@ var fields = [{
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Title', 'pattern-wrangler'),
   render: function render(_ref2) {
     var item = _ref2.item;
-    return /*#__PURE__*/React.createElement("span", null, item.title);
+    if (!(item !== null && item !== void 0 && item.categories) || item.categories.length === 0) {
+      return /*#__PURE__*/React.createElement("div", {
+        className: "no-categories"
+      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('No categories', 'pattern-wrangler'));
+    }
+    return /*#__PURE__*/React.createElement("div", {
+      className: "pattern-title-categories"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "pattern-title"
+    }, item.title), item.categories.length > 0 && /*#__PURE__*/React.createElement("div", {
+      className: "pattern-categories"
+    }, item.categories.map(function (category, index) {
+      // If cat is object, get category.name, otherwise just use the category.
+      console.log(category);
+      var catName = _typeof(category) === 'object' ? category.title : category;
+      // Convert to title case.
+      var titleCase = catName.split(' ').map(function (word) {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }).join(' ');
+      return /*#__PURE__*/React.createElement("span", {
+        key: "category-".concat(index),
+        className: "pattern-category"
+      }, titleCase, index < item.categories.length - 1 && ', ');
+    })));
   },
   enableSorting: true,
   enableHiding: false,
@@ -336,38 +359,20 @@ var fields = [{
   enableSorting: false,
   enableHiding: false
 }, {
-  id: 'pattern-categories',
+  id: 'categories',
   label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Categories', 'pattern-wrangler'),
   render: function render(_ref4) {
-    var _item$categories;
     var item = _ref4.item;
-    return item === null || item === void 0 || (_item$categories = item.categories) === null || _item$categories === void 0 ? void 0 : _item$categories.map(function (category, index) {
-      // If cat is object, get category.name, otherwise just use the category.
-      var catName = _typeof(category) === 'object' ? category.name : category;
-      // Convert to title case.
-      var titleCase = catName.split(' ').map(function (word) {
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      }).join(' ');
-      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
-        key: category
-      }, titleCase), index < item.categories.length - 1 && ', ');
-    });
+    return null;
   },
   enableSorting: false,
   enableHiding: false,
   enableGlobalSearch: true,
-  type: 'array'
-}, {
-  id: 'author',
-  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Author', 'pattern-wrangler'),
   type: 'text',
   getValue: function getValue(_ref5) {
     var item = _ref5.item;
-    return item.author;
-  },
-  enableSorting: false,
-  enableHiding: true,
-  enableGlobalSearch: false
+    return item.categories.join(', ');
+  }
 }, {
   elements: [{
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('All Patterns', 'pattern-wrangler'),
@@ -581,7 +586,7 @@ var Interface = function Interface(props) {
       titleField: 'title',
       mediaField: 'pattern-view-json',
       layout: defaultLayouts.grid.layout,
-      fields: [].concat(fields)
+      fields: ['title', 'pattern-view-json', 'categories']
     }),
     _useState26 = _slicedToArray(_useState25, 2),
     view = _useState26[0],
@@ -690,7 +695,7 @@ var Interface = function Interface(props) {
       if (data.categories) {
         // Find the index of the pattern-categories field.
         var fieldsIndex = fields.findIndex(function (field) {
-          return field.id === 'pattern-categories';
+          return field.id === 'categories';
         });
         fields[fieldsIndex].elements = Object.values(data.categories).map(function (category) {
           return {
@@ -806,4 +811,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=6c52f5e1569f86e2e2f3
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=ba91a6e6d42abc17ccd3

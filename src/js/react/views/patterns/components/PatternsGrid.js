@@ -182,7 +182,43 @@ const fields = [
 		id: 'title',
 		label: __( 'Title', 'pattern-wrangler' ),
 		render: ( { item } ) => {
-			return <span>{ item.title }</span>;
+			if ( ! item?.categories || item.categories.length === 0 ) {
+				return (
+					<div className="no-categories">
+						{ __( 'No categories', 'pattern-wrangler' ) }
+					</div>
+				);
+			}
+
+			return (
+				<div className="pattern-title-categories">
+					<div className="pattern-title">{ item.title }</div>
+					{ item.categories.length > 0 && (
+						<div className="pattern-categories">
+							{ item.categories.map( ( category, index ) => {
+								// If cat is object, get category.name, otherwise just use the category.
+								console.log( category );
+								const catName =
+									typeof category === 'object' ? category.title : category;
+								// Convert to title case.
+								const titleCase = catName
+									.split( ' ' )
+									.map(
+										( word ) =>
+											word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase()
+									)
+									.join( ' ' );
+								return (
+									<span key={ `category-${ index }` } className="pattern-category">
+										{ titleCase }
+										{ index < item.categories.length - 1 && ', ' }
+									</span>
+								);
+							} ) }
+						</div>
+					) }
+				</div>
+			);
 		},
 		enableSorting: true,
 		enableHiding: false,
@@ -233,42 +269,18 @@ const fields = [
 		enableHiding: false,
 	},
 	{
-		id: 'pattern-categories',
+		id: 'categories',
 		label: __( 'Categories', 'pattern-wrangler' ),
 		render: ( { item } ) => {
-			return item?.categories?.map( ( category, index ) => {
-				// If cat is object, get category.name, otherwise just use the category.
-				const catName = typeof category === 'object' ? category.name : category;
-				// Convert to title case.
-				const titleCase = catName
-					.split( ' ' )
-					.map(
-						( word ) => word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase()
-					)
-					.join( ' ' );
-				return (
-					<>
-						<span key={ category }>{ titleCase }</span>
-						{ index < item.categories.length - 1 && ', ' }
-					</>
-				);
-			} );
+			return null;
 		},
 		enableSorting: false,
 		enableHiding: false,
 		enableGlobalSearch: true,
-		type: 'array',
-	},
-	{
-		id: 'author',
-		label: __( 'Author', 'pattern-wrangler' ),
 		type: 'text',
 		getValue: ( { item } ) => {
-			return item.author;
+			return item.categories.join( ', ' );
 		},
-		enableSorting: false,
-		enableHiding: true,
-		enableGlobalSearch: false,
 	},
 	{
 		elements: [
@@ -477,7 +489,7 @@ const Interface = ( props ) => {
 		titleField: 'title',
 		mediaField: 'pattern-view-json',
 		layout: defaultLayouts.grid.layout,
-		fields: [ ...fields ],
+		fields: [ 'title', 'pattern-view-json', 'categories' ],
 	} );
 
 	// const { data, isLoading, error } = useQuery( {
@@ -590,7 +602,7 @@ const Interface = ( props ) => {
 			if ( data.categories ) {
 				// Find the index of the pattern-categories field.
 				const fieldsIndex = fields.findIndex(
-					( field ) => field.id === 'pattern-categories'
+					( field ) => field.id === 'categories'
 				);
 				fields[ fieldsIndex ].elements = Object.values( data.categories ).map(
 					( category ) => {

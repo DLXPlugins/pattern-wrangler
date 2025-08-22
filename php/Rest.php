@@ -165,13 +165,23 @@ class Rest {
 				continue;
 			}
 
+			// Map categories to their names.
+			$categories = array();
+			foreach ( $pattern['categories'] as $category ) {
+				$category_registry = \WP_Block_Pattern_Categories_Registry::get_instance();
+				$category          = $category_registry->get_registered( $category );
+				if ( $category ) {
+					$categories[] = $category['label'];
+				}
+			}
+
 			$preview_image                 = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
 			$patterns[ $pattern['title'] ] = array(
 				'id'            => Functions::get_sanitized_pattern_id( $pattern['name'] ),
 				'title'         => $pattern['title'],
 				'slug'          => $pattern['name'],
 				'content'       => $pattern['content'],
-				'categories'    => $pattern['categories'] ?? array(),
+				'categories'    => $categories,
 				'isLocal'       => false,
 				'preview'       => $preview_image,
 				'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
