@@ -1163,6 +1163,8 @@ var Interface = function Interface(props) {
     className: "dlx-patterns-view-button-actions-wrapper"
   }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControl, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern Type', 'pattern-wrangler'),
+    isAdaptiveWidth: true,
+    hideLabelFromVision: true,
     value: (view === null || view === void 0 || (_view$filters = view.filters) === null || _view$filters === void 0 || (_view$filters = _view$filters.find(function (filter) {
       return filter.field === 'patternType';
     })) === null || _view$filters === void 0 ? void 0 : _view$filters.value) || 'all',
@@ -1184,19 +1186,27 @@ var Interface = function Interface(props) {
     }
   }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
     value: "local",
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Local', 'pattern-wrangler')
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Local', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Local Patterns', 'pattern-wrangler')
   }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
     value: "all",
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('All', 'pattern-wrangler')
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('All', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show All Patterns', 'pattern-wrangler')
   }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
     value: "registered",
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Registered', 'pattern-wrangler')
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Registered', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Registered Patterns', 'pattern-wrangler')
   })),
   // If patttern type is local, show synced|both|unsynced buttons.
   (view === null || view === void 0 || (_view$filters2 = view.filters) === null || _view$filters2 === void 0 || (_view$filters2 = _view$filters2.find(function (filter) {
     return filter.field === 'patternType';
   })) === null || _view$filters2 === void 0 ? void 0 : _view$filters2.value) === 'local' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControl, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern Status', 'pattern-wrangler'),
+    isAdaptiveWidth: true,
+    hideLabelFromVision: true,
     value: (view === null || view === void 0 || (_view$filters3 = view.filters) === null || _view$filters3 === void 0 || (_view$filters3 = _view$filters3.find(function (filter) {
       return filter.field === 'patternStatus';
     })) === null || _view$filters3 === void 0 ? void 0 : _view$filters3.value) || 'both',
@@ -1218,13 +1228,19 @@ var Interface = function Interface(props) {
     }
   }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
     value: "unsynced",
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Unsynced', 'pattern-wrangler')
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Unsynced', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Unsynced Patterns', 'pattern-wrangler')
   }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
     value: "both",
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Both', 'pattern-wrangler')
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Both', 'pattern-wrangler'),
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Both Synced and Unsynced Patterns', 'pattern-wrangler'),
+    showTooltip: true
   }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
     value: "synced",
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Synced', 'pattern-wrangler')
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Synced', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Synced Patterns', 'pattern-wrangler')
   })))), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-layout-pagination-wrapper"
   }, /*#__PURE__*/React.createElement(_wordpress_dataviews__WEBPACK_IMPORTED_MODULE_15__["default"].ViewConfig, null), /*#__PURE__*/React.createElement(_wordpress_dataviews__WEBPACK_IMPORTED_MODULE_15__["default"].LayoutSwitcher, null))), /*#__PURE__*/React.createElement("div", {
@@ -1471,4 +1487,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=b26c372ef4708a712705
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=d26a6d2cc1c7ae1b031b

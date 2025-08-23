@@ -1012,6 +1012,8 @@ const Interface = ( props ) => {
 						<div className="dlx-patterns-view-button-actions-wrapper">
 							<ToggleGroupControl
 								label={ __( 'Pattern Type', 'pattern-wrangler' ) }
+								isAdaptiveWidth={ true }
+								hideLabelFromVision={ true }
 								value={ view?.filters?.find( ( filter ) => filter.field === 'patternType' )?.value || 'all' }
 								onChange={ ( value ) => {
 									const myNewView = { ...view };
@@ -1032,14 +1034,20 @@ const Interface = ( props ) => {
 								<ToggleGroupControlOption
 									value="local"
 									label={ __( 'Local', 'pattern-wrangler' ) }
+									showTooltip={ true }
+									aria-label={ __( 'Show Only Local Patterns', 'pattern-wrangler' ) }
 								/>
 								<ToggleGroupControlOption
 									value="all"
 									label={ __( 'All', 'pattern-wrangler' ) }
+									showTooltip={ true }
+									aria-label={ __( 'Show All Patterns', 'pattern-wrangler' ) }
 								/>
 								<ToggleGroupControlOption
 									value="registered"
 									label={ __( 'Registered', 'pattern-wrangler' ) }
+									showTooltip={ true }
+									aria-label={ __( 'Show Only Registered Patterns', 'pattern-wrangler' ) }
 								/>
 							</ToggleGroupControl>
 							{
@@ -1049,6 +1057,8 @@ const Interface = ( props ) => {
 									<>
 										<ToggleGroupControl
 											label={ __( 'Pattern Status', 'pattern-wrangler' ) }
+											isAdaptiveWidth={ true }
+											hideLabelFromVision={ true }
 											value={ view?.filters?.find( ( filter ) => filter.field === 'patternStatus' )?.value || 'both' }
 											onChange={ ( value ) => {
 												const myNewView = { ...view };
@@ -1069,14 +1079,20 @@ const Interface = ( props ) => {
 											<ToggleGroupControlOption
 												value="unsynced"
 												label={ __( 'Unsynced', 'pattern-wrangler' ) }
+												showTooltip={ true }
+												aria-label={ __( 'Show Only Unsynced Patterns', 'pattern-wrangler' ) }
 											/>
 											<ToggleGroupControlOption
 												value="both"
 												label={ __( 'Both', 'pattern-wrangler' ) }
+												aria-label={ __( 'Show Both Synced and Unsynced Patterns', 'pattern-wrangler' ) }
+												showTooltip={ true }
 											/>
 											<ToggleGroupControlOption
 												value="synced"
 												label={ __( 'Synced', 'pattern-wrangler' ) }
+												showTooltip={ true }
+												aria-label={ __( 'Show Only Synced Patterns', 'pattern-wrangler' ) }
 											/>
 										</ToggleGroupControl>
 									</>
