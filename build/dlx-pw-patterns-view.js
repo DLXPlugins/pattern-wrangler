@@ -545,6 +545,16 @@ module.exports = window["wp"]["element"];
 
 /***/ }),
 
+/***/ "@wordpress/escape-html":
+/*!************************************!*\
+  !*** external ["wp","escapeHtml"] ***!
+  \************************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["escapeHtml"];
+
+/***/ }),
+
 /***/ "@wordpress/i18n":
 /*!******************************!*\
   !*** external ["wp","i18n"] ***!
@@ -9401,7 +9411,7 @@ function invariant(condition, message) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "" + chunkId + ".js?ver=" + {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-2f0ee2":"6bd7663bbcbdc182063c","src_js_react_views_patterns_components_PatternsGrid_js":"fa6b377a9c3c80af95be"}[chunkId] + "";
+/******/ 			return "" + chunkId + ".js?ver=" + {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-2f0ee2":"6bd7663bbcbdc182063c","src_js_react_views_patterns_components_PatternsGrid_js":"4eb4cdc7f2dedfb4230c"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	

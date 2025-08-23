@@ -7,9 +7,9 @@ import {
 	Suspense,
 } from '@wordpress/element';
 import { useResizeObserver, useRefEffect } from '@wordpress/compose';
-import { cleanForSlug } from '@wordpress/url';
 import { downloadBlob } from '@wordpress/blob';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
+import { escapeAttribute } from '@wordpress/escape-html';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
 import { useQuery } from '@tanstack/react-query';
 import { __ } from '@wordpress/i18n';
@@ -17,7 +17,7 @@ import { DataViews } from '@wordpress/dataviews';
 import apiFetch from '@wordpress/api-fetch';
 import { useAsyncResource } from 'use-async-resource';
 import { useRouter } from '@tanstack/react-router';
-import { addQueryArgs, getQueryArgs, safeDecodeURI } from '@wordpress/url';
+import { addQueryArgs, getQueryArgs, safeDecodeURI, removeQueryArgs, cleanForSlug } from '@wordpress/url';
 import { dispatch, select, useDispatch } from '@wordpress/data';
 import PatternsViewStore from '../store';
 import ErrorBoundary from '../../../components/ErrorBoundary';
@@ -263,6 +263,7 @@ const Interface = ( props ) => {
 		mediaField: 'pattern-view-json',
 		layout: defaultLayouts.grid.layout,
 		fields: [ 'title', 'pattern-view-json' ],
+		search: escapeAttribute( getQueryArgs( window.location.href )?.search || '' ),
 	} );
 
 	const fields = [
@@ -674,20 +675,15 @@ const Interface = ( props ) => {
 		}
 
 		// Do search.
-		const searchField = safeDecodeURI(
-			getQueryArgs( window.location.href ).search
-		);
+		const searchField = newView?.search || '';
+
 		if ( 'undefined' !== searchField && '' !== searchField ) {
-			patternsCopy = patternsCopy.filter( ( pattern ) =>
-				pattern.title
+			patternsCopy = patternsCopy.filter( ( pattern ) => {
+				const patternLabel = pattern.label || pattern.title;
+				return patternLabel
 					.toLowerCase()
-					.includes( ( newView.search || searchField ).toLowerCase() )
-			);
-			const newViewCopy = {
-				...view,
-				search: searchField,
-			};
-			setView( newViewCopy );
+					.includes( ( newView.search || searchField ).toLowerCase() );
+			} );
 		}
 
 		// Return the patterns for display with pagination.
@@ -708,20 +704,15 @@ const Interface = ( props ) => {
 			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
 			per_page: newView.perPage,
 			view_type: newView.type,
+			search: newView.search,
+			orderby: newView.sort?.field,
+			order: newView.sort?.direction,
 		};
 
-		// Now adjust for sort order.
-		const patternSortCopy = getPatternsForDisplay( newView );
-
-		setPatternsDisplay( patternSortCopy );
 		setView( {
 			...newView,
-			paginationInfo: {
-				totalItems: patterns.length,
-				totalPages: Math.ceil( patterns.length / newView.perPage ),
-				page: changeQueryArgs.page + 1,
-				perPage: changeQueryArgs.per_page,
-			},
+			...changeQueryArgs,
+
 		} );
 
 		// Only add search if it exists.
@@ -736,7 +727,11 @@ const Interface = ( props ) => {
 		}
 
 		// Update URL without page reload using addQueryArgs.
-		const newUrl = addQueryArgs( window.location.pathname, queryArgs );
+		let newUrl = addQueryArgs( window.location.pathname, queryArgs );
+
+		const patternsToShow = getPatternsForDisplay( newView );
+		setPatternsDisplay( patternsToShow );
+
 		window.history.pushState( {}, '', newUrl );
 
 		// Update the view state.
@@ -799,8 +794,8 @@ const Interface = ( props ) => {
 				view={ view }
 				onChangeView={ onChangeView }
 				paginationInfo={ {
-					totalItems: patterns.length,
-					totalPages: Math.ceil( patterns.length / view.perPage ),
+					totalItems: ( view?.filters?.length > 0 || view?.search ) ? patternsDisplay.length : patterns.length,
+					totalPages: Math.ceil( ( view?.filters?.length > 0 || view?.search ) ? patternsDisplay.length / view.perPage : patterns.length / view.perPage ),
 				} }
 				perPageSizes={ [ 12, 24, 48, 96 ] }
 				selection={ selectedItems }
