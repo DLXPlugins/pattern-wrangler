@@ -59,7 +59,7 @@ var PatternsView = function PatternsView() {
     className: "dlx-patterns-view-header"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "dlx-patterns-view-title"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Site Patterns', 'pattern-wrangler'))), /*#__PURE__*/React.createElement(PatternsGrid, null)));
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Pattern Library', 'pattern-wrangler'))), /*#__PURE__*/React.createElement(PatternsGrid, null)));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PatternsView);
 
@@ -9401,7 +9401,7 @@ function invariant(condition, message) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "" + chunkId + ".js?ver=" + {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-2f0ee2":"6bd7663bbcbdc182063c","src_js_react_views_patterns_components_PatternsGrid_js":"dd8f486f099d950d0e1c"}[chunkId] + "";
+/******/ 			return "" + chunkId + ".js?ver=" + {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-2f0ee2":"6bd7663bbcbdc182063c","src_js_react_views_patterns_components_PatternsGrid_js":"fa6b377a9c3c80af95be"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	

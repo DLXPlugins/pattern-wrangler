@@ -122,7 +122,7 @@ class Rest {
 		// Get registered categories into shape. Registerd are label arrays.
 		$registered_categories_arr = array();
 		foreach ( $registered_categories as $registered_category ) {
-			$registered_categories_arr[ $registered_category['label'] ] = array(
+			$registered_categories_arr[ sanitize_title( $registered_category['slug'] ) ] = array(
 				'label'       => $registered_category['label'],
 				'customLabel' => $registered_category['label'],
 				'slug'        => $registered_category['slug'],
@@ -135,7 +135,7 @@ class Rest {
 		// Get local categories into shape. Terms are objects.
 		$local_categories_arr = array();
 		foreach ( $local_categories as $local_category ) {
-			$local_categories_arr[ $local_category->name ] = array(
+			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
 				'label'       => $local_category->name,
 				'customLabel' => $local_category->name,
 				'slug'        => $local_category->slug,
@@ -146,7 +146,7 @@ class Rest {
 		}
 
 		// Merge the registered and local categories.
-		$all_categories = array_unique( array_merge( $registered_categories_arr, $local_categories_arr ), SORT_REGULAR );
+		$all_categories = array_merge( $registered_categories_arr, $local_categories_arr ); // We don't care about duplicates here.
 
 		// Placeholder for patterns.
 		$patterns = array();
@@ -166,12 +166,14 @@ class Rest {
 			}
 
 			// Map categories to their names.
-			$categories = array();
+			$categories     = array();
+			$category_slugs = array();
 			foreach ( $pattern['categories'] as $category ) {
 				$category_registry = \WP_Block_Pattern_Categories_Registry::get_instance();
 				$category          = $category_registry->get_registered( $category );
 				if ( $category ) {
-					$categories[] = $category['label'];
+					$categories[]     = $category['label'];
+					$category_slugs[] = sanitize_title( $category['name'] );
 				}
 			}
 
@@ -182,7 +184,9 @@ class Rest {
 				'slug'          => $pattern['name'],
 				'content'       => $pattern['content'],
 				'categories'    => $categories,
+				'categorySlugs' => $category_slugs,
 				'isLocal'       => false,
+				'syncStatus'    => 'registered',
 				'preview'       => $preview_image,
 				'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
 				'patternType'   => 'registered',
@@ -193,15 +197,17 @@ class Rest {
 		foreach ( $local_patterns as $pattern ) {
 			$preview_image                    = $this->get_pattern_preview( $pattern->post_title, $pattern->post_name, $pattern->ID );
 			$patterns[ $pattern->post_title ] = array(
-				'id'          => $pattern->ID,
-				'title'       => $pattern->post_title,
-				'slug'        => $pattern->post_name,
-				'content'     => $pattern->post_content,
-				'categories'  => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
-				'isLocal'     => true,
-				'preview'     => $preview_image,
+				'id'            => $pattern->ID,
+				'title'         => $pattern->post_title,
+				'slug'          => $pattern->post_name,
+				'content'       => $pattern->post_content,
+				'categories'    => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
+				'categorySlugs' => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
+				'isLocal'       => true,
+				'syncStatus'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'preview'       => $preview_image,
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
-				'patternType' => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'patternType'   => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 			);
 		}
 

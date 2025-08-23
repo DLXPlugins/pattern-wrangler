@@ -7,6 +7,7 @@ import {
 	Suspense,
 } from '@wordpress/element';
 import { useResizeObserver, useRefEffect } from '@wordpress/compose';
+import { cleanForSlug } from '@wordpress/url';
 import { downloadBlob } from '@wordpress/blob';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
@@ -179,149 +180,7 @@ const defaultLayouts = {
 		},
 	},
 };
-const fields = [
-	{
-		id: 'title',
-		label: __( 'Title', 'pattern-wrangler' ),
-		render: ( { item } ) => {
-			if ( ! item?.categories || item.categories.length === 0 ) {
-				return (
-					<div className="no-categories">
-						{ __( 'No categories', 'pattern-wrangler' ) }
-					</div>
-				);
-			}
 
-			return (
-				<div className="pattern-title-categories">
-					<div className="pattern-title">{ item.title }</div>
-					{ item.categories.length > 0 && (
-						<div className="pattern-categories">
-							{ item.categories.map( ( category, index ) => {
-								// If cat is object, get category.name, otherwise just use the category.
-								const catName =
-									typeof category === 'object' ? category.name : category;
-								// Convert to title case.
-								const titleCase = catName
-									.split( ' ' )
-									.map(
-										( word ) =>
-											word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase()
-									)
-									.join( ' ' );
-								return (
-									<span key={ `category-${ index }` } className="pattern-category">
-										{ titleCase }
-										{ index < item.categories.length - 1 && ', ' }
-									</span>
-								);
-							} ) }
-						</div>
-					) }
-				</div>
-			);
-		},
-		enableSorting: true,
-		enableHiding: false,
-		enableGlobalSearch: true,
-	},
-	{
-		id: 'pattern-view-json',
-		label: __( 'Preview', 'pattern-wrangler' ),
-		getValue: ( { item } ) => {
-			const viewportWidth = item.viewportWidth || 1200;
-
-			const previewUrl = item?.id
-				? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
-				: '';
-
-			// Determine badge type based on pattern properties.
-			let badgeText = __( 'Local', 'pattern-wrangler' );
-			let badgeClass = 'pattern-badge-local';
-
-			if ( ! item.isLocal ) {
-				badgeText = __( 'Registered', 'pattern-wrangler' );
-				badgeClass = 'pattern-badge-registered';
-			} else if ( 'synced' === item.patternType ) {
-				badgeText = __( 'Local Synced', 'pattern-wrangler' );
-				badgeClass = 'pattern-badge-synced';
-			} else {
-				badgeText = __( 'Local Unsynced', 'pattern-wrangler' );
-				badgeClass = 'pattern-badge-unsynced';
-			}
-
-			const Badge = (
-				<>
-					<div className="pattern-badge-wrapper">
-						<span className={ `pattern-badge ${ badgeClass }` }>{ badgeText }</span>
-					</div>
-				</>
-			);
-			return (
-				<>
-					{ Badge }
-					<div className="pattern-preview-wrapper">
-						<ResponsiveIframe
-							src={ previewUrl }
-							title={ `Preview: ${ item.title }` }
-							item={ item }
-						/>
-					</div>
-				</>
-			);
-		},
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
-		id: 'categories',
-		label: __( 'Categories', 'pattern-wrangler' ),
-		render: ( { item } ) => {
-			return null;
-		},
-		enableSorting: false,
-		enableHiding: false,
-		enableGlobalSearch: true,
-		type: 'array',
-		getValue: ( { item } ) => {
-			return item.categories.join( ', ' );
-		},
-	},
-	{
-		elements: [
-			{
-				label: __( 'All Patterns', 'pattern-wrangler' ),
-				value: 'all',
-			},
-			{
-				label: __( 'Local Patterns', 'pattern-wrangler' ),
-				value: 'local',
-			},
-			{
-				label: __( 'Registered Patterns', 'pattern-wrangler' ),
-				value: 'registered',
-			},
-			{
-				label: __( 'Unsynced Patterns', 'pattern-wrangler' ),
-				value: 'unsynced',
-			},
-			{
-				label: __( 'Synced Patterns', 'pattern-wrangler' ),
-				value: 'synced',
-			},
-		],
-		enableHiding: false,
-		enableSorting: false,
-		enableGlobalSearch: true,
-		filterBy: {
-			operators: [ 'is' ],
-		},
-		default: 'all',
-		type: 'dropdown',
-		id: 'patternType',
-		label: __( 'Pattern Type', 'pattern-wrangler' ),
-	},
-];
 /**
  * Retrieve all the patterns.
  *
@@ -403,8 +262,156 @@ const Interface = ( props ) => {
 		titleField: 'title',
 		mediaField: 'pattern-view-json',
 		layout: defaultLayouts.grid.layout,
-		fields: [ 'title', 'pattern-view-json', 'categories' ],
+		fields: [ 'title', 'pattern-view-json' ],
 	} );
+
+	const fields = [
+		{
+			id: 'title',
+			label: __( 'Title', 'pattern-wrangler' ),
+			render: ( { item } ) => {
+
+				if ( ! item?.categorySlugs || item.categorySlugs.length === 0 ) {
+					return (
+						<div className="no-categories">
+							{ __( 'No categories', 'pattern-wrangler' ) }
+						</div>
+					);
+				}
+
+				return (
+					<div className="pattern-title-categories">
+						<div className="pattern-title">{ item.title }</div>
+						{ item.categorySlugs.length > 0 && Object.values( categories ).length > 0 && (
+							<div className="pattern-categories">
+								{ item.categorySlugs.map( ( category, index ) => {
+									if ( ! categories.hasOwnProperty( category ) ) {
+										return null;
+									}
+
+									const catLabel = categories[ category ].label || categories[ category ].name;
+
+									return (
+										<span
+											key={ `category-${ index }` }
+											className="pattern-category"
+										>
+											{ catLabel } { index < item.categorySlugs.length - 1 && ', ' }
+										</span>
+									);
+								} ) }
+							</div>
+						) }
+					</div>
+				);
+			},
+			enableSorting: true,
+			enableHiding: false,
+			enableGlobalSearch: true,
+		},
+		{
+			id: 'pattern-view-json',
+			label: __( 'Preview', 'pattern-wrangler' ),
+			getValue: ( { item } ) => {
+				const viewportWidth = item.viewportWidth || 1200;
+
+				const previewUrl = item?.id
+					? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+					: '';
+
+				// Determine badge type based on pattern properties.
+				let badgeText = __( 'Local', 'pattern-wrangler' );
+				let badgeClass = 'pattern-badge-local';
+
+				if ( ! item.isLocal ) {
+					badgeText = __( 'Registered', 'pattern-wrangler' );
+					badgeClass = 'pattern-badge-registered';
+				} else if ( 'synced' === item.patternType ) {
+					badgeText = __( 'Local Synced', 'pattern-wrangler' );
+					badgeClass = 'pattern-badge-synced';
+				} else {
+					badgeText = __( 'Local Unsynced', 'pattern-wrangler' );
+					badgeClass = 'pattern-badge-unsynced';
+				}
+
+				const Badge = (
+					<>
+						<div className="pattern-badge-wrapper">
+							<span className={ `pattern-badge ${ badgeClass }` }>{ badgeText }</span>
+						</div>
+					</>
+				);
+				return (
+					<>
+						{ Badge }
+						<div className="pattern-preview-wrapper">
+							<ResponsiveIframe
+								src={ previewUrl }
+								title={ `Preview: ${ item.title }` }
+								item={ item }
+							/>
+						</div>
+					</>
+				);
+			},
+			enableSorting: false,
+			enableHiding: false,
+		},
+		{
+			id: 'categories',
+			label: __( 'Categories', 'pattern-wrangler' ),
+			render: ( { item } ) => {
+				return null;
+			},
+			enableSorting: false,
+			enableHiding: false,
+			enableGlobalSearch: true,
+			type: 'array',
+			filterBy: {
+				operators: [ 'isAny', 'isNone' ],
+			},
+			elements: Object.values( categories ).map( ( category ) => {
+				return {
+					label: category.label || category.name,
+					value: category.slug,
+				};
+			} ),
+		},
+		{
+			elements: [
+				{
+					label: __( 'All Patterns', 'pattern-wrangler' ),
+					value: 'all',
+				},
+				{
+					label: __( 'Local Patterns', 'pattern-wrangler' ),
+					value: 'local',
+				},
+				{
+					label: __( 'Registered Patterns', 'pattern-wrangler' ),
+					value: 'registered',
+				},
+				{
+					label: __( 'Unsynced Patterns', 'pattern-wrangler' ),
+					value: 'unsynced',
+				},
+				{
+					label: __( 'Synced Patterns', 'pattern-wrangler' ),
+					value: 'synced',
+				},
+			],
+			enableHiding: false,
+			enableSorting: false,
+			enableGlobalSearch: true,
+			filterBy: {
+				operators: [ 'is' ],
+			},
+			default: 'all',
+			type: 'dropdown',
+			id: 'patternType',
+			label: __( 'Pattern Type', 'pattern-wrangler' ),
+		},
+	];
 
 	const actions = [
 		{
@@ -590,6 +597,82 @@ const Interface = ( props ) => {
 			}
 		}
 
+		// Filter by categories.
+		const filters = newView?.filters || [];
+		if ( filters.length > 0 ) {
+			filters.forEach( ( filter ) => {
+				switch ( filter.field ) {
+					case 'categories':
+						if ( filter.value ) {
+							// filter.value is an array.
+							// Clean the filter values once for efficiency
+							const cleanedFilterValues = filter.value.map( ( value ) =>
+								cleanForSlug( value )
+							);
+
+							if ( filter.operator === 'isAny' ) {
+								patternsCopy = patternsCopy.filter( ( pattern ) => {
+									const patternCategories = pattern.categorySlugs || [];
+									return patternCategories.some( ( category ) => {
+										const categoryToCheck =
+											category.name || cleanForSlug( category );
+										return cleanedFilterValues.includes( categoryToCheck );
+									} );
+								} );
+							} else if ( filter.operator === 'isNone' ) {
+								patternsCopy = patternsCopy.filter( ( pattern ) => {
+									const patternCategories = pattern.categorySlugs || [];
+
+									// Exclude patterns that have ANY of the categories in filter.value
+									// Check if this pattern has any excluded categories
+									const hasExcludedCategory = patternCategories.some(
+										( category ) => {
+											const categoryToCheck =
+												category.name || cleanForSlug( category );
+											return cleanedFilterValues.includes( categoryToCheck );
+										}
+									);
+
+									// Return true to keep the pattern only if it has NO excluded categories
+									return ! hasExcludedCategory;
+								} );
+							}
+						}
+						break;
+					case 'patternType':
+						if ( filter.value ) {
+							switch ( filter.value ) {
+								case 'all':
+									break;
+								case 'local':
+									patternsCopy = patternsCopy.filter( ( pattern ) => pattern.isLocal );
+									break;
+								case 'registered':
+									patternsCopy = patternsCopy.filter( ( pattern ) => ! pattern.isLocal );
+									break;
+								case 'unsynced':
+									patternsCopy = patternsCopy.filter( ( pattern ) => {
+										if ( pattern.syncStatus ) {
+											return pattern.syncStatus === 'unsynced' && pattern.isLocal;
+										}
+										return false;
+									} );
+									break;
+								case 'synced':
+									patternsCopy = patternsCopy.filter( ( pattern ) => {
+										if ( pattern.syncStatus ) {
+											return pattern.syncStatus === 'synced' && pattern.isLocal;
+										}
+										return false;
+									} );
+									break;
+							}
+						}
+						break;
+				}
+			} );
+		}
+
 		// Do search.
 		const searchField = safeDecodeURI(
 			getQueryArgs( window.location.href ).search
@@ -667,10 +750,16 @@ const Interface = ( props ) => {
 				const fieldsIndex = fields.findIndex(
 					( field ) => field.id === 'categories'
 				);
+				let maybeDuplicateLabel = '';
 				fields[ fieldsIndex ].elements = Object.values( data.categories ).map(
 					( category ) => {
+						let catLabel = category.label;
+						if ( maybeDuplicateLabel === category.label ) {
+							catLabel = `${ catLabel } (${ category.count + 1 })`;
+						}
+						maybeDuplicateLabel = category.label;
 						return {
-							label: category.label,
+							label: catLabel,
 							value: category.slug,
 						};
 					}

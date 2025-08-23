@@ -26,7 +26,7 @@ const PatternsView = () => {
 		<>
 			<div className="wrap">
 				<div className="dlx-patterns-view-header">
-					<h2 className="dlx-patterns-view-title">{ __( 'Site Patterns', 'pattern-wrangler' ) }</h2>
+					<h2 className="dlx-patterns-view-title">{ __( 'Pattern Library', 'pattern-wrangler' ) }</h2>
 				</div>
 				<PatternsGrid />
 			</div>

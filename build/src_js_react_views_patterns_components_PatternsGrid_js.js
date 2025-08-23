@@ -181,25 +181,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _wordpress_compose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/compose */ "@wordpress/compose");
 /* harmony import */ var _wordpress_compose__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_compose__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_blob__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/blob */ "@wordpress/blob");
-/* harmony import */ var _wordpress_blob__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blob__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _fancyapps_ui_dist_fancybox_fancybox_umd_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fancyapps/ui/dist/fancybox/fancybox.umd.js */ "./node_modules/@fancyapps/ui/dist/fancybox/fancybox.umd.js");
-/* harmony import */ var _fancyapps_ui_dist_fancybox_fancybox_umd_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_fancyapps_ui_dist_fancybox_fancybox_umd_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _fancyapps_ui_dist_fancybox_fancybox_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fancyapps/ui/dist/fancybox/fancybox.css */ "./node_modules/@fancyapps/ui/dist/fancybox/fancybox.css");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/url */ "@wordpress/url");
+/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_url__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_blob__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/blob */ "@wordpress/blob");
+/* harmony import */ var _wordpress_blob__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blob__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _fancyapps_ui_dist_fancybox_fancybox_umd_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fancyapps/ui/dist/fancybox/fancybox.umd.js */ "./node_modules/@fancyapps/ui/dist/fancybox/fancybox.umd.js");
+/* harmony import */ var _fancyapps_ui_dist_fancybox_fancybox_umd_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_fancyapps_ui_dist_fancybox_fancybox_umd_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _fancyapps_ui_dist_fancybox_fancybox_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fancyapps/ui/dist/fancybox/fancybox.css */ "./node_modules/@fancyapps/ui/dist/fancybox/fancybox.css");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _wordpress_dataviews__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @wordpress/dataviews */ "./node_modules/@wordpress/dataviews/build-module/components/dataviews/index.js");
-/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
-/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var use_async_resource__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! use-async-resource */ "./node_modules/use-async-resource/lib/index.js");
-/* harmony import */ var use_async_resource__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(use_async_resource__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @wordpress/url */ "@wordpress/url");
-/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_wordpress_url__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var use_async_resource__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! use-async-resource */ "./node_modules/use-async-resource/lib/index.js");
+/* harmony import */ var use_async_resource__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(use_async_resource__WEBPACK_IMPORTED_MODULE_8__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_9__);
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../store */ "./src/js/react/views/patterns/store/index.js");
 /* harmony import */ var _components_ErrorBoundary__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../../components/ErrorBoundary */ "./src/js/react/components/ErrorBoundary/index.js");
 /* harmony import */ var _Snackbar__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Snackbar */ "./src/js/react/views/patterns/components/Snackbar/index.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
@@ -213,7 +214,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -221,6 +221,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 /* eslint-disable react/no-unknown-property */
+
 
 
 
@@ -374,7 +375,7 @@ var ResponsiveIframe = function ResponsiveIframe(_ref) {
 var popPatternPreview = function popPatternPreview(item) {
   var viewportWidth = item.viewportWidth || 1200;
   var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&viewport_width=").concat(viewportWidth) : '';
-  _fancyapps_ui_dist_fancybox_fancybox_umd_js__WEBPACK_IMPORTED_MODULE_3__.Fancybox.show([{
+  _fancyapps_ui_dist_fancybox_fancybox_umd_js__WEBPACK_IMPORTED_MODULE_4__.Fancybox.show([{
     src: previewUrl,
     caption: item.title,
     type: 'iframe',
@@ -396,130 +397,20 @@ var defaultLayouts = {
     }
   }
 };
-var fields = [{
-  id: 'title',
-  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Title', 'pattern-wrangler'),
-  render: function render(_ref2) {
-    var item = _ref2.item;
-    if (!(item !== null && item !== void 0 && item.categories) || item.categories.length === 0) {
-      return /*#__PURE__*/React.createElement("div", {
-        className: "no-categories"
-      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('No categories', 'pattern-wrangler'));
-    }
-    return /*#__PURE__*/React.createElement("div", {
-      className: "pattern-title-categories"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "pattern-title"
-    }, item.title), item.categories.length > 0 && /*#__PURE__*/React.createElement("div", {
-      className: "pattern-categories"
-    }, item.categories.map(function (category, index) {
-      // If cat is object, get category.name, otherwise just use the category.
-      var catName = _typeof(category) === 'object' ? category.name : category;
-      // Convert to title case.
-      var titleCase = catName.split(' ').map(function (word) {
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      }).join(' ');
-      return /*#__PURE__*/React.createElement("span", {
-        key: "category-".concat(index),
-        className: "pattern-category"
-      }, titleCase, index < item.categories.length - 1 && ', ');
-    })));
-  },
-  enableSorting: true,
-  enableHiding: false,
-  enableGlobalSearch: true
-}, {
-  id: 'pattern-view-json',
-  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Preview', 'pattern-wrangler'),
-  getValue: function getValue(_ref3) {
-    var item = _ref3.item;
-    var viewportWidth = item.viewportWidth || 1200;
-    var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&viewport_width=").concat(viewportWidth) : '';
 
-    // Determine badge type based on pattern properties.
-    var badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Local', 'pattern-wrangler');
-    var badgeClass = 'pattern-badge-local';
-    if (!item.isLocal) {
-      badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Registered', 'pattern-wrangler');
-      badgeClass = 'pattern-badge-registered';
-    } else if ('synced' === item.patternType) {
-      badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Local Synced', 'pattern-wrangler');
-      badgeClass = 'pattern-badge-synced';
-    } else {
-      badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Local Unsynced', 'pattern-wrangler');
-      badgeClass = 'pattern-badge-unsynced';
-    }
-    var Badge = /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "pattern-badge-wrapper"
-    }, /*#__PURE__*/React.createElement("span", {
-      className: "pattern-badge ".concat(badgeClass)
-    }, badgeText)));
-    return /*#__PURE__*/React.createElement(React.Fragment, null, Badge, /*#__PURE__*/React.createElement("div", {
-      className: "pattern-preview-wrapper"
-    }, /*#__PURE__*/React.createElement(ResponsiveIframe, {
-      src: previewUrl,
-      title: "Preview: ".concat(item.title),
-      item: item
-    })));
-  },
-  enableSorting: false,
-  enableHiding: false
-}, {
-  id: 'categories',
-  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Categories', 'pattern-wrangler'),
-  render: function render(_ref4) {
-    var item = _ref4.item;
-    return null;
-  },
-  enableSorting: false,
-  enableHiding: false,
-  enableGlobalSearch: true,
-  type: 'array',
-  getValue: function getValue(_ref5) {
-    var item = _ref5.item;
-    return item.categories.join(', ');
-  }
-}, {
-  elements: [{
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('All Patterns', 'pattern-wrangler'),
-    value: 'all'
-  }, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Local Patterns', 'pattern-wrangler'),
-    value: 'local'
-  }, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Registered Patterns', 'pattern-wrangler'),
-    value: 'registered'
-  }, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Unsynced Patterns', 'pattern-wrangler'),
-    value: 'unsynced'
-  }, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Synced Patterns', 'pattern-wrangler'),
-    value: 'synced'
-  }],
-  enableHiding: false,
-  enableSorting: false,
-  enableGlobalSearch: true,
-  filterBy: {
-    operators: ['is']
-  },
-  "default": 'all',
-  type: 'dropdown',
-  id: 'patternType',
-  label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Pattern Type', 'pattern-wrangler')
-}];
 /**
  * Retrieve all the patterns.
  *
  * @return {Promise<Object>} The patterns.
  */
 var retrieveAllPatterns = /*#__PURE__*/function () {
-  var _ref6 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+  var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           _context.next = 2;
-          return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_6___default()({
-            path: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.addQueryArgs)('/dlxplugins/pattern-wrangler/v1/patterns/all/', {
+          return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_7___default()({
+            path: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.addQueryArgs)('/dlxplugins/pattern-wrangler/v1/patterns/all/', {
               nonce: dlxEnhancedPatternsView.getNonce
             }),
             method: 'GET'
@@ -533,16 +424,16 @@ var retrieveAllPatterns = /*#__PURE__*/function () {
     }, _callee);
   }));
   return function retrieveAllPatterns() {
-    return _ref6.apply(this, arguments);
+    return _ref2.apply(this, arguments);
   };
 }();
 var PatternsGrid = function PatternsGrid(props) {
-  var _useAsyncResource = (0,use_async_resource__WEBPACK_IMPORTED_MODULE_7__.useAsyncResource)(retrieveAllPatterns, []),
+  var _useAsyncResource = (0,use_async_resource__WEBPACK_IMPORTED_MODULE_8__.useAsyncResource)(retrieveAllPatterns, []),
     _useAsyncResource2 = _slicedToArray(_useAsyncResource, 2),
     defaults = _useAsyncResource2[0],
     getDefaults = _useAsyncResource2[1];
   return /*#__PURE__*/React.createElement(_components_ErrorBoundary__WEBPACK_IMPORTED_MODULE_11__["default"], {
-    fallback: /*#__PURE__*/React.createElement("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Could not load block patterns.', 'quotes-dlx'), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("a", {
+    fallback: /*#__PURE__*/React.createElement("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Could not load block patterns.', 'quotes-dlx'), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("a", {
       href: "https://dlxplugins.com/support/",
       target: "_blank",
       rel: "noopener noreferrer"
@@ -557,7 +448,7 @@ var PatternsGrid = function PatternsGrid(props) {
 };
 
 // Get query args from current URL.
-var queryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.getQueryArgs)(window.location.href);
+var queryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.getQueryArgs)(window.location.href);
 var Interface = function Interface(props) {
   var defaults = props.defaults;
   var data = defaults();
@@ -609,14 +500,128 @@ var Interface = function Interface(props) {
       titleField: 'title',
       mediaField: 'pattern-view-json',
       layout: defaultLayouts.grid.layout,
-      fields: ['title', 'pattern-view-json', 'categories']
+      fields: ['title', 'pattern-view-json']
     }),
     _useState26 = _slicedToArray(_useState25, 2),
     view = _useState26[0],
     setView = _useState26[1];
+  var fields = [{
+    id: 'title',
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Title', 'pattern-wrangler'),
+    render: function render(_ref3) {
+      var item = _ref3.item;
+      if (!(item !== null && item !== void 0 && item.categorySlugs) || item.categorySlugs.length === 0) {
+        return /*#__PURE__*/React.createElement("div", {
+          className: "no-categories"
+        }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('No categories', 'pattern-wrangler'));
+      }
+      return /*#__PURE__*/React.createElement("div", {
+        className: "pattern-title-categories"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "pattern-title"
+      }, item.title), item.categorySlugs.length > 0 && Object.values(categories).length > 0 && /*#__PURE__*/React.createElement("div", {
+        className: "pattern-categories"
+      }, item.categorySlugs.map(function (category, index) {
+        if (!categories.hasOwnProperty(category)) {
+          return null;
+        }
+        var catLabel = categories[category].label || categories[category].name;
+        return /*#__PURE__*/React.createElement("span", {
+          key: "category-".concat(index),
+          className: "pattern-category"
+        }, catLabel, " ", index < item.categorySlugs.length - 1 && ', ');
+      })));
+    },
+    enableSorting: true,
+    enableHiding: false,
+    enableGlobalSearch: true
+  }, {
+    id: 'pattern-view-json',
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Preview', 'pattern-wrangler'),
+    getValue: function getValue(_ref4) {
+      var item = _ref4.item;
+      var viewportWidth = item.viewportWidth || 1200;
+      var previewUrl = item !== null && item !== void 0 && item.id ? "".concat(ajaxurl, "/?action=dlxpw_pattern_preview&pattern_id=").concat(item.id, "&viewport_width=").concat(viewportWidth) : '';
+
+      // Determine badge type based on pattern properties.
+      var badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Local', 'pattern-wrangler');
+      var badgeClass = 'pattern-badge-local';
+      if (!item.isLocal) {
+        badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Registered', 'pattern-wrangler');
+        badgeClass = 'pattern-badge-registered';
+      } else if ('synced' === item.patternType) {
+        badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Local Synced', 'pattern-wrangler');
+        badgeClass = 'pattern-badge-synced';
+      } else {
+        badgeText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Local Unsynced', 'pattern-wrangler');
+        badgeClass = 'pattern-badge-unsynced';
+      }
+      var Badge = /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+        className: "pattern-badge-wrapper"
+      }, /*#__PURE__*/React.createElement("span", {
+        className: "pattern-badge ".concat(badgeClass)
+      }, badgeText)));
+      return /*#__PURE__*/React.createElement(React.Fragment, null, Badge, /*#__PURE__*/React.createElement("div", {
+        className: "pattern-preview-wrapper"
+      }, /*#__PURE__*/React.createElement(ResponsiveIframe, {
+        src: previewUrl,
+        title: "Preview: ".concat(item.title),
+        item: item
+      })));
+    },
+    enableSorting: false,
+    enableHiding: false
+  }, {
+    id: 'categories',
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Categories', 'pattern-wrangler'),
+    render: function render(_ref5) {
+      var item = _ref5.item;
+      return null;
+    },
+    enableSorting: false,
+    enableHiding: false,
+    enableGlobalSearch: true,
+    type: 'array',
+    filterBy: {
+      operators: ['isAny', 'isNone']
+    },
+    elements: Object.values(categories).map(function (category) {
+      return {
+        label: category.label || category.name,
+        value: category.slug
+      };
+    })
+  }, {
+    elements: [{
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('All Patterns', 'pattern-wrangler'),
+      value: 'all'
+    }, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Local Patterns', 'pattern-wrangler'),
+      value: 'local'
+    }, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Registered Patterns', 'pattern-wrangler'),
+      value: 'registered'
+    }, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Unsynced Patterns', 'pattern-wrangler'),
+      value: 'unsynced'
+    }, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Synced Patterns', 'pattern-wrangler'),
+      value: 'synced'
+    }],
+    enableHiding: false,
+    enableSorting: false,
+    enableGlobalSearch: true,
+    filterBy: {
+      operators: ['is']
+    },
+    "default": 'all',
+    type: 'dropdown',
+    id: 'patternType',
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern Type', 'pattern-wrangler')
+  }];
   var actions = [{
     id: 'edit',
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Edit', 'pattern-wrangler'),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Edit', 'pattern-wrangler'),
     icon: 'edit',
     callback: function callback() {
       // TODO: Implement edit functionality.
@@ -627,7 +632,7 @@ var Interface = function Interface(props) {
     isPrimary: true
   }, {
     id: 'delete',
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Delete Pattern', 'pattern-wrangler'),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Delete Pattern', 'pattern-wrangler'),
     icon: 'trash',
     isEligible: function isEligible(pattern) {
       // Pattern must be local.
@@ -640,7 +645,7 @@ var Interface = function Interface(props) {
     isDestructive: true
   }, {
     id: 'delete',
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Preview Pattern', 'pattern-wrangler'),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Preview Pattern', 'pattern-wrangler'),
     icon: 'edit',
     isEligible: function isEligible() {
       // Pattern must be local.
@@ -655,7 +660,7 @@ var Interface = function Interface(props) {
     isDestructive: true
   }, {
     id: 'copy-to-local',
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Copy to Local Pattern', 'pattern-wrangler'),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Copy to Local Pattern', 'pattern-wrangler'),
     icon: 'edit',
     callback: function callback() {
       // TODO: Implement copy to local functionality.
@@ -667,7 +672,7 @@ var Interface = function Interface(props) {
     isDestructive: false
   }, {
     id: 'disable-preview',
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Disable Pattern', 'pattern-wrangler'),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Disable Pattern', 'pattern-wrangler'),
     icon: 'controls-pause',
     callback: function callback() {
       // TODO: Implement disable preview functionality.
@@ -680,7 +685,7 @@ var Interface = function Interface(props) {
     isPrimary: false
   }, {
     id: 'delete-pattern',
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Delete Pattern', 'pattern-wrangler'),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Delete Pattern', 'pattern-wrangler'),
     icon: 'trash',
     callback: function callback() {
       // TODO: Implement delete pattern functionality.
@@ -693,7 +698,7 @@ var Interface = function Interface(props) {
     isPrimary: false
   }, {
     id: 'copy',
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Copy Pattern', 'pattern-wrangler'),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Copy Pattern', 'pattern-wrangler'),
     icon: 'edit',
     callback: function callback(items) {
       var copyContent = items[0].content.trim();
@@ -705,8 +710,8 @@ var Interface = function Interface(props) {
         navigator.clipboard.write(_data);
         setSnackbar({
           isVisible: true,
-          message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Pattern copied to clipboard', 'pattern-wrangler'),
-          title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Pattern Copied', 'pattern-wrangler'),
+          message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern copied to clipboard', 'pattern-wrangler'),
+          title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern Copied', 'pattern-wrangler'),
           type: 'success',
           onClose: function onClose() {
             setSnackbar({
@@ -725,7 +730,7 @@ var Interface = function Interface(props) {
     isDestructive: false
   }, {
     id: 'export',
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Export to JSON', 'pattern-wrangler'),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Export to JSON', 'pattern-wrangler'),
     icon: 'edit',
     callback: function callback(items) {
       var isLocal = items[0].isLocal;
@@ -742,7 +747,7 @@ var Interface = function Interface(props) {
         content: items[0].content,
         syncStatus: syncStatus
       }, null, 2);
-      (0,_wordpress_blob__WEBPACK_IMPORTED_MODULE_2__.downloadBlob)("".concat(title, ".json"), fileContent, 'application/json');
+      (0,_wordpress_blob__WEBPACK_IMPORTED_MODULE_3__.downloadBlob)("".concat(title, ".json"), fileContent, 'application/json');
     },
     isEligible: function isEligible() {
       return true;
@@ -775,8 +780,8 @@ var Interface = function Interface(props) {
     }
 
     // Set up order and orderby.
-    var orderBy = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.getQueryArgs)(window.location.href).orderby;
-    var order = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.getQueryArgs)(window.location.href).order;
+    var orderBy = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.getQueryArgs)(window.location.href).orderby;
+    var order = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.getQueryArgs)(window.location.href).order;
     if ('title' === orderBy) {
       if ('asc' === order) {
         patternsCopy.sort(function (a, b) {
@@ -789,8 +794,83 @@ var Interface = function Interface(props) {
       }
     }
 
+    // Filter by categories.
+    var filters = (newView === null || newView === void 0 ? void 0 : newView.filters) || [];
+    if (filters.length > 0) {
+      filters.forEach(function (filter) {
+        switch (filter.field) {
+          case 'categories':
+            if (filter.value) {
+              // filter.value is an array.
+              // Clean the filter values once for efficiency
+              var cleanedFilterValues = filter.value.map(function (value) {
+                return (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.cleanForSlug)(value);
+              });
+              if (filter.operator === 'isAny') {
+                patternsCopy = patternsCopy.filter(function (pattern) {
+                  var patternCategories = pattern.categorySlugs || [];
+                  return patternCategories.some(function (category) {
+                    var categoryToCheck = category.name || (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.cleanForSlug)(category);
+                    return cleanedFilterValues.includes(categoryToCheck);
+                  });
+                });
+              } else if (filter.operator === 'isNone') {
+                patternsCopy = patternsCopy.filter(function (pattern) {
+                  var patternCategories = pattern.categorySlugs || [];
+
+                  // Exclude patterns that have ANY of the categories in filter.value
+                  // Check if this pattern has any excluded categories
+                  var hasExcludedCategory = patternCategories.some(function (category) {
+                    var categoryToCheck = category.name || (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.cleanForSlug)(category);
+                    return cleanedFilterValues.includes(categoryToCheck);
+                  });
+
+                  // Return true to keep the pattern only if it has NO excluded categories
+                  return !hasExcludedCategory;
+                });
+              }
+            }
+            break;
+          case 'patternType':
+            if (filter.value) {
+              switch (filter.value) {
+                case 'all':
+                  break;
+                case 'local':
+                  patternsCopy = patternsCopy.filter(function (pattern) {
+                    return pattern.isLocal;
+                  });
+                  break;
+                case 'registered':
+                  patternsCopy = patternsCopy.filter(function (pattern) {
+                    return !pattern.isLocal;
+                  });
+                  break;
+                case 'unsynced':
+                  patternsCopy = patternsCopy.filter(function (pattern) {
+                    if (pattern.syncStatus) {
+                      return pattern.syncStatus === 'unsynced' && pattern.isLocal;
+                    }
+                    return false;
+                  });
+                  break;
+                case 'synced':
+                  patternsCopy = patternsCopy.filter(function (pattern) {
+                    if (pattern.syncStatus) {
+                      return pattern.syncStatus === 'synced' && pattern.isLocal;
+                    }
+                    return false;
+                  });
+                  break;
+              }
+            }
+            break;
+        }
+      });
+    }
+
     // Do search.
-    var searchField = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.safeDecodeURI)((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.getQueryArgs)(window.location.href).search);
+    var searchField = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.safeDecodeURI)((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.getQueryArgs)(window.location.href).search);
     if ('undefined' !== searchField && '' !== searchField) {
       patternsCopy = patternsCopy.filter(function (pattern) {
         return pattern.title.toLowerCase().includes((newView.search || searchField).toLowerCase());
@@ -814,7 +894,7 @@ var Interface = function Interface(props) {
     var _newView$sort;
     // Create query args object with view state.
     var changeQueryArgs = {
-      page: parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.getQueryArgs)(window.location.href).paged) || 1,
+      page: parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.getQueryArgs)(window.location.href).paged) || 1,
       per_page: newView.perPage,
       view_type: newView.type
     };
@@ -843,7 +923,7 @@ var Interface = function Interface(props) {
     }
 
     // Update URL without page reload using addQueryArgs.
-    var newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.addQueryArgs)(window.location.pathname, queryArgs);
+    var newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_2__.addQueryArgs)(window.location.pathname, queryArgs);
     window.history.pushState({}, '', newUrl);
 
     // Update the view state.
@@ -856,9 +936,15 @@ var Interface = function Interface(props) {
         var fieldsIndex = fields.findIndex(function (field) {
           return field.id === 'categories';
         });
+        var maybeDuplicateLabel = '';
         fields[fieldsIndex].elements = Object.values(data.categories).map(function (category) {
+          var catLabel = category.label;
+          if (maybeDuplicateLabel === category.label) {
+            catLabel = "".concat(catLabel, " (").concat(category.count + 1, ")");
+          }
+          maybeDuplicateLabel = category.label;
           return {
-            label: category.label,
+            label: catLabel,
             value: category.slug
           };
         });
@@ -890,7 +976,7 @@ var Interface = function Interface(props) {
     data: patternsDisplay,
     fields: fields,
     actions: actions,
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Patterns', 'pattern-wrangler'),
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Patterns', 'pattern-wrangler'),
     view: view,
     onChangeView: onChangeView,
     paginationInfo: {
@@ -901,7 +987,7 @@ var Interface = function Interface(props) {
     selection: selectedItems,
     onChangeSelection: setSelectedItems,
     defaultLayouts: defaultLayouts,
-    searchLabel: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__.__)('Search Patterns', 'pattern-wrangler')
+    searchLabel: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Search Patterns', 'pattern-wrangler')
   }), snackbar.isVisible && /*#__PURE__*/React.createElement(_Snackbar__WEBPACK_IMPORTED_MODULE_12__["default"], {
     isVisible: snackbar.isVisible,
     message: snackbar.message,
@@ -1144,4 +1230,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=dd8f486f099d950d0e1c
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=fa6b377a9c3c80af95be
