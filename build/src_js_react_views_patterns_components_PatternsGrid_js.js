@@ -894,7 +894,6 @@ var Interface = function Interface(props) {
     var _newView$sort3;
     // Create query args object with view state.
     var changeQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href);
-    console.log(newView);
     changeQueryArgs.paged = newView.page || 1;
     changeQueryArgs.perPage = newView.perPage;
 
@@ -916,6 +915,11 @@ var Interface = function Interface(props) {
     }
     setPatternsDisplay(getPatternsForDisplay(newView));
     window.history.pushState({}, '', newUrl);
+
+    // Unset and reset page from changeQueryArgs.
+    changeQueryArgs.page = changeQueryArgs.paged;
+    console.log('newView', newView);
+    console.log('changeQueryArgs', changeQueryArgs);
     setView(_objectSpread(_objectSpread({}, newView), changeQueryArgs));
 
     // Update the view state.
@@ -962,6 +966,7 @@ var Interface = function Interface(props) {
   if (loading) {
     return /*#__PURE__*/React.createElement(React.Fragment, null, "Loading...");
   }
+  console.log('view', view);
   return /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-container"
   }, /*#__PURE__*/React.createElement(_wordpress_dataviews__WEBPACK_IMPORTED_MODULE_14__["default"], {
@@ -1222,4 +1227,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=e27cf22756a1b9417971
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=74652fb8c4e7bb837cc0

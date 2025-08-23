@@ -701,7 +701,6 @@ const Interface = ( props ) => {
 	const onChangeView = ( newView ) => {
 		// Create query args object with view state.
 		const changeQueryArgs = getQueryArgs( window.location.href );
-		console.log( newView );
 		changeQueryArgs.paged = newView.page || 1;
 		changeQueryArgs.perPage = newView.perPage;
 
@@ -726,10 +725,14 @@ const Interface = ( props ) => {
 
 		window.history.pushState( {}, '', newUrl );
 
+		// Unset and reset page from changeQueryArgs.
+		changeQueryArgs.page = changeQueryArgs.paged;
+
+		console.log( 'newView', newView );
+		console.log( 'changeQueryArgs', changeQueryArgs );
 		setView( {
 			...newView,
 			...changeQueryArgs,
-
 		} );
 
 		// Update the view state.
@@ -781,6 +784,8 @@ const Interface = ( props ) => {
 	if ( loading ) {
 		return <>Loading...</>;
 	}
+
+	console.log( 'view', view );
 
 	return (
 		<div className="dlx-patterns-view-container">
