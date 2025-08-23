@@ -13,11 +13,21 @@ import { escapeAttribute } from '@wordpress/escape-html';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
 import { useQuery } from '@tanstack/react-query';
 import { __ } from '@wordpress/i18n';
+import {
+	Button,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
+} from '@wordpress/components';
 import { DataViews } from '@wordpress/dataviews';
 import apiFetch from '@wordpress/api-fetch';
 import { useAsyncResource } from 'use-async-resource';
 import { useRouter } from '@tanstack/react-router';
-import { addQueryArgs, getQueryArgs, safeDecodeURI, removeQueryArgs, cleanForSlug } from '@wordpress/url';
+import {
+	addQueryArgs,
+	getQueryArgs,
+	removeQueryArgs,
+	cleanForSlug,
+} from '@wordpress/url';
 import { dispatch, select, useDispatch } from '@wordpress/data';
 import PatternsViewStore from '../store';
 import ErrorBoundary from '../../../components/ErrorBoundary';
@@ -242,6 +252,7 @@ const Interface = ( props ) => {
 		title: '',
 		type: '',
 	} );
+	const [ isFiltersOpen, setIsFiltersOpen ] = useState( false );
 
 	const { setViewType } = useDispatch( PatternsViewStore );
 
@@ -256,8 +267,12 @@ const Interface = ( props ) => {
 		perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 12,
 		defaultPerPage: 12,
 		sort: {
-			field: escapeAttribute( getQueryArgs( window.location.href ).orderby || 'title' ),
-			direction: escapeAttribute( getQueryArgs( window.location.href ).order || 'asc' ),
+			field: escapeAttribute(
+				getQueryArgs( window.location.href ).orderby || 'title'
+			),
+			direction: escapeAttribute(
+				getQueryArgs( window.location.href ).order || 'asc'
+			),
 		},
 		titleField: 'title',
 		mediaField: 'pattern-view-json',
@@ -271,7 +286,6 @@ const Interface = ( props ) => {
 			id: 'title',
 			label: __( 'Title', 'pattern-wrangler' ),
 			render: ( { item } ) => {
-
 				if ( ! item?.categorySlugs || item.categorySlugs.length === 0 ) {
 					return (
 						<div className="no-categories">
@@ -283,21 +297,24 @@ const Interface = ( props ) => {
 				return (
 					<div className="pattern-title-categories">
 						<div className="pattern-title">{ item.title }</div>
-						{ item.categorySlugs.length > 0 && Object.values( categories ).length > 0 && (
+						{ item.categorySlugs.length > 0 &&
+							Object.values( categories ).length > 0 && (
 							<div className="pattern-categories">
 								{ item.categorySlugs.map( ( category, index ) => {
 									if ( ! categories.hasOwnProperty( category ) ) {
 										return null;
 									}
 
-									const catLabel = categories[ category ].label || categories[ category ].name;
+									const catLabel =
+											categories[ category ].label || categories[ category ].name;
 
 									return (
 										<span
 											key={ `category-${ index }` }
 											className="pattern-category"
 										>
-											{ catLabel } { index < item.categorySlugs.length - 1 && ', ' }
+											{ catLabel }{ ' ' }
+											{ index < item.categorySlugs.length - 1 && ', ' }
 										</span>
 									);
 								} ) }
@@ -392,6 +409,20 @@ const Interface = ( props ) => {
 					label: __( 'Registered Patterns', 'pattern-wrangler' ),
 					value: 'registered',
 				},
+			],
+			enableHiding: false,
+			enableSorting: false,
+			enableGlobalSearch: false,
+			filterBy: {
+				operators: [ 'is' ],
+			},
+			default: 'all',
+			type: 'array',
+			id: 'patternType',
+			label: __( 'Pattern Type', 'pattern-wrangler' ),
+		},
+		{
+			elements: [
 				{
 					label: __( 'Unsynced Patterns', 'pattern-wrangler' ),
 					value: 'unsynced',
@@ -400,17 +431,20 @@ const Interface = ( props ) => {
 					label: __( 'Synced Patterns', 'pattern-wrangler' ),
 					value: 'synced',
 				},
+				{
+					label: __( 'Both', 'pattern-wrangler' ),
+					value: 'both',
+				},
 			],
 			enableHiding: false,
 			enableSorting: false,
-			enableGlobalSearch: true,
+			enableGlobalSearch: false,
 			filterBy: {
 				operators: [ 'is' ],
 			},
-			default: 'all',
-			type: 'dropdown',
-			id: 'patternType',
-			label: __( 'Pattern Type', 'pattern-wrangler' ),
+			type: 'array',
+			id: 'patternStatus',
+			label: __( 'Pattern Status', 'pattern-wrangler' ),
 		},
 	];
 
@@ -575,6 +609,139 @@ const Interface = ( props ) => {
 	// } );
 
 	/**
+	 * Get the total count of filtered patterns without pagination.
+	 *
+	 * @param {Object} newView The new view object.
+	 * @return {number} The total count of filtered patterns.
+	 */
+	const getFilteredPatternsCount = ( newView ) => {
+		let patternsCopy = [ ...patterns ];
+
+		if ( null === patternsCopy || 0 === patternsCopy.length ) {
+			patternsCopy = [ ...data.patterns ];
+		}
+
+		const orderBy = newView?.sort?.field;
+		const order = newView?.sort?.direction;
+
+		if ( 'title' === orderBy ) {
+			if ( 'desc' === order ) {
+				patternsCopy.sort( ( a, b ) => b.title.localeCompare( a.title ) );
+			} else {
+				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
+			}
+		}
+
+		// Filter by categories.
+		const filters = newView?.filters || [];
+		if ( filters.length > 0 ) {
+			filters.forEach( ( filter ) => {
+				switch ( filter.field ) {
+					case 'categories':
+						if ( filter.value ) {
+							// filter.value is an array.
+							// Clean the filter values once for efficiency
+							const cleanedFilterValues = filter.value.map( ( value ) =>
+								cleanForSlug( value )
+							);
+
+							if ( filter.operator === 'isAny' ) {
+								patternsCopy = patternsCopy.filter( ( pattern ) => {
+									const patternCategories = pattern.categorySlugs || [];
+									return patternCategories.some( ( category ) => {
+										const categoryToCheck =
+											category.name || cleanForSlug( category );
+										return cleanedFilterValues.includes( categoryToCheck );
+									} );
+								} );
+							} else if ( filter.operator === 'isNone' ) {
+								patternsCopy = patternsCopy.filter( ( pattern ) => {
+									const patternCategories = pattern.categorySlugs || [];
+
+									// Exclude patterns that have ANY of the categories in filter.value
+									// Check if this pattern has any excluded categories
+									const hasExcludedCategory = patternCategories.some(
+										( category ) => {
+											const categoryToCheck =
+												category.name || cleanForSlug( category );
+											return cleanedFilterValues.includes( categoryToCheck );
+										}
+									);
+
+									// Return true to keep the pattern only if it has NO excluded categories
+									return ! hasExcludedCategory;
+								} );
+							}
+						}
+						break;
+					case 'patternType':
+						if ( filter.value ) {
+							switch ( filter.value ) {
+								case 'all':
+									break;
+								case 'local':
+									patternsCopy = patternsCopy.filter(
+										( pattern ) => pattern.isLocal
+									);
+									break;
+								case 'registered':
+									patternsCopy = patternsCopy.filter(
+										( pattern ) => ! pattern.isLocal
+									);
+									break;
+							}
+						}
+						break;
+					case 'patternStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find( ( f ) => f.field === 'patternType' );
+							if ( patternTypeFilter && patternTypeFilter.value === 'local' && filter.value ) {
+								switch ( filter.value ) {
+									case 'unsynced':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											if ( pattern.syncStatus ) {
+												return (
+													pattern.syncStatus === 'unsynced' && pattern.isLocal
+												);
+											}
+											return false;
+										} );
+										break;
+									case 'synced':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											if ( pattern.syncStatus ) {
+												return pattern.syncStatus === 'synced' && pattern.isLocal;
+											}
+											return false;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+				}
+			} );
+		}
+
+		// Do search.
+		const searchField = newView?.search || '';
+
+		if ( 'undefined' !== searchField && '' !== searchField ) {
+			patternsCopy = patternsCopy.filter( ( pattern ) => {
+				const patternLabel = pattern.label || pattern.title;
+				return patternLabel
+					.toLowerCase()
+					.includes( ( newView.search || searchField ).toLowerCase() );
+			} );
+		}
+
+		// Return the total count without pagination.
+		return patternsCopy.length;
+	};
+
+	/**
 	 * Retrieve a list of modified patterns based on query vars and the current view.
 	 *
 	 * @param {Object} newView The new view object.
@@ -646,30 +813,46 @@ const Interface = ( props ) => {
 								case 'all':
 									break;
 								case 'local':
-									patternsCopy = patternsCopy.filter( ( pattern ) => pattern.isLocal );
+									patternsCopy = patternsCopy.filter(
+										( pattern ) => pattern.isLocal
+									);
 									break;
 								case 'registered':
-									patternsCopy = patternsCopy.filter( ( pattern ) => ! pattern.isLocal );
-									break;
-								case 'unsynced':
-									patternsCopy = patternsCopy.filter( ( pattern ) => {
-										if ( pattern.syncStatus ) {
-											return pattern.syncStatus === 'unsynced' && pattern.isLocal;
-										}
-										return false;
-									} );
-									break;
-								case 'synced':
-									patternsCopy = patternsCopy.filter( ( pattern ) => {
-										if ( pattern.syncStatus ) {
-											return pattern.syncStatus === 'synced' && pattern.isLocal;
-										}
-										return false;
-									} );
+									patternsCopy = patternsCopy.filter(
+										( pattern ) => ! pattern.isLocal
+									);
 									break;
 							}
 						}
 						break;
+					case 'patternStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find( ( f ) => f.field === 'patternType' );
+						if ( patternTypeFilter && patternTypeFilter.value === 'local' && filter.value ) {
+								switch ( filter.value ) {
+									case 'unsynced':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											if ( pattern.syncStatus ) {
+												return (
+													pattern.syncStatus === 'unsynced' && pattern.isLocal
+												);
+											}
+											return false;
+										} );
+										break;
+									case 'synced':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											if ( pattern.syncStatus ) {
+												return pattern.syncStatus === 'synced' && pattern.isLocal;
+											}
+											return false;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
 				}
 			} );
 		}
@@ -727,9 +910,6 @@ const Interface = ( props ) => {
 
 		// Unset and reset page from changeQueryArgs.
 		changeQueryArgs.page = changeQueryArgs.paged;
-
-		console.log( 'newView', newView );
-		console.log( 'changeQueryArgs', changeQueryArgs );
 		setView( {
 			...newView,
 			...changeQueryArgs,
@@ -788,37 +968,148 @@ const Interface = ( props ) => {
 	console.log( 'view', view );
 
 	return (
-		<div className="dlx-patterns-view-container">
-			<DataViews
-				data={ patternsDisplay }
-				fields={ fields }
-				actions={ actions }
-				label={ __( 'Patterns', 'pattern-wrangler' ) }
-				view={ view }
-				onChangeView={ onChangeView }
-				paginationInfo={ {
-					totalItems: ( view?.filters?.length > 0 || view?.search ) ? patternsDisplay.length : patterns.length,
-					totalPages: Math.ceil( ( view?.filters?.length > 0 || view?.search ) ? patternsDisplay.length / view.perPage : patterns.length / view.perPage ),
-				} }
-				perPageSizes={ [ 12, 24, 48, 96 ] }
-				selection={ selectedItems }
-				onChangeSelection={ setSelectedItems }
-				defaultLayouts={ defaultLayouts }
-				searchLabel={ __( 'Search Patterns', 'pattern-wrangler' ) }
-			/>
-			{ snackbar.isVisible && (
-				<Snackbar
-					isVisible={ snackbar.isVisible }
-					message={ snackbar.message }
-					title={ snackbar.title }
-					type={ snackbar.type }
-					onClose={ () => {
-						setSnackbar( {
-							isVisible: false,
-						} );
+		<div className="dlx-patterns-view-container-wrapper">
+			<div className="dlx-patterns-view-container">
+				<DataViews
+					data={ patternsDisplay }
+					fields={ fields }
+					actions={ actions }
+					label={ __( 'Patterns', 'pattern-wrangler' ) }
+					view={ view }
+					onChangeView={ onChangeView }
+					paginationInfo={ {
+						totalItems: getFilteredPatternsCount( view ),
+						totalPages: Math.ceil( getFilteredPatternsCount( view ) / view.perPage ),
 					} }
-				/>
-			) }
+					perPageSizes={ [ 12, 24, 48, 96 ] }
+					selection={ selectedItems }
+					onChangeSelection={ setSelectedItems }
+					defaultLayouts={ defaultLayouts }
+					searchLabel={ __( 'Search Patterns', 'pattern-wrangler' ) }
+				>
+					<div className="dlx-patterns-view-container-header">
+						<h1>{ __( 'Pattern Library', 'pattern-wrangler' ) }</h1>
+					</div>
+					<div className="dlx-patterns-view-quick-buttons-wrapper">
+						<Button
+							variant="primary"
+							className="dlx-patterns-view-quick-button"
+						>
+							{ __( 'Add New Pattern', 'pattern-wrangler' ) }
+						</Button>
+						<Button
+							variant="secondary"
+							className="dlx-patterns-view-quick-button"
+						>
+							{ __( 'Import Pattern From JSON File', 'pattern-wrangler' ) }
+						</Button>
+					</div>
+					<div className="dlx-patterns-view-grid">
+						<div className="dlx-patterns-view-search-filters-wrapper">
+							<DataViews.Search />
+							<DataViews.FiltersToggle />
+						</div>
+						<div className="dlx-patterns-view-button-actions-wrapper">
+							<ToggleGroupControl
+								label={ __( 'Pattern Type', 'pattern-wrangler' ) }
+								value={ view?.filters?.find( ( filter ) => filter.field === 'patternType' )?.value || 'all' }
+								onChange={ ( value ) => {
+									const myNewView = { ...view };
+									// Merge with existing filters, replacing patternType if it exists
+									const existingFilters =
+										myNewView.filters?.filter(
+											( filter ) => filter.field !== 'patternType'
+										) || [];
+									myNewView.filters = [
+										...existingFilters,
+										{ field: 'patternType', operator: 'is', value },
+									];
+									// Reset to first page when filter changes
+									myNewView.page = 1;
+									onChangeView( myNewView );
+								} }
+							>
+								<ToggleGroupControlOption
+									value="local"
+									label={ __( 'Local', 'pattern-wrangler' ) }
+								/>
+								<ToggleGroupControlOption
+									value="all"
+									label={ __( 'All', 'pattern-wrangler' ) }
+								/>
+								<ToggleGroupControlOption
+									value="registered"
+									label={ __( 'Registered', 'pattern-wrangler' ) }
+								/>
+							</ToggleGroupControl>
+							{
+								// If patttern type is local, show synced|both|unsynced buttons.
+								view?.filters?.find( ( filter ) => filter.field === 'patternType' )
+									?.value === 'local' && (
+									<>
+										<ToggleGroupControl
+											label={ __( 'Pattern Status', 'pattern-wrangler' ) }
+											value={ view?.filters?.find( ( filter ) => filter.field === 'patternStatus' )?.value || 'both' }
+											onChange={ ( value ) => {
+												const myNewView = { ...view };
+												// Merge with existing filters, replacing patternStatus if it exists
+												const existingFilters =
+													myNewView.filters?.filter(
+														( filter ) => filter.field !== 'patternStatus'
+													) || [];
+												myNewView.filters = [
+													...existingFilters,
+													{ field: 'patternStatus', operator: 'is', value },
+												];
+												// Reset to first page when filter changes
+												myNewView.page = 1;
+												onChangeView( myNewView );
+											} }
+										>
+											<ToggleGroupControlOption
+												value="unsynced"
+												label={ __( 'Unsynced', 'pattern-wrangler' ) }
+											/>
+											<ToggleGroupControlOption
+												value="both"
+												label={ __( 'Both', 'pattern-wrangler' ) }
+											/>
+											<ToggleGroupControlOption
+												value="synced"
+												label={ __( 'Synced', 'pattern-wrangler' ) }
+											/>
+										</ToggleGroupControl>
+									</>
+								)
+							}
+						</div>
+						<div className="dlx-patterns-view-layout-pagination-wrapper">
+							<DataViews.ViewConfig />
+							<DataViews.LayoutSwitcher />
+						</div>
+					</div>
+					<div className="dlx-patterns-view-filters-wrapper">
+						<DataViews.Filters />
+					</div>
+					<DataViews.Layout />
+					<DataViews.BulkActionToolbar />
+					<DataViews.Pagination />
+				</DataViews>
+
+				{ snackbar.isVisible && (
+					<Snackbar
+						isVisible={ snackbar.isVisible }
+						message={ snackbar.message }
+						title={ snackbar.title }
+						type={ snackbar.type }
+						onClose={ () => {
+							setSnackbar( {
+								isVisible: false,
+							} );
+						} }
+					/>
+				) }
+			</div>
 		</div>
 	);
 };

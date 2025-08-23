@@ -6,6 +6,33 @@
     transform: rotate(360deg);
   }
 }
+/* Make interface full-width/full-height */
+#wpcontent {
+  position: relative;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  position: relative;
+  background-color: #FFFFFF;
+}
+
+#wpbody-content {
+  padding: 0;
+  margin: 0;
+}
+
+#wpfooter {
+  display: none;
+}
+
+/* hide notices (only on our screen) */
+body .notice,
+body .updated,
+body div.updated.success,
+body div.updated.error,
+body div.updated.warning {
+  display: none !important;
+}
+
 .fancybox__container {
   z-index: 100000;
 }
@@ -15,6 +42,56 @@
 }
 .dlx-patterns-view-container .components-card {
   max-width: 100%;
+}
+
+.dlx-patterns-view-container-wrapper {
+  padding: 24px 48px;
+}
+.dlx-patterns-view-container-wrapper .dataviews-view-grid {
+  padding-left: 0;
+  padding-right: 0;
+}
+.dlx-patterns-view-container-wrapper .dataviews-wrapper {
+  overflow: visible;
+}
+.dlx-patterns-view-container-wrapper .dataviews-view-grid .dataviews-view-grid__card {
+  display: flex;
+  background-color: #eaeaea;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #eaeaea;
+  border: 1px solid #eaeaea;
+}
+.dlx-patterns-view-container-wrapper .components-button.is-pressed:hover:not(:disabled, [aria-disabled=true]), .dlx-patterns-view-container-wrapper .components-button.is-pressed:not(:disabled, [aria-disabled=true]) {
+  background-color: var(--wp-components-color-foreground, #1e1e1e);
+  color: var(--wp-components-color-background, #fff);
+}
+
+.dlx-patterns-view-quick-buttons-wrapper {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-bottom: 16px;
+}
+
+.dlx-patterns-view-search-filters-wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: start;
+}
+
+.dlx-patterns-view-grid {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: end;
+  padding-bottom: 16px;
+}
+
+.dlx-patterns-view-filters-wrapper {
+  padding-bottom: 16px;
 }
 
 .pattern-preview-iframe-wrapper {
@@ -121,6 +198,7 @@
 
 .dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__title-field {
   display: flex;
+  padding-left: 16px;
 }
 
 .dlx-patterns-view-container .dataviews-view-grid__card {

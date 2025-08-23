@@ -604,9 +604,7 @@ class Admin {
 	 */
 	public function enhanced_patterns_view() {
 		?>
-		<div class="wrap">
-			<div id="dlx-pattern-wrangler-view"></div>
-		</div>
+		<div id="dlx-pattern-wrangler-view"></div>
 		<?php
 	}
 }
