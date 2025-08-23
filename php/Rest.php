@@ -211,8 +211,13 @@ class Rest {
 			);
 		}
 
-		// Sort patterns by title.
-		ksort( $patterns );
+		// Sort patterns by title ascending.
+		usort(
+			$patterns,
+			function ( $a, $b ) {
+				return strcmp( $a['title'], $b['title'] );
+			}
+		);
 
 		// Reindex array.
 		$patterns = array_values( $patterns );

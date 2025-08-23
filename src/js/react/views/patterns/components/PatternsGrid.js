@@ -252,12 +252,12 @@ const Interface = ( props ) => {
 			totalItems: patterns.length,
 			totalPages: 0,
 		},
-		page: 1,
-		perPage: 12,
+		page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
+		perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 12,
 		defaultPerPage: 12,
 		sort: {
-			field: 'title',
-			direction: 'desc',
+			field: escapeAttribute( getQueryArgs( window.location.href ).orderby || 'title' ),
+			direction: escapeAttribute( getQueryArgs( window.location.href ).order || 'asc' ),
 		},
 		titleField: 'title',
 		mediaField: 'pattern-view-json',
@@ -587,14 +587,14 @@ const Interface = ( props ) => {
 			patternsCopy = [ ...data.patterns ];
 		}
 
-		// Set up order and orderby.
-		const orderBy = getQueryArgs( window.location.href ).orderby;
-		const order = getQueryArgs( window.location.href ).order;
+		const orderBy = newView?.sort?.field;
+		const order = newView?.sort?.direction;
+
 		if ( 'title' === orderBy ) {
-			if ( 'asc' === order ) {
-				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
-			} else {
+			if ( 'desc' === order ) {
 				patternsCopy.sort( ( a, b ) => b.title.localeCompare( a.title ) );
+			} else {
+				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
 			}
 		}
 
@@ -700,39 +700,37 @@ const Interface = ( props ) => {
 	 */
 	const onChangeView = ( newView ) => {
 		// Create query args object with view state.
-		const changeQueryArgs = {
-			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
-			per_page: newView.perPage,
-			view_type: newView.type,
-			search: newView.search,
-			orderby: newView.sort?.field,
-			order: newView.sort?.direction,
-		};
+		const changeQueryArgs = getQueryArgs( window.location.href );
+		console.log( newView );
+		changeQueryArgs.paged = newView.page || 1;
+		changeQueryArgs.perPage = newView.perPage;
+
+		// Only add search if it exists.
+		if ( newView.search ) {
+			changeQueryArgs.search = newView.search;
+		}
+
+		// Add sort parameters if they exist.
+		if ( newView.sort?.field ) {
+			changeQueryArgs.orderby = newView.sort.field;
+			changeQueryArgs.order = newView.sort.direction;
+		}
+
+		// Update URL without page reload using addQueryArgs.
+		let newUrl = addQueryArgs( window.location.pathname, changeQueryArgs );
+		if ( getQueryArgs( window.location.href ).search && ! newView.search ) {
+			newUrl = removeQueryArgs( newUrl, 'search' );
+		}
+
+		setPatternsDisplay( getPatternsForDisplay( newView ) );
+
+		window.history.pushState( {}, '', newUrl );
 
 		setView( {
 			...newView,
 			...changeQueryArgs,
 
 		} );
-
-		// Only add search if it exists.
-		if ( newView.search ) {
-			queryArgs.search = newView.search;
-		}
-
-		// Add sort parameters if they exist.
-		if ( newView.sort?.field ) {
-			queryArgs.orderby = newView.sort.field;
-			queryArgs.order = newView.sort.direction;
-		}
-
-		// Update URL without page reload using addQueryArgs.
-		let newUrl = addQueryArgs( window.location.pathname, queryArgs );
-
-		const patternsToShow = getPatternsForDisplay( newView );
-		setPatternsDisplay( patternsToShow );
-
-		window.history.pushState( {}, '', newUrl );
 
 		// Update the view state.
 		//setView( newView );

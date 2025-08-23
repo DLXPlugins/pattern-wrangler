@@ -493,12 +493,12 @@ var Interface = function Interface(props) {
         totalItems: patterns.length,
         totalPages: 0
       },
-      page: 1,
-      perPage: 12,
+      page: parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).paged) || 1,
+      perPage: parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).perPage) || 12,
       defaultPerPage: 12,
       sort: {
-        field: 'title',
-        direction: 'desc'
+        field: (0,_wordpress_escape_html__WEBPACK_IMPORTED_MODULE_4__.escapeAttribute)((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).orderby || 'title'),
+        direction: (0,_wordpress_escape_html__WEBPACK_IMPORTED_MODULE_4__.escapeAttribute)((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).order || 'asc')
       },
       titleField: 'title',
       mediaField: 'pattern-view-json',
@@ -778,22 +778,21 @@ var Interface = function Interface(props) {
    * @return {Array} The patterns for display.
    */
   var getPatternsForDisplay = function getPatternsForDisplay(newView) {
+    var _newView$sort, _newView$sort2;
     var patternsCopy = _toConsumableArray(patterns);
     if (null === patternsCopy || 0 === patternsCopy.length) {
       patternsCopy = _toConsumableArray(data.patterns);
     }
-
-    // Set up order and orderby.
-    var orderBy = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).orderby;
-    var order = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).order;
+    var orderBy = newView === null || newView === void 0 || (_newView$sort = newView.sort) === null || _newView$sort === void 0 ? void 0 : _newView$sort.field;
+    var order = newView === null || newView === void 0 || (_newView$sort2 = newView.sort) === null || _newView$sort2 === void 0 ? void 0 : _newView$sort2.direction;
     if ('title' === orderBy) {
-      if ('asc' === order) {
+      if ('desc' === order) {
         patternsCopy.sort(function (a, b) {
-          return a.title.localeCompare(b.title);
+          return b.title.localeCompare(a.title);
         });
       } else {
         patternsCopy.sort(function (a, b) {
-          return b.title.localeCompare(a.title);
+          return a.title.localeCompare(b.title);
         });
       }
     }
@@ -892,34 +891,32 @@ var Interface = function Interface(props) {
    * @param {Object} newView The new view object.
    */
   var onChangeView = function onChangeView(newView) {
-    var _newView$sort, _newView$sort2, _newView$sort3;
+    var _newView$sort3;
     // Create query args object with view state.
-    var changeQueryArgs = {
-      page: parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).paged) || 1,
-      per_page: newView.perPage,
-      view_type: newView.type,
-      search: newView.search,
-      orderby: (_newView$sort = newView.sort) === null || _newView$sort === void 0 ? void 0 : _newView$sort.field,
-      order: (_newView$sort2 = newView.sort) === null || _newView$sort2 === void 0 ? void 0 : _newView$sort2.direction
-    };
-    setView(_objectSpread(_objectSpread({}, newView), changeQueryArgs));
+    var changeQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href);
+    console.log(newView);
+    changeQueryArgs.paged = newView.page || 1;
+    changeQueryArgs.perPage = newView.perPage;
 
     // Only add search if it exists.
     if (newView.search) {
-      queryArgs.search = newView.search;
+      changeQueryArgs.search = newView.search;
     }
 
     // Add sort parameters if they exist.
     if ((_newView$sort3 = newView.sort) !== null && _newView$sort3 !== void 0 && _newView$sort3.field) {
-      queryArgs.orderby = newView.sort.field;
-      queryArgs.order = newView.sort.direction;
+      changeQueryArgs.orderby = newView.sort.field;
+      changeQueryArgs.order = newView.sort.direction;
     }
 
     // Update URL without page reload using addQueryArgs.
-    var newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.addQueryArgs)(window.location.pathname, queryArgs);
-    var patternsToShow = getPatternsForDisplay(newView);
-    setPatternsDisplay(patternsToShow);
+    var newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.addQueryArgs)(window.location.pathname, changeQueryArgs);
+    if ((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).search && !newView.search) {
+      newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(newUrl, 'search');
+    }
+    setPatternsDisplay(getPatternsForDisplay(newView));
     window.history.pushState({}, '', newUrl);
+    setView(_objectSpread(_objectSpread({}, newView), changeQueryArgs));
 
     // Update the view state.
     //setView( newView );
@@ -1225,4 +1222,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=4eb4cdc7f2dedfb4230c
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=e27cf22756a1b9417971
