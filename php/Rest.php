@@ -129,6 +129,7 @@ class Rest {
 				'enabled'     => true,
 				'count'       => 0,
 				'mappedTo'    => false,
+				'registered'  => true,
 			);
 		}
 
@@ -142,6 +143,7 @@ class Rest {
 				'enabled'     => true,
 				'count'       => $local_category->count,
 				'mappedTo'    => false,
+				'registered'  => false,
 			);
 		}
 

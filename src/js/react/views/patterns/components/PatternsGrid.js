@@ -28,10 +28,11 @@ import {
 	removeQueryArgs,
 	cleanForSlug,
 } from '@wordpress/url';
-import { dispatch, select, useDispatch } from '@wordpress/data';
-import PatternsViewStore from '../store';
+// import { dispatch, select, useDispatch } from '@wordpress/data';
+// import PatternsViewStore from '../store';
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import Snackbar from './Snackbar';
+import PatternCreateModal from './PatternCreateModal';
 
 // Enhanced iframe component that works with the existing PHP scaling system.
 const ResponsiveIframe = ( { src, title, item } ) => {
@@ -235,7 +236,7 @@ const PatternsGrid = ( props ) => {
 };
 
 // Get query args from current URL.
-const queryArgs = getQueryArgs( window.location.href );
+// const queryArgs = getQueryArgs( window.location.href );
 
 const Interface = ( props ) => {
 	const { defaults } = props;
@@ -244,7 +245,9 @@ const Interface = ( props ) => {
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const [ patterns, setPatterns ] = useState( [] );
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
+	
 	const [ categories, setCategories ] = useState( [] );
+	const [ localCategories, setLocalCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
 	const [ snackbar, setSnackbar ] = useState( {
 		isVisible: false,
@@ -252,9 +255,9 @@ const Interface = ( props ) => {
 		title: '',
 		type: '',
 	} );
-	const [ isFiltersOpen, setIsFiltersOpen ] = useState( false );
+	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] = useState( false );
 
-	const { setViewType } = useDispatch( PatternsViewStore );
+	// const { setViewType } = useDispatch( PatternsViewStore );
 
 	const [ view, setView ] = useState( {
 		type: 'grid',
@@ -281,7 +284,7 @@ const Interface = ( props ) => {
 		search: escapeAttribute( getQueryArgs( window.location.href )?.search || '' ),
 	} );
 
-	const fields = [
+	const fields = useMemo( () => [
 		{
 			id: 'title',
 			label: __( 'Title', 'pattern-wrangler' ),
@@ -446,9 +449,9 @@ const Interface = ( props ) => {
 			id: 'patternStatus',
 			label: __( 'Pattern Status', 'pattern-wrangler' ),
 		},
-	];
+	], [ categories ] );
 
-	const actions = [
+	const actions = useMemo( () => [
 		{
 			id: 'edit',
 			label: __( 'Edit', 'pattern-wrangler' ),
@@ -595,7 +598,7 @@ const Interface = ( props ) => {
 			isPrimary: false,
 			isDestructive: false,
 		},
-	];
+	], [] );
 
 	// const { data, isLoading, error } = useQuery( {
 	// 	queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
@@ -926,6 +929,7 @@ const Interface = ( props ) => {
 				const fieldsIndex = fields.findIndex(
 					( field ) => field.id === 'categories'
 				);
+				const originalLocalCategories = [];
 				let maybeDuplicateLabel = '';
 				fields[ fieldsIndex ].elements = Object.values( data.categories ).map(
 					( category ) => {
@@ -934,6 +938,9 @@ const Interface = ( props ) => {
 							catLabel = `${ catLabel } (${ category.count + 1 })`;
 						}
 						maybeDuplicateLabel = category.label;
+						if ( ! category.registered ) {
+							originalLocalCategories.push( { value: category.id, label: category.label } );
+						}
 						return {
 							label: catLabel,
 							value: category.slug,
@@ -946,6 +953,7 @@ const Interface = ( props ) => {
 				};
 				// Force view to re-render.
 				setCategories( data.categories );
+				setLocalCategories( originalLocalCategories );
 				setView( newViewCopy );
 
 				// Now filter the patterns.
@@ -992,6 +1000,9 @@ const Interface = ( props ) => {
 						<Button
 							variant="primary"
 							className="dlx-patterns-view-quick-button"
+							onClick={ () => {
+								setIsAddNewPatternModalOpen( true );
+							} }
 						>
 							{ __( 'Add New Pattern', 'pattern-wrangler' ) }
 						</Button>
@@ -1124,6 +1135,13 @@ const Interface = ( props ) => {
 					/>
 				) }
 			</div>
+			{ isAddNewPatternModalOpen && (
+				<PatternCreateModal
+					isOpen={ isAddNewPatternModalOpen }
+					onRequestClose={ () => setIsAddNewPatternModalOpen( false ) }
+					categories={ localCategories }
+				/>
+			) }
 		</div>
 	);
 };
