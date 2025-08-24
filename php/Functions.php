@@ -336,7 +336,7 @@ class Functions {
 		if ( $is_multisite ) {
 			// Get network values.
 			$network_options      = Options::get_network_options();
-			$hide_remote_patterns = (bool) $network_options['hideRemotePatterns'] ?? false;
+			$hide_remote_patterns = 'hide' === $network_options['hideRemotePatterns'] ? true : false;
 
 			// Get the site ID. We might need this later.
 			if ( 0 === $site_id ) {

@@ -104,10 +104,6 @@ class Options {
 		$current_options = self::get_network_options( $force );
 		foreach ( $options as $key => &$option ) {
 			switch ( $key ) {
-				case 'hideCorePatterns':
-				case 'hideRemotePatterns':
-				case 'hideSyncedPatternsForNetwork':
-				case 'hideUnsyncedPatternsForNetwork':
 				case 'disablePatternImporterBlock':
 				case 'disablePatternExporterForNetwork':
 				case 'enableEnhancedView':
@@ -215,13 +211,17 @@ class Options {
 		$defaults = array(
 			'patternMothershipSiteId'          => 1,
 			'patternConfiguration'             => 'hybrid', // Can be `nework_only`, `local_only`, `hybrid`, or `disabled`.
-			'hideSyncedPatternsForNetwork'     => false, // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
-			'hideUnsyncedPatternsForNetwork'   => false, // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.
+			'hideSyncedPatternsForNetwork'     => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
+			'hideUnsyncedPatternsForNetwork'   => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.
 			'disablePatternImporterBlock'      => false, // If false, site admins can still configure this option per site.
 			'disablePatternExporterForNetwork' => false, // If true, site admins will not see a pattern exporter option.
-			'hideCorePatterns'                 => false,
-			'hideRemotePatterns'               => false,
+			'hideCorePatterns'                 => 'default',
+			'hideRemotePatterns'               => 'default',
 			'enableEnhancedView'               => true,
+			'hideAllPatterns'                  => 'default',
+			'hideThemePatterns'                => 'default',
+			'hidePluginPatterns'               => 'default',
+			'hideUncategorizedPatterns'        => 'default',
 		);
 		/**
 		 * Allow options to be extended by plugins.

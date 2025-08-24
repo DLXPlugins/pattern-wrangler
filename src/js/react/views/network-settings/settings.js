@@ -9,6 +9,8 @@ import {
 	Popover,
 	BaseControl,
 	Button,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { useAsyncResource } from 'use-async-resource';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
@@ -58,6 +60,10 @@ const Settings = ( props ) => {
 			disablePatternExporterForNetwork: data.disablePatternExporterForNetwork,
 			hideCorePatterns: data.hideCorePatterns,
 			hideRemotePatterns: data.hideRemotePatterns,
+			hideAllPatterns: data.hideAllPatterns,
+			hideThemePatterns: data.hideThemePatterns,
+			hidePluginPatterns: data.hidePluginPatterns,
+			hideUncategorizedPatterns: data.hideUncategorizedPatterns,
 		},
 	} );
 	const formValues = useWatch( { control } );
@@ -189,14 +195,86 @@ const Settings = ( props ) => {
 									<div className="dlx-admin__row">
 										<Controller
 											control={ control }
+											name="hideAllPatterns"
+											render={ ( { field } ) => (
+												<>
+													<ToggleGroupControl
+														label={ __( 'Hide All Patterns', 'pattern-wrangler' ) }
+														isAdaptiveWidth={ true }
+														value={ field.value }
+														onChange={ ( value ) => {
+															field.onChange( value );
+														} }
+													>
+														<ToggleGroupControlOption
+															value="hide"
+															label={ __( 'Hide', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Hide All Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+														<ToggleGroupControlOption
+															value="default"
+															label={ __( 'Default', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __( 'No Change. Let site admins decide.', 'pattern-wrangler' ) }
+														/>
+														<ToggleGroupControlOption
+															value="show"
+															label={ __( 'Show', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Show All Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+													</ToggleGroupControl>
+												</>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											control={ control }
 											name="hideCorePatterns"
 											render={ ( { field } ) => (
-												<ToggleControl
-													label={ __( 'Hide Core Patterns', 'pattern-wrangler' ) }
-													help={ __( 'If enabled, core patterns will be hidden from the network.', 'pattern-wrangler' ) }
-													checked={ field.value }
-													onChange={ field.onChange }
-												/>
+												<>
+													<ToggleGroupControl
+														label={ __( 'Hide Core Patterns', 'pattern-wrangler' ) }
+														isAdaptiveWidth={ true }
+														value={ field.value }
+														onChange={ ( value ) => {
+															field.onChange( value );
+														} }
+													>
+														<ToggleGroupControlOption
+															value="hide"
+															label={ __( 'Hide', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Hide Core Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+														<ToggleGroupControlOption
+															value="default"
+															label={ __( 'Default', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __( 'No Change', 'pattern-wrangler' ) }
+														/>
+														<ToggleGroupControlOption
+															value="show"
+															label={ __( 'Show', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Show Core Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+													</ToggleGroupControl>
+												</>
 											) }
 										/>
 									</div>
@@ -205,12 +283,130 @@ const Settings = ( props ) => {
 											control={ control }
 											name="hideRemotePatterns"
 											render={ ( { field } ) => (
-												<ToggleControl
-													label={ __( 'Hide Remote Patterns', 'pattern-wrangler' ) }
-													help={ __( 'If enabled, remote patterns will be hidden from the network.', 'pattern-wrangler' ) }
-													checked={ field.value }
-													onChange={ field.onChange }
-												/>
+												<>
+													<ToggleGroupControl
+														label={ __(
+															'Hide Remote Patterns',
+															'pattern-wrangler'
+														) }
+														isAdaptiveWidth={ true }
+														value={ field.value }
+														onChange={ ( value ) => {
+															field.onChange( value );
+														} }
+													>
+														<ToggleGroupControlOption
+															value="hide"
+															label={ __( 'Hide', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Hide Remote Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+														<ToggleGroupControlOption
+															value="default"
+															label={ __( 'Default', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __( 'No Change', 'pattern-wrangler' ) }
+														/>
+														<ToggleGroupControlOption
+															value="show"
+															label={ __( 'Show', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Show Remote Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+													</ToggleGroupControl>
+												</>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											control={ control }
+											name="hideThemePatterns"
+											render={ ( { field } ) => (
+												<>
+													<ToggleGroupControl
+														label={ __( 'Hide Theme Patterns', 'pattern-wrangler' ) }
+														isAdaptiveWidth={ true }
+														value={ field.value }
+														onChange={ ( value ) => {
+															field.onChange( value );
+														} }
+													>
+														<ToggleGroupControlOption
+															value="hide"
+															label={ __( 'Hide', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Hide Theme Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+														<ToggleGroupControlOption
+															value="default"
+															label={ __( 'Default', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __( 'No Change', 'pattern-wrangler' ) }
+														/>
+														<ToggleGroupControlOption
+															value="show"
+															label={ __( 'Show', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Show Theme Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+													</ToggleGroupControl>
+												</>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											control={ control }
+											name="hidePluginPatterns"
+											render={ ( { field } ) => (
+												<>
+													<ToggleGroupControl
+														label={ __( 'Hide Plugin Patterns', 'pattern-wrangler' ) }
+														isAdaptiveWidth={ true }
+														value={ field.value }
+														onChange={ ( value ) => {
+															field.onChange( value );
+														} }
+													>
+														<ToggleGroupControlOption
+															value="hide"
+															label={ __( 'Hide', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Hide Plugin Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+														<ToggleGroupControlOption
+															value="default"
+															label={ __( 'Default', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __( 'No Change', 'pattern-wrangler' ) }
+														/>
+														<ToggleGroupControlOption
+															value="show"
+															label={ __( 'Show', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Show Plugin Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+													</ToggleGroupControl>
+												</>
 											) }
 										/>
 									</div>
@@ -219,12 +415,44 @@ const Settings = ( props ) => {
 											control={ control }
 											name="hideSyncedPatternsForNetwork"
 											render={ ( { field } ) => (
-												<ToggleControl
-													label={ __( 'Hide Synced Patterns', 'pattern-wrangler' ) }
-													help={ __( 'If enabled, synced patterns will be hidden from the network.', 'pattern-wrangler' ) }
-													checked={ field.value }
-													onChange={ field.onChange }
-												/>
+												<>
+													<ToggleGroupControl
+														label={ __(
+															'Hide Synced Patterns',
+															'pattern-wrangler'
+														) }
+														isAdaptiveWidth={ true }
+														value={ field.value }
+														onChange={ ( value ) => {
+															field.onChange( value );
+														} }
+													>
+														<ToggleGroupControlOption
+															value="hide"
+															label={ __( 'Hide', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Hide Synced Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+														<ToggleGroupControlOption
+															value="default"
+															label={ __( 'Default', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __( 'No Change', 'pattern-wrangler' ) }
+														/>
+														<ToggleGroupControlOption
+															value="show"
+															label={ __( 'Show', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Show Synced Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+													</ToggleGroupControl>
+												</>
 											) }
 										/>
 									</div>
@@ -233,21 +461,51 @@ const Settings = ( props ) => {
 											control={ control }
 											name="hideUnsyncedPatternsForNetwork"
 											render={ ( { field } ) => (
-												<ToggleControl
-													label={ __( 'Hide Unsynced Patterns', 'pattern-wrangler' ) }
-													help={ __( 'If enabled, unsynced patterns will be hidden from the network.', 'pattern-wrangler' ) }
-													checked={ field.value }
-													onChange={ field.onChange }
-												/>
+												<>
+													<ToggleGroupControl
+														label={ __(
+															'Hide Unsynced Patterns',
+															'pattern-wrangler'
+														) }
+														isAdaptiveWidth={ true }
+														value={ field.value }
+														onChange={ ( value ) => {
+															field.onChange( value );
+														} }
+													>
+														<ToggleGroupControlOption
+															value="hide"
+															label={ __( 'Hide', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Hide Unsynced Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+														<ToggleGroupControlOption
+															value="default"
+															label={ __( 'Default', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __( 'No Change', 'pattern-wrangler' ) }
+														/>
+														<ToggleGroupControlOption
+															value="show"
+															label={ __( 'Show', 'pattern-wrangler' ) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Show Unsynced Patterns',
+																'pattern-wrangler'
+															) }
+														/>
+													</ToggleGroupControl>
+												</>
 											) }
 										/>
 									</div>
 								</td>
 							</tr>
 							<tr>
-								<th scope="row">
-									{ __( 'Misc Settings', 'pattern-wrangler' ) }
-								</th>
+								<th scope="row">{ __( 'Misc Settings', 'pattern-wrangler' ) }</th>
 								<td>
 									<div className="dlx-admin__row">
 										<Controller
@@ -255,8 +513,14 @@ const Settings = ( props ) => {
 											name="disablePatternImporterBlock"
 											render={ ( { field } ) => (
 												<ToggleControl
-													label={ __( 'Disable Patterns Importer Block', 'pattern-wrangler' ) }
-													help={ __( 'If enabled, the Patterns Importer block will be disabled for all sites in the network.', 'pattern-wrangler' ) }
+													label={ __(
+														'Disable Patterns Importer Block',
+														'pattern-wrangler'
+													) }
+													help={ __(
+														'If enabled, the Patterns Importer block will be disabled for all sites in the network.',
+														'pattern-wrangler'
+													) }
 													checked={ field.value }
 													onChange={ field.onChange }
 												/>
@@ -269,8 +533,14 @@ const Settings = ( props ) => {
 											name="disablePatternExporterForNetwork"
 											render={ ( { field } ) => (
 												<ToggleControl
-													label={ __( 'Disable Pattern Exporter', 'pattern-wrangler' ) }
-													help={ __( 'If enabled, the Pattern Exporter will be disabled for all sites in the network.', 'pattern-wrangler' ) }
+													label={ __(
+														'Disable Pattern Exporter',
+														'pattern-wrangler'
+													) }
+													help={ __(
+														'If enabled, the Pattern Exporter will be disabled for all sites in the network.',
+														'pattern-wrangler'
+													) }
 													checked={ field.value }
 													onChange={ field.onChange }
 												/>
