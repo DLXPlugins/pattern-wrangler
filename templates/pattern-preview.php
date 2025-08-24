@@ -56,7 +56,7 @@ if ( is_numeric( $pattern_id ) ) {
 } elseif ( empty( $pattern_content ) && $pattern_id ) {
 	$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 	foreach ( $registered_patterns as $pattern ) {
-		if ( $pattern_id === $pattern['slug'] ) {
+		if ( $pattern_id === $pattern['slug'] || $pattern_id === $pattern['name'] ) {
 			$pattern_content = $pattern['content'];
 			$viewport_width  = absint( $pattern['viewportWidth'] );
 			break;
@@ -69,6 +69,45 @@ if ( is_numeric( $pattern_id ) ) {
 	die( 'Invalid pattern ID.' );
 }
 
+/**
+ * Get first published post with featured image and set query to it. This is so blog posts and such can be displayed in the preview.
+ */
+$posts = get_posts(
+	array(
+		'post_type'      => 'any',
+		'posts_per_page' => 1,
+		'post_status'    => 'publish',
+		'meta_query'     => array(
+			array(
+				'key'     => '_thumbnail_id',
+				'compare' => 'EXISTS',
+			),
+		),
+	)
+);
+// If empty, try to get first one without featured image.
+if ( empty( $posts ) ) {
+	$posts = get_posts(
+		array(
+			'post_type'      => 'post',
+			'posts_per_page' => 1,
+			'post_status'    => 'publish',
+		)
+	);
+}
+// This is so blog posts and such can be displayed in the preview by overriding the query.
+if ( ! empty( $posts ) ) {
+	global $wp_query, $post;
+	$wp_query = new \WP_Query(
+		array(
+			'p'         => $posts[0]->ID,
+			'post_type' => 'any',
+		)
+	);
+	$post     = $posts[0];
+	\setup_postdata( $posts[0] );
+
+}
 /**
  * Filter to get the scale.
  *
@@ -243,5 +282,4 @@ if ( ! wp_is_block_theme() ) {
 	</html>
 	<?php
 }
-		$wp_query = $temp;
 		wp_reset_postdata();

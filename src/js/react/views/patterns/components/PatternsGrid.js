@@ -965,8 +965,6 @@ const Interface = ( props ) => {
 		return <>Loading...</>;
 	}
 
-	console.log( 'view', view );
-
 	return (
 		<div className="dlx-patterns-view-container-wrapper">
 			<div className="dlx-patterns-view-container">

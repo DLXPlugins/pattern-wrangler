@@ -9405,7 +9405,7 @@ function invariant(condition, message) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "" + chunkId + ".js?ver=" + {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-2f0ee2":"6bd7663bbcbdc182063c","src_js_react_views_patterns_components_PatternsGrid_js":"d26a6d2cc1c7ae1b031b"}[chunkId] + "";
+/******/ 			return "" + chunkId + ".js?ver=" + {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-2f0ee2":"6bd7663bbcbdc182063c","src_js_react_views_patterns_components_PatternsGrid_js":"557278a091e3f39923c2"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	

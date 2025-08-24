@@ -1124,7 +1124,6 @@ var Interface = function Interface(props) {
   if (loading) {
     return /*#__PURE__*/React.createElement(React.Fragment, null, "Loading...");
   }
-  console.log('view', view);
   return /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-container-wrapper"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1487,4 +1486,4 @@ var PatternsViewStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRe
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=d26a6d2cc1c7ae1b031b
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=557278a091e3f39923c2
