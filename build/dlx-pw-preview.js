@@ -2,13 +2,13 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "@wordpress/data":
-/*!******************************!*\
-  !*** external ["wp","data"] ***!
-  \******************************/
+/***/ "@wordpress/components":
+/*!************************************!*\
+  !*** external ["wp","components"] ***!
+  \************************************/
 /***/ ((module) => {
 
-module.exports = window["wp"]["data"];
+module.exports = window["wp"]["components"];
 
 /***/ }),
 
@@ -119,49 +119,57 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/plugins */ "@wordpress/plugins");
-/* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_plugins__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/plugins */ "@wordpress/plugins");
+/* harmony import */ var _wordpress_plugins__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_plugins__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/editor */ "@wordpress/editor");
+/* harmony import */ var _wordpress_editor__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_editor__WEBPACK_IMPORTED_MODULE_3__);
 
 
 
 
-// Try to get ActionItem, but don't fail if it's not available
-var PluginPreviewMenuItem;
-try {
-  var _require = __webpack_require__(/*! @wordpress/editor */ "@wordpress/editor"),
-    ImportedPluginPreviewMenuItem = _require.PluginPreviewMenuItem;
-  PluginPreviewMenuItem = ImportedPluginPreviewMenuItem;
-} catch (e) {
-  // ActionItem not available
-}
 
 /**
  * Render a Preview Button.
  *
- * @return {Object|null} The rendered component or null if ActionItem not available.
+ * @return {Object} The rendered component.
  */
 var PatternPreviewButton = function PatternPreviewButton() {
-  // Return early if ActionItem isn't available
-  if (!PluginPreviewMenuItem) {
-    return null;
-  }
-  return /*#__PURE__*/React.createElement(PluginPreviewMenuItem, {
+  return /*#__PURE__*/React.createElement(_wordpress_editor__WEBPACK_IMPORTED_MODULE_3__.PluginPostStatusInfo, {
     icon: "external",
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Preview Pattern', 'pattern-wrangler'),
-    onClick: function onClick() {
-      window.open(dlxPatternWranglerPreview.previewUrl, '_blank');
-    }
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Preview Pattern', 'pattern-wrangler'));
+    className: "dlx-pw-preview-sidebar"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "dlx-pw-preview-sidebar-content"
+  }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Tooltip, {
+    text: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Preview Pattern in new tab', 'pattern-wrangler')
+  }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+    variant: "tertiary",
+    href: dlxPatternWranglerPreview.previewUrl,
+    target: "_blank",
+    icon: "external",
+    iconPosition: "right",
+    rel: "noopener noreferrer",
+    className: "button button-secondary",
+    showTooltip: true,
+    style: {
+      margin: 0,
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '0.5em 1em',
+      fontSize: '1em',
+      fontWeight: 'normal',
+      lineHeight: '1.5',
+      textDecoration: 'none'
+    },
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Preview Pattern in new tab', 'pattern-wrangler')
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Preview Pattern', 'pattern-wrangler')))));
 };
-
-// Only register if ActionItem is available
-if (PluginPreviewMenuItem) {
-  (0,_wordpress_plugins__WEBPACK_IMPORTED_MODULE_1__.registerPlugin)('dlx-pattern-wrangler-preview-button', {
-    render: PatternPreviewButton
-  });
-}
+(0,_wordpress_plugins__WEBPACK_IMPORTED_MODULE_2__.registerPlugin)('dlx-pattern-wrangler-preview-button', {
+  render: PatternPreviewButton
+});
 })();
 
 /******/ })()

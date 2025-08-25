@@ -244,6 +244,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var use_async_resource__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! use-async-resource */ "./node_modules/use-async-resource/lib/index.js");
 /* harmony import */ var use_async_resource__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(use_async_resource__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/triangle-alert.js");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var react_hook_form__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react-hook-form */ "./node_modules/react-hook-form/dist/index.esm.mjs");
@@ -385,7 +386,7 @@ var PatternCreateModal = function PatternCreateModal(props) {
     control: control,
     name: "patternTitle",
     rules: {
-      required: true
+      required: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Pattern title is required.', 'pattern-wrangler')
     },
     render: function render(_ref2) {
       var field = _ref2.field;
@@ -457,7 +458,14 @@ var PatternCreateModal = function PatternCreateModal(props) {
     variant: "secondary",
     onClick: props.onRequestClose,
     disabled: isSaving
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Cancel', 'pattern-wrangler')))))));
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Cancel', 'pattern-wrangler'))), (errors === null || errors === void 0 ? void 0 : errors.patternTitle) && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_Notice__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    className: "dlx-pw-admin-notice",
+    status: "error",
+    inline: true,
+    icon: function icon() {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(lucide_react__WEBPACK_IMPORTED_MODULE_9__["default"], null);
+    }
+  }, errors.patternTitle.message)))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PatternCreateModal);
 
@@ -1799,4 +1807,4 @@ var Snackbar = function Snackbar(props) {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=d851ffd8575263544c68
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=b38ec96f8e033f66d9e3

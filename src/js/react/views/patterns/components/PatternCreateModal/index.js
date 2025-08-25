@@ -112,7 +112,9 @@ const PatternCreateModal = ( props ) => {
 							<Controller
 								control={ control }
 								name="patternTitle"
-								rules={ { required: true } }
+								rules={ { 
+									required: __( 'Pattern title is required.', 'pattern-wrangler' ) 
+								} }
 								render={ ( { field } ) => (
 									<TextControl
 										label={ __( 'Pattern Title', 'pattern-wrangler' ) }
@@ -196,6 +198,18 @@ const PatternCreateModal = ( props ) => {
 								{ __( 'Cancel', 'pattern-wrangler' ) }
 							</Button>
 						</div>
+						{
+							errors?.patternTitle && (
+								<Notice
+									className="dlx-pw-admin-notice"
+									status="error"
+									inline={ true }
+									icon={ () => <AlertTriangle /> }
+								>
+									{ errors.patternTitle.message }
+								</Notice>
+							)
+						}
 					</form>
 				</div>
 			</Modal>
