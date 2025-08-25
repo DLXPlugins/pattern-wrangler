@@ -14,6 +14,7 @@ import {
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	FormTokenField,
 } from '@wordpress/components';
+import apiFetch from '@wordpress/api-fetch';
 import { useAsyncResource } from 'use-async-resource';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 
@@ -28,11 +29,14 @@ import Notice from '../../../../components/Notice';
 const PatternCreateModal = ( props ) => {
 	const originalCategories = props.categories || [];
 	const categories = ( props.categories || [] ).map( ( category ) => category.label );
+	const [ copyPatternId ] = useState( props.copyPatternId || 0 );
+
+	const [ isSaving, setIsSaving ] = useState( false );
 
 	const {
 		control,
-		handleSubmit,
 		getValues,
+		handleSubmit,
 		reset,
 		setError,
 		trigger,
@@ -40,9 +44,9 @@ const PatternCreateModal = ( props ) => {
 	} = useForm( {
 		defaultValues: {
 			patternTitle: props.patternTitle || '',
-			patternDescription: props.patternDescription || '',
 			patternCategories: props.patternCategories || [],
 			patternSyncStatus: props.patternSyncStatus || 'synced',
+			patternCopyId: copyPatternId,
 		},
 	} );
 	const formValues = useWatch( { control } );
@@ -59,9 +63,40 @@ const PatternCreateModal = ( props ) => {
 	 */
 	const getIdByValue = ( labelValue ) => {
 		const label = originalCategories.find(
-			( findLabel ) => findLabel.label === labelValue
+			( findLabel ) => findLabel.label.toLowerCase() === labelValue.toLowerCase()
 		);
-		return label ? label.id : null;
+		return label ? label.id : 0;
+	};
+
+	const onSubmit = async ( formData ) => {
+		setIsSaving( true );
+
+		const newCategories = formData.patternCategories.map( ( category ) => {
+			return {
+				name: category,
+				id: getIdByValue( category ),
+			};
+		} );
+
+		const response = await apiFetch( {
+			path: '/dlxplugins/pattern-wrangler/v1/patterns/create/',
+			method: 'POST',
+			data: {
+				nonce: dlxEnhancedPatternsView.createNonce,
+				patternTitle: formData.patternTitle,
+				patternCategories: newCategories,
+				patternSyncStatus: formData.patternSyncStatus,
+				patternCopyId: formData.patternCopyId,
+			},
+		} );
+		if ( response?.error ) {
+			setError( 'patternTitle', { message: response.error } );
+		} else {
+			const patternId = response.patternId;
+			const redirectUrl = encodeURIComponent( window.location.href );
+			window.location.href = `/wp-admin/post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
+		}
+		setIsSaving( false );
 	};
 
 	return (
@@ -69,15 +104,24 @@ const PatternCreateModal = ( props ) => {
 			<Modal
 				title={ __( 'Add Pattern', 'pattern-wrangler' ) }
 				onRequestClose={ props.onRequestClose }
+				focusOnMount="firstContentElement"
 			>
 				<div className="dlx-pw-modal-content">
-					<form onSubmit={ handleSubmit( ( formData ) => {} ) }>
+					<form onSubmit={ handleSubmit( onSubmit ) }>
 						<div className="dlx-pw-modal-admin-row">
-							<TextControl
-								label={ __( 'Pattern Title', 'pattern-wrangler' ) }
-								help={ __( 'Enter the title of the pattern.', 'pattern-wrangler' ) }
-								value={ formValues.patternTitle }
-								onChange={ ( value ) => setValue( 'patternTitle', value ) }
+							<Controller
+								control={ control }
+								name="patternTitle"
+								rules={ { required: true } }
+								render={ ( { field } ) => (
+									<TextControl
+										label={ __( 'Pattern Title', 'pattern-wrangler' ) }
+										help={ __( 'Enter the title of the pattern.', 'pattern-wrangler' ) }
+										value={ field.value }
+										onChange={ ( value ) => field.onChange( value ) }
+										disabled={ isSaving }
+									/>
+								) }
 							/>
 						</div>
 						<div className="dlx-pw-modal-admin-row">
@@ -95,10 +139,11 @@ const PatternCreateModal = ( props ) => {
 										onChange={ ( tokens ) => {
 											field.onChange( tokens );
 										} }
-										tokenizeOnSpace={ true }
+										tokenizeOnSpace={ false }
 										allowMultiple={ true }
 										placeholder={ __( 'Add a category', 'pattern-wrangler' ) }
 										suggestions={ categories }
+										disabled={ isSaving }
 									/>
 								) }
 							/>
@@ -116,6 +161,7 @@ const PatternCreateModal = ( props ) => {
 											onChange={ ( value ) => {
 												field.onChange( value );
 											} }
+											disabled={ isSaving }
 										>
 											<ToggleGroupControlOption
 												value="synced"
@@ -133,6 +179,22 @@ const PatternCreateModal = ( props ) => {
 									</>
 								) }
 							/>
+						</div>
+						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
+							<Button
+								variant="primary"
+								type="submit"
+								disabled={ isSaving }
+							>
+								{ isSaving ? __( 'Adding Pattern…', 'pattern-wrangler' ) : __( 'Add Pattern', 'pattern-wrangler' ) }
+							</Button>
+							<Button
+								variant="secondary"
+								onClick={ props.onRequestClose }
+								disabled={ isSaving }
+							>
+								{ __( 'Cancel', 'pattern-wrangler' ) }
+							</Button>
 						</div>
 					</form>
 				</div>

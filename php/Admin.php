@@ -518,6 +518,7 @@ class Admin {
 				array(
 					'getNonce'                => wp_create_nonce( 'dlx-pw-patterns-view-get-patterns' ),
 					'restNonce'               => wp_create_nonce( 'wp_rest' ),
+					'createNonce'             => wp_create_nonce( 'dlx-pw-patterns-view-create-pattern' ),
 					'ajaxurl'                 => admin_url( 'admin-ajax.php' ),
 					'options'                 => $options,
 					'networkOptions'          => Options::get_network_options(),

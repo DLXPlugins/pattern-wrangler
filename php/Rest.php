@@ -54,6 +54,9 @@ class Rest {
 			)
 		);
 
+		/**
+		 * For retrieving site patterns for a site.
+		 */
 		register_rest_route(
 			'dlxplugins/pattern-wrangler/v1',
 			'/patterns/all',
@@ -62,27 +65,90 @@ class Rest {
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'rest_get_all_patterns' ),
 					'permission_callback' => function () {
-						return current_user_can( 'edit_posts' );
+						return current_user_can( 'manage_options' );
 					},
 
 				),
 			)
 		);
 
-		// Register route for generating a pattern preview image.
+		/**
+		 * For creating a pattern.
+		 */
 		register_rest_route(
 			'dlxplugins/pattern-wrangler/v1',
-			'/patterns/get_preview',
+			'/patterns/create',
 			array(
 				'methods'             => 'POST',
-				'callback'            => array( $this, 'rest_get_pattern_preview' ),
+				'callback'            => array( $this, 'rest_create_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'edit_posts' );
+					return current_user_can( 'manage_options' );
 				},
-				'sanitize_callback'   => array( $this, 'rest_preview_image_sanitize' ),
-				'validate_callback'   => array( $this, 'rest_preview_image_validate' ),
 			)
 		);
+	}
+
+	/**
+	 * Create a pattern.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_create_pattern( $request ) {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-create-pattern' ) || ! current_user_can( 'manage_options' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
+		}
+
+		$pattern_title       = sanitize_text_field( $request->get_param( 'patternTitle' ) );
+		$pattern_categories  = Functions::sanitize_array_recursive( $request->get_param( 'patternCategories' ) ); // Cats are in format, [name, id].
+		$pattern_sync_status = sanitize_text_field( $request->get_param( 'patternSyncStatus' ) );
+		$pattern_copy_id     = sanitize_text_field( $request->get_param( 'patternCopyId' ) ); // 0 if not copying.
+
+		// Get categories into right format.
+		$categories = array();
+
+		$maybe_pattern_content = Functions::get_pattern_by_id( $pattern_copy_id );
+		$content               = '';
+		if ( null !== $maybe_pattern_content ) {
+			$content = $maybe_pattern_content;
+		}
+
+		// Create the pattern.
+		$pattern_id = wp_insert_post(
+			array(
+				'post_title'   => $pattern_title,
+				'post_content' => $content,
+				'post_status'  => 'publish',
+				'post_type'    => 'wp_block',
+			)
+		);
+
+		// If unsynced, set the sync status.
+		if ( 'unsynced' === $pattern_sync_status ) {
+			update_post_meta( $pattern_id, 'wp_pattern_sync_status', 'unsynced' );
+		}
+
+		// Set categories.
+		foreach ( $pattern_categories as $category ) {
+			if ( is_numeric( $category['id'] ) && 0 !== $category['id'] ) {
+				wp_set_post_terms( $pattern_id, absint( $category['id'] ), 'wp_pattern_category' );
+			} else {
+				wp_set_post_terms( $pattern_id, sanitize_text_field( $category['name'] ), 'wp_pattern_category' );
+			}
+		}
+
+		/**
+		 * Action: dlx_pw_pattern_created
+		 *
+		 * @param int $pattern_id The pattern ID.
+		 */
+		do_action( 'dlx_pw_pattern_created', $pattern_id );
+
+		// Return the pattern ID.
+		return rest_ensure_response( array( 'patternId' => $pattern_id ) );
 	}
 
 	/**
@@ -91,7 +157,7 @@ class Rest {
 	public function rest_get_all_patterns() {
 		// Check nonce and permissions.
 		$nonce = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ) );
-		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-get-patterns' ) || ! current_user_can( 'edit_posts' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-get-patterns' ) || ! current_user_can( 'manage_options' ) ) {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to view patterns.' ) );
 		}
 
@@ -130,6 +196,7 @@ class Rest {
 				'count'       => 0,
 				'mappedTo'    => false,
 				'registered'  => true,
+				'id'          => 0,
 			);
 		}
 
@@ -144,6 +211,7 @@ class Rest {
 				'count'       => $local_category->count,
 				'mappedTo'    => false,
 				'registered'  => false,
+				'id'          => $local_category->term_id,
 			);
 		}
 

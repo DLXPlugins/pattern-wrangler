@@ -679,6 +679,17 @@ module.exports = window["wp"]["i18n"];
 
 /***/ }),
 
+/***/ "@wordpress/url":
+/*!*****************************!*\
+  !*** external ["wp","url"] ***!
+  \*****************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = window["wp"]["url"];
+
+/***/ }),
+
 /***/ "./node_modules/classnames/index.js":
 /*!******************************************!*\
   !*** ./node_modules/classnames/index.js ***!
@@ -5665,8 +5676,45 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _js_blocks_pattern_importer_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./js/blocks/pattern-importer/index */ "./src/js/blocks/pattern-importer/index.js");
+/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/url */ "@wordpress/url");
+/* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_url__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _js_blocks_pattern_importer_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/blocks/pattern-importer/index */ "./src/js/blocks/pattern-importer/index.js");
 
+
+
+/**
+ * Register a plugin that intercepts the back button if a redirect is in place.
+ */
+wp.domReady(function () {
+  var redirectTo = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_0__.getQueryArg)(window.location.href, 'redirect_to');
+  var tries = 0;
+  if (redirectTo) {
+    // Function to find and update back button
+    var updateBackButton = function updateBackButton() {
+      // Try to find the back button in the current document
+      var backButton = document.querySelector('.edit-post-fullscreen-mode-close');
+      if (backButton) {
+        backButton.href = decodeURIComponent(redirectTo);
+        return true;
+      }
+      return false;
+    };
+
+    // Try immediately
+    if (!updateBackButton()) {
+      // If not found, wait a bit and try again
+      setTimeout(function () {
+        tries++;
+        if (tries < 3 && !updateBackButton()) {
+          // Try one more time after a longer delay
+          setTimeout(updateBackButton, 1000);
+        } else if (tries >= 3) {
+          console.error('Pattern Wrangler: Failed to find back button after 3 tries.');
+        }
+      }, 500);
+    }
+  }
+});
 })();
 
 /******/ })()

@@ -939,7 +939,7 @@ const Interface = ( props ) => {
 						}
 						maybeDuplicateLabel = category.label;
 						if ( ! category.registered ) {
-							originalLocalCategories.push( { value: category.id, label: category.label } );
+							originalLocalCategories.push( { id: category.id, label: category.label } );
 						}
 						return {
 							label: catLabel,

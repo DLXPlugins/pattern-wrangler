@@ -335,3 +335,16 @@ body div.updated.warning {
   background: #FFC107;
   color: #000;
 }
+
+.dlx-pw-modal-admin-row-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+  align-items: center;
+  padding-top: 16px;
+}
+
+.components-toggle-group-control {
+  border: 1px solid #ccc;
+}

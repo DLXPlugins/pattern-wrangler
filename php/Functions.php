@@ -363,6 +363,47 @@ class Functions {
 	}
 
 	/**
+	 * Get a pattern by ID.
+	 *
+	 * @param string|int $pattern_id The pattern ID.
+	 *
+	 * @return string|null The pattern content or null if not found.
+	 */
+	public static function get_pattern_by_id( $pattern_id ) {
+		// Perform query.
+		if ( is_numeric( $pattern_id ) ) {
+			global $wp_query;
+			$temp     = $wp_query;
+			$wp_query = new \WP_Query(
+				array(
+					'p'         => $pattern_id,
+					'post_type' => 'wp_block',
+				)
+			);
+			if ( ! $wp_query->have_posts() ) {
+				return null;
+			} else {
+				$wp_query->the_post();
+				$pattern_content = $wp_query->post->post_content;
+			}
+			$wp_query = $temp;
+		} elseif ( empty( $pattern_content ) && $pattern_id ) {
+			$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+			foreach ( $registered_patterns as $pattern ) {
+				if ( $pattern_id === $pattern['slug'] || $pattern_id === $pattern['name'] ) {
+					$pattern_content = $pattern['content'];
+					return $pattern_content;
+					break;
+				}
+			}
+			if ( ! isset( $pattern_content ) ) {
+				return null;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Check if a pattern is synced.
 	 *
 	 * @param int $pattern_id The pattern ID.
