@@ -752,7 +752,7 @@ var PatternsGrid = function PatternsGrid(props) {
 // const queryArgs = getQueryArgs( window.location.href );
 
 var Interface = function Interface(props) {
-  var _getQueryArgs, _view$filters, _view$filters2, _view$filters3;
+  var _getQueryArgs, _getQueryArgs2, _getQueryArgs3, _view$filters, _view$filters2, _view$filters3;
   var defaults = props.defaults;
   var data = defaults();
   var _useState13 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
@@ -813,7 +813,14 @@ var Interface = function Interface(props) {
       mediaField: 'pattern-view-json',
       layout: defaultLayouts.grid.layout,
       fields: ['title', 'pattern-view-json'],
-      search: (0,_wordpress_escape_html__WEBPACK_IMPORTED_MODULE_4__.escapeAttribute)(((_getQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href)) === null || _getQueryArgs === void 0 ? void 0 : _getQueryArgs.search) || '')
+      search: (0,_wordpress_escape_html__WEBPACK_IMPORTED_MODULE_4__.escapeAttribute)(((_getQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href)) === null || _getQueryArgs === void 0 ? void 0 : _getQueryArgs.search) || ''),
+      filters: [{
+        field: 'patternType',
+        value: ((_getQueryArgs2 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href)) === null || _getQueryArgs2 === void 0 ? void 0 : _getQueryArgs2.patternType) || 'all'
+      }, {
+        field: 'patternStatus',
+        value: ((_getQueryArgs3 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href)) === null || _getQueryArgs3 === void 0 ? void 0 : _getQueryArgs3.patternStatus) || 'both'
+      }]
     }),
     _useState30 = _slicedToArray(_useState29, 2),
     view = _useState30[0],
@@ -953,8 +960,10 @@ var Interface = function Interface(props) {
       id: 'edit',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Edit', 'pattern-wrangler'),
       icon: 'edit',
-      callback: function callback() {
-        // TODO: Implement edit functionality.
+      callback: function callback(items) {
+        var item = items[0];
+        var redirectUrl = encodeURIComponent(window.location.href);
+        window.location.href = "/wp-admin/post.php?post=".concat(item.id, "&action=edit&redirect_to=").concat(redirectUrl);
       },
       isEligible: function isEligible(pattern) {
         return pattern.isLocal;
@@ -1357,7 +1366,7 @@ var Interface = function Interface(props) {
    * @param {Object} newView The new view object.
    */
   var onChangeView = function onChangeView(newView) {
-    var _newView$sort5;
+    var _newView$sort5, _newView$filters, _newView$filters2;
     // Create query args object with view state.
     var changeQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href);
     changeQueryArgs.paged = newView.page || 1;
@@ -1372,6 +1381,20 @@ var Interface = function Interface(props) {
     if ((_newView$sort5 = newView.sort) !== null && _newView$sort5 !== void 0 && _newView$sort5.field) {
       changeQueryArgs.orderby = newView.sort.field;
       changeQueryArgs.order = newView.sort.direction;
+    }
+
+    // Get pattern type and status from filters.
+    var patternTypeFilter = (_newView$filters = newView.filters) === null || _newView$filters === void 0 ? void 0 : _newView$filters.find(function (filter) {
+      return filter.field === 'patternType';
+    });
+    var patternStatusFilter = (_newView$filters2 = newView.filters) === null || _newView$filters2 === void 0 ? void 0 : _newView$filters2.find(function (filter) {
+      return filter.field === 'patternStatus';
+    });
+    if (patternTypeFilter) {
+      changeQueryArgs.patternType = patternTypeFilter.value;
+    }
+    if (patternStatusFilter) {
+      changeQueryArgs.patternStatus = patternStatusFilter.value;
     }
 
     // Update URL without page reload using addQueryArgs.
@@ -1759,4 +1782,4 @@ var Snackbar = function Snackbar(props) {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=90de1265970d8dee14ba
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=fb56e87127d2f0d7ef4f

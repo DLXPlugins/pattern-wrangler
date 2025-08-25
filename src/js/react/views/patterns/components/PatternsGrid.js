@@ -282,6 +282,16 @@ const Interface = ( props ) => {
 		layout: defaultLayouts.grid.layout,
 		fields: [ 'title', 'pattern-view-json' ],
 		search: escapeAttribute( getQueryArgs( window.location.href )?.search || '' ),
+		filters: [
+			{
+				field: 'patternType',
+				value: getQueryArgs( window.location.href )?.patternType || 'all',
+			},
+			{
+				field: 'patternStatus',
+				value: getQueryArgs( window.location.href )?.patternStatus || 'both',
+			},
+		],
 	} );
 
 	const fields = useMemo( () => [
@@ -456,8 +466,10 @@ const Interface = ( props ) => {
 			id: 'edit',
 			label: __( 'Edit', 'pattern-wrangler' ),
 			icon: 'edit',
-			callback: () => {
-				// TODO: Implement edit functionality.
+			callback: ( items) => {
+				const item = items[ 0 ];
+				const redirectUrl = encodeURIComponent( window.location.href );
+				window.location.href = `/wp-admin/post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
 			},
 			isEligible: ( pattern ) => {
 				return pattern.isLocal;
@@ -899,6 +911,16 @@ const Interface = ( props ) => {
 		if ( newView.sort?.field ) {
 			changeQueryArgs.orderby = newView.sort.field;
 			changeQueryArgs.order = newView.sort.direction;
+		}
+
+		// Get pattern type and status from filters.
+		const patternTypeFilter = newView.filters?.find( ( filter ) => filter.field === 'patternType' );
+		const patternStatusFilter = newView.filters?.find( ( filter ) => filter.field === 'patternStatus' );
+		if ( patternTypeFilter ) {
+			changeQueryArgs.patternType = patternTypeFilter.value;
+		}
+		if ( patternStatusFilter ) {
+			changeQueryArgs.patternStatus = patternStatusFilter.value;
 		}
 
 		// Update URL without page reload using addQueryArgs.
