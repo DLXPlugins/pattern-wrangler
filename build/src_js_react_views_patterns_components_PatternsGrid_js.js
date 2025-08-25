@@ -275,6 +275,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 // Local imports.
 
 
+
+/**
+ * Pattern Create Modal.
+ *
+ * @param {Object}   props                   The props.
+ * @param {string}   props.title             The title of the modal.
+ * @param {string}   props.patternTitle      The title of the pattern.
+ * @param {Array}    props.patternCategories The categories of the pattern in label arrays.
+ * @param {string}   props.patternSyncStatus The sync status of the pattern.
+ * @param {string}   props.patternCopyId     The id of the pattern to copy.
+ * @param {Object}   props.categories        The categories of the pattern.
+ * @param {Function} props.onRequestClose    The function to call when the modal is closed.
+ * @param {string}   props.syncedDefaultStatus The default sync status of the pattern. Values are 'synced' or 'unsynced'.
+ * @param {boolean}  props.syncedDisabled      Whether the synced status is disabled.
+ * @return {Object} The rendered component.
+ */
 var PatternCreateModal = function PatternCreateModal(props) {
   var originalCategories = props.categories || [];
   var categories = (props.categories || []).map(function (category) {
@@ -283,15 +299,21 @@ var PatternCreateModal = function PatternCreateModal(props) {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(props.copyPatternId || 0),
     _useState2 = _slicedToArray(_useState, 1),
     copyPatternId = _useState2[0];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
-    _useState4 = _slicedToArray(_useState3, 2),
-    isSaving = _useState4[0],
-    setIsSaving = _useState4[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(props.syncedDefaultStatus || 'synced'),
+    _useState4 = _slicedToArray(_useState3, 1),
+    syncedDefaultStatus = _useState4[0];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(props.syncedDisabled || false),
+    _useState6 = _slicedToArray(_useState5, 1),
+    syncedDisabled = _useState6[0];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState8 = _slicedToArray(_useState7, 2),
+    isSaving = _useState8[0],
+    setIsSaving = _useState8[1];
   var _useForm = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_8__.useForm)({
       defaultValues: {
         patternTitle: props.patternTitle || '',
         patternCategories: props.patternCategories || [],
-        patternSyncStatus: props.patternSyncStatus || 'synced',
+        patternSyncStatus: props.patternSyncStatus || syncedDefaultStatus,
         patternCopyId: copyPatternId
       }
     }),
@@ -373,7 +395,7 @@ var PatternCreateModal = function PatternCreateModal(props) {
     };
   }();
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Modal, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Add Pattern', 'pattern-wrangler'),
+    title: props.title || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Add Pattern', 'pattern-wrangler'),
     onRequestClose: props.onRequestClose,
     focusOnMount: "firstContentElement"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
@@ -435,17 +457,19 @@ var PatternCreateModal = function PatternCreateModal(props) {
         onChange: function onChange(value) {
           field.onChange(value);
         },
-        disabled: isSaving
+        disabled: isSaving || syncedDisabled
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControlOption, {
         value: "synced",
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Synced', 'pattern-wrangler'),
         showTooltip: true,
-        "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Synced', 'pattern-wrangler')
+        "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Synced', 'pattern-wrangler'),
+        disabled: syncedDisabled
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControlOption, {
         value: "unsynced",
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Unsynced', 'pattern-wrangler'),
         showTooltip: true,
-        "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Unsynced', 'pattern-wrangler')
+        "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Unsynced', 'pattern-wrangler'),
+        disabled: syncedDisabled
       })));
     }
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
@@ -688,9 +712,7 @@ var popPatternPreview = function popPatternPreview(item) {
     src: previewUrl,
     caption: item.title,
     type: 'iframe',
-    zoom: true,
-    compact: true,
-    width: '80%'
+    closeButton: true
   }]);
 };
 var defaultLayouts = {
@@ -800,7 +822,14 @@ var Interface = function Interface(props) {
     _useState28 = _slicedToArray(_useState27, 2),
     isAddNewPatternModalOpen = _useState28[0],
     setIsAddNewPatternModalOpen = _useState28[1];
-
+  var _useState29 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState30 = _slicedToArray(_useState29, 2),
+    isCopyToLocalModalOpen = _useState30[0],
+    setIsCopyToLocalModalOpen = _useState30[1];
+  var _useState31 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState32 = _slicedToArray(_useState31, 2),
+    copyPatternId = _useState32[0],
+    setCopyPatternId = _useState32[1];
   /**
    * Returns a default view with query vars. Useful for setting or refreshing the view.
    *
@@ -836,10 +865,10 @@ var Interface = function Interface(props) {
       }]
     };
   };
-  var _useState29 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(getDefaultView()),
-    _useState30 = _slicedToArray(_useState29, 2),
-    view = _useState30[0],
-    setView = _useState30[1];
+  var _useState33 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(getDefaultView()),
+    _useState34 = _slicedToArray(_useState33, 2),
+    view = _useState34[0],
+    setView = _useState34[1];
   var fields = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return [{
       id: 'title',
@@ -1022,8 +1051,10 @@ var Interface = function Interface(props) {
       id: 'copy-to-local',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Copy to Local Pattern', 'pattern-wrangler'),
       icon: 'edit',
-      callback: function callback() {
-        // TODO: Implement copy to local functionality.
+      callback: function callback(items) {
+        var item = items[0];
+        setIsCopyToLocalModalOpen(true);
+        setCopyPatternId(item.id);
       },
       isEligible: function isEligible(pattern) {
         return !pattern.isLocal;
@@ -1630,7 +1661,17 @@ var Interface = function Interface(props) {
     onRequestClose: function onRequestClose() {
       return setIsAddNewPatternModalOpen(false);
     },
-    categories: localCategories
+    categories: localCategories,
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Create New Pattern', 'pattern-wrangler')
+  }), isCopyToLocalModalOpen && /*#__PURE__*/React.createElement(_PatternCreateModal__WEBPACK_IMPORTED_MODULE_13__["default"], {
+    isOpen: isCopyToLocalModalOpen,
+    onRequestClose: function onRequestClose() {
+      return setIsCopyToLocalModalOpen(false);
+    },
+    categories: localCategories,
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Copy Pattern to Local', 'pattern-wrangler'),
+    syncedDefaultStatus: 'unsynced',
+    copyPatternId: copyPatternId
   }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PatternsGrid);
@@ -1813,4 +1854,4 @@ var Snackbar = function Snackbar(props) {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=4ad14235c59d598adf1d
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=b3d41c71015329d93382

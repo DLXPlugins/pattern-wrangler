@@ -194,6 +194,7 @@ add_action(
 	1 // Priority 1 to ensure it runs early.
 );
 
+
 // Calculate aspect ratio from pattern viewport..
 
 // Get header if theme is not FSE theme.
@@ -237,7 +238,7 @@ if ( ! wp_is_block_theme() ) {
 		<?php wp_head(); ?>
 	</head>
 
-	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; display: relative; box-sizing: border-box; width: 100%; padding: 48px;">
+	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; display: relative; box-sizing: border-box; width: 100%; padding: 48px; pointer-events: none;">
 	<?php wp_body_open(); ?>
 	<div class="wp-site-blocks">
 		<header class="wp-block-template-part site-header">

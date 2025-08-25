@@ -26,11 +26,27 @@ import classnames from 'classnames';
 import SendCommand from '../../../../utils/SendCommand';
 import Notice from '../../../../components/Notice';
 
+/**
+ * Pattern Create Modal.
+ *
+ * @param {Object}   props                   The props.
+ * @param {string}   props.title             The title of the modal.
+ * @param {string}   props.patternTitle      The title of the pattern.
+ * @param {Array}    props.patternCategories The categories of the pattern in label arrays.
+ * @param {string}   props.patternSyncStatus The sync status of the pattern.
+ * @param {string}   props.patternCopyId     The id of the pattern to copy.
+ * @param {Object}   props.categories        The categories of the pattern.
+ * @param {Function} props.onRequestClose    The function to call when the modal is closed.
+ * @param {string}   props.syncedDefaultStatus The default sync status of the pattern. Values are 'synced' or 'unsynced'.
+ * @param {boolean}  props.syncedDisabled      Whether the synced status is disabled.
+ * @return {Object} The rendered component.
+ */
 const PatternCreateModal = ( props ) => {
 	const originalCategories = props.categories || [];
 	const categories = ( props.categories || [] ).map( ( category ) => category.label );
 	const [ copyPatternId ] = useState( props.copyPatternId || 0 );
-
+	const [ syncedDefaultStatus ] = useState( props.syncedDefaultStatus || 'synced' );
+	const [ syncedDisabled ] = useState( props.syncedDisabled || false );
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const {
@@ -45,7 +61,7 @@ const PatternCreateModal = ( props ) => {
 		defaultValues: {
 			patternTitle: props.patternTitle || '',
 			patternCategories: props.patternCategories || [],
-			patternSyncStatus: props.patternSyncStatus || 'synced',
+			patternSyncStatus: props.patternSyncStatus || syncedDefaultStatus,
 			patternCopyId: copyPatternId,
 		},
 	} );
@@ -68,7 +84,7 @@ const PatternCreateModal = ( props ) => {
 		return label ? label.id : 0;
 	};
 
-	const onSubmit = async ( formData ) => {
+	const onSubmit = async( formData ) => {
 		setIsSaving( true );
 
 		const newCategories = formData.patternCategories.map( ( category ) => {
@@ -102,7 +118,7 @@ const PatternCreateModal = ( props ) => {
 	return (
 		<>
 			<Modal
-				title={ __( 'Add Pattern', 'pattern-wrangler' ) }
+				title={ props.title || __( 'Add Pattern', 'pattern-wrangler' ) }
 				onRequestClose={ props.onRequestClose }
 				focusOnMount="firstContentElement"
 			>
@@ -112,13 +128,19 @@ const PatternCreateModal = ( props ) => {
 							<Controller
 								control={ control }
 								name="patternTitle"
-								rules={ { 
-									required: __( 'Pattern title is required.', 'pattern-wrangler' ) 
+								rules={ {
+									required: __(
+										'Pattern title is required.',
+										'pattern-wrangler'
+									),
 								} }
 								render={ ( { field } ) => (
 									<TextControl
 										label={ __( 'Pattern Title', 'pattern-wrangler' ) }
-										help={ __( 'Enter the title of the pattern.', 'pattern-wrangler' ) }
+										help={ __(
+											'Enter the title of the pattern.',
+											'pattern-wrangler'
+										) }
 										value={ field.value }
 										onChange={ ( value ) => field.onChange( value ) }
 										disabled={ isSaving }
@@ -163,19 +185,21 @@ const PatternCreateModal = ( props ) => {
 											onChange={ ( value ) => {
 												field.onChange( value );
 											} }
-											disabled={ isSaving }
+											disabled={ isSaving || syncedDisabled }
 										>
 											<ToggleGroupControlOption
 												value="synced"
 												label={ __( 'Synced', 'pattern-wrangler' ) }
 												showTooltip={ true }
 												aria-label={ __( 'Synced', 'pattern-wrangler' ) }
+												disabled={ syncedDisabled }
 											/>
 											<ToggleGroupControlOption
 												value="unsynced"
 												label={ __( 'Unsynced', 'pattern-wrangler' ) }
 												showTooltip={ true }
 												aria-label={ __( 'Unsynced', 'pattern-wrangler' ) }
+												disabled={ syncedDisabled }
 											/>
 										</ToggleGroupControl>
 									</>
@@ -183,12 +207,10 @@ const PatternCreateModal = ( props ) => {
 							/>
 						</div>
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
-							<Button
-								variant="primary"
-								type="submit"
-								disabled={ isSaving }
-							>
-								{ isSaving ? __( 'Adding Pattern…', 'pattern-wrangler' ) : __( 'Add Pattern', 'pattern-wrangler' ) }
+							<Button variant="primary" type="submit" disabled={ isSaving }>
+								{ isSaving
+									? __( 'Adding Pattern…', 'pattern-wrangler' )
+									: __( 'Add Pattern', 'pattern-wrangler' ) }
 							</Button>
 							<Button
 								variant="secondary"
@@ -198,18 +220,16 @@ const PatternCreateModal = ( props ) => {
 								{ __( 'Cancel', 'pattern-wrangler' ) }
 							</Button>
 						</div>
-						{
-							errors?.patternTitle && (
-								<Notice
-									className="dlx-pw-admin-notice"
-									status="error"
-									inline={ true }
-									icon={ () => <AlertTriangle /> }
-								>
-									{ errors.patternTitle.message }
-								</Notice>
-							)
-						}
+						{ errors?.patternTitle && (
+							<Notice
+								className="dlx-pw-admin-notice"
+								status="error"
+								inline={ true }
+								icon={ () => <AlertTriangle /> }
+							>
+								{ errors.patternTitle.message }
+							</Notice>
+						) }
 					</form>
 				</div>
 			</Modal>

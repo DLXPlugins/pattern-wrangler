@@ -171,9 +171,7 @@ const popPatternPreview = ( item ) => {
 			src: previewUrl,
 			caption: item.title,
 			type: 'iframe',
-			zoom: true,
-			compact: true,
-			width: '80%',
+			closeButton: true,
 		},
 	] );
 };
@@ -255,9 +253,9 @@ const Interface = ( props ) => {
 		title: '',
 		type: '',
 	} );
-	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] =
-		useState( false );
-
+	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] = useState( false );
+	const [ isCopyToLocalModalOpen, setIsCopyToLocalModalOpen ] = useState( false );
+	const [ copyPatternId, setCopyPatternId ] = useState( 0 );
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
 	 *
@@ -527,8 +525,10 @@ const Interface = ( props ) => {
 				id: 'copy-to-local',
 				label: __( 'Copy to Local Pattern', 'pattern-wrangler' ),
 				icon: 'edit',
-				callback: () => {
-					// TODO: Implement copy to local functionality.
+				callback: ( items ) => {
+					const item = items[ 0 ];
+					setIsCopyToLocalModalOpen( true );
+					setCopyPatternId( item.id );
 				},
 				isEligible: ( pattern ) => {
 					return ! pattern.isLocal;
@@ -1239,6 +1239,17 @@ const Interface = ( props ) => {
 					isOpen={ isAddNewPatternModalOpen }
 					onRequestClose={ () => setIsAddNewPatternModalOpen( false ) }
 					categories={ localCategories }
+					title={ __( 'Create New Pattern', 'pattern-wrangler' ) }
+				/>
+			) }
+			{ isCopyToLocalModalOpen && (
+				<PatternCreateModal
+					isOpen={ isCopyToLocalModalOpen }
+					onRequestClose={ () => setIsCopyToLocalModalOpen( false ) }
+					categories={ localCategories }
+					title={ __( 'Copy Pattern to Local', 'pattern-wrangler' ) }
+					syncedDefaultStatus={ 'unsynced' }
+					copyPatternId={ copyPatternId }
 				/>
 			) }
 		</div>

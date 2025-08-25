@@ -230,7 +230,7 @@ body div.updated.warning {
 	overflow: hidden;
 }
 .fancybox__iframe {
-	width: 100% !important;
+	width: 85vw !important;
 }
 .has-iframe .fancybox__content {
 	overflow: scroll;
@@ -253,6 +253,7 @@ body div.updated.warning {
 .pattern-badge-wrapper {
 	display: flex;
 	justify-content: flex-end;
+	padding: 0 0 12px 0;
 }
 
 .pattern-badge-local {
