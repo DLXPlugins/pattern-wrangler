@@ -245,7 +245,7 @@ const Interface = ( props ) => {
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const [ patterns, setPatterns ] = useState( [] );
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
-	
+
 	const [ categories, setCategories ] = useState( [] );
 	const [ localCategories, setLocalCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
@@ -255,362 +255,378 @@ const Interface = ( props ) => {
 		title: '',
 		type: '',
 	} );
-	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] = useState( false );
+	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] =
+		useState( false );
 
-	// const { setViewType } = useDispatch( PatternsViewStore );
-
-	const [ view, setView ] = useState( {
-		type: 'grid',
-		previewSize: 'large',
-		paginationInfo: {
-			totalItems: patterns.length,
-			totalPages: 0,
-		},
-		page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
-		perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 12,
-		defaultPerPage: 12,
-		sort: {
-			field: escapeAttribute(
-				getQueryArgs( window.location.href ).orderby || 'title'
-			),
-			direction: escapeAttribute(
-				getQueryArgs( window.location.href ).order || 'asc'
-			),
-		},
-		titleField: 'title',
-		mediaField: 'pattern-view-json',
-		layout: defaultLayouts.grid.layout,
-		fields: [ 'title', 'pattern-view-json' ],
-		search: escapeAttribute( getQueryArgs( window.location.href )?.search || '' ),
-		filters: [
-			{
-				field: 'patternType',
-				value: getQueryArgs( window.location.href )?.patternType || 'all',
+	/**
+	 * Returns a default view with query vars. Useful for setting or refreshing the view.
+	 *
+	 * @return {Object} The default view.
+	 */
+	const getDefaultView = () => {
+		return {
+			type: 'grid',
+			previewSize: 'large',
+			paginationInfo: {
+				totalItems: patterns.length,
+				totalPages: 0,
 			},
-			{
-				field: 'patternStatus',
-				value: getQueryArgs( window.location.href )?.patternStatus || 'both',
+			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
+			perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 12,
+			defaultPerPage: 12,
+			sort: {
+				field: escapeAttribute(
+					getQueryArgs( window.location.href ).orderby || 'title'
+				),
+				direction: escapeAttribute(
+					getQueryArgs( window.location.href ).order || 'asc'
+				),
 			},
-		],
-	} );
+			titleField: 'title',
+			mediaField: 'pattern-view-json',
+			layout: defaultLayouts.grid.layout,
+			fields: [ 'title', 'pattern-view-json' ],
+			search: escapeAttribute( getQueryArgs( window.location.href )?.search || '' ),
+			filters: [
+				{
+					field: 'patternType',
+					value: getQueryArgs( window.location.href )?.patternType || 'all',
+				},
+				{
+					field: 'patternStatus',
+					value: getQueryArgs( window.location.href )?.patternStatus || 'both',
+				},
+			],
+		};
+	};
 
-	const fields = useMemo( () => [
-		{
-			id: 'title',
-			label: __( 'Title', 'pattern-wrangler' ),
-			render: ( { item } ) => {
-				if ( ! item?.categorySlugs || item.categorySlugs.length === 0 ) {
+	const [ view, setView ] = useState( getDefaultView() );
+
+	const fields = useMemo(
+		() => [
+			{
+				id: 'title',
+				label: __( 'Title', 'pattern-wrangler' ),
+				render: ( { item } ) => {
+					if ( ! item?.categorySlugs || item.categorySlugs.length === 0 ) {
+						return (
+							<div className="no-categories">
+								{ __( 'No categories', 'pattern-wrangler' ) }
+							</div>
+						);
+					}
+
 					return (
-						<div className="no-categories">
-							{ __( 'No categories', 'pattern-wrangler' ) }
+						<div className="pattern-title-categories">
+							<div className="pattern-title">{ item.title }</div>
+							{ item.categorySlugs.length > 0 &&
+								Object.values( categories ).length > 0 && (
+								<div className="pattern-categories">
+									{ item.categorySlugs.map( ( category, index ) => {
+										if ( ! categories.hasOwnProperty( category ) ) {
+											return null;
+										}
+
+										const catLabel =
+												categories[ category ].label || categories[ category ].name;
+
+										return (
+											<span
+												key={ `category-${ index }` }
+												className="pattern-category"
+											>
+												{ catLabel }{ ' ' }
+												{ index < item.categorySlugs.length - 1 && ', ' }
+											</span>
+										);
+									} ) }
+								</div>
+							) }
 						</div>
 					);
-				}
+				},
+				enableSorting: true,
+				enableHiding: false,
+				enableGlobalSearch: true,
+			},
+			{
+				id: 'pattern-view-json',
+				label: __( 'Preview', 'pattern-wrangler' ),
+				getValue: ( { item } ) => {
+					const viewportWidth = item.viewportWidth || 1200;
 
-				return (
-					<div className="pattern-title-categories">
-						<div className="pattern-title">{ item.title }</div>
-						{ item.categorySlugs.length > 0 &&
-							Object.values( categories ).length > 0 && (
-							<div className="pattern-categories">
-								{ item.categorySlugs.map( ( category, index ) => {
-									if ( ! categories.hasOwnProperty( category ) ) {
-										return null;
-									}
+					const previewUrl = item?.id
+						? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+						: '';
 
-									const catLabel =
-											categories[ category ].label || categories[ category ].name;
+					// Determine badge type based on pattern properties.
+					let badgeText = __( 'Local', 'pattern-wrangler' );
+					let badgeClass = 'pattern-badge-local';
 
-									return (
-										<span
-											key={ `category-${ index }` }
-											className="pattern-category"
-										>
-											{ catLabel }{ ' ' }
-											{ index < item.categorySlugs.length - 1 && ', ' }
-										</span>
-									);
-								} ) }
+					if ( ! item.isLocal ) {
+						badgeText = __( 'Registered', 'pattern-wrangler' );
+						badgeClass = 'pattern-badge-registered';
+					} else if ( 'synced' === item.patternType ) {
+						badgeText = __( 'Local Synced', 'pattern-wrangler' );
+						badgeClass = 'pattern-badge-synced';
+					} else {
+						badgeText = __( 'Local Unsynced', 'pattern-wrangler' );
+						badgeClass = 'pattern-badge-unsynced';
+					}
+
+					const Badge = (
+						<>
+							<div className="pattern-badge-wrapper">
+								<span className={ `pattern-badge ${ badgeClass }` }>
+									{ badgeText }
+								</span>
 							</div>
-						) }
-					</div>
-				);
-			},
-			enableSorting: true,
-			enableHiding: false,
-			enableGlobalSearch: true,
-		},
-		{
-			id: 'pattern-view-json',
-			label: __( 'Preview', 'pattern-wrangler' ),
-			getValue: ( { item } ) => {
-				const viewportWidth = item.viewportWidth || 1200;
-
-				const previewUrl = item?.id
-					? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
-					: '';
-
-				// Determine badge type based on pattern properties.
-				let badgeText = __( 'Local', 'pattern-wrangler' );
-				let badgeClass = 'pattern-badge-local';
-
-				if ( ! item.isLocal ) {
-					badgeText = __( 'Registered', 'pattern-wrangler' );
-					badgeClass = 'pattern-badge-registered';
-				} else if ( 'synced' === item.patternType ) {
-					badgeText = __( 'Local Synced', 'pattern-wrangler' );
-					badgeClass = 'pattern-badge-synced';
-				} else {
-					badgeText = __( 'Local Unsynced', 'pattern-wrangler' );
-					badgeClass = 'pattern-badge-unsynced';
-				}
-
-				const Badge = (
-					<>
-						<div className="pattern-badge-wrapper">
-							<span className={ `pattern-badge ${ badgeClass }` }>{ badgeText }</span>
-						</div>
-					</>
-				);
-				return (
-					<>
-						{ Badge }
-						<div className="pattern-preview-wrapper">
-							<ResponsiveIframe
-								src={ previewUrl }
-								title={ `Preview: ${ item.title }` }
-								item={ item }
-							/>
-						</div>
-					</>
-				);
-			},
-			enableSorting: false,
-			enableHiding: false,
-		},
-		{
-			id: 'categories',
-			label: __( 'Categories', 'pattern-wrangler' ),
-			render: ( { item } ) => {
-				return null;
-			},
-			enableSorting: false,
-			enableHiding: false,
-			enableGlobalSearch: true,
-			type: 'array',
-			filterBy: {
-				operators: [ 'isAny', 'isNone' ],
-			},
-			elements: Object.values( categories ).map( ( category ) => {
-				return {
-					label: category.label || category.name,
-					value: category.slug,
-				};
-			} ),
-		},
-		{
-			elements: [
-				{
-					label: __( 'All Patterns', 'pattern-wrangler' ),
-					value: 'all',
+						</>
+					);
+					return (
+						<>
+							{ Badge }
+							<div className="pattern-preview-wrapper">
+								<ResponsiveIframe
+									src={ previewUrl }
+									title={ `Preview: ${ item.title }` }
+									item={ item }
+								/>
+							</div>
+						</>
+					);
 				},
-				{
-					label: __( 'Local Patterns', 'pattern-wrangler' ),
-					value: 'local',
+				enableSorting: false,
+				enableHiding: false,
+			},
+			{
+				id: 'categories',
+				label: __( 'Categories', 'pattern-wrangler' ),
+				render: ( { item } ) => {
+					return null;
 				},
-				{
-					label: __( 'Registered Patterns', 'pattern-wrangler' ),
-					value: 'registered',
+				enableSorting: false,
+				enableHiding: false,
+				enableGlobalSearch: true,
+				type: 'array',
+				filterBy: {
+					operators: [ 'isAny', 'isNone' ],
 				},
-			],
-			enableHiding: false,
-			enableSorting: false,
-			enableGlobalSearch: false,
-			filterBy: {
-				operators: [ 'is' ],
+				elements: Object.values( categories ).map( ( category ) => {
+					return {
+						label: category.label || category.name,
+						value: category.slug,
+					};
+				} ),
 			},
-			default: 'all',
-			type: 'array',
-			id: 'patternType',
-			label: __( 'Pattern Type', 'pattern-wrangler' ),
-		},
-		{
-			elements: [
-				{
-					label: __( 'Unsynced Patterns', 'pattern-wrangler' ),
-					value: 'unsynced',
-				},
-				{
-					label: __( 'Synced Patterns', 'pattern-wrangler' ),
-					value: 'synced',
-				},
-				{
-					label: __( 'Both', 'pattern-wrangler' ),
-					value: 'both',
-				},
-			],
-			enableHiding: false,
-			enableSorting: false,
-			enableGlobalSearch: false,
-			filterBy: {
-				operators: [ 'is' ],
-			},
-			type: 'array',
-			id: 'patternStatus',
-			label: __( 'Pattern Status', 'pattern-wrangler' ),
-		},
-	], [ categories ] );
-
-	const actions = useMemo( () => [
-		{
-			id: 'edit',
-			label: __( 'Edit', 'pattern-wrangler' ),
-			icon: 'edit',
-			callback: ( items) => {
-				const item = items[ 0 ];
-				const redirectUrl = encodeURIComponent( window.location.href );
-				window.location.href = `/wp-admin/post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
-			},
-			isEligible: ( pattern ) => {
-				return pattern.isLocal;
-			},
-			isPrimary: true,
-		},
-		{
-			id: 'delete',
-			label: __( 'Delete Pattern', 'pattern-wrangler' ),
-			icon: 'trash',
-			isEligible: ( pattern ) => {
-				// Pattern must be local.
-				return pattern.isLocal;
-			},
-			callback: () => {
-				// TODO: Implement delete functionality.
-			},
-			isPrimary: false,
-			isDestructive: true,
-		},
-		{
-			id: 'delete',
-			label: __( 'Preview Pattern', 'pattern-wrangler' ),
-			icon: 'edit',
-			isEligible: () => {
-				// Pattern must be local.
-				return true;
-			},
-			callback: ( items ) => {
-				// Get the first item.
-				const item = items[ 0 ];
-				popPatternPreview( item );
-			},
-			isPrimary: false,
-			isDestructive: true,
-		},
-		{
-			id: 'copy-to-local',
-			label: __( 'Copy to Local Pattern', 'pattern-wrangler' ),
-			icon: 'edit',
-			callback: () => {
-				// TODO: Implement copy to local functionality.
-			},
-			isEligible: ( pattern ) => {
-				return ! pattern.isLocal;
-			},
-			isPrimary: false,
-			isDestructive: false,
-		},
-		{
-			id: 'disable-preview',
-			label: __( 'Disable Pattern', 'pattern-wrangler' ),
-			icon: 'controls-pause',
-			callback: () => {
-				// TODO: Implement disable preview functionality.
-			},
-			isEligible: ( item ) => {
-				return ! item.isLocal;
-			},
-			isDestructive: true,
-			supportsBulk: true,
-			isPrimary: false,
-		},
-		{
-			id: 'delete-pattern',
-			label: __( 'Delete Pattern', 'pattern-wrangler' ),
-			icon: 'trash',
-			callback: () => {
-				// TODO: Implement delete pattern functionality.
-			},
-			isEligible: ( item ) => {
-				return item.isLocal;
-			},
-			isDestructive: true,
-			supportsBulk: true,
-			isPrimary: false,
-		},
-		{
-			id: 'copy',
-			label: __( 'Copy Pattern', 'pattern-wrangler' ),
-			icon: 'edit',
-			callback: ( items ) => {
-				const copyContent = items[ 0 ].content.trim();
-				try {
-					const copyBlob = new Blob( [ copyContent ], { type: 'text/html' } );
-					const data = [ new ClipboardItem( { [ copyBlob.type ]: copyBlob } ) ];
-					navigator.clipboard.write( data );
-
-					setSnackbar( {
-						isVisible: true,
-						message: __( 'Pattern copied to clipboard', 'pattern-wrangler' ),
-						title: __( 'Pattern Copied', 'pattern-wrangler' ),
-						type: 'success',
-						onClose: () => {
-							setSnackbar( {
-								isVisible: false,
-							} );
-						},
-					} );
-				} catch ( e ) {
-					// Copying is not supported on Mozilla (firefox).
-				}
-			},
-			isEligible: ( pattern ) => {
-				return true;
-			},
-			isPrimary: false,
-			isDestructive: false,
-		},
-		{
-			id: 'export',
-			label: __( 'Export to JSON', 'pattern-wrangler' ),
-			icon: 'edit',
-			callback: ( items ) => {
-				const isLocal = items[ 0 ].isLocal;
-				const title = items[ 0 ].title;
-				let syncStatus = '';
-				if ( isLocal ) {
-					syncStatus = 'unsynced';
-				} else if ( 'synced' === items[ 0 ].patternType ) {
-					syncStatus = 'synced';
-				}
-				const fileContent = JSON.stringify(
+			{
+				elements: [
 					{
-						__file: 'wp_block',
-						title,
-						content: items[ 0 ].content,
-						syncStatus,
+						label: __( 'All Patterns', 'pattern-wrangler' ),
+						value: 'all',
 					},
-					null,
-					2
-				);
-				downloadBlob( `${ title }.json`, fileContent, 'application/json' );
+					{
+						label: __( 'Local Patterns', 'pattern-wrangler' ),
+						value: 'local',
+					},
+					{
+						label: __( 'Registered Patterns', 'pattern-wrangler' ),
+						value: 'registered',
+					},
+				],
+				enableHiding: false,
+				enableSorting: false,
+				enableGlobalSearch: false,
+				filterBy: {
+					operators: [ 'is' ],
+				},
+				default: 'all',
+				type: 'array',
+				id: 'patternType',
+				label: __( 'Pattern Type', 'pattern-wrangler' ),
 			},
-			isEligible: () => {
-				return true;
+			{
+				elements: [
+					{
+						label: __( 'Unsynced Patterns', 'pattern-wrangler' ),
+						value: 'unsynced',
+					},
+					{
+						label: __( 'Synced Patterns', 'pattern-wrangler' ),
+						value: 'synced',
+					},
+					{
+						label: __( 'Both', 'pattern-wrangler' ),
+						value: 'both',
+					},
+				],
+				enableHiding: false,
+				enableSorting: false,
+				enableGlobalSearch: false,
+				filterBy: {
+					operators: [ 'is' ],
+				},
+				type: 'array',
+				id: 'patternStatus',
+				label: __( 'Pattern Status', 'pattern-wrangler' ),
 			},
-			isPrimary: false,
-			isDestructive: false,
-		},
-	], [] );
+		],
+		[ categories ]
+	);
+
+	const actions = useMemo(
+		() => [
+			{
+				id: 'edit',
+				label: __( 'Edit', 'pattern-wrangler' ),
+				icon: 'edit',
+				callback: ( items ) => {
+					const item = items[ 0 ];
+					const redirectUrl = encodeURIComponent( window.location.href );
+					window.location.href = `/wp-admin/post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
+				},
+				isEligible: ( pattern ) => {
+					return pattern.isLocal;
+				},
+				isPrimary: true,
+			},
+			{
+				id: 'delete',
+				label: __( 'Delete Pattern', 'pattern-wrangler' ),
+				icon: 'trash',
+				isEligible: ( pattern ) => {
+					// Pattern must be local.
+					return pattern.isLocal;
+				},
+				callback: () => {
+					// TODO: Implement delete functionality.
+				},
+				isPrimary: false,
+				isDestructive: true,
+			},
+			{
+				id: 'delete',
+				label: __( 'Preview Pattern', 'pattern-wrangler' ),
+				icon: 'edit',
+				isEligible: () => {
+					// Pattern must be local.
+					return true;
+				},
+				callback: ( items ) => {
+					// Get the first item.
+					const item = items[ 0 ];
+					popPatternPreview( item );
+				},
+				isPrimary: false,
+				isDestructive: true,
+			},
+			{
+				id: 'copy-to-local',
+				label: __( 'Copy to Local Pattern', 'pattern-wrangler' ),
+				icon: 'edit',
+				callback: () => {
+					// TODO: Implement copy to local functionality.
+				},
+				isEligible: ( pattern ) => {
+					return ! pattern.isLocal;
+				},
+				isPrimary: false,
+				isDestructive: false,
+			},
+			{
+				id: 'disable-preview',
+				label: __( 'Disable Pattern', 'pattern-wrangler' ),
+				icon: 'controls-pause',
+				callback: () => {
+					// TODO: Implement disable preview functionality.
+				},
+				isEligible: ( item ) => {
+					return ! item.isLocal;
+				},
+				isDestructive: true,
+				supportsBulk: true,
+				isPrimary: false,
+			},
+			{
+				id: 'delete-pattern',
+				label: __( 'Delete Pattern', 'pattern-wrangler' ),
+				icon: 'trash',
+				callback: () => {
+					// TODO: Implement delete pattern functionality.
+				},
+				isEligible: ( item ) => {
+					return item.isLocal;
+				},
+				isDestructive: true,
+				supportsBulk: true,
+				isPrimary: false,
+			},
+			{
+				id: 'copy',
+				label: __( 'Copy Pattern', 'pattern-wrangler' ),
+				icon: 'edit',
+				callback: ( items ) => {
+					const copyContent = items[ 0 ].content.trim();
+					try {
+						const copyBlob = new Blob( [ copyContent ], { type: 'text/html' } );
+						const data = [ new ClipboardItem( { [ copyBlob.type ]: copyBlob } ) ];
+						navigator.clipboard.write( data );
+
+						setSnackbar( {
+							isVisible: true,
+							message: __( 'Pattern copied to clipboard', 'pattern-wrangler' ),
+							title: __( 'Pattern Copied', 'pattern-wrangler' ),
+							type: 'success',
+							onClose: () => {
+								setSnackbar( {
+									isVisible: false,
+								} );
+							},
+						} );
+					} catch ( e ) {
+						// Copying is not supported on Mozilla (firefox).
+					}
+				},
+				isEligible: ( pattern ) => {
+					return true;
+				},
+				isPrimary: false,
+				isDestructive: false,
+			},
+			{
+				id: 'export',
+				label: __( 'Export to JSON', 'pattern-wrangler' ),
+				icon: 'edit',
+				callback: ( items ) => {
+					const isLocal = items[ 0 ].isLocal;
+					const title = items[ 0 ].title;
+					let syncStatus = '';
+					if ( isLocal ) {
+						syncStatus = 'unsynced';
+					} else if ( 'synced' === items[ 0 ].patternType ) {
+						syncStatus = 'synced';
+					}
+					const fileContent = JSON.stringify(
+						{
+							__file: 'wp_block',
+							title,
+							content: items[ 0 ].content,
+							syncStatus,
+						},
+						null,
+						2
+					);
+					downloadBlob( `${ title }.json`, fileContent, 'application/json' );
+				},
+				isEligible: () => {
+					return true;
+				},
+				isPrimary: false,
+				isDestructive: false,
+			},
+		],
+		[]
+	);
 
 	// const { data, isLoading, error } = useQuery( {
 	// 	queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
@@ -709,8 +725,14 @@ const Interface = ( props ) => {
 						break;
 					case 'patternStatus':
 						if ( filter.value ) {
-							const patternTypeFilter = filters.find( ( f ) => f.field === 'patternType' );
-							if ( patternTypeFilter && patternTypeFilter.value === 'local' && filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'local' &&
+								filter.value
+							) {
 								switch ( filter.value ) {
 									case 'unsynced':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
@@ -725,7 +747,9 @@ const Interface = ( props ) => {
 									case 'synced':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
 											if ( pattern.syncStatus ) {
-												return pattern.syncStatus === 'synced' && pattern.isLocal;
+												return (
+													pattern.syncStatus === 'synced' && pattern.isLocal
+												);
 											}
 											return false;
 										} );
@@ -842,8 +866,14 @@ const Interface = ( props ) => {
 						break;
 					case 'patternStatus':
 						if ( filter.value ) {
-							const patternTypeFilter = filters.find( ( f ) => f.field === 'patternType' );
-						if ( patternTypeFilter && patternTypeFilter.value === 'local' && filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'local' &&
+								filter.value
+							) {
 								switch ( filter.value ) {
 									case 'unsynced':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
@@ -858,7 +888,9 @@ const Interface = ( props ) => {
 									case 'synced':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
 											if ( pattern.syncStatus ) {
-												return pattern.syncStatus === 'synced' && pattern.isLocal;
+												return (
+													pattern.syncStatus === 'synced' && pattern.isLocal
+												);
 											}
 											return false;
 										} );
@@ -914,8 +946,12 @@ const Interface = ( props ) => {
 		}
 
 		// Get pattern type and status from filters.
-		const patternTypeFilter = newView.filters?.find( ( filter ) => filter.field === 'patternType' );
-		const patternStatusFilter = newView.filters?.find( ( filter ) => filter.field === 'patternStatus' );
+		const patternTypeFilter = newView.filters?.find(
+			( filter ) => filter.field === 'patternType'
+		);
+		const patternStatusFilter = newView.filters?.find(
+			( filter ) => filter.field === 'patternStatus'
+		);
 		if ( patternTypeFilter ) {
 			changeQueryArgs.patternType = patternTypeFilter.value;
 		}
@@ -944,6 +980,16 @@ const Interface = ( props ) => {
 		//setView( newView );
 	};
 
+	/**
+	 * Listen for any history changes.
+	 */
+	useEffect( () => {
+		// Listen for any history changes.
+		window.addEventListener( 'popstate', () => {
+			onChangeView( getDefaultView() );
+		} );
+	}, [ view ] );
+
 	useEffect( () => {
 		if ( data && data.hasOwnProperty( 'patterns' ) ) {
 			if ( data.categories ) {
@@ -961,7 +1007,10 @@ const Interface = ( props ) => {
 						}
 						maybeDuplicateLabel = category.label;
 						if ( ! category.registered ) {
-							originalLocalCategories.push( { id: category.id, label: category.label } );
+							originalLocalCategories.push( {
+								id: category.id,
+								label: category.label,
+							} );
 						}
 						return {
 							label: catLabel,
@@ -1007,7 +1056,9 @@ const Interface = ( props ) => {
 					onChangeView={ onChangeView }
 					paginationInfo={ {
 						totalItems: getFilteredPatternsCount( view ),
-						totalPages: Math.ceil( getFilteredPatternsCount( view ) / view.perPage ),
+						totalPages: Math.ceil(
+							getFilteredPatternsCount( view ) / view.perPage
+						),
 					} }
 					perPageSizes={ [ 12, 24, 48, 96 ] }
 					selection={ selectedItems }
@@ -1045,7 +1096,11 @@ const Interface = ( props ) => {
 								label={ __( 'Pattern Type', 'pattern-wrangler' ) }
 								isAdaptiveWidth={ true }
 								hideLabelFromVision={ true }
-								value={ view?.filters?.find( ( filter ) => filter.field === 'patternType' )?.value || 'all' }
+								value={
+									view?.filters?.find(
+										( filter ) => filter.field === 'patternType'
+									)?.value || 'all'
+								}
 								onChange={ ( value ) => {
 									const myNewView = { ...view };
 									// Merge with existing filters, replacing patternType if it exists
@@ -1066,7 +1121,10 @@ const Interface = ( props ) => {
 									value="local"
 									label={ __( 'Local', 'pattern-wrangler' ) }
 									showTooltip={ true }
-									aria-label={ __( 'Show Only Local Patterns', 'pattern-wrangler' ) }
+									aria-label={ __(
+										'Show Only Local Patterns',
+										'pattern-wrangler'
+									) }
 								/>
 								<ToggleGroupControlOption
 									value="all"
@@ -1078,7 +1136,10 @@ const Interface = ( props ) => {
 									value="registered"
 									label={ __( 'Registered', 'pattern-wrangler' ) }
 									showTooltip={ true }
-									aria-label={ __( 'Show Only Registered Patterns', 'pattern-wrangler' ) }
+									aria-label={ __(
+										'Show Only Registered Patterns',
+										'pattern-wrangler'
+									) }
 								/>
 							</ToggleGroupControl>
 							{
@@ -1090,7 +1151,11 @@ const Interface = ( props ) => {
 											label={ __( 'Pattern Status', 'pattern-wrangler' ) }
 											isAdaptiveWidth={ true }
 											hideLabelFromVision={ true }
-											value={ view?.filters?.find( ( filter ) => filter.field === 'patternStatus' )?.value || 'both' }
+											value={
+												view?.filters?.find(
+													( filter ) => filter.field === 'patternStatus'
+												)?.value || 'both'
+											}
 											onChange={ ( value ) => {
 												const myNewView = { ...view };
 												// Merge with existing filters, replacing patternStatus if it exists
@@ -1111,19 +1176,28 @@ const Interface = ( props ) => {
 												value="unsynced"
 												label={ __( 'Unsynced', 'pattern-wrangler' ) }
 												showTooltip={ true }
-												aria-label={ __( 'Show Only Unsynced Patterns', 'pattern-wrangler' ) }
+												aria-label={ __(
+													'Show Only Unsynced Patterns',
+													'pattern-wrangler'
+												) }
 											/>
 											<ToggleGroupControlOption
 												value="both"
 												label={ __( 'Both', 'pattern-wrangler' ) }
-												aria-label={ __( 'Show Both Synced and Unsynced Patterns', 'pattern-wrangler' ) }
+												aria-label={ __(
+													'Show Both Synced and Unsynced Patterns',
+													'pattern-wrangler'
+												) }
 												showTooltip={ true }
 											/>
 											<ToggleGroupControlOption
 												value="synced"
 												label={ __( 'Synced', 'pattern-wrangler' ) }
 												showTooltip={ true }
-												aria-label={ __( 'Show Only Synced Patterns', 'pattern-wrangler' ) }
+												aria-label={ __(
+													'Show Only Synced Patterns',
+													'pattern-wrangler'
+												) }
 											/>
 										</ToggleGroupControl>
 									</>

@@ -752,7 +752,7 @@ var PatternsGrid = function PatternsGrid(props) {
 // const queryArgs = getQueryArgs( window.location.href );
 
 var Interface = function Interface(props) {
-  var _getQueryArgs, _getQueryArgs2, _getQueryArgs3, _view$filters, _view$filters2, _view$filters3;
+  var _view$filters, _view$filters2, _view$filters3;
   var defaults = props.defaults;
   var data = defaults();
   var _useState13 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
@@ -793,9 +793,14 @@ var Interface = function Interface(props) {
     isAddNewPatternModalOpen = _useState28[0],
     setIsAddNewPatternModalOpen = _useState28[1];
 
-  // const { setViewType } = useDispatch( PatternsViewStore );
-
-  var _useState29 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  /**
+   * Returns a default view with query vars. Useful for setting or refreshing the view.
+   *
+   * @return {Object} The default view.
+   */
+  var getDefaultView = function getDefaultView() {
+    var _getQueryArgs, _getQueryArgs2, _getQueryArgs3;
+    return {
       type: 'grid',
       previewSize: 'large',
       paginationInfo: {
@@ -821,7 +826,9 @@ var Interface = function Interface(props) {
         field: 'patternStatus',
         value: ((_getQueryArgs3 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href)) === null || _getQueryArgs3 === void 0 ? void 0 : _getQueryArgs3.patternStatus) || 'both'
       }]
-    }),
+    };
+  };
+  var _useState29 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(getDefaultView()),
     _useState30 = _slicedToArray(_useState29, 2),
     view = _useState30[0],
     setView = _useState30[1];
@@ -1412,6 +1419,16 @@ var Interface = function Interface(props) {
     // Update the view state.
     //setView( newView );
   };
+
+  /**
+   * Listen for any history changes.
+   */
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    // Listen for any history changes.
+    window.addEventListener('popstate', function () {
+      onChangeView(getDefaultView());
+    });
+  }, [view]);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (data && data.hasOwnProperty('patterns')) {
       if (data.categories) {
@@ -1782,4 +1799,4 @@ var Snackbar = function Snackbar(props) {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=fb56e87127d2f0d7ef4f
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=d851ffd8575263544c68
