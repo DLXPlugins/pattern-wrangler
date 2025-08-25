@@ -310,8 +310,9 @@ const Interface = ( props ) => {
 				render: ( { item } ) => {
 					if ( ! item?.categorySlugs || item.categorySlugs.length === 0 ) {
 						return (
-							<div className="no-categories">
-								{ __( 'No categories', 'pattern-wrangler' ) }
+							<div className="pattern-title-categories">
+								<div className="pattern-title">{ item.title }</div>
+								<div className="pattern-categories">{ __( 'No categories', 'pattern-wrangler' ) }</div>
 							</div>
 						);
 					}
@@ -323,12 +324,14 @@ const Interface = ( props ) => {
 								Object.values( categories ).length > 0 && (
 								<div className="pattern-categories">
 									{ item.categorySlugs.map( ( category, index ) => {
-										if ( ! categories.hasOwnProperty( category ) ) {
+										const catSlug = category?.slug || category.toString();
+										if ( ! categories.hasOwnProperty( catSlug ) ) {
 											return null;
 										}
 
+
 										const catLabel =
-												categories[ category ].label || categories[ category ].name;
+												categories[ catSlug ]?.label || categories[ catSlug ]?.name;
 
 										return (
 											<span
@@ -483,7 +486,7 @@ const Interface = ( props ) => {
 				callback: ( items ) => {
 					const item = items[ 0 ];
 					const redirectUrl = encodeURIComponent( window.location.href );
-					window.location.href = `/wp-admin/post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
+					window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
 				},
 				isEligible: ( pattern ) => {
 					return pattern.isLocal;

@@ -134,7 +134,7 @@ class Rest {
 		// Set categories.
 		foreach ( $pattern_categories as $category ) {
 			if ( is_numeric( $category['id'] ) && 0 !== $category['id'] ) {
-				wp_set_post_terms( $pattern_id, absint( $category['id'] ), 'wp_pattern_category' );
+				wp_set_post_terms( $pattern_id, array( absint( $category['id'] ) ), 'wp_pattern_category' );
 			} else {
 				wp_set_post_terms( $pattern_id, sanitize_text_field( $category['name'] ), 'wp_pattern_category' );
 			}

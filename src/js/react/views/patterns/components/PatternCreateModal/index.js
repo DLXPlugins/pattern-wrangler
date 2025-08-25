@@ -94,7 +94,7 @@ const PatternCreateModal = ( props ) => {
 		} else {
 			const patternId = response.patternId;
 			const redirectUrl = encodeURIComponent( window.location.href );
-			window.location.href = `/wp-admin/post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
+			window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
 		}
 		setIsSaving( false );
 	};

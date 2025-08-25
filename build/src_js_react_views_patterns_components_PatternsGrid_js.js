@@ -359,7 +359,7 @@ var PatternCreateModal = function PatternCreateModal(props) {
             } else {
               patternId = response.patternId;
               redirectUrl = encodeURIComponent(window.location.href);
-              window.location.href = "/wp-admin/post.php?post=".concat(patternId, "&action=edit&redirect_to=").concat(redirectUrl);
+              window.location.href = "".concat(dlxEnhancedPatternsView.getSiteBaseUrl, "post.php?post=").concat(patternId, "&action=edit&redirect_to=").concat(redirectUrl);
             }
             setIsSaving(false);
           case 7:
@@ -848,8 +848,12 @@ var Interface = function Interface(props) {
         var item = _ref3.item;
         if (!(item !== null && item !== void 0 && item.categorySlugs) || item.categorySlugs.length === 0) {
           return /*#__PURE__*/React.createElement("div", {
-            className: "no-categories"
-          }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('No categories', 'pattern-wrangler'));
+            className: "pattern-title-categories"
+          }, /*#__PURE__*/React.createElement("div", {
+            className: "pattern-title"
+          }, item.title), /*#__PURE__*/React.createElement("div", {
+            className: "pattern-categories"
+          }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('No categories', 'pattern-wrangler')));
         }
         return /*#__PURE__*/React.createElement("div", {
           className: "pattern-title-categories"
@@ -858,10 +862,12 @@ var Interface = function Interface(props) {
         }, item.title), item.categorySlugs.length > 0 && Object.values(categories).length > 0 && /*#__PURE__*/React.createElement("div", {
           className: "pattern-categories"
         }, item.categorySlugs.map(function (category, index) {
-          if (!categories.hasOwnProperty(category)) {
+          var _categories$catSlug, _categories$catSlug2;
+          var catSlug = (category === null || category === void 0 ? void 0 : category.slug) || category.toString();
+          if (!categories.hasOwnProperty(catSlug)) {
             return null;
           }
-          var catLabel = categories[category].label || categories[category].name;
+          var catLabel = ((_categories$catSlug = categories[catSlug]) === null || _categories$catSlug === void 0 ? void 0 : _categories$catSlug.label) || ((_categories$catSlug2 = categories[catSlug]) === null || _categories$catSlug2 === void 0 ? void 0 : _categories$catSlug2.name);
           return /*#__PURE__*/React.createElement("span", {
             key: "category-".concat(index),
             className: "pattern-category"
@@ -978,7 +984,7 @@ var Interface = function Interface(props) {
       callback: function callback(items) {
         var item = items[0];
         var redirectUrl = encodeURIComponent(window.location.href);
-        window.location.href = "/wp-admin/post.php?post=".concat(item.id, "&action=edit&redirect_to=").concat(redirectUrl);
+        window.location.href = "".concat(dlxEnhancedPatternsView.getSiteBaseUrl, "post.php?post=").concat(item.id, "&action=edit&redirect_to=").concat(redirectUrl);
       },
       isEligible: function isEligible(pattern) {
         return pattern.isLocal;
@@ -1807,4 +1813,4 @@ var Snackbar = function Snackbar(props) {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=b38ec96f8e033f66d9e3
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=4ad14235c59d598adf1d

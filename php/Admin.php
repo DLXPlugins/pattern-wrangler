@@ -525,6 +525,7 @@ class Admin {
 					'isMultisite'             => Functions::is_multisite(),
 					'networkAdminSettingsUrl' => Functions::get_network_settings_url(),
 					'isUserNetworkAdmin'      => current_user_can( 'manage_network' ),
+					'getSiteBaseUrl'          => esc_url( admin_url() ),
 				)
 			);
 			\wp_set_script_translations( 'dlx-pw-patterns-view', 'pattern-wrangler' );
