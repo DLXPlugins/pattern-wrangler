@@ -6,12 +6,11 @@ import {
 	useRef,
 	Suspense,
 } from '@wordpress/element';
-import { useResizeObserver, useRefEffect } from '@wordpress/compose';
+import { useResizeObserver } from '@wordpress/compose';
 import { downloadBlob } from '@wordpress/blob';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import { escapeAttribute } from '@wordpress/escape-html';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
-import { useQuery } from '@tanstack/react-query';
 import { __ } from '@wordpress/i18n';
 import {
 	Button,
@@ -19,20 +18,17 @@ import {
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { DataViews } from '@wordpress/dataviews';
-import apiFetch from '@wordpress/api-fetch';
-import { useAsyncResource } from 'use-async-resource';
-import { useRouter } from '@tanstack/react-router';
 import {
 	addQueryArgs,
 	getQueryArgs,
 	removeQueryArgs,
 	cleanForSlug,
 } from '@wordpress/url';
-// import { dispatch, select, useDispatch } from '@wordpress/data';
-// import PatternsViewStore from '../store';
+import { useDispatch, useSelect, dispatch } from '@wordpress/data';
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
+import patternsStore from '../store';
 
 // Enhanced iframe component that works with the existing PHP scaling system.
 const ResponsiveIframe = ( { src, title, item } ) => {
@@ -41,7 +37,6 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 	const [ isLoaded, setIsLoaded ] = useState( false );
 	const [ scale, setScale ] = useState( 1 );
 	const [ iframeWidth, setIframeWidth ] = useState( 0 );
-	const [ iframeHeight, setIframeHeight ] = useState( 0 );
 	const [ iframeMinHeight, setIframeMinHeight ] = useState( 0 );
 	const [ aspectRatio, setAspectRatio ] = useState( 1 );
 
@@ -55,7 +50,6 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 		const handleLoad = () => {
 			setIsLoaded( true );
 			setIframeWidth( item.viewportWidth || iframe.offsetWidth );
-			setIframeHeight( iframe.offsetHeight );
 
 			// The PHP template will handle scaling automatically.
 			// We just need to ensure the container is ready for the scaling calculations.
@@ -107,7 +101,6 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 	useEffect( () => {
 		if ( iframeRef.current ) {
 			setIframeWidth( iframeRef.current.offsetWidth );
-			setIframeHeight( iframeRef.current.offsetHeight );
 		}
 	}, [ iframeRef, iframeMinHeight ] );
 
@@ -190,61 +183,75 @@ const defaultLayouts = {
 	},
 };
 
-/**
- * Retrieve all the patterns.
- *
- * @return {Promise<Object>} The patterns.
- */
-const retrieveAllPatterns = async() => {
-	return await apiFetch( {
-		path: addQueryArgs( '/dlxplugins/pattern-wrangler/v1/patterns/all/', {
-			nonce: dlxEnhancedPatternsView.getNonce,
-		} ),
-		method: 'GET',
-	} );
-};
-
 const PatternsGrid = ( props ) => {
-	const [ defaults, getDefaults ] = useAsyncResource( retrieveAllPatterns, [] );
-	return (
-		<ErrorBoundary
-			fallback={
-				<p>
-					{ __( 'Could not load block patterns.', 'quotes-dlx' ) }
-					<br />
-					<a
-						href="https://dlxplugins.com/support/"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						DLX Plugins Support
-					</a>
-				</p>
-			}
-		>
-			<Suspense
-				fallback={
-					<div className="has-admin-container-body__content">loading...</div>
-				}
-			>
-				<Interface defaults={ defaults } { ...props } />
-			</Suspense>
-		</ErrorBoundary>
-	);
+	const { data, loading, error } = useSelect( ( select ) => {
+		return {
+			data: select( patternsStore ).getData(),
+			loading: select( patternsStore ).getLoading(),
+			error: select( patternsStore ).getError(),
+		};
+	} );
+
+	useEffect( () => {
+		dispatch( patternsStore ).fetchData();
+	}, [] );
+
+	// Show loading state.
+	if ( loading ) {
+		return (
+			<div className="dlx-patterns-view-loading">
+				<p>{ __( 'Loading patterns…', 'pattern-wrangler' ) }</p>
+			</div>
+		);
+	}
+
+	// Show error state.
+	if ( error ) {
+		return (
+			<div className="dlx-patterns-view-error">
+				<p>{ __( 'Error loading patterns:', 'pattern-wrangler' ) } { error }</p>
+				<Button
+					variant="primary"
+					onClick={ () => dispatch( patternsStore ).fetchData() }
+				>
+					{ __( 'Retry', 'pattern-wrangler' ) }
+				</Button>
+			</div>
+		);
+	}
+
+	// Show empty state.
+	if ( ! data || ! data.patterns || data.patterns.length === 0 ) {
+		return (
+			<div className="dlx-patterns-view-empty">
+				<p>{ __( 'No patterns found.', 'pattern-wrangler' ) }</p>
+			</div>
+		);
+	}
+	return <Interface data={ data } { ...props } />;
 };
 
 // Get query args from current URL.
 // const queryArgs = getQueryArgs( window.location.href );
 
 const Interface = ( props ) => {
-	const { defaults } = props;
-	const data = defaults();
+	const { data } = props;
 
 	const [ selectedItems, setSelectedItems ] = useState( [] );
-	const [ patterns, setPatterns ] = useState( [] );
+	const { patterns } = useSelect( ( select ) => {
+		return {
+			patterns: select( patternsStore ).getPatterns(),
+		};
+	} );
+
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
 
-	const [ categories, setCategories ] = useState( [] );
+	const { categories } = useSelect( ( select ) => {
+		return {
+			categories: select( patternsStore ).getCategories(),
+		};
+	} );
+
 	const [ localCategories, setLocalCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
 	const [ snackbar, setSnackbar ] = useState( {
@@ -326,7 +333,6 @@ const Interface = ( props ) => {
 										if ( ! categories.hasOwnProperty( catSlug ) ) {
 											return null;
 										}
-
 
 										const catLabel =
 												categories[ catSlug ]?.label || categories[ catSlug ]?.name;
@@ -1026,13 +1032,11 @@ const Interface = ( props ) => {
 					fields: [ ...fields ],
 				};
 				// Force view to re-render.
-				setCategories( data.categories );
 				setLocalCategories( originalLocalCategories );
 				setView( newViewCopy );
 
 				// Now filter the patterns.
 				if ( data.patterns && ! patternsDisplay.length ) {
-					setPatterns( data.patterns );
 					if ( data.patterns !== patternsDisplay ) {
 						const patternsToShow = getPatternsForDisplay( view );
 						setPatternsDisplay( patternsToShow );
