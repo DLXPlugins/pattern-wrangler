@@ -17,6 +17,28 @@ const actions = {
 			patterns,
 		};
 	},
+	setPattern( patternId, patternTitle, patternCategories, patternCategorySlugs ) {
+		return {
+			type: 'SET_PATTERN',
+			patternId,
+			patternTitle,
+			patternCategories,
+			patternCategorySlugs,
+		};
+	},
+	setCategory( categoryId, categoryTermData ) {
+		return {
+			type: 'SET_CATEGORY',
+			categoryId,
+			categoryTermData,
+		};
+	},
+	upsertCategory( categoryData ) {
+		return {
+			type: 'UPSERT_CATEGORY',
+			categoryData,
+		};
+	},
 	setCategories( categories ) {
 		return {
 			type: 'SET_CATEGORIES',
@@ -97,6 +119,55 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 				return {
 					...state,
 					categories: action.categories,
+				};
+			case 'UPSERT_CATEGORY':
+				const { categoryData } = action;
+
+				const updatedCategories = { ...categoryData, ...state.categories };
+
+				console.log( 'updatedCategories', updatedCategories );
+
+				return {
+					...state,
+					categories: updatedCategories,
+					data: {
+						...state.data,
+						categories: updatedCategories,
+					},
+				};
+			case 'SET_PATTERN':
+				const { patternCategories, patternCategorySlugs } = action;
+				const newPatterns = state.patterns.map( ( pattern ) => {
+					if ( pattern.id === action.patternId ) {
+						return {
+							...pattern,
+							...{ title: action.patternTitle, categories: patternCategories, categorySlugs: patternCategorySlugs },
+						};
+					}
+					return pattern;
+				} );
+				return {
+					...state,
+					patterns: newPatterns,
+					data: {
+						...state.data,
+						patterns: newPatterns,
+					},
+				};
+			case 'SET_CATEGORY':
+				const newCategories = state.categories.map( ( category ) => {
+					if ( category.id === action.categoryId ) {
+						return { ...category, ...action.categoryTermData };
+					}
+					return category;
+				} );
+				return {
+					...state,
+					categories: newCategories,
+					data: {
+						...state.data,
+						categories: newCategories,
+					},
 				};
 			case 'SET_DATA':
 				return {

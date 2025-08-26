@@ -279,22 +279,28 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 /**
  * Pattern Create Modal.
  *
- * @param {Object}   props                   The props.
- * @param {string}   props.title             The title of the modal.
- * @param {string}   props.patternTitle      The title of the pattern.
- * @param {Array}    props.patternCategories The categories of the pattern in label arrays.
- * @param {string}   props.patternSyncStatus The sync status of the pattern.
- * @param {string}   props.patternCopyId     The id of the pattern to copy.
- * @param {Object}   props.categories        The categories of the pattern.
- * @param {Function} props.onRequestClose    The function to call when the modal is closed.
+ * @param {Object}   props                     The props.
+ * @param {string}   props.title               The title of the modal.
+ * @param {string}   props.patternId           The id of the pattern.
+ * @param {string}   props.patternNonce        The nonce of the pattern.
+ * @param {string}   props.patternTitle        The title of the pattern.
+ * @param {Array}    props.patternCategories   The categories of the pattern in label arrays.
+ * @param {string}   props.patternSyncStatus   The sync status of the pattern.
+ * @param {string}   props.patternCopyId       The id of the pattern to copy.
+ * @param {Object}   props.categories          The categories of all the patterns..
+ * @param {Function} props.onRequestClose      The function to call when the modal is closed.
  * @param {string}   props.syncedDefaultStatus The default sync status of the pattern. Values are 'synced' or 'unsynced'.
  * @param {boolean}  props.syncedDisabled      Whether the synced status is disabled.
+ * @param {Function} props.onEdit              The function to call when the pattern is edited.
  * @return {Object} The rendered component.
  */
 var PatternCreateModal = function PatternCreateModal(props) {
   var originalCategories = props.categories || [];
   var categories = (props.categories || []).map(function (category) {
-    return category.label;
+    return category.label || category.name;
+  });
+  var localPatternCategories = (props.patternCategories || []).map(function (category) {
+    return category.label || category.name;
   });
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(props.copyPatternId || 0),
     _useState2 = _slicedToArray(_useState, 1),
@@ -309,10 +315,16 @@ var PatternCreateModal = function PatternCreateModal(props) {
     _useState8 = _slicedToArray(_useState7, 2),
     isSaving = _useState8[0],
     setIsSaving = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(props.isEditMode || false),
+    _useState10 = _slicedToArray(_useState9, 2),
+    isEditMode = _useState10[0],
+    setIsEditMode = _useState10[1];
   var _useForm = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_8__.useForm)({
       defaultValues: {
+        patternId: props.patternId || 0,
+        patternNonce: props.patternNonce || '',
         patternTitle: props.patternTitle || '',
-        patternCategories: props.patternCategories || [],
+        patternCategories: localPatternCategories || [],
         patternSyncStatus: props.patternSyncStatus || syncedDefaultStatus,
         patternCopyId: copyPatternId
       }
@@ -343,13 +355,14 @@ var PatternCreateModal = function PatternCreateModal(props) {
    */
   var getIdByValue = function getIdByValue(labelValue) {
     var label = originalCategories.find(function (findLabel) {
-      return findLabel.label.toLowerCase() === labelValue.toLowerCase();
+      var findNewLabel = findLabel.label || findLabel.name;
+      return findNewLabel.toLowerCase() === labelValue.toLowerCase();
     });
     return label ? label.id : 0;
   };
   var onSubmit = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(formData) {
-      var newCategories, response, patternId, redirectUrl;
+      var newCategories, path, response, patternId, redirectUrl;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
@@ -360,11 +373,14 @@ var PatternCreateModal = function PatternCreateModal(props) {
                 id: getIdByValue(category)
               };
             });
-            _context.next = 4;
+            path = isEditMode ? '/dlxplugins/pattern-wrangler/v1/patterns/update/' : '/dlxplugins/pattern-wrangler/v1/patterns/create/';
+            _context.next = 5;
             return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
-              path: '/dlxplugins/pattern-wrangler/v1/patterns/create/',
+              path: path,
               method: 'POST',
               data: {
+                patternId: formData.patternId,
+                patternNonce: formData.patternNonce,
                 nonce: dlxEnhancedPatternsView.createNonce,
                 patternTitle: formData.patternTitle,
                 patternCategories: newCategories,
@@ -372,7 +388,7 @@ var PatternCreateModal = function PatternCreateModal(props) {
                 patternCopyId: formData.patternCopyId
               }
             });
-          case 4:
+          case 5:
             response = _context.sent;
             if (response !== null && response !== void 0 && response.error) {
               setError('patternTitle', {
@@ -380,11 +396,15 @@ var PatternCreateModal = function PatternCreateModal(props) {
               });
             } else {
               patternId = response.patternId;
-              redirectUrl = encodeURIComponent(window.location.href);
-              window.location.href = "".concat(dlxEnhancedPatternsView.getSiteBaseUrl, "post.php?post=").concat(patternId, "&action=edit&redirect_to=").concat(redirectUrl);
+              if (!isEditMode) {
+                redirectUrl = encodeURIComponent(window.location.href);
+                window.location.href = "".concat(dlxEnhancedPatternsView.getSiteBaseUrl, "post.php?post=").concat(patternId, "&action=edit&redirect_to=").concat(redirectUrl);
+              } else {
+                props.onEdit(response);
+              }
             }
             setIsSaving(false);
-          case 7:
+          case 8:
           case "end":
             return _context.stop();
         }
@@ -394,6 +414,22 @@ var PatternCreateModal = function PatternCreateModal(props) {
       return _ref.apply(this, arguments);
     };
   }();
+
+  /**
+   * Get the button text.
+   *
+   * @return {string} The button text.
+   */
+  var getButtonText = function getButtonText() {
+    var buttonText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Add Pattern', 'pattern-wrangler');
+    if (isEditMode) {
+      buttonText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Save Pattern', 'pattern-wrangler');
+    }
+    if (isSaving) {
+      buttonText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Saving Pattern…', 'pattern-wrangler');
+    }
+    return buttonText;
+  };
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Modal, {
     title: props.title || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Add Pattern', 'pattern-wrangler'),
     onRequestClose: props.onRequestClose,
@@ -478,7 +514,7 @@ var PatternCreateModal = function PatternCreateModal(props) {
     variant: "primary",
     type: "submit",
     disabled: isSaving
-  }, isSaving ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Adding Pattern…', 'pattern-wrangler') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Add Pattern', 'pattern-wrangler')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+  }, getButtonText()), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
     variant: "secondary",
     onClick: props.onRequestClose,
     disabled: isSaving
@@ -814,6 +850,11 @@ var Interface = function Interface(props) {
     _useState26 = _slicedToArray(_useState25, 2),
     copyPatternId = _useState26[0],
     setCopyPatternId = _useState26[1];
+  var _useState27 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState28 = _slicedToArray(_useState27, 2),
+    isQuickEditModalOpen = _useState28[0],
+    setIsQuickEditModalOpen = _useState28[1];
+
   /**
    * Returns a default view with query vars. Useful for setting or refreshing the view.
    *
@@ -849,10 +890,10 @@ var Interface = function Interface(props) {
       }]
     };
   };
-  var _useState27 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(getDefaultView()),
-    _useState28 = _slicedToArray(_useState27, 2),
-    view = _useState28[0],
-    setView = _useState28[1];
+  var _useState29 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(getDefaultView()),
+    _useState30 = _slicedToArray(_useState29, 2),
+    view = _useState30[0],
+    setView = _useState30[1];
   var fields = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return [{
       id: 'title',
@@ -864,7 +905,16 @@ var Interface = function Interface(props) {
             className: "pattern-title-categories"
           }, /*#__PURE__*/React.createElement("div", {
             className: "pattern-title"
-          }, item.title), /*#__PURE__*/React.createElement("div", {
+          }, item.isLocal && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
+            variant: "link",
+            onClick: function onClick(e) {
+              e.preventDefault();
+              var redirectUrl = encodeURIComponent(window.location.href);
+              window.location.href = "".concat(dlxEnhancedPatternsView.getSiteBaseUrl, "post.php?post=").concat(item.id, "&action=edit&redirect_to=").concat(redirectUrl);
+            }
+          }, item.title), !item.isLocal && /*#__PURE__*/React.createElement("span", {
+            className: "pattern-title"
+          }, item.title)), /*#__PURE__*/React.createElement("div", {
             className: "pattern-categories"
           }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('No categories', 'pattern-wrangler')));
         }
@@ -872,7 +922,16 @@ var Interface = function Interface(props) {
           className: "pattern-title-categories"
         }, /*#__PURE__*/React.createElement("div", {
           className: "pattern-title"
-        }, item.title), item.categorySlugs.length > 0 && Object.values(categories).length > 0 && /*#__PURE__*/React.createElement("div", {
+        }, item.isLocal && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
+          variant: "link",
+          onClick: function onClick(e) {
+            e.preventDefault();
+            var redirectUrl = encodeURIComponent(window.location.href);
+            window.location.href = "".concat(dlxEnhancedPatternsView.getSiteBaseUrl, "post.php?post=").concat(item.id, "&action=edit&redirect_to=").concat(redirectUrl);
+          }
+        }, item.title), !item.isLocal && /*#__PURE__*/React.createElement("span", {
+          className: "pattern-title"
+        }, item.title)), item.categorySlugs.length > 0 && Object.values(categories).length > 0 && /*#__PURE__*/React.createElement("div", {
           className: "pattern-categories"
         }, item.categorySlugs.map(function (category, index) {
           var _categories$catSlug, _categories$catSlug2;
@@ -988,16 +1047,16 @@ var Interface = function Interface(props) {
       id: 'patternStatus',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern Status', 'pattern-wrangler')
     }];
-  }, [categories]);
+  }, [categories, patterns]);
   var actions = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return [{
-      id: 'edit',
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Edit', 'pattern-wrangler'),
+      id: 'quick-edit',
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Quick Edit', 'pattern-wrangler'),
       icon: 'edit',
       callback: function callback(items) {
-        var item = items[0];
-        var redirectUrl = encodeURIComponent(window.location.href);
-        window.location.href = "".concat(dlxEnhancedPatternsView.getSiteBaseUrl, "post.php?post=").concat(item.id, "&action=edit&redirect_to=").concat(redirectUrl);
+        setIsQuickEditModalOpen({
+          item: items[0]
+        });
       },
       isEligible: function isEligible(pattern) {
         return pattern.isLocal;
@@ -1013,21 +1072,6 @@ var Interface = function Interface(props) {
       },
       callback: function callback() {
         // TODO: Implement delete functionality.
-      },
-      isPrimary: false,
-      isDestructive: true
-    }, {
-      id: 'delete',
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Preview Pattern', 'pattern-wrangler'),
-      icon: 'edit',
-      isEligible: function isEligible() {
-        // Pattern must be local.
-        return true;
-      },
-      callback: function callback(items) {
-        // Get the first item.
-        var item = items[0];
-        popPatternPreview(item);
       },
       isPrimary: false,
       isDestructive: true
@@ -1130,7 +1174,7 @@ var Interface = function Interface(props) {
       isPrimary: false,
       isDestructive: false
     }];
-  }, []);
+  }, [categories, patterns]);
 
   // const { data, isLoading, error } = useQuery( {
   // 	queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
@@ -1492,7 +1536,7 @@ var Interface = function Interface(props) {
         setView(newViewCopy);
 
         // Now filter the patterns.
-        if (data.patterns && !patternsDisplay.length) {
+        if (data.patterns) {
           if (data.patterns !== patternsDisplay) {
             var patternsToShow = getPatternsForDisplay(view);
             setPatternsDisplay(patternsToShow);
@@ -1654,6 +1698,25 @@ var Interface = function Interface(props) {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Copy Pattern to Local', 'pattern-wrangler'),
     syncedDefaultStatus: 'unsynced',
     copyPatternId: copyPatternId
+  }), isQuickEditModalOpen && /*#__PURE__*/React.createElement(_PatternCreateModal__WEBPACK_IMPORTED_MODULE_12__["default"], {
+    isOpen: isQuickEditModalOpen,
+    onRequestClose: function onRequestClose() {
+      return setIsQuickEditModalOpen(null);
+    },
+    pattern: isQuickEditModalOpen.item,
+    patternTitle: isQuickEditModalOpen.item.title,
+    categories: localCategories,
+    patternCategories: isQuickEditModalOpen.item.categories,
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Quick Edit Pattern', 'pattern-wrangler'),
+    syncedDisabled: true,
+    patternId: isQuickEditModalOpen.item.id,
+    patternNonce: isQuickEditModalOpen.item.editNonce,
+    isEditMode: true,
+    onEdit: function onEdit(editResponse) {
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_9__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_13__["default"]).upsertCategory(editResponse.categories);
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_9__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_13__["default"]).setPattern(editResponse.patternId, editResponse.patternTitle, editResponse.categorySlugs, editResponse.categorySlugs);
+      setIsQuickEditModalOpen(null);
+    }
   }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PatternsGrid);
@@ -1868,6 +1931,28 @@ var actions = {
       patterns: patterns
     };
   },
+  setPattern: function setPattern(patternId, patternTitle, patternCategories, patternCategorySlugs) {
+    return {
+      type: 'SET_PATTERN',
+      patternId: patternId,
+      patternTitle: patternTitle,
+      patternCategories: patternCategories,
+      patternCategorySlugs: patternCategorySlugs
+    };
+  },
+  setCategory: function setCategory(categoryId, categoryTermData) {
+    return {
+      type: 'SET_CATEGORY',
+      categoryId: categoryId,
+      categoryTermData: categoryTermData
+    };
+  },
+  upsertCategory: function upsertCategory(categoryData) {
+    return {
+      type: 'UPSERT_CATEGORY',
+      categoryData: categoryData
+    };
+  },
   setCategories: function setCategories(categories) {
     return {
       type: 'SET_CATEGORIES',
@@ -1968,6 +2053,48 @@ var patternsStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxS
         return _objectSpread(_objectSpread({}, state), {}, {
           categories: action.categories
         });
+      case 'UPSERT_CATEGORY':
+        var categoryData = action.categoryData;
+        var updatedCategories = _objectSpread(_objectSpread({}, categoryData), state.categories);
+        console.log('updatedCategories', updatedCategories);
+        return _objectSpread(_objectSpread({}, state), {}, {
+          categories: updatedCategories,
+          data: _objectSpread(_objectSpread({}, state.data), {}, {
+            categories: updatedCategories
+          })
+        });
+      case 'SET_PATTERN':
+        var patternCategories = action.patternCategories,
+          patternCategorySlugs = action.patternCategorySlugs;
+        var newPatterns = state.patterns.map(function (pattern) {
+          if (pattern.id === action.patternId) {
+            return _objectSpread(_objectSpread({}, pattern), {
+              title: action.patternTitle,
+              categories: patternCategories,
+              categorySlugs: patternCategorySlugs
+            });
+          }
+          return pattern;
+        });
+        return _objectSpread(_objectSpread({}, state), {}, {
+          patterns: newPatterns,
+          data: _objectSpread(_objectSpread({}, state.data), {}, {
+            patterns: newPatterns
+          })
+        });
+      case 'SET_CATEGORY':
+        var newCategories = state.categories.map(function (category) {
+          if (category.id === action.categoryId) {
+            return _objectSpread(_objectSpread({}, category), action.categoryTermData);
+          }
+          return category;
+        });
+        return _objectSpread(_objectSpread({}, state), {}, {
+          categories: newCategories,
+          data: _objectSpread(_objectSpread({}, state.data), {}, {
+            categories: newCategories
+          })
+        });
       case 'SET_DATA':
         return _objectSpread(_objectSpread({}, state), {}, {
           data: action.data
@@ -2019,4 +2146,4 @@ var patternsStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxS
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=1915d6682f6f0eaccd5d
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=1e64511f05a0cc3e6c6b

@@ -263,6 +263,8 @@ const Interface = ( props ) => {
 	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] = useState( false );
 	const [ isCopyToLocalModalOpen, setIsCopyToLocalModalOpen ] = useState( false );
 	const [ copyPatternId, setCopyPatternId ] = useState( 0 );
+	const [ isQuickEditModalOpen, setIsQuickEditModalOpen ] = useState( null );
+
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
 	 *
@@ -316,7 +318,25 @@ const Interface = ( props ) => {
 					if ( ! item?.categorySlugs || item.categorySlugs.length === 0 ) {
 						return (
 							<div className="pattern-title-categories">
-								<div className="pattern-title">{ item.title }</div>
+								<div className="pattern-title">
+									{ item.isLocal && (
+										<Button
+											variant="link"
+											onClick={ ( e ) => {
+												e.preventDefault();
+												const redirectUrl = encodeURIComponent(
+													window.location.href
+												);
+												window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
+											} }
+										>
+											{ item.title }
+										</Button>
+									) }
+									{ ! item.isLocal && (
+										<span className="pattern-title">{ item.title }</span>
+									) }
+								</div>
 								<div className="pattern-categories">{ __( 'No categories', 'pattern-wrangler' ) }</div>
 							</div>
 						);
@@ -324,7 +344,25 @@ const Interface = ( props ) => {
 
 					return (
 						<div className="pattern-title-categories">
-							<div className="pattern-title">{ item.title }</div>
+							<div className="pattern-title">
+								{ item.isLocal && (
+									<Button
+										variant="link"
+										onClick={ ( e ) => {
+											e.preventDefault();
+											const redirectUrl = encodeURIComponent(
+												window.location.href
+											);
+											window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
+										} }
+									>
+										{ item.title }
+									</Button>
+								) }
+								{ ! item.isLocal && (
+									<span className="pattern-title">{ item.title }</span>
+								) }
+							</div>
 							{ item.categorySlugs.length > 0 &&
 								Object.values( categories ).length > 0 && (
 								<div className="pattern-categories">
@@ -478,19 +516,17 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Status', 'pattern-wrangler' ),
 			},
 		],
-		[ categories ]
+		[ categories, patterns ]
 	);
 
 	const actions = useMemo(
 		() => [
 			{
-				id: 'edit',
-				label: __( 'Edit', 'pattern-wrangler' ),
+				id: 'quick-edit',
+				label: __( 'Quick Edit', 'pattern-wrangler' ),
 				icon: 'edit',
 				callback: ( items ) => {
-					const item = items[ 0 ];
-					const redirectUrl = encodeURIComponent( window.location.href );
-					window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
+					setIsQuickEditModalOpen( { item: items[ 0 ] } );
 				},
 				isEligible: ( pattern ) => {
 					return pattern.isLocal;
@@ -507,22 +543,6 @@ const Interface = ( props ) => {
 				},
 				callback: () => {
 					// TODO: Implement delete functionality.
-				},
-				isPrimary: false,
-				isDestructive: true,
-			},
-			{
-				id: 'delete',
-				label: __( 'Preview Pattern', 'pattern-wrangler' ),
-				icon: 'edit',
-				isEligible: () => {
-					// Pattern must be local.
-					return true;
-				},
-				callback: ( items ) => {
-					// Get the first item.
-					const item = items[ 0 ];
-					popPatternPreview( item );
 				},
 				isPrimary: false,
 				isDestructive: true,
@@ -634,7 +654,7 @@ const Interface = ( props ) => {
 				isDestructive: false,
 			},
 		],
-		[]
+		[ categories, patterns ]
 	);
 
 	// const { data, isLoading, error } = useQuery( {
@@ -1036,7 +1056,7 @@ const Interface = ( props ) => {
 				setView( newViewCopy );
 
 				// Now filter the patterns.
-				if ( data.patterns && ! patternsDisplay.length ) {
+				if ( data.patterns ) {
 					if ( data.patterns !== patternsDisplay ) {
 						const patternsToShow = getPatternsForDisplay( view );
 						setPatternsDisplay( patternsToShow );
@@ -1254,6 +1274,26 @@ const Interface = ( props ) => {
 					title={ __( 'Copy Pattern to Local', 'pattern-wrangler' ) }
 					syncedDefaultStatus={ 'unsynced' }
 					copyPatternId={ copyPatternId }
+				/>
+			) }
+			{ isQuickEditModalOpen && (
+				<PatternCreateModal
+					isOpen={ isQuickEditModalOpen }
+					onRequestClose={ () => setIsQuickEditModalOpen( null ) }
+					pattern={ isQuickEditModalOpen.item }
+					patternTitle={ isQuickEditModalOpen.item.title }
+					categories={ localCategories }
+					patternCategories={ isQuickEditModalOpen.item.categories }
+					title={ __( 'Quick Edit Pattern', 'pattern-wrangler' ) }
+					syncedDisabled={ true }
+					patternId={ isQuickEditModalOpen.item.id }
+					patternNonce={ isQuickEditModalOpen.item.editNonce }
+					isEditMode={ true }
+					onEdit={ ( editResponse ) => {
+						dispatch( patternsStore ).upsertCategory( editResponse.categories );
+						dispatch( patternsStore ).setPattern( editResponse.patternId, editResponse.patternTitle, editResponse.categorySlugs, editResponse.categorySlugs );
+						setIsQuickEditModalOpen( null );
+					} }
 				/>
 			) }
 		</div>

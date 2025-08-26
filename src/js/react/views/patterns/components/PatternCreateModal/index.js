@@ -29,25 +29,34 @@ import Notice from '../../../../components/Notice';
 /**
  * Pattern Create Modal.
  *
- * @param {Object}   props                   The props.
- * @param {string}   props.title             The title of the modal.
- * @param {string}   props.patternTitle      The title of the pattern.
- * @param {Array}    props.patternCategories The categories of the pattern in label arrays.
- * @param {string}   props.patternSyncStatus The sync status of the pattern.
- * @param {string}   props.patternCopyId     The id of the pattern to copy.
- * @param {Object}   props.categories        The categories of the pattern.
- * @param {Function} props.onRequestClose    The function to call when the modal is closed.
+ * @param {Object}   props                     The props.
+ * @param {string}   props.title               The title of the modal.
+ * @param {string}   props.patternId           The id of the pattern.
+ * @param {string}   props.patternNonce        The nonce of the pattern.
+ * @param {string}   props.patternTitle        The title of the pattern.
+ * @param {Array}    props.patternCategories   The categories of the pattern in label arrays.
+ * @param {string}   props.patternSyncStatus   The sync status of the pattern.
+ * @param {string}   props.patternCopyId       The id of the pattern to copy.
+ * @param {Object}   props.categories          The categories of all the patterns..
+ * @param {Function} props.onRequestClose      The function to call when the modal is closed.
  * @param {string}   props.syncedDefaultStatus The default sync status of the pattern. Values are 'synced' or 'unsynced'.
  * @param {boolean}  props.syncedDisabled      Whether the synced status is disabled.
+ * @param {Function} props.onEdit              The function to call when the pattern is edited.
  * @return {Object} The rendered component.
  */
 const PatternCreateModal = ( props ) => {
 	const originalCategories = props.categories || [];
-	const categories = ( props.categories || [] ).map( ( category ) => category.label );
+	const categories = ( props.categories || [] ).map( ( category ) => {
+		return category.label || category.name;
+	} );
+	const localPatternCategories = ( props.patternCategories || [] ).map( ( category ) => {
+		return category.label || category.name;
+	} );
 	const [ copyPatternId ] = useState( props.copyPatternId || 0 );
 	const [ syncedDefaultStatus ] = useState( props.syncedDefaultStatus || 'synced' );
 	const [ syncedDisabled ] = useState( props.syncedDisabled || false );
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ isEditMode, setIsEditMode ] = useState( props.isEditMode || false );
 
 	const {
 		control,
@@ -59,8 +68,10 @@ const PatternCreateModal = ( props ) => {
 		setValue,
 	} = useForm( {
 		defaultValues: {
+			patternId: props.patternId || 0,
+			patternNonce: props.patternNonce || '',
 			patternTitle: props.patternTitle || '',
-			patternCategories: props.patternCategories || [],
+			patternCategories: localPatternCategories || [],
 			patternSyncStatus: props.patternSyncStatus || syncedDefaultStatus,
 			patternCopyId: copyPatternId,
 		},
@@ -79,7 +90,10 @@ const PatternCreateModal = ( props ) => {
 	 */
 	const getIdByValue = ( labelValue ) => {
 		const label = originalCategories.find(
-			( findLabel ) => findLabel.label.toLowerCase() === labelValue.toLowerCase()
+			( findLabel ) => {
+				const findNewLabel = findLabel.label || findLabel.name;
+				return findNewLabel.toLowerCase() === labelValue.toLowerCase();
+			}
 		);
 		return label ? label.id : 0;
 	};
@@ -94,10 +108,16 @@ const PatternCreateModal = ( props ) => {
 			};
 		} );
 
+		const path = isEditMode
+			? '/dlxplugins/pattern-wrangler/v1/patterns/update/'
+			: '/dlxplugins/pattern-wrangler/v1/patterns/create/';
+
 		const response = await apiFetch( {
-			path: '/dlxplugins/pattern-wrangler/v1/patterns/create/',
+			path,
 			method: 'POST',
 			data: {
+				patternId: formData.patternId,
+				patternNonce: formData.patternNonce,
 				nonce: dlxEnhancedPatternsView.createNonce,
 				patternTitle: formData.patternTitle,
 				patternCategories: newCategories,
@@ -109,10 +129,30 @@ const PatternCreateModal = ( props ) => {
 			setError( 'patternTitle', { message: response.error } );
 		} else {
 			const patternId = response.patternId;
-			const redirectUrl = encodeURIComponent( window.location.href );
-			window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
+			if ( ! isEditMode ) {
+				const redirectUrl = encodeURIComponent( window.location.href );
+				window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
+			} else {
+				props.onEdit( response );
+			}
 		}
 		setIsSaving( false );
+	};
+
+	/**
+	 * Get the button text.
+	 *
+	 * @return {string} The button text.
+	 */
+	const getButtonText = () => {
+		let buttonText = __( 'Add Pattern', 'pattern-wrangler' );
+		if ( isEditMode ) {
+			buttonText = __( 'Save Pattern', 'pattern-wrangler' );
+		}
+		if ( isSaving ) {
+			buttonText = __( 'Saving Pattern…', 'pattern-wrangler' );
+		}
+		return buttonText;
 	};
 
 	return (
@@ -208,9 +248,7 @@ const PatternCreateModal = ( props ) => {
 						</div>
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
 							<Button variant="primary" type="submit" disabled={ isSaving }>
-								{ isSaving
-									? __( 'Adding Pattern…', 'pattern-wrangler' )
-									: __( 'Add Pattern', 'pattern-wrangler' ) }
+								{ getButtonText() }
 							</Button>
 							<Button
 								variant="secondary"

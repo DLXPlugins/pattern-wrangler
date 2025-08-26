@@ -65,7 +65,7 @@ class Rest {
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'rest_get_all_patterns' ),
 					'permission_callback' => function () {
-						return current_user_can( 'manage_options' );
+						return current_user_can( 'edit_posts' );
 					},
 
 				),
@@ -82,7 +82,22 @@ class Rest {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_create_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'manage_options' );
+					return current_user_can( 'edit_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For updating a pattern.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/patterns/update',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_update_pattern' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
 				},
 			)
 		);
@@ -132,23 +147,109 @@ class Rest {
 		}
 
 		// Set categories.
+		$terms_to_add = array();
 		foreach ( $pattern_categories as $category ) {
 			if ( is_numeric( $category['id'] ) && 0 !== $category['id'] ) {
-				wp_set_post_terms( $pattern_id, array( absint( $category['id'] ) ), 'wp_pattern_category' );
+				$terms_to_add[] = absint( $category['id'] );
 			} else {
-				wp_set_post_terms( $pattern_id, sanitize_text_field( $category['name'] ), 'wp_pattern_category' );
+				$terms_to_add[] = sanitize_text_field( $category['name'] );
 			}
 		}
+
+		// Add terms.
+		$terms_affected_ids = wp_set_post_terms( $pattern_id, $terms_to_add, 'wp_pattern_category' );
 
 		/**
 		 * Action: dlx_pw_pattern_created
 		 *
 		 * @param int $pattern_id The pattern ID.
+		 * @param array $terms_affected_ids The terms affected IDs.
 		 */
-		do_action( 'dlx_pw_pattern_created', $pattern_id );
+		do_action( 'dlx_pw_pattern_created', $pattern_id, $terms_affected_ids );
 
 		// Return the pattern ID.
 		return rest_ensure_response( array( 'patternId' => $pattern_id ) );
+	}
+
+	/**
+	 * Create a pattern.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_update_pattern( $request ) {
+		// Check nonce and permissions.
+		$nonce      = sanitize_text_field( $request->get_param( 'patternNonce' ) );
+		$pattern_id = absint( $request->get_param( 'patternId' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to edit patterns.' ) );
+		}
+
+		$pattern_title      = sanitize_text_field( $request->get_param( 'patternTitle' ) );
+		$pattern_categories = Functions::sanitize_array_recursive( $request->get_param( 'patternCategories' ) ); // Cats are in format, [name, id].
+
+		// Update the pattern.
+		$pattern_id = wp_update_post(
+			array(
+				'ID'         => $pattern_id,
+				'post_title' => $pattern_title,
+			)
+		);
+
+		// Clear post terms.
+		wp_delete_object_term_relationships( $pattern_id, 'wp_pattern_category' );
+
+		$terms_affected = array();
+
+		// Set categories.
+		$terms_to_add = array();
+		foreach ( $pattern_categories as $category ) {
+			if ( is_numeric( $category['id'] ) && 0 !== $category['id'] ) {
+				$terms_to_add[] = absint( $category['id'] );
+			} else {
+				$terms_to_add[] = sanitize_text_field( $category['name'] );
+			}
+		}
+
+		// Add terms.
+		$terms_affected_ids   = wp_set_post_terms( $pattern_id, $terms_to_add, 'wp_pattern_category' );
+
+		// Get terms from IDs.
+		foreach ( $terms_affected_ids as $term_id ) {
+			$category_term = get_term( $term_id, 'wp_pattern_category' );
+			if ( $category_term ) {
+				$terms_affected_slugs[]                                   = sanitize_text_field( $category_term->name );
+				$terms_affected[ sanitize_title( $category_term->slug ) ] = array(
+					'label'       => sanitize_text_field( $category_term->name ),
+					'customLabel' => sanitize_text_field( $category_term->name ),
+					'slug'        => sanitize_title( $category_term->slug ),
+					'enabled'     => true,
+					'count'       => absint( $category_term->count ),
+					'mappedTo'    => false,
+					'registered'  => false,
+					'id'          => absint( $category_term->term_id ),
+				);
+			}
+		}
+
+		/**
+		 * Action: dlx_pw_pattern_updated
+		 *
+		 * @param int   $pattern_id The pattern ID.
+		 * @param array $terms_affected The terms affected.
+		 */
+		do_action( 'dlx_pw_pattern_updated', $pattern_id, $terms_affected );
+
+		// Return the pattern ID.
+		return rest_ensure_response(
+			array(
+				'patternId'     => $pattern_id,
+				'patternTitle'  => sanitize_text_field( $pattern_title ),
+				'categories'    => $terms_affected,
+				'categorySlugs' => array_values( $terms_affected ),
+			)
+		);
 	}
 
 	/**
@@ -260,6 +361,7 @@ class Rest {
 				'preview'       => $preview_image,
 				'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
 				'patternType'   => 'registered',
+				'editNonce'     => '',
 			);
 		}
 
@@ -278,6 +380,7 @@ class Rest {
 				'preview'       => $preview_image,
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
 				'patternType'   => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
 			);
 		}
 
