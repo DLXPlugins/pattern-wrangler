@@ -202,15 +202,17 @@ body div.updated.warning {
   gap: 32px;
 }
 
-.dlx-patterns-view-container .dataviews-title-field span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__title-field {
   display: flex;
   padding-right: 16px;
+  white-space: unset;
+}
+.dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__title-field .pattern-title {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__title-field .pattern-title button {
+  font-size: 16px;
 }
 
 .dlx-patterns-view-container .dataviews-view-grid__card {

@@ -28,6 +28,7 @@ import { useDispatch, useSelect, dispatch } from '@wordpress/data';
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
+import PatternPauseModal from './PatternPauseModal';
 import patternsStore from '../store';
 
 // Enhanced iframe component that works with the existing PHP scaling system.
@@ -264,6 +265,7 @@ const Interface = ( props ) => {
 	const [ isCopyToLocalModalOpen, setIsCopyToLocalModalOpen ] = useState( false );
 	const [ copyPatternId, setCopyPatternId ] = useState( 0 );
 	const [ isQuickEditModalOpen, setIsQuickEditModalOpen ] = useState( null );
+	const [ isPauseModalOpen, setIsPauseModalOpen ] = useState( null );
 
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
@@ -538,14 +540,15 @@ const Interface = ( props ) => {
 				label: __( 'Delete Pattern', 'pattern-wrangler' ),
 				icon: 'trash',
 				isEligible: ( pattern ) => {
-					// Pattern must be local.
-					return pattern.isLocal;
+					// Pattern must be local and disabled.
+					return pattern.isLocal && pattern.isDisabled;
 				},
 				callback: () => {
 					// TODO: Implement delete functionality.
 				},
 				isPrimary: false,
 				isDestructive: true,
+				supportsBulk: true,
 			},
 			{
 				id: 'copy-to-local',
@@ -566,25 +569,11 @@ const Interface = ( props ) => {
 				id: 'disable-preview',
 				label: __( 'Disable Pattern', 'pattern-wrangler' ),
 				icon: 'controls-pause',
-				callback: () => {
-					// TODO: Implement disable preview functionality.
+				callback: ( items ) => {
+					setIsPauseModalOpen( { items } );
 				},
 				isEligible: ( item ) => {
-					return ! item.isLocal;
-				},
-				isDestructive: true,
-				supportsBulk: true,
-				isPrimary: false,
-			},
-			{
-				id: 'delete-pattern',
-				label: __( 'Delete Pattern', 'pattern-wrangler' ),
-				icon: 'trash',
-				callback: () => {
-					// TODO: Implement delete pattern functionality.
-				},
-				isEligible: ( item ) => {
-					return item.isLocal;
+					return ! item.isDisabled;
 				},
 				isDestructive: true,
 				supportsBulk: true,
@@ -1294,6 +1283,16 @@ const Interface = ( props ) => {
 						dispatch( patternsStore ).setPattern( editResponse.patternId, editResponse.patternTitle, editResponse.categorySlugs, editResponse.categorySlugs );
 						setIsQuickEditModalOpen( null );
 					} }
+				/>
+			) }
+			{ isPauseModalOpen && (
+				<PatternPauseModal
+					items={ isPauseModalOpen.items }
+					onPause={ ( pauseResponse ) => {
+						setIsPauseModalOpen( null );
+						console.log( pauseResponse );
+					} }
+					onRequestClose={ () => setIsPauseModalOpen( null ) }
 				/>
 			) }
 		</div>

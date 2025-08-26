@@ -101,6 +101,62 @@ class Rest {
 				},
 			)
 		);
+
+		/**
+		 * For pausing a pattern.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/patterns/pause',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_pause_pattern' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+	}
+
+	/**
+	 * Pause a pattern.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_pause_pattern( $request ) {
+		// Check nonce and permissions.
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to pause patterns.' ) );
+		}
+
+		$items = $request->get_param( 'items' );
+
+		foreach ( $items as $item ) {
+			$pattern_id = $item['id'];
+			$nonce      = $item['nonce'];
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for pattern ' . $pattern_id ) );
+			}
+
+			if ( is_numeric( $pattern_id ) && 0 !== $pattern_id ) {
+				wp_update_post(
+					array(
+						'ID'          => $pattern_id,
+						'post_status' => 'draft',
+					)
+				);
+			} else {
+				$disabled_patterns   = Options::get_disabled_patterns();
+				$disabled_patterns[] = sanitize_text_field( $pattern_id );
+				$disabled_patterns   = array_unique( $disabled_patterns );
+				Options::set_disabled_patterns( $disabled_patterns );
+			}
+		}
+
+		return rest_ensure_response( array( 'success' => true ) );
 	}
 
 	/**
@@ -213,7 +269,7 @@ class Rest {
 		}
 
 		// Add terms.
-		$terms_affected_ids   = wp_set_post_terms( $pattern_id, $terms_to_add, 'wp_pattern_category' );
+		$terms_affected_ids = wp_set_post_terms( $pattern_id, $terms_to_add, 'wp_pattern_category' );
 
 		// Get terms from IDs.
 		foreach ( $terms_affected_ids as $term_id ) {
@@ -275,7 +331,7 @@ class Rest {
 			array(
 				'post_type'      => 'wp_block',
 				'posts_per_page' => 500, /* if there are more than 500 patterns, we need to paginate */
-				'post_status'    => 'publish',
+				'post_status'    => array( 'publish', 'draft' ),
 			)
 		);
 
@@ -356,12 +412,13 @@ class Rest {
 				'content'       => $pattern['content'],
 				'categories'    => $categories,
 				'categorySlugs' => $category_slugs,
+				'isDisabled'    => false, /* todo - read from option */
 				'isLocal'       => false,
 				'syncStatus'    => 'registered',
 				'preview'       => $preview_image,
 				'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
 				'patternType'   => 'registered',
-				'editNonce'     => '',
+				'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
 			);
 		}
 
@@ -375,6 +432,7 @@ class Rest {
 				'content'       => $pattern->post_content,
 				'categories'    => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
 				'categorySlugs' => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
+				'isDisabled'    => 'draft' === $pattern->post_status,
 				'isLocal'       => true,
 				'syncStatus'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				'preview'       => $preview_image,

@@ -46,6 +46,13 @@ class Options {
 	protected static $network_options_key = 'dlx_pw_network_options';
 
 	/**
+	 * The key used to store the pattern statuses.
+	 *
+	 * @var string
+	 */
+	protected static $pattern_statuses_key = 'dlx_pw_disabled_patterns';
+
+	/**
 	 * Update options via sanitization
 	 *
 	 * @since 1.0.0
@@ -231,5 +238,24 @@ class Options {
 		 */
 		$defaults = apply_filters( 'dlx_pw_network_options_defaults', $defaults );
 		return $defaults;
+	}
+
+	/**
+	 * Get the disabled patterns.
+	 *
+	 * @return array The disabled patterns.
+	 */
+	public static function get_disabled_patterns() {
+		$disabled_patterns = get_option( self::$pattern_statuses_key, array() );
+		return $disabled_patterns;
+	}
+
+	/**
+	 * Set the disabled patterns.
+	 *
+	 * @param array $patterns The disabled patterns.
+	 */
+	public static function set_disabled_patterns( $patterns ) {
+		update_option( self::$pattern_statuses_key, $patterns );
 	}
 }
