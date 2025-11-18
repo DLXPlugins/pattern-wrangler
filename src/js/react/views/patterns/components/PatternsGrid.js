@@ -305,6 +305,14 @@ const Interface = ( props ) => {
 					field: 'patternStatus',
 					value: getQueryArgs( window.location.href )?.patternStatus || 'both',
 				},
+				{
+					field: 'patternLocalStatus',
+					value: getQueryArgs( window.location.href )?.patternLocalStatus || 'both',
+				},
+				{
+					field: 'patternRegisteredStatus',
+					value: getQueryArgs( window.location.href )?.patternRegisteredStatus || 'both',
+				},
 			],
 		};
 	};
@@ -410,6 +418,17 @@ const Interface = ( props ) => {
 					let badgeText = __( 'Local', 'pattern-wrangler' );
 					let badgeClass = 'pattern-badge-local';
 
+					let badgeDisabledText = __( 'Disabled', 'pattern-wrangler' );
+					const badgeDisabledClass = 'pattern-badge-disabled';
+					let showDisabledBadge = true;
+					if ( item.isDisabled && item.isLocal ) {
+						badgeDisabledText = __( 'Draft', 'pattern-wrangler' );
+					} else if ( ! item.isDisabled && item.isLocal ) {
+						showDisabledBadge = false;
+					} else if ( ! item.isDisabled && ! item.isLocal ) {
+						showDisabledBadge = false;
+					}
+
 					if ( ! item.isLocal ) {
 						badgeText = __( 'Registered', 'pattern-wrangler' );
 						badgeClass = 'pattern-badge-registered';
@@ -424,6 +443,9 @@ const Interface = ( props ) => {
 					const Badge = (
 						<>
 							<div className="pattern-badge-wrapper">
+								{ showDisabledBadge && (
+									<span className={ `pattern-badge ${ badgeDisabledClass }` }>{ badgeDisabledText }</span>
+								) }
 								<span className={ `pattern-badge ${ badgeClass }` }>
 									{ badgeText }
 								</span>
@@ -516,6 +538,56 @@ const Interface = ( props ) => {
 				type: 'array',
 				id: 'patternStatus',
 				label: __( 'Pattern Status', 'pattern-wrangler' ),
+			},
+			{
+				elements: [
+					{
+						label: __( 'Paused Patterns', 'pattern-wrangler' ),
+						value: 'paused',
+					},
+					{
+						label: __( 'Unpaused Patterns', 'pattern-wrangler' ),
+						value: 'unpaused',
+					},
+					{
+						label: __( 'Both', 'pattern-wrangler' ),
+						value: 'both',
+					},
+				],
+				enableHiding: false,
+				enableSorting: false,
+				enableGlobalSearch: false,
+				filterBy: {
+					operators: [ 'is' ],
+				},
+				type: 'array',
+				id: 'patternRegisteredStatus',
+				label: __( 'Pattern Registered Status', 'pattern-wrangler' ),
+			},
+			{
+				elements: [
+					{
+						label: __( 'Draft Patterns', 'pattern-wrangler' ),
+						value: 'draft',
+					},
+					{
+						label: __( 'Published Patterns', 'pattern-wrangler' ),
+						value: 'published',
+					},
+					{
+						label: __( 'Both', 'pattern-wrangler' ),
+						value: 'both',
+					},
+				],
+				enableHiding: false,
+				enableSorting: false,
+				enableGlobalSearch: false,
+				filterBy: {
+					operators: [ 'is' ],
+				},
+				type: 'array',
+				id: 'patternLocalStatus',
+				label: __( 'Pattern Local Status', 'pattern-wrangler' ),
 			},
 		],
 		[ categories, patterns ]
@@ -778,6 +850,68 @@ const Interface = ( props ) => {
 							}
 						}
 						break;
+					case 'patternLocalStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+									patternTypeFilter.value === 'local' &&
+									filter.value
+							) {
+								switch ( filter.value ) {
+									case 'draft':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return (
+												pattern.isDisabled && pattern.isLocal
+											);
+										} );
+										break;
+									case 'published':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return (
+												! pattern.isDisabled && pattern.isLocal
+											);
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+					case 'patternRegisteredStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'registered' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'paused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return (
+												pattern.isDisabled && ! pattern.isLocal
+											);
+										} );
+										break;
+									case 'unpaused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return (
+												! pattern.isDisabled && ! pattern.isLocal
+											);
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
 				}
 			} );
 		}
@@ -918,6 +1052,69 @@ const Interface = ( props ) => {
 								}
 							}
 						}
+					break;
+					case 'patternLocalStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'local' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'draft':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return (
+												pattern.isDisabled && pattern.isLocal
+											);
+										} );
+										break;
+									case 'published':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return (
+												! pattern.isDisabled && pattern.isLocal
+											);
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+					case 'patternRegisteredStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'registered' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'paused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return (
+												pattern.isDisabled && ! pattern.isLocal
+											);
+										} );
+										break;
+									case 'unpaused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return (
+												! pattern.isDisabled && ! pattern.isLocal
+											);
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
 				}
 			} );
 		}
@@ -975,6 +1172,20 @@ const Interface = ( props ) => {
 		}
 		if ( patternStatusFilter ) {
 			changeQueryArgs.patternStatus = patternStatusFilter.value;
+		}
+
+		// Get registered/local pattern disabled/enabled status from filters.
+		const patternRegisteredStatusFilter = newView.filters?.find(
+			( filter ) => filter.field === 'patternRegisteredStatus'
+		);
+		const patternLocalStatusFilter = newView.filters?.find(
+			( filter ) => filter.field === 'patternLocalStatus'
+		);
+		if ( patternRegisteredStatusFilter ) {
+			changeQueryArgs.patternRegisteredStatus = patternRegisteredStatusFilter.value;
+		}
+		if ( patternLocalStatusFilter ) {
+			changeQueryArgs.patternLocalStatus = patternLocalStatusFilter.value;
 		}
 
 		// Update URL without page reload using addQueryArgs.
@@ -1161,6 +1372,67 @@ const Interface = ( props ) => {
 							{
 								// If patttern type is local, show synced|both|unsynced buttons.
 								view?.filters?.find( ( filter ) => filter.field === 'patternType' )
+									?.value === 'registered' && (
+									<>
+										<ToggleGroupControl
+											label={ __( 'Registered Status', 'pattern-wrangler' ) }
+											isAdaptiveWidth={ true }
+											hideLabelFromVision={ true }
+											value={
+												view?.filters?.find(
+													( filter ) => filter.field === 'patternRegisteredStatus'
+												)?.value || 'both'
+											}
+											onChange={ ( value ) => {
+												const myNewView = { ...view };
+												// Merge with existing filters, replacing patternStatus if it exists
+												const existingFilters =
+													myNewView.filters?.filter(
+														( filter ) => filter.field !== 'patternRegisteredStatus'
+													) || [];
+												myNewView.filters = [
+													...existingFilters,
+													{ field: 'patternRegisteredStatus', operator: 'is', value },
+												];
+												// Reset to first page when filter changes
+												myNewView.page = 1;
+												onChangeView( myNewView );
+											} }
+										>
+											<ToggleGroupControlOption
+												value="paused"
+												label={ __( 'Disabled', 'pattern-wrangler' ) }
+												showTooltip={ true }
+												aria-label={ __(
+													'Show Only Disabled Patterns',
+													'pattern-wrangler'
+												) }
+											/>
+											<ToggleGroupControlOption
+												value="both"
+												label={ __( 'Both', 'pattern-wrangler' ) }
+												aria-label={ __(
+													'Show Both Disabled and Enabled Patterns',
+													'pattern-wrangler'
+												) }
+												showTooltip={ true }
+											/>
+											<ToggleGroupControlOption
+												value="unpaused"
+												label={ __( 'Enabled', 'pattern-wrangler' ) }
+												showTooltip={ true }
+												aria-label={ __(
+													'Show Only Enabled Patterns',
+													'pattern-wrangler'
+												) }
+											/>
+										</ToggleGroupControl>
+									</>
+								)
+							}
+							{
+								// If patttern type is local, show synced|both|unsynced buttons.
+								view?.filters?.find( ( filter ) => filter.field === 'patternType' )
 									?.value === 'local' && (
 									<>
 										<ToggleGroupControl
@@ -1212,6 +1484,59 @@ const Interface = ( props ) => {
 												showTooltip={ true }
 												aria-label={ __(
 													'Show Only Synced Patterns',
+													'pattern-wrangler'
+												) }
+											/>
+										</ToggleGroupControl>
+										<ToggleGroupControl
+											label={ __( 'Published Status', 'pattern-wrangler' ) }
+											isAdaptiveWidth={ true }
+											hideLabelFromVision={ true }
+											value={
+												view?.filters?.find(
+													( filter ) => filter.field === 'patternLocalStatus'
+												)?.value || 'both'
+											}
+											onChange={ ( value ) => {
+												const myNewView = { ...view };
+												// Merge with existing filters, replacing patternStatus if it exists
+												const existingFilters =
+													myNewView.filters?.filter(
+														( filter ) => filter.field !== 'patternLocalStatus'
+													) || [];
+												myNewView.filters = [
+													...existingFilters,
+													{ field: 'patternLocalStatus', operator: 'is', value },
+												];
+												// Reset to first page when filter changes
+												myNewView.page = 1;
+												onChangeView( myNewView );
+											} }
+										>
+											<ToggleGroupControlOption
+												value="draft"
+												label={ __( 'Draft', 'pattern-wrangler' ) }
+												showTooltip={ true }
+												aria-label={ __(
+													'Show Only Draft Patterns',
+													'pattern-wrangler'
+												) }
+											/>
+											<ToggleGroupControlOption
+												value="both"
+												label={ __( 'Both', 'pattern-wrangler' ) }
+												aria-label={ __(
+													'Show Both Draft and Published Patterns',
+													'pattern-wrangler'
+												) }
+												showTooltip={ true }
+											/>
+											<ToggleGroupControlOption
+												value="published"
+												label={ __( 'Published', 'pattern-wrangler' ) }
+												showTooltip={ true }
+												aria-label={ __(
+													'Show Only Published Patterns',
 													'pattern-wrangler'
 												) }
 											/>

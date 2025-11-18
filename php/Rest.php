@@ -405,14 +405,14 @@ class Rest {
 			}
 
 			$preview_image                 = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
-			$patterns[ $pattern['title'] ] = array(
+			$patterns[ $pattern['name'] ] = array(
 				'id'            => Functions::get_sanitized_pattern_id( $pattern['name'] ),
 				'title'         => $pattern['title'],
 				'slug'          => $pattern['name'],
 				'content'       => $pattern['content'],
 				'categories'    => $categories,
 				'categorySlugs' => $category_slugs,
-				'isDisabled'    => false, /* todo - read from option */
+				'isDisabled'    => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
 				'isLocal'       => false,
 				'syncStatus'    => 'registered',
 				'preview'       => $preview_image,
@@ -425,7 +425,7 @@ class Rest {
 		// Process local patterns.
 		foreach ( $local_patterns as $pattern ) {
 			$preview_image                    = $this->get_pattern_preview( $pattern->post_title, $pattern->post_name, $pattern->ID );
-			$patterns[ $pattern->post_title ] = array(
+			$patterns[ $pattern->post_name ] = array(
 				'id'            => $pattern->ID,
 				'title'         => $pattern->post_title,
 				'slug'          => $pattern->post_name,
