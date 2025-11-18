@@ -25,7 +25,7 @@ import {
 	cleanForSlug,
 } from '@wordpress/url';
 import { BookPlus, Play } from 'lucide-react';
-import { useDispatch, useSelect, dispatch } from '@wordpress/data';
+import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
@@ -252,7 +252,7 @@ const Interface = ( props ) => {
 
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
 
-	const { categories } = useSelect( ( select ) => {
+	const { categories } = useSelect( () => {
 		return {
 			categories: select( patternsStore ).getCategories(),
 		};
@@ -364,6 +364,8 @@ const Interface = ( props ) => {
 						);
 					}
 
+					const currentCategories = select( patternsStore ).getCategories();
+
 					return (
 						<>
 							<div className="pattern-title-categories">
@@ -387,17 +389,17 @@ const Interface = ( props ) => {
 									) }
 								</div>
 								{ item.categorySlugs.length > 0 &&
-									Object.values( categories ).length > 0 && (
+									Object.values( currentCategories ).length > 0 && (
 									<div className="pattern-categories">
 										{ item.categorySlugs.map( ( category, index ) => {
 											const catSlug = category?.slug || category.toString();
-											if ( ! categories.hasOwnProperty( catSlug ) ) {
+											if ( ! currentCategories.hasOwnProperty( catSlug ) ) {
 												return null;
 											}
 
 											const catLabel =
-													categories[ catSlug ]?.label ||
-													categories[ catSlug ]?.name;
+											currentCategories[ catSlug ]?.label ||
+											currentCategories[ catSlug ]?.name;
 
 											return (
 												<span
@@ -412,7 +414,6 @@ const Interface = ( props ) => {
 									</div>
 								) }
 							</div>
-							
 						</>
 					);
 				},
@@ -609,7 +610,7 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Local Status', 'pattern-wrangler' ),
 			},
 		],
-		[ categories ]
+		[]
 	);
 
 	const actions = useMemo(

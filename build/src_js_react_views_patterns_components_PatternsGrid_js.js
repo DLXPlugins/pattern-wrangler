@@ -1391,9 +1391,9 @@ var Interface = function Interface(props) {
     _useState14 = _slicedToArray(_useState13, 2),
     patternsDisplay = _useState14[0],
     setPatternsDisplay = _useState14[1];
-  var _useSelect3 = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_9__.useSelect)(function (select) {
+  var _useSelect3 = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_9__.useSelect)(function () {
       return {
-        categories: select(_store__WEBPACK_IMPORTED_MODULE_16__["default"]).getCategories()
+        categories: (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_9__.select)(_store__WEBPACK_IMPORTED_MODULE_16__["default"]).getCategories()
       };
     }),
     categories = _useSelect3.categories;
@@ -1511,6 +1511,7 @@ var Interface = function Interface(props) {
             className: "pattern-categories"
           }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('No categories', 'pattern-wrangler')));
         }
+        var currentCategories = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_9__.select)(_store__WEBPACK_IMPORTED_MODULE_16__["default"]).getCategories();
         return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
           className: "pattern-title-categories"
         }, /*#__PURE__*/React.createElement("div", {
@@ -1524,15 +1525,15 @@ var Interface = function Interface(props) {
           }
         }, item.title), !item.isLocal && /*#__PURE__*/React.createElement("span", {
           className: "pattern-title"
-        }, item.title)), item.categorySlugs.length > 0 && Object.values(categories).length > 0 && /*#__PURE__*/React.createElement("div", {
+        }, item.title)), item.categorySlugs.length > 0 && Object.values(currentCategories).length > 0 && /*#__PURE__*/React.createElement("div", {
           className: "pattern-categories"
         }, item.categorySlugs.map(function (category, index) {
-          var _categories$catSlug, _categories$catSlug2;
+          var _currentCategories$ca, _currentCategories$ca2;
           var catSlug = (category === null || category === void 0 ? void 0 : category.slug) || category.toString();
-          if (!categories.hasOwnProperty(catSlug)) {
+          if (!currentCategories.hasOwnProperty(catSlug)) {
             return null;
           }
-          var catLabel = ((_categories$catSlug = categories[catSlug]) === null || _categories$catSlug === void 0 ? void 0 : _categories$catSlug.label) || ((_categories$catSlug2 = categories[catSlug]) === null || _categories$catSlug2 === void 0 ? void 0 : _categories$catSlug2.name);
+          var catLabel = ((_currentCategories$ca = currentCategories[catSlug]) === null || _currentCategories$ca === void 0 ? void 0 : _currentCategories$ca.label) || ((_currentCategories$ca2 = currentCategories[catSlug]) === null || _currentCategories$ca2 === void 0 ? void 0 : _currentCategories$ca2.name);
           return /*#__PURE__*/React.createElement("span", {
             key: "category-".concat(index),
             className: "pattern-category"
@@ -1693,7 +1694,7 @@ var Interface = function Interface(props) {
       id: 'patternLocalStatus',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern Local Status', 'pattern-wrangler')
     }];
-  }, [categories]);
+  }, []);
   var actions = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return [{
       id: 'quick-edit',
@@ -3075,4 +3076,4 @@ var patternsStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxS
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=638b91001e1b97de78bf
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=88841edaddc5d25f3d0f
