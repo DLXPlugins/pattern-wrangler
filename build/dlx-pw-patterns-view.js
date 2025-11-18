@@ -31,7 +31,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 var PatternsGrid = /* webpackChunkName: "PatternsGrid-0.0.1" */(0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.lazy)(function () {
-  return Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-7ee036"), __webpack_require__.e("src_js_react_views_patterns_components_PatternsGrid_js")]).then(__webpack_require__.bind(__webpack_require__, /*! ./PatternsGrid */ "./src/js/react/views/patterns/components/PatternsGrid.js"));
+  return Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-fb78cf"), __webpack_require__.e("src_js_react_views_patterns_components_PatternsGrid_js")]).then(__webpack_require__.bind(__webpack_require__, /*! ./PatternsGrid */ "./src/js/react/views/patterns/components/PatternsGrid.js"));
 });
 var PatternsView = function PatternsView() {
   var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('local'),
@@ -9291,7 +9291,7 @@ function invariant(condition, message) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "" + chunkId + ".js?ver=" + {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-7ee036":"926ed1d67b3349e01343","src_js_react_views_patterns_components_PatternsGrid_js":"628dcd251b7ee2c3d737"}[chunkId] + "";
+/******/ 			return "" + chunkId + ".js?ver=" + {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-fb78cf":"935bd529308818d55461","src_js_react_views_patterns_components_PatternsGrid_js":"ce388558d834ad3bfc81"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -9468,7 +9468,7 @@ function invariant(condition, message) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = (chunkId, promises) => {
-/******/ 			var cssChunks = {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-7ee036":1};
+/******/ 			var cssChunks = {"vendors-node_modules_fancyapps_ui_dist_fancybox_fancybox_umd_js-node_modules_wordpress_datavi-fb78cf":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(() => {

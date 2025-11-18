@@ -365,3 +365,17 @@ body div.updated.warning {
  .components-toggle-group-control {
 	border: 1px solid #ccc;
  }
+
+ /* Lucide React Icons Styles */
+svg.lucide {
+	color: inherit;
+	fill: none !important;
+	
+	path,
+	circle,
+	rect,
+	line {
+		fill: unset !important;
+		color: currentColor !important;
+	}
+}

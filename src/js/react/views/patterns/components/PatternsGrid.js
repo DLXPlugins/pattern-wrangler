@@ -24,11 +24,14 @@ import {
 	removeQueryArgs,
 	cleanForSlug,
 } from '@wordpress/url';
+import { BookPlus, Play } from 'lucide-react';
 import { useDispatch, useSelect, dispatch } from '@wordpress/data';
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
 import PatternPauseModal from './PatternPauseModal';
+import PatternPublishModal from './PatternPublishModal';
+import PatternUnpauseModal from './PatternUnpauseModal';
 import patternsStore from '../store';
 
 // Enhanced iframe component that works with the existing PHP scaling system.
@@ -266,7 +269,8 @@ const Interface = ( props ) => {
 	const [ copyPatternId, setCopyPatternId ] = useState( 0 );
 	const [ isQuickEditModalOpen, setIsQuickEditModalOpen ] = useState( null );
 	const [ isPauseModalOpen, setIsPauseModalOpen ] = useState( null );
-
+	const [ isPublishModalOpen, setIsPublishModalOpen ] = useState( null );
+	const [ isUnpauseModalOpen, setIsUnpauseModalOpen ] = useState( null );
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
 	 *
@@ -620,6 +624,36 @@ const Interface = ( props ) => {
 				},
 				isPrimary: false,
 				isDestructive: true,
+				supportsBulk: true,
+			},
+			{
+				id: 'publish',
+				label: __( 'Publish Pattern', 'pattern-wrangler' ),
+				icon: <BookPlus />,
+				isEligible: ( pattern ) => {
+					// Pattern must be local and disabled.
+					return pattern.isLocal && pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsPublishModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: false,
+				supportsBulk: true,
+			},
+			{
+				id: 'unpause',
+				label: __( 'Re-enable Pattern', 'pattern-wrangler' ),
+				icon: <Play />,
+				isEligible: ( pattern ) => {
+					// Pattern must be local and enabled.
+					return ! pattern.isLocal && pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsUnpauseModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: false,
 				supportsBulk: true,
 			},
 			{
@@ -1613,11 +1647,31 @@ const Interface = ( props ) => {
 			{ isPauseModalOpen && (
 				<PatternPauseModal
 					items={ isPauseModalOpen.items }
-					onPause={ ( pauseResponse ) => {
+					onPause={ ( pauseResponse, itemIdsAndNonces ) => {
+						dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
 						setIsPauseModalOpen( null );
-						console.log( pauseResponse );
 					} }
 					onRequestClose={ () => setIsPauseModalOpen( null ) }
+				/>
+			) }
+			{ isPublishModalOpen && (
+				<PatternPublishModal
+					items={ isPublishModalOpen.items }
+					onPublish={ ( publishResponse, itemIdsAndNonces ) => {
+						dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
+						setIsPublishModalOpen( null );
+					} }
+					onRequestClose={ () => setIsPublishModalOpen( null ) }
+				/>
+			) }
+			{ isUnpauseModalOpen && (
+				<PatternUnpauseModal
+					items={ isUnpauseModalOpen.items }
+					onReenable={ ( reenableResponse, itemIdsAndNonces ) => {
+						dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
+						setIsUnpauseModalOpen( null );
+					} }
+					onRequestClose={ () => setIsUnpauseModalOpen( null ) }
 				/>
 			) }
 		</div>

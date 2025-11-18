@@ -4328,4 +4328,13 @@ body div.updated.warning {
   padding-top: 16px;
 }.components-toggle-group-control {
   border: 1px solid #ccc;
+}/* Lucide React Icons Styles */svg.lucide {
+  color: inherit;
+  fill: none !important;
+}svg.lucide path,
+svg.lucide circle,
+svg.lucide rect,
+svg.lucide line {
+  fill: unset !important;
+  color: currentColor !important;
 }

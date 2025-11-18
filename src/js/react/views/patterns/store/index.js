@@ -26,6 +26,18 @@ const actions = {
 			patternCategorySlugs,
 		};
 	},
+	disablePatterns( patternIdsAndNonces ) {
+		return {
+			type: 'DISABLE_PATTERNS',
+			patternIdsAndNonces,
+		};
+	},
+	enablePatterns( patternIdsAndNonces ) {
+		return {
+			type: 'ENABLE_PATTERNS',
+			patternIdsAndNonces,
+		};
+	},
 	setCategory( categoryId, categoryTermData ) {
 		return {
 			type: 'SET_CATEGORY',
@@ -183,6 +195,50 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 				return {
 					...state,
 					error: action.error,
+				};
+			case 'DISABLE_PATTERNS':
+				const { patternIdsAndNonces: disabledPatternIdsAndNonces } = action;
+				// Mark matching pattern IDs as disabled.
+				const disabledPatterns = state.patterns.map( ( pattern ) => {
+					if ( disabledPatternIdsAndNonces[ 0 ].id === pattern.id ) {
+						return {
+							...pattern,
+							isDisabled: true,
+						};
+					}
+					return pattern;
+				} );
+
+				// Return all patterns, but with the matching patterns disabled.
+				return {
+					...state,
+					patterns: disabledPatterns,
+					data: {
+						...state.data,
+						patterns: disabledPatterns,
+					},
+				};
+			case 'ENABLE_PATTERNS':
+				const { patternIdsAndNonces: enabledPatternIdsAndNonces } = action;
+				// Mark matching pattern IDs as enabled.
+				const enabledPatterns = state.patterns.map( ( pattern ) => {
+					if ( enabledPatternIdsAndNonces[ 0 ].id === pattern.id ) {
+						return {
+							...pattern,
+							isDisabled: false,
+						};
+					}
+					return pattern;
+				} );
+
+				// Return all patterns, but with the matching patterns enabled.
+				return {
+					...state,
+					patterns: enabledPatterns,
+					data: {
+						...state.data,
+						patterns: enabledPatterns,
+					},
 				};
 			default:
 				return state;

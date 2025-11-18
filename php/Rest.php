@@ -116,6 +116,21 @@ class Rest {
 				},
 			)
 		);
+
+		/**
+		 * For publishing a pattern.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/patterns/publish',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_publish_pattern' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
 	}
 
 	/**
@@ -153,6 +168,47 @@ class Rest {
 				$disabled_patterns[] = sanitize_text_field( $pattern_id );
 				$disabled_patterns   = array_unique( $disabled_patterns );
 				Options::set_disabled_patterns( $disabled_patterns );
+			}
+		}
+
+		return rest_ensure_response( array( 'success' => true ) );
+	}
+
+	/**
+	 * Publish a pattern.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_publish_pattern( $request ) {
+		// Check nonce and permissions.
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to publish patterns.' ) );
+		}
+
+		$items = $request->get_param( 'items' );
+
+		foreach ( $items as $item ) {
+			$pattern_id = $item['id'];
+			$nonce      = $item['nonce'];
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for pattern ' . $pattern_id ) );
+			}
+
+			if ( is_numeric( $pattern_id ) && 0 !== $pattern_id ) {
+				wp_update_post(
+					array(
+						'ID'          => $pattern_id,
+						'post_status' => 'publish',
+					)
+				);
+			} else {
+				// Not numeric, so a slug, so let's remove it from the disabled patterns.
+				$disabled_patterns = Options::get_disabled_patterns();
+				$disabled_patterns = array_diff( $disabled_patterns, array( sanitize_text_field( $pattern_id ) ) );
+				Options::set_disabled_patterns( array_values( $disabled_patterns ) );
 			}
 		}
 
