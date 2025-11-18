@@ -49,6 +49,9 @@ class Patterns {
 		// Deregister any patterns that are not synced.
 		add_action( 'init', array( $this, 'maybe_deregister_unsynced_patterns' ), 1004 );
 
+		// De-register any paused patterns.
+		add_action( 'rest_api_init', array( $this, 'maybe_deregister_paused_registered_patterns' ), 1005 );
+
 		// Deregister all pattenrs if all patterns are disabled.
 		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 2000 );
 
@@ -155,6 +158,28 @@ class Patterns {
 				<p><?php esc_html_e( 'Unsynced patterns are hidden. Users will not be able to use unsynced patterns in the block editor.', 'pattern-wrangler' ); ?></p>
 			</div>
 			<?php
+		}
+	}
+
+	/**
+	 * Deregister any paused registered patterns.
+	 */
+	public function maybe_deregister_paused_registered_patterns() {
+		$route = \rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/all';
+		if ( isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( $_SERVER['REQUEST_URI'], $route ) ) {
+			// This is needed to unregister patterns everywhere except for the all patterns route.
+			return;
+		}
+
+		// Get disabled patterns.
+		$options = Options::get_disabled_patterns();
+		foreach ( $options as $option ) {
+			$option = sanitize_text_field( $option );
+			if ( empty( $option ) ) {
+				continue;
+			}
+
+			unregister_block_pattern( $option );
 		}
 	}
 
