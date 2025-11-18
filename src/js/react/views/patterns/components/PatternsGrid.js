@@ -213,7 +213,9 @@ const PatternsGrid = ( props ) => {
 	if ( error ) {
 		return (
 			<div className="dlx-patterns-view-error">
-				<p>{ __( 'Error loading patterns:', 'pattern-wrangler' ) } { error }</p>
+				<p>
+					{ __( 'Error loading patterns:', 'pattern-wrangler' ) } { error }
+				</p>
 				<Button
 					variant="primary"
 					onClick={ () => dispatch( patternsStore ).fetchData() }
@@ -264,7 +266,8 @@ const Interface = ( props ) => {
 		title: '',
 		type: '',
 	} );
-	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] = useState( false );
+	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] =
+		useState( false );
 	const [ isCopyToLocalModalOpen, setIsCopyToLocalModalOpen ] = useState( false );
 	const [ copyPatternId, setCopyPatternId ] = useState( 0 );
 	const [ isQuickEditModalOpen, setIsQuickEditModalOpen ] = useState( null );
@@ -311,11 +314,14 @@ const Interface = ( props ) => {
 				},
 				{
 					field: 'patternLocalStatus',
-					value: getQueryArgs( window.location.href )?.patternLocalStatus || 'both',
+					value:
+						getQueryArgs( window.location.href )?.patternLocalStatus || 'both',
 				},
 				{
 					field: 'patternRegisteredStatus',
-					value: getQueryArgs( window.location.href )?.patternRegisteredStatus || 'both',
+					value:
+						getQueryArgs( window.location.href )?.patternRegisteredStatus ||
+						'both',
 				},
 			],
 		};
@@ -351,57 +357,63 @@ const Interface = ( props ) => {
 										<span className="pattern-title">{ item.title }</span>
 									) }
 								</div>
-								<div className="pattern-categories">{ __( 'No categories', 'pattern-wrangler' ) }</div>
+								<div className="pattern-categories">
+									{ __( 'No categories', 'pattern-wrangler' ) }
+								</div>
 							</div>
 						);
 					}
 
 					return (
-						<div className="pattern-title-categories">
-							<div className="pattern-title">
-								{ item.isLocal && (
-									<Button
-										variant="link"
-										onClick={ ( e ) => {
-											e.preventDefault();
-											const redirectUrl = encodeURIComponent(
-												window.location.href
+						<>
+							<div className="pattern-title-categories">
+								<div className="pattern-title">
+									{ item.isLocal && (
+										<Button
+											variant="link"
+											onClick={ ( e ) => {
+												e.preventDefault();
+												const redirectUrl = encodeURIComponent(
+													window.location.href
+												);
+												window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
+											} }
+										>
+											{ item.title }
+										</Button>
+									) }
+									{ ! item.isLocal && (
+										<span className="pattern-title">{ item.title }</span>
+									) }
+								</div>
+								{ item.categorySlugs.length > 0 &&
+									Object.values( categories ).length > 0 && (
+									<div className="pattern-categories">
+										{ item.categorySlugs.map( ( category, index ) => {
+											const catSlug = category?.slug || category.toString();
+											if ( ! categories.hasOwnProperty( catSlug ) ) {
+												return null;
+											}
+
+											const catLabel =
+													categories[ catSlug ]?.label ||
+													categories[ catSlug ]?.name;
+
+											return (
+												<span
+													key={ `category-${ index }` }
+													className="pattern-category"
+												>
+													{ catLabel }{ ' ' }
+													{ index < item.categorySlugs.length - 1 && ', ' }
+												</span>
 											);
-											window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
-										} }
-									>
-										{ item.title }
-									</Button>
-								) }
-								{ ! item.isLocal && (
-									<span className="pattern-title">{ item.title }</span>
+										} ) }
+									</div>
 								) }
 							</div>
-							{ item.categorySlugs.length > 0 &&
-								Object.values( categories ).length > 0 && (
-								<div className="pattern-categories">
-									{ item.categorySlugs.map( ( category, index ) => {
-										const catSlug = category?.slug || category.toString();
-										if ( ! categories.hasOwnProperty( catSlug ) ) {
-											return null;
-										}
-
-										const catLabel =
-												categories[ catSlug ]?.label || categories[ catSlug ]?.name;
-
-										return (
-											<span
-												key={ `category-${ index }` }
-												className="pattern-category"
-											>
-												{ catLabel }{ ' ' }
-												{ index < item.categorySlugs.length - 1 && ', ' }
-											</span>
-										);
-									} ) }
-								</div>
-							) }
-						</div>
+							
+						</>
 					);
 				},
 				enableSorting: true,
@@ -448,7 +460,9 @@ const Interface = ( props ) => {
 						<>
 							<div className="pattern-badge-wrapper">
 								{ showDisabledBadge && (
-									<span className={ `pattern-badge ${ badgeDisabledClass }` }>{ badgeDisabledText }</span>
+									<span className={ `pattern-badge ${ badgeDisabledClass }` }>
+										{ badgeDisabledText }
+									</span>
 								) }
 								<span className={ `pattern-badge ${ badgeClass }` }>
 									{ badgeText }
@@ -476,6 +490,7 @@ const Interface = ( props ) => {
 				id: 'categories',
 				label: __( 'Categories', 'pattern-wrangler' ),
 				render: ( { item } ) => {
+					console.log( 'item', item );
 					return null;
 				},
 				enableSorting: false,
@@ -891,22 +906,18 @@ const Interface = ( props ) => {
 							);
 							if (
 								patternTypeFilter &&
-									patternTypeFilter.value === 'local' &&
-									filter.value
+								patternTypeFilter.value === 'local' &&
+								filter.value
 							) {
 								switch ( filter.value ) {
 									case 'draft':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return (
-												pattern.isDisabled && pattern.isLocal
-											);
+											return pattern.isDisabled && pattern.isLocal;
 										} );
 										break;
 									case 'published':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return (
-												! pattern.isDisabled && pattern.isLocal
-											);
+											return ! pattern.isDisabled && pattern.isLocal;
 										} );
 										break;
 									case 'both':
@@ -928,16 +939,12 @@ const Interface = ( props ) => {
 								switch ( filter.value ) {
 									case 'paused':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return (
-												pattern.isDisabled && ! pattern.isLocal
-											);
+											return pattern.isDisabled && ! pattern.isLocal;
 										} );
 										break;
 									case 'unpaused':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return (
-												! pattern.isDisabled && ! pattern.isLocal
-											);
+											return ! pattern.isDisabled && ! pattern.isLocal;
 										} );
 										break;
 									case 'both':
@@ -1086,7 +1093,7 @@ const Interface = ( props ) => {
 								}
 							}
 						}
-					break;
+						break;
 					case 'patternLocalStatus':
 						if ( filter.value ) {
 							const patternTypeFilter = filters.find(
@@ -1100,16 +1107,12 @@ const Interface = ( props ) => {
 								switch ( filter.value ) {
 									case 'draft':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return (
-												pattern.isDisabled && pattern.isLocal
-											);
+											return pattern.isDisabled && pattern.isLocal;
 										} );
 										break;
 									case 'published':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return (
-												! pattern.isDisabled && pattern.isLocal
-											);
+											return ! pattern.isDisabled && pattern.isLocal;
 										} );
 										break;
 									case 'both':
@@ -1131,16 +1134,12 @@ const Interface = ( props ) => {
 								switch ( filter.value ) {
 									case 'paused':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return (
-												pattern.isDisabled && ! pattern.isLocal
-											);
+											return pattern.isDisabled && ! pattern.isLocal;
 										} );
 										break;
 									case 'unpaused':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return (
-												! pattern.isDisabled && ! pattern.isLocal
-											);
+											return ! pattern.isDisabled && ! pattern.isLocal;
 										} );
 										break;
 									case 'both':
@@ -1216,7 +1215,8 @@ const Interface = ( props ) => {
 			( filter ) => filter.field === 'patternLocalStatus'
 		);
 		if ( patternRegisteredStatusFilter ) {
-			changeQueryArgs.patternRegisteredStatus = patternRegisteredStatusFilter.value;
+			changeQueryArgs.patternRegisteredStatus =
+				patternRegisteredStatusFilter.value;
 		}
 		if ( patternLocalStatusFilter ) {
 			changeQueryArgs.patternLocalStatus = patternLocalStatusFilter.value;
@@ -1422,11 +1422,16 @@ const Interface = ( props ) => {
 												// Merge with existing filters, replacing patternStatus if it exists
 												const existingFilters =
 													myNewView.filters?.filter(
-														( filter ) => filter.field !== 'patternRegisteredStatus'
+														( filter ) =>
+															filter.field !== 'patternRegisteredStatus'
 													) || [];
 												myNewView.filters = [
 													...existingFilters,
-													{ field: 'patternRegisteredStatus', operator: 'is', value },
+													{
+														field: 'patternRegisteredStatus',
+														operator: 'is',
+														value,
+													},
 												];
 												// Reset to first page when filter changes
 												myNewView.page = 1;
@@ -1540,7 +1545,11 @@ const Interface = ( props ) => {
 													) || [];
 												myNewView.filters = [
 													...existingFilters,
-													{ field: 'patternLocalStatus', operator: 'is', value },
+													{
+														field: 'patternLocalStatus',
+														operator: 'is',
+														value,
+													},
 												];
 												// Reset to first page when filter changes
 												myNewView.page = 1;
@@ -1639,7 +1648,12 @@ const Interface = ( props ) => {
 					isEditMode={ true }
 					onEdit={ ( editResponse ) => {
 						dispatch( patternsStore ).upsertCategory( editResponse.categories );
-						dispatch( patternsStore ).setPattern( editResponse.patternId, editResponse.patternTitle, editResponse.categorySlugs, editResponse.categorySlugs );
+						dispatch( patternsStore ).setPattern(
+							editResponse.patternId,
+							editResponse.patternTitle,
+							editResponse.categorySlugs,
+							editResponse.categorySlugs
+						);
 						setIsQuickEditModalOpen( null );
 					} }
 				/>

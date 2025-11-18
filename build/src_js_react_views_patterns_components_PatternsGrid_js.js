@@ -1511,7 +1511,7 @@ var Interface = function Interface(props) {
             className: "pattern-categories"
           }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('No categories', 'pattern-wrangler')));
         }
-        return /*#__PURE__*/React.createElement("div", {
+        return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
           className: "pattern-title-categories"
         }, /*#__PURE__*/React.createElement("div", {
           className: "pattern-title"
@@ -1537,7 +1537,7 @@ var Interface = function Interface(props) {
             key: "category-".concat(index),
             className: "pattern-category"
           }, catLabel, ' ', index < item.categorySlugs.length - 1 && ', ');
-        })));
+        }))));
       },
       enableSorting: true,
       enableHiding: false,
@@ -1595,6 +1595,7 @@ var Interface = function Interface(props) {
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Categories', 'pattern-wrangler'),
       render: function render(_ref4) {
         var item = _ref4.item;
+        console.log('item', item);
         return null;
       },
       enableSorting: false,
@@ -3074,4 +3075,4 @@ var patternsStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxS
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=4d9ace0bb13f0f01773b
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=638b91001e1b97de78bf
