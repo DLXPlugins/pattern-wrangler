@@ -4237,7 +4237,7 @@ body div.updated.warning {
   overflow: hidden;
 }.fancybox__iframe {
   width: 85vw !important;
-}.has-iframe .fancybox__content {
+}.has-iframe .fancybox__content iframe {
   overflow: scroll;
 }.pattern-badge {
   display: inline-block;
