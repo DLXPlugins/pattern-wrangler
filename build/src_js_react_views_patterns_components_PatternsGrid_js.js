@@ -1692,7 +1692,7 @@ var Interface = function Interface(props) {
       id: 'patternLocalStatus',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern Local Status', 'pattern-wrangler')
     }];
-  }, [categories, patterns]);
+  }, [categories]);
   var actions = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return [{
       id: 'quick-edit',
@@ -3003,39 +3003,36 @@ var patternsStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxS
       case 'DISABLE_PATTERNS':
         var disabledPatternIdsAndNonces = action.patternIdsAndNonces;
         // Mark matching pattern IDs as disabled.
-        var disabledPatterns = state.patterns.map(function (pattern) {
-          if (disabledPatternIdsAndNonces[0].id === pattern.id) {
-            return _objectSpread(_objectSpread({}, pattern), {}, {
-              isDisabled: true
-            });
+        var updatedPatterns = [];
+        state.patterns.forEach(function (pattern) {
+          if (disabledPatternIdsAndNonces.some(function (patternIdAndNonce) {
+            return patternIdAndNonce.id === pattern.id;
+          })) {
+            pattern.isDisabled = true;
           }
-          return pattern;
+          updatedPatterns.push(pattern);
         });
-
-        // Return all patterns, but with the matching patterns disabled.
         return _objectSpread(_objectSpread({}, state), {}, {
-          patterns: disabledPatterns,
+          patterns: [].concat(updatedPatterns),
           data: _objectSpread(_objectSpread({}, state.data), {}, {
-            patterns: disabledPatterns
+            patterns: [].concat(updatedPatterns)
           })
         });
       case 'ENABLE_PATTERNS':
         var enabledPatternIdsAndNonces = action.patternIdsAndNonces;
-        // Mark matching pattern IDs as enabled.
-        var enabledPatterns = state.patterns.map(function (pattern) {
-          if (enabledPatternIdsAndNonces[0].id === pattern.id) {
-            return _objectSpread(_objectSpread({}, pattern), {}, {
-              isDisabled: false
-            });
+        var updatedEnabledPatterns = [];
+        state.patterns.forEach(function (pattern) {
+          if (enabledPatternIdsAndNonces.some(function (patternIdAndNonce) {
+            return patternIdAndNonce.id === pattern.id;
+          })) {
+            pattern.isDisabled = false;
           }
-          return pattern;
+          updatedEnabledPatterns.push(pattern);
         });
-
-        // Return all patterns, but with the matching patterns enabled.
         return _objectSpread(_objectSpread({}, state), {}, {
-          patterns: enabledPatterns,
+          patterns: [].concat(updatedEnabledPatterns),
           data: _objectSpread(_objectSpread({}, state.data), {}, {
-            patterns: enabledPatterns
+            patterns: [].concat(updatedEnabledPatterns)
           })
         });
       default:
@@ -3077,4 +3074,4 @@ var patternsStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxS
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=ce388558d834ad3bfc81
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=4d9ace0bb13f0f01773b

@@ -199,45 +199,37 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 			case 'DISABLE_PATTERNS':
 				const { patternIdsAndNonces: disabledPatternIdsAndNonces } = action;
 				// Mark matching pattern IDs as disabled.
-				const disabledPatterns = state.patterns.map( ( pattern ) => {
-					if ( disabledPatternIdsAndNonces[ 0 ].id === pattern.id ) {
-						return {
-							...pattern,
-							isDisabled: true,
-						};
+				const updatedPatterns = [];
+				state.patterns.forEach( ( pattern ) => {
+					if ( disabledPatternIdsAndNonces.some( ( patternIdAndNonce ) => patternIdAndNonce.id === pattern.id ) ) {
+						pattern.isDisabled = true;
 					}
-					return pattern;
+					updatedPatterns.push( pattern );
 				} );
 
-				// Return all patterns, but with the matching patterns disabled.
 				return {
 					...state,
-					patterns: disabledPatterns,
+					patterns: [ ...updatedPatterns ],
 					data: {
 						...state.data,
-						patterns: disabledPatterns,
+						patterns: [ ...updatedPatterns ],
 					},
 				};
 			case 'ENABLE_PATTERNS':
 				const { patternIdsAndNonces: enabledPatternIdsAndNonces } = action;
-				// Mark matching pattern IDs as enabled.
-				const enabledPatterns = state.patterns.map( ( pattern ) => {
-					if ( enabledPatternIdsAndNonces[ 0 ].id === pattern.id ) {
-						return {
-							...pattern,
-							isDisabled: false,
-						};
+				const updatedEnabledPatterns = [];
+				state.patterns.forEach( ( pattern ) => {
+					if ( enabledPatternIdsAndNonces.some( ( patternIdAndNonce ) => patternIdAndNonce.id === pattern.id ) ) {
+						pattern.isDisabled = false;
 					}
-					return pattern;
+					updatedEnabledPatterns.push( pattern );
 				} );
-
-				// Return all patterns, but with the matching patterns enabled.
 				return {
 					...state,
-					patterns: enabledPatterns,
+					patterns: [ ...updatedEnabledPatterns ],
 					data: {
 						...state.data,
-						patterns: enabledPatterns,
+						patterns: [ ...updatedEnabledPatterns ],
 					},
 				};
 			default:

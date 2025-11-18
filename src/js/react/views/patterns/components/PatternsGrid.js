@@ -594,7 +594,7 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Local Status', 'pattern-wrangler' ),
 			},
 		],
-		[ categories, patterns ]
+		[ categories ]
 	);
 
 	const actions = useMemo(
