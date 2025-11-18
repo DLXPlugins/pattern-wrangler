@@ -1107,6 +1107,7 @@ const Interface = ( props ) => {
 							) {
 								switch ( filter.value ) {
 									case 'draft':
+									case 'paused':
 										patternsCopy = patternsCopy.filter( ( pattern ) => {
 											return pattern.isDisabled && pattern.isLocal;
 										} );
@@ -1377,6 +1378,27 @@ const Interface = ( props ) => {
 									// Reset to first page when filter changes
 									myNewView.page = 1;
 									onChangeView( myNewView );
+
+									let patternUrl = window.location.href;
+									switch ( value ) {
+										case 'all':
+											patternUrl = removeQueryArgs( patternUrl, 'patternStatus' );
+											patternUrl = removeQueryArgs( patternUrl, 'patternRegisteredStatus' );
+											patternUrl = removeQueryArgs( patternUrl, 'patternLocalStatus' );
+											window.history.pushState( {}, '', patternUrl );
+											break;
+										case 'local':
+											patternUrl = removeQueryArgs( patternUrl, 'patternRegisteredStatus' );
+											window.history.pushState( {}, '', patternUrl );
+											break;
+										case 'registered':
+											patternUrl = removeQueryArgs( patternUrl, 'patternStatus' );
+											patternUrl = removeQueryArgs( patternUrl, 'patternLocalStatus' );
+											window.history.pushState( {}, '', patternUrl );
+											break;
+										default:
+											break;
+									}
 								} }
 							>
 								<ToggleGroupControlOption

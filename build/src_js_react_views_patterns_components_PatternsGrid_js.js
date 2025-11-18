@@ -2147,6 +2147,7 @@ var Interface = function Interface(props) {
               if (_patternTypeFilter3 && _patternTypeFilter3.value === 'local' && filter.value) {
                 switch (filter.value) {
                   case 'draft':
+                  case 'paused':
                     patternsCopy = patternsCopy.filter(function (pattern) {
                       return pattern.isDisabled && pattern.isLocal;
                     });
@@ -2386,6 +2387,26 @@ var Interface = function Interface(props) {
       // Reset to first page when filter changes
       myNewView.page = 1;
       onChangeView(myNewView);
+      var patternUrl = window.location.href;
+      switch (value) {
+        case 'all':
+          patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.removeQueryArgs)(patternUrl, 'patternStatus');
+          patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.removeQueryArgs)(patternUrl, 'patternRegisteredStatus');
+          patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.removeQueryArgs)(patternUrl, 'patternLocalStatus');
+          window.history.pushState({}, '', patternUrl);
+          break;
+        case 'local':
+          patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.removeQueryArgs)(patternUrl, 'patternRegisteredStatus');
+          window.history.pushState({}, '', patternUrl);
+          break;
+        case 'registered':
+          patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.removeQueryArgs)(patternUrl, 'patternStatus');
+          patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_8__.removeQueryArgs)(patternUrl, 'patternLocalStatus');
+          window.history.pushState({}, '', patternUrl);
+          break;
+        default:
+          break;
+      }
     }
   }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
     value: "local",
@@ -3076,4 +3097,4 @@ var patternsStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxS
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=88841edaddc5d25f3d0f
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=2ae3a03e7060918530a6
