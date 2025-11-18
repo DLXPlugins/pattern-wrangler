@@ -89,7 +89,6 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -132,3 +131,5 @@ dist
 dlx-pattern-wrangler.zip
 
 pattern-wrangler.zip
+
+package-lock.json
