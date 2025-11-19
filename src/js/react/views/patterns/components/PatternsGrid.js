@@ -32,6 +32,7 @@ import PatternCreateModal from './PatternCreateModal';
 import PatternPauseModal from './PatternPauseModal';
 import PatternPublishModal from './PatternPublishModal';
 import PatternUnpauseModal from './PatternUnpauseModal';
+import PatternDeleteModal from './PatternDeleteModal';
 import patternsStore from '../store';
 
 // Enhanced iframe component that works with the existing PHP scaling system.
@@ -274,6 +275,7 @@ const Interface = ( props ) => {
 	const [ isPauseModalOpen, setIsPauseModalOpen ] = useState( null );
 	const [ isPublishModalOpen, setIsPublishModalOpen ] = useState( null );
 	const [ isUnpauseModalOpen, setIsUnpauseModalOpen ] = useState( null );
+	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( null );
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
 	 *
@@ -635,8 +637,8 @@ const Interface = ( props ) => {
 					// Pattern must be local and disabled.
 					return pattern.isLocal && pattern.isDisabled;
 				},
-				callback: () => {
-					// TODO: Implement delete functionality.
+				callback: ( items ) => {
+					setIsDeleteModalOpen( { items } );
 				},
 				isPrimary: false,
 				isDestructive: true,
@@ -1709,6 +1711,16 @@ const Interface = ( props ) => {
 						setIsUnpauseModalOpen( null );
 					} }
 					onRequestClose={ () => setIsUnpauseModalOpen( null ) }
+				/>
+			) }
+			{ isDeleteModalOpen && (
+				<PatternDeleteModal
+					items={ isDeleteModalOpen.items }
+					onDelete={ ( deleteResponse, itemIdsAndNonces ) => {
+						dispatch( patternsStore ).deletePatterns( itemIdsAndNonces );
+						setIsDeleteModalOpen( null );
+					} }
+					onRequestClose={ () => setIsDeleteModalOpen( null ) }
 				/>
 			) }
 		</div>

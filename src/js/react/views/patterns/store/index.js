@@ -108,6 +108,12 @@ const actions = {
 			}
 		};
 	},
+	deletePatterns( patternIdsAndNonces ) {
+		return {
+			type: 'DELETE_PATTERNS',
+			patternIdsAndNonces,
+		};
+	},
 };
 
 const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', {
@@ -230,6 +236,19 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 					data: {
 						...state.data,
 						patterns: [ ...updatedEnabledPatterns ],
+					},
+				};
+			case 'DELETE_PATTERNS':
+				const { patternIdsAndNonces: deletedPatternIdsAndNonces } = action;
+				const updatedDeletedPatterns = [ ...state.patterns ].filter( ( pattern ) => {
+					return ! deletedPatternIdsAndNonces.some( ( patternIdAndNonce ) => patternIdAndNonce.id === pattern.id );
+				} );
+				return {
+					...state,
+					patterns: updatedDeletedPatterns,
+					data: {
+						...state.data,
+						patterns: updatedDeletedPatterns,
 					},
 				};
 			default:

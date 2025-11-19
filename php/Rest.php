@@ -1,5 +1,4 @@
 <?php
-
 /**
  * REST class.
  *
@@ -103,6 +102,21 @@ class Rest {
 		);
 
 		/**
+		 * For deleting a pattern.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/patterns/delete',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_delete_pattern' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
 		 * For pausing a pattern.
 		 */
 		register_rest_route(
@@ -131,6 +145,36 @@ class Rest {
 				},
 			)
 		);
+	}
+
+	/**
+	 * Delete a pattern.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_delete_pattern( $request ) {
+		// Check nonce and permissions.
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to delete patterns.' ) );
+		}
+
+		$items = $request->get_param( 'items' );
+
+		foreach ( $items as $item ) {
+			$pattern_id = $item['id'];
+			$nonce      = $item['nonce'];
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for pattern ' . $pattern_id ) );
+			}
+
+			// Delete the pattern.
+			wp_delete_post( $pattern_id, true );
+		}
+
+		return rest_ensure_response( array( 'success' => true ) );
 	}
 
 	/**
@@ -460,7 +504,7 @@ class Rest {
 				}
 			}
 
-			$preview_image                 = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
+			$preview_image                = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
 			$patterns[ $pattern['name'] ] = array(
 				'id'            => Functions::get_sanitized_pattern_id( $pattern['name'] ),
 				'title'         => $pattern['title'],
@@ -480,7 +524,7 @@ class Rest {
 
 		// Process local patterns.
 		foreach ( $local_patterns as $pattern ) {
-			$preview_image                    = $this->get_pattern_preview( $pattern->post_title, $pattern->post_name, $pattern->ID );
+			$preview_image                   = $this->get_pattern_preview( $pattern->post_title, $pattern->post_name, $pattern->ID );
 			$patterns[ $pattern->post_name ] = array(
 				'id'            => $pattern->ID,
 				'title'         => $pattern->post_title,
