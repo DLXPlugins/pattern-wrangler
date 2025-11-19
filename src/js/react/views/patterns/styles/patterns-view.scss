@@ -220,7 +220,6 @@ body div.updated.warning {
 .dlx-patterns-view-container .dataviews-view-grid__card {
 	display: grid;
 	grid-template-rows: 1fr;
-	gap: 16px;
 }
 .pattern-preview-iframe-link {
 	display: block;
@@ -378,4 +377,11 @@ svg.lucide {
 		fill: unset !important;
 		color: currentColor !important;
 	}
+}
+
+/**
+Hide erronous display when hittnig the back button on a filter change.
+*/
+.dataviews-view-grid__title-actions ~ .components-h-stack  {
+	display: none;
 }

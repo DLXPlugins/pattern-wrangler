@@ -539,14 +539,6 @@ class Admin {
 			Functions::get_plugin_version(),
 			'all'
 		);
-		// Enqueue dataview styles.
-		wp_enqueue_style(
-			'dlx-pw-dataviews-css',
-			Functions::get_plugin_url( 'build/style-dlx-pw-patterns-view.css' ),
-			array(),
-			Functions::get_plugin_version(),
-			'all'
-		);
 	}
 
 	/**

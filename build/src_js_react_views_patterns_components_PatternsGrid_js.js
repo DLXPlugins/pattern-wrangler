@@ -3097,4 +3097,4 @@ var patternsStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxS
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=2ae3a03e7060918530a6
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=67dd67b3f08982ff1c2e
