@@ -26,6 +26,12 @@ const actions = {
 			patternCategorySlugs,
 		};
 	},
+	addPattern( pattern ) {
+		return {
+			type: 'ADD_PATTERN',
+			pattern,
+		};
+	},
 	disablePatterns( patternIdsAndNonces ) {
 		return {
 			type: 'DISABLE_PATTERNS',
@@ -143,8 +149,6 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 
 				const updatedCategories = { ...categoryData, ...state.categories };
 
-				console.log( 'updatedCategories', updatedCategories );
-
 				return {
 					...state,
 					categories: updatedCategories,
@@ -170,6 +174,15 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 					data: {
 						...state.data,
 						patterns: newPatterns,
+					},
+				};
+			case 'ADD_PATTERN':
+				return {
+					...state,
+					patterns: [ ...state.patterns, action.pattern ],
+					data: {
+						...state.data,
+						patterns: [ ...state.patterns, action.pattern ],
 					},
 				};
 			case 'SET_CATEGORY':

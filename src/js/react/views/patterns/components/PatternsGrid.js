@@ -16,7 +16,9 @@ import {
 	Button,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
+	FormFileUpload,
 } from '@wordpress/components';
+import apiFetch from '@wordpress/api-fetch';
 import { DataViews } from '@wordpress/dataviews';
 import {
 	addQueryArgs,
@@ -25,8 +27,7 @@ import {
 	cleanForSlug,
 } from '@wordpress/url';
 import { BookPlus, Play } from 'lucide-react';
-import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
-import ErrorBoundary from '../../../components/ErrorBoundary';
+import { useDispatch,useSelect, dispatch, select } from '@wordpress/data';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
 import PatternPauseModal from './PatternPauseModal';
@@ -34,6 +35,7 @@ import PatternPublishModal from './PatternPublishModal';
 import PatternUnpauseModal from './PatternUnpauseModal';
 import PatternDeleteModal from './PatternDeleteModal';
 import patternsStore from '../store';
+import createPatternFromFile from '../utils/createPatternFromFile';
 
 // Enhanced iframe component that works with the existing PHP scaling system.
 const ResponsiveIframe = ( { src, title, item } ) => {
@@ -276,6 +278,7 @@ const Interface = ( props ) => {
 	const [ isPublishModalOpen, setIsPublishModalOpen ] = useState( null );
 	const [ isUnpauseModalOpen, setIsUnpauseModalOpen ] = useState( null );
 	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( null );
+
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
 	 *
@@ -1344,12 +1347,45 @@ const Interface = ( props ) => {
 						>
 							{ __( 'Add New Pattern', 'pattern-wrangler' ) }
 						</Button>
-						<Button
+						<FormFileUpload
+							accept=".json"
 							variant="secondary"
 							className="dlx-patterns-view-quick-button"
+							onChange={ async ( event ) => {
+								const file = event.target.files[ 0 ];
+								try {
+									// Post the new pattern to the REST API
+									const pattern = await createPatternFromFile( file );
+
+									// Now POST it to the REST API
+									const response = await apiFetch( {
+										path: '/wp/v2/blocks',
+										method: 'POST',
+										data: {
+											title: pattern.title,
+											content: pattern.content,
+											status: 'publish',
+											meta: {
+												wp_pattern_sync_status: pattern.syncStatus,
+											},
+										},
+									} );
+									if ( response?.id ) {
+										const getPatternResponse = await apiFetch( {
+											path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ response.id }`,
+											method: 'GET',
+										} );
+										if ( getPatternResponse ) {
+											dispatch( patternsStore ).addPattern( getPatternResponse );
+										}
+									}
+								} catch ( err ) {
+								}
+							} }
 						>
-							{ __( 'Import Pattern From JSON File', 'pattern-wrangler' ) }
-						</Button>
+							
+								{ __( 'Import Pattern From JSON File', 'pattern-wrangler' ) }
+						</FormFileUpload>
 					</div>
 					<div className="dlx-patterns-view-grid">
 						<div className="dlx-patterns-view-search-filters-wrapper">
