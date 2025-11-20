@@ -34,6 +34,7 @@ import PatternPauseModal from './PatternPauseModal';
 import PatternPublishModal from './PatternPublishModal';
 import PatternUnpauseModal from './PatternUnpauseModal';
 import PatternDeleteModal from './PatternDeleteModal';
+import PatternGetCodeModal from './PatternGetCodeModal';
 import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
 
@@ -278,7 +279,7 @@ const Interface = ( props ) => {
 	const [ isPublishModalOpen, setIsPublishModalOpen ] = useState( null );
 	const [ isUnpauseModalOpen, setIsUnpauseModalOpen ] = useState( null );
 	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( null );
-
+	const [ isGetCodeModalOpen, setIsGetCodeModalOpen ] = useState( null );
 	const exportPattern = ( item ) => {
 		const isLocal = item.isLocal;
 		const title = item.title;
@@ -385,7 +386,7 @@ const Interface = ( props ) => {
 								variant="link"
 								onClick={ ( e ) => {
 									e.preventDefault();
-									// todo - launch modal to get code
+									setIsGetCodeModalOpen( { item } );
 								} }
 							>
 								{ __( 'Get Code', 'pattern-wrangler' ) }
@@ -758,6 +759,19 @@ const Interface = ( props ) => {
 					return pattern.isLocal;
 				},
 				isPrimary: true,
+			},
+			{
+				id: 'get-code',
+				label: __( 'Get Code', 'pattern-wrangler' ),
+				icon: 'code',
+				callback: ( items ) => {
+					setIsGetCodeModalOpen( { item: items[ 0 ] } );
+				},
+				isEligible: ( item ) => {
+					return item.isLocal;
+				},
+				isPrimary: false,
+				supportsBulk: false,
 			},
 			{
 				id: 'delete',
@@ -2034,6 +2048,12 @@ const Interface = ( props ) => {
 						setIsDeleteModalOpen( null );
 					} }
 					onRequestClose={ () => setIsDeleteModalOpen( null ) }
+				/>
+			) }
+			{ isGetCodeModalOpen && (
+				<PatternGetCodeModal
+					item={ isGetCodeModalOpen.item }
+					onRequestClose={ () => setIsGetCodeModalOpen( null ) }
 				/>
 			) }
 		</div>

@@ -578,6 +578,7 @@ class Rest {
 				'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
 				'patternType'   => 'registered',
 				'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
+				'siteId'        => get_current_blog_id(),
 			);
 		}
 
@@ -598,6 +599,7 @@ class Rest {
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
 				'patternType'   => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
+				'siteId'        => get_current_blog_id(),
 			);
 		}
 

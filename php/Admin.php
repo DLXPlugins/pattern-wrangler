@@ -522,7 +522,7 @@ class Admin {
 					'ajaxurl'                 => admin_url( 'admin-ajax.php' ),
 					'options'                 => $options,
 					'networkOptions'          => Options::get_network_options(),
-					'isMultisite'             => Functions::is_multisite(),
+					'isMultisite'             => is_multisite(),
 					'networkAdminSettingsUrl' => Functions::get_network_settings_url(),
 					'isUserNetworkAdmin'      => current_user_can( 'manage_network' ),
 					'getSiteBaseUrl'          => esc_url( admin_url() ),

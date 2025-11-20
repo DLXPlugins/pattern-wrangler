@@ -405,3 +405,15 @@ Hide erronous display when hittnig the back button on a filter change.
 .dataviews-view-grid__title-actions ~ .components-h-stack  {
 	display: none;
 }
+.dlx-pw-copy-shortcode {
+	position: absolute;
+	top: calc(11px/2 + 1.4em);
+	right: 0;
+	height: 32px;
+}
+.dlx-pw-modal-admin-row-input input.components-text-control__input {
+	padding-right: 48px !important;
+}
+.dlx-pw-modal-admin-row-input .components-base-control__field {
+	position: relative;
+}
