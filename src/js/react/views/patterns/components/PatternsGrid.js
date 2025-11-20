@@ -28,6 +28,7 @@ import {
 } from '@wordpress/url';
 import { BookPlus, Play } from 'lucide-react';
 import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
+import BeatLoader from 'react-spinners/BeatLoader';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
 import PatternPauseModal from './PatternPauseModal';
@@ -207,8 +208,15 @@ const PatternsGrid = ( props ) => {
 	// Show loading state.
 	if ( loading ) {
 		return (
-			<div className="dlx-patterns-view-loading">
-				<p>{ __( 'Loading patterns…', 'pattern-wrangler' ) }</p>
+			<div className="dlx-patterns-view-container-wrapper">
+				<div className="dlx-patterns-view-container">
+					<div className="dataviews-wrapper">
+						<div className="dlx-patterns-view-container-header">
+							<h1>{ __( 'Loading patterns…', 'pattern-wrangler' ) }</h1>
+							<BeatLoader size={ 30 } color="#3c434a" />
+						</div>
+					</div>
+				</div>
 			</div>
 		);
 	}
@@ -363,8 +371,9 @@ const Interface = ( props ) => {
 
 	/**
 	 * Returns the quick links for a pattern.
+	 *
 	 * @param {Object} item - The pattern item.
-	 * @returns {JSX.Element|null} The quick links JSX element or null if no quick links are needed.
+	 * @return {JSX.Element|null} The quick links JSX element or null if no quick links are needed.
 	 */
 	const getQuickLinks = ( item ) => {
 		return (

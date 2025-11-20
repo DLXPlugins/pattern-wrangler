@@ -4094,6 +4094,7 @@ body.lockscroll {
   padding-right: 0 !important;
   position: relative;
   background-color: #FFFFFF;
+  min-height: 100vh;
 }#wpbody-content {
   padding: 0;
   margin: 0;
