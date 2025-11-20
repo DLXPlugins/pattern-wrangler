@@ -1358,42 +1358,13 @@ var Settings = function Settings(props) {
     className: "form-table form-table-row-sections"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("tbody", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("th", {
     scope: "row"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Network Settings', 'pattern-wrangler')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-admin__row"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
-    control: control,
-    name: "patternConfiguration",
-    render: function render(_ref) {
-      var field = _ref.field;
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
-        label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Pattern Configuration', 'pattern-wrangler'),
-        help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Select the pattern configuration for the network. Choose `Disabled` to disable patterns for the entire network.', 'pattern-wrangler'),
-        value: field.value,
-        onChange: field.onChange,
-        options: [{
-          label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Network Only', 'pattern-wrangler'),
-          value: 'network_only'
-        }, {
-          label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Local Only', 'pattern-wrangler'),
-          value: 'local_only'
-        }, {
-          label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hybrid', 'pattern-wrangler'),
-          value: 'hybrid'
-        }, {
-          label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Disabled', 'pattern-wrangler'),
-          value: 'disabled'
-        }]
-      });
-    }
-  })), getSitePicker())), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("tr", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("th", {
-    scope: "row"
   }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Global Visibility Settings', 'pattern-wrangler')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "dlx-admin__row"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
     control: control,
     name: "hideAllPatterns",
-    render: function render(_ref2) {
-      var field = _ref2.field;
+    render: function render(_ref) {
+      var field = _ref.field;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide All Patterns', 'pattern-wrangler'),
         isAdaptiveWidth: true,
@@ -1423,8 +1394,8 @@ var Settings = function Settings(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
     control: control,
     name: "hideCorePatterns",
-    render: function render(_ref3) {
-      var field = _ref3.field;
+    render: function render(_ref2) {
+      var field = _ref2.field;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide Core Patterns', 'pattern-wrangler'),
         isAdaptiveWidth: true,
@@ -1454,8 +1425,8 @@ var Settings = function Settings(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
     control: control,
     name: "hideRemotePatterns",
-    render: function render(_ref4) {
-      var field = _ref4.field;
+    render: function render(_ref3) {
+      var field = _ref3.field;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide Remote Patterns', 'pattern-wrangler'),
         isAdaptiveWidth: true,
@@ -1485,8 +1456,8 @@ var Settings = function Settings(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
     control: control,
     name: "hideThemePatterns",
-    render: function render(_ref5) {
-      var field = _ref5.field;
+    render: function render(_ref4) {
+      var field = _ref4.field;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide Theme Patterns', 'pattern-wrangler'),
         isAdaptiveWidth: true,
@@ -1516,8 +1487,8 @@ var Settings = function Settings(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
     control: control,
     name: "hidePluginPatterns",
-    render: function render(_ref6) {
-      var field = _ref6.field;
+    render: function render(_ref5) {
+      var field = _ref5.field;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide Plugin Patterns', 'pattern-wrangler'),
         isAdaptiveWidth: true,
@@ -1547,8 +1518,8 @@ var Settings = function Settings(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
     control: control,
     name: "hideSyncedPatternsForNetwork",
-    render: function render(_ref7) {
-      var field = _ref7.field;
+    render: function render(_ref6) {
+      var field = _ref6.field;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide Synced Patterns', 'pattern-wrangler'),
         isAdaptiveWidth: true,
@@ -1578,8 +1549,8 @@ var Settings = function Settings(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
     control: control,
     name: "hideUnsyncedPatternsForNetwork",
-    render: function render(_ref8) {
-      var field = _ref8.field;
+    render: function render(_ref7) {
+      var field = _ref7.field;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide Unsynced Patterns', 'pattern-wrangler'),
         isAdaptiveWidth: true,
@@ -1611,8 +1582,8 @@ var Settings = function Settings(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
     control: control,
     name: "disablePatternImporterBlock",
-    render: function render(_ref9) {
-      var field = _ref9.field;
+    render: function render(_ref8) {
+      var field = _ref8.field;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Disable Patterns Importer Block', 'pattern-wrangler'),
         help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('If enabled, the Patterns Importer block will be disabled for all sites in the network.', 'pattern-wrangler'),
@@ -1625,8 +1596,8 @@ var Settings = function Settings(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_9__.Controller, {
     control: control,
     name: "disablePatternExporterForNetwork",
-    render: function render(_ref10) {
-      var field = _ref10.field;
+    render: function render(_ref9) {
+      var field = _ref9.field;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Disable Pattern Exporter', 'pattern-wrangler'),
         help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('If enabled, the Pattern Exporter will be disabled for all sites in the network.', 'pattern-wrangler'),

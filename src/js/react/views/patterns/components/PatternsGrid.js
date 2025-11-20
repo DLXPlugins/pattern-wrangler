@@ -380,26 +380,30 @@ const Interface = ( props ) => {
 				<div className="pattern-quick-links">
 					{ item.isLocal && (
 						<>
-							<Button
-								variant="link"
-								onClick={ ( e ) => {
-									e.preventDefault();
-									setIsQuickEditModalOpen( { item } );
-								} }
-							>
-								{ __( 'Quick Edit', 'pattern-wrangler' ) }
-							</Button>
-							{ ' | ' }
-							<Button
-								variant="link"
-								onClick={ ( e ) => {
-									e.preventDefault();
-									setIsGetCodeModalOpen( { item } );
-								} }
-							>
-								{ __( 'Get Code', 'pattern-wrangler' ) }
-							</Button>
-							{ ' | ' }
+							{ ! item.isDisabled && (
+								<>
+									<Button
+										variant="link"
+										onClick={ ( e ) => {
+											e.preventDefault();
+											setIsQuickEditModalOpen( { item } );
+										} }
+									>
+										{ __( 'Quick Edit', 'pattern-wrangler' ) }
+									</Button>
+									{ ' | ' }
+									<Button
+										variant="link"
+										onClick={ ( e ) => {
+											e.preventDefault();
+											setIsGetCodeModalOpen( { item } );
+										} }
+									>
+										{ __( 'Get Code', 'pattern-wrangler' ) }
+									</Button>
+									{ ' | ' }
+								</>
+							) }
 							<Button
 								variant="link"
 								onClick={ ( e ) => {
@@ -764,7 +768,7 @@ const Interface = ( props ) => {
 					setIsQuickEditModalOpen( { item: items[ 0 ] } );
 				},
 				isEligible: ( pattern ) => {
-					return pattern.isLocal;
+					return pattern.isLocal && ! pattern.isDisabled;
 				},
 				isPrimary: true,
 			},
@@ -776,7 +780,7 @@ const Interface = ( props ) => {
 					setIsGetCodeModalOpen( { item: items[ 0 ] } );
 				},
 				isEligible: ( item ) => {
-					return item.isLocal;
+					return item.isLocal && ! item.isDisabled;
 				},
 				isPrimary: false,
 				supportsBulk: false,

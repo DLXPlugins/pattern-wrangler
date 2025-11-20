@@ -41,17 +41,18 @@ class Rest {
 	 */
 	public function rest_api_register() {
 
-		register_rest_route(
-			'dlxplugins/pattern-wrangler/v1',
-			'/search/sites',
-			array(
-				'methods'             => 'POST',
-				'permission_callback' => array( $this, 'rest_get_users_permissions_callback' ),
-				'callback'            => array( $this, 'rest_get_sites' ),
-				'sanitize_callback'   => array( $this, 'rest_api_sanitize' ),
-				'validate_callback'   => array( $this, 'rest_api_validate' ),
-			)
-		);
+		// todo - for multisite site pattern library.
+		// register_rest_route(
+		// 'dlxplugins/pattern-wrangler/v1',
+		// '/search/sites',
+		// array(
+		// 'methods'             => 'POST',
+		// 'permission_callback' => array( $this, 'rest_get_users_permissions_callback' ),
+		// 'callback'            => array( $this, 'rest_get_sites' ),
+		// 'sanitize_callback'   => array( $this, 'rest_api_sanitize' ),
+		// 'validate_callback'   => array( $this, 'rest_api_validate' ),
+		// )
+		// );
 
 		/**
 		 * For retrieving site patterns for a site.
@@ -478,21 +479,35 @@ class Rest {
 		}
 
 		// Check transient first.
-		$patterns = false; // get_transient( 'dlx_all_patterns_cache' );
-		if ( false !== $patterns ) {
-			return rest_ensure_response( $patterns );
+		$patterns       = get_transient( 'dlx_all_patterns_cache' );
+		$all_categories = get_transient( 'dlx_all_categories_cache' );
+		if ( false !== $patterns && false !== $all_categories && false ) {
+			return rest_ensure_response(
+				array(
+					'patterns'   => $patterns,
+					'categories' => $all_categories,
+				)
+			);
 		}
+
+		// Run the pattern class filters.
+		Patterns::get_instance()->maybe_deregister_pattern_categories();
+		Patterns::get_instance()->maybe_deregister_theme_patterns();
+		Patterns::get_instance()->maybe_deregister_plugin_patterns();
+		Patterns::get_instance()->maybe_deregister_uncategorized_patterns();
+		Patterns::get_instance()->maybe_deregister_all_patterns();
+
 		// Get registered patterns.
 		$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 
 		// Get local/DB patterns.
-		$local_patterns = get_posts(
-			array(
-				'post_type'      => 'wp_block',
-				'posts_per_page' => 500, /* if there are more than 500 patterns, we need to paginate */
-				'post_status'    => array( 'publish', 'draft' ),
-			)
+		$post_args      = array(
+			'post_type'      => 'wp_block',
+			'posts_per_page' => 500, /* if there are more than 500 patterns, we need to paginate */
+			'post_status'    => array( 'publish', 'draft' ),
 		);
+		$post_args      = Patterns::get_instance()->modify_blocks_rest_query( $post_args, null );
+		$local_patterns = get_posts( $post_args );
 
 		// Get registered and local categories.
 		$categories = Functions::get_pattern_categories();
@@ -533,6 +548,8 @@ class Rest {
 
 		// Merge the registered and local categories.
 		$all_categories = array_merge( $registered_categories_arr, $local_categories_arr ); // We don't care about duplicates here.
+
+		set_transient( 'dlx_all_categories_cache', $all_categories, HOUR_IN_SECONDS );
 
 		// Placeholder for patterns.
 		$patterns = array();
@@ -754,31 +771,5 @@ class Rest {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * Get the HTML head content for preview rendering.
-	 *
-	 * @return string The HTML head content.
-	 */
-	private function get_preview_head_html() {
-		// Get theme styles.
-		$styles       = '';
-		$block_styles = wp_get_global_stylesheet();
-		if ( $block_styles ) {
-			$styles .= '<style>' . $block_styles . '</style>';
-		}
-
-		// Add theme stylesheet.
-		$styles .= '<link rel="stylesheet" href="' . get_stylesheet_uri() . '">';
-
-		// Add admin styles for proper block rendering.
-		$styles .= '<link rel="stylesheet" href="' . includes_url( 'css/dist/block-library/style.min.css' ) . '">';
-		$styles .= '<link rel="stylesheet" href="' . includes_url( 'css/dist/block-library/theme.min.css' ) . '">';
-
-		return sprintf(
-			'<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">%s',
-			$styles
-		);
 	}
 }

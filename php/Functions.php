@@ -254,7 +254,7 @@ class Functions {
 		if ( $is_multisite ) {
 			// Get network values.
 			$network_options   = Options::get_network_options();
-			$hide_all_patterns = 'disabled' === $network_options['patternConfiguration'];
+			$hide_all_patterns = 'hide' === $network_options['hideAllPatterns'];
 
 			// Get the site ID. We might need this later.
 			if ( 0 === $site_id ) {
@@ -294,8 +294,8 @@ class Functions {
 
 		if ( $is_multisite ) {
 			// Get network values.
-			$network_options = Options::get_network_options();
-			$hide_core       = (bool) $network_options['hideCorePatterns'] ?? false;
+			$network_options    = Options::get_network_options();
+			$hide_core_patterns = 'hide' === $network_options['hideCorePatterns'] ?? false;
 
 			// Get the site ID. We might need this later.
 			if ( 0 === $site_id ) {

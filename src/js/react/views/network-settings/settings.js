@@ -141,7 +141,7 @@ const Settings = ( props ) => {
 				<div id="dlx-pw-admin-table">
 					<table className="form-table form-table-row-sections">
 						<tbody>
-							<tr>
+							{ /* <tr>
 								<th scope="row">
 									{ __( 'Network Settings', 'pattern-wrangler' ) }
 								</th>
@@ -186,7 +186,7 @@ const Settings = ( props ) => {
 									</div>
 									{ getSitePicker() }
 								</td>
-							</tr>
+							</tr> */ }
 							<tr>
 								<th scope="row">
 									{ __( 'Global Visibility Settings', 'pattern-wrangler' ) }

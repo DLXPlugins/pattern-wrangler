@@ -238,12 +238,12 @@ const Main = ( props ) => {
 	 * @return {boolean} True if local patterns can be shown, false otherwise.
 	 */
 	const canShowLocalPatterns = () => {
-		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			return (
-				networkOptions.patternConfiguration === 'hybrid' ||
-				networkOptions.patternConfiguration === 'network_only'
-			);
-		}
+		// if ( dlxPatternWranglerAdmin.isMultisite ) {
+		// 	return (
+		// 		networkOptions.patternConfiguration === 'hybrid' ||
+		// 		networkOptions.patternConfiguration === 'network_only'
+		// 	);
+		// }
 		return true;
 	};
 
@@ -645,14 +645,15 @@ const Main = ( props ) => {
 		themePatternData.canShow = getValues( 'hideThemePatterns' );
 		themePatternData.networkCanShow = true;
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'hybrid' ) {
-				if ( 'hide' === networkOptions.hideThemePatterns ) {
-					themePatternData.canShow = false;
-					themePatternData.networkCanShow = false;
-				} else if ( 'show' === networkOptions.hideThemePatterns ) {
-					themePatternData.canShow = true;
-					themePatternData.networkCanShow = false;
-				}
+			if ( 'hide' === networkOptions.hideThemePatterns ) {
+				themePatternData.canShow = false;
+				themePatternData.networkCanShow = false;
+			} else if ( 'show' === networkOptions.hideThemePatterns ) {
+				themePatternData.canShow = true;
+				themePatternData.networkCanShow = false;
+			} else {
+				themePatternData.canShow = getValues( 'hideThemePatterns' );
+				themePatternData.networkCanShow = true;
 			}
 		}
 		return (
@@ -666,7 +667,7 @@ const Main = ( props ) => {
 								'Hide Theme Patterns',
 								'pattern-wrangler'
 							) }
-							checked={ themePatternData.canShow }
+							checked={ value || 'default' === value }
 							disabled={ ! themePatternData.networkCanShow }
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );
@@ -703,14 +704,12 @@ const Main = ( props ) => {
 		pluginPatternData.canShow = getValues( 'hidePluginPatterns' );
 		pluginPatternData.networkCanShow = true;
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'hybrid' ) {
-				if ( 'hide' === networkOptions.hidePluginPatterns ) {
-					pluginPatternData.canShow = false;
-					pluginPatternData.networkCanShow = false;
-				} else if ( 'show' === networkOptions.hidePluginPatterns ) {
-					pluginPatternData.canShow = true;
-					pluginPatternData.networkCanShow = false;
-				}
+			if ( 'hide' === networkOptions.hidePluginPatterns ) {
+				pluginPatternData.canShow = false;
+				pluginPatternData.networkCanShow = false;
+			} else if ( 'show' === networkOptions.hidePluginPatterns ) {
+				pluginPatternData.canShow = true;
+				pluginPatternData.networkCanShow = false;
 			}
 		}
 		return (
@@ -724,7 +723,7 @@ const Main = ( props ) => {
 								'Hide Plugin Patterns',
 								'pattern-wrangler'
 							) }
-							checked={ pluginPatternData.canShow }
+							checked={ ! pluginPatternData.canShow }
 							disabled={ ! pluginPatternData.networkCanShow }
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );

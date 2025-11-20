@@ -1899,7 +1899,7 @@ var Interface = function Interface(props) {
   var getQuickLinks = function getQuickLinks(item) {
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       className: "pattern-quick-links"
-    }, item.isLocal && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
+    }, item.isLocal && /*#__PURE__*/React.createElement(React.Fragment, null, !item.isDisabled && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
       variant: "link",
       onClick: function onClick(e) {
         e.preventDefault();
@@ -1915,7 +1915,7 @@ var Interface = function Interface(props) {
           item: item
         });
       }
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Get Code', 'pattern-wrangler')), ' | ', /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Get Code', 'pattern-wrangler')), ' | '), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
       variant: "link",
       onClick: function onClick(e) {
         e.preventDefault();
@@ -2181,7 +2181,7 @@ var Interface = function Interface(props) {
         });
       },
       isEligible: function isEligible(pattern) {
-        return pattern.isLocal;
+        return pattern.isLocal && !pattern.isDisabled;
       },
       isPrimary: true
     }, {
@@ -2194,7 +2194,7 @@ var Interface = function Interface(props) {
         });
       },
       isEligible: function isEligible(item) {
-        return item.isLocal;
+        return item.isLocal && !item.isDisabled;
       },
       isPrimary: false,
       supportsBulk: false
@@ -3888,4 +3888,4 @@ function _createPatternFromFile() {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=858b1e0896474153c79b
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=6ae3341b39b10e175f2b

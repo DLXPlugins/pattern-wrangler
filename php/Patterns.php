@@ -17,6 +17,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Patterns {
 
 	/**
+	 * Holds the class instance.
+	 *
+	 * @var Patterns $instance
+	 */
+	private static $instance = null;
+
+	/**
+	 * Return an instance of the class
+	 *
+	 * @return Patterns class instance.
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
 	 * Class runner.
 	 */
 	public function run() {
@@ -45,9 +64,6 @@ class Patterns {
 
 		// Deregister any patterns that are uncategorized.
 		add_action( 'init', array( $this, 'maybe_deregister_uncategorized_patterns' ), 1003 );
-
-		// Deregister any patterns that are not synced.
-		add_action( 'init', array( $this, 'maybe_deregister_unsynced_patterns' ), 1004 );
 
 		// De-register any paused patterns.
 		add_action( 'rest_api_init', array( $this, 'maybe_deregister_paused_registered_patterns' ), 1005 );
@@ -195,14 +211,6 @@ class Patterns {
 	}
 
 	/**
-	 * Deregister any patterns that are not synced.
-	 */
-	public function maybe_deregister_unsynced_patterns() {
-		$options                     = Options::get_options();
-		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
-	}
-
-	/**
 	 * Make patterns exportable.
 	 *
 	 * @param array  $args     Array of arguments for the post type.
@@ -290,6 +298,14 @@ class Patterns {
 		$options = Options::get_options();
 
 		$hide_theme_patterns = (bool) $options['hideThemePatterns'];
+		$is_multisite        = Functions::is_multisite( false );
+		if ( $is_multisite ) {
+			$network_options = Options::get_network_options();
+			$hide_theme_patterns = 'hide' === $network_options['hideThemePatterns'] ? true : $hide_theme_patterns;
+			if ( 'show' === $network_options['hideThemePatterns'] ) {
+				$hide_theme_patterns = false;
+			}
+		}
 		if ( $hide_theme_patterns ) {
 			// Get the active theme.
 			$theme = wp_get_theme();
@@ -334,6 +350,14 @@ class Patterns {
 		$options = Options::get_options();
 
 		$hide_plugin_patterns = (bool) $options['hidePluginPatterns'];
+		$is_multisite        = Functions::is_multisite( false );
+		if ( $is_multisite ) {
+			$network_options = Options::get_network_options();
+			$hide_plugin_patterns = 'hide' === $network_options['hidePluginPatterns'] ? true : $hide_plugin_patterns;
+			if ( 'show' === $network_options['hidePluginPatterns'] ) {
+				$hide_plugin_patterns = false;
+			}
+		}
 		if ( $hide_plugin_patterns ) {
 
 			// Get all registered patterns.
@@ -578,6 +602,22 @@ class Patterns {
 		$hide_all_patterns           = Functions::is_patterns_enabled_for_site() ? false : true;
 		$hide_core_synced_patterns   = (bool) $options['hideCoreSyncedPatterns'];
 		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
+
+		$is_multisite        = Functions::is_multisite( false );
+		if ( $is_multisite ) {
+			$network_options = Options::get_network_options();
+			$hide_core_synced_patterns = 'hide' === $network_options['hideSyncedPatternsForNetwork'] ? true : $hide_core_synced_patterns;
+			if ( 'show' === $network_options['hideSyncedPatternsForNetwork'] ) {
+				$hide_core_synced_patterns = false;
+			}
+		}
+		if ( $is_multisite ) {
+			$network_options = Options::get_network_options();
+			$hide_core_unsynced_patterns = 'hide' === $network_options['hideUnsyncedPatternsForNetwork'] ? true : $hide_core_unsynced_patterns;
+			if ( 'show' === $network_options['hideUnsyncedPatternsForNetwork'] ) {
+				$hide_core_unsynced_patterns = false;
+			}
+		}
 
 		// Exit early if not enabled.
 		if ( $hide_all_patterns ) {

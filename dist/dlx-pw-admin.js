@@ -946,9 +946,12 @@ var Main = function Main(props) {
    * @return {boolean} True if local patterns can be shown, false otherwise.
    */
   var canShowLocalPatterns = function canShowLocalPatterns() {
-    if (dlxPatternWranglerAdmin.isMultisite) {
-      return networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only';
-    }
+    // if ( dlxPatternWranglerAdmin.isMultisite ) {
+    // 	return (
+    // 		networkOptions.patternConfiguration === 'hybrid' ||
+    // 		networkOptions.patternConfiguration === 'network_only'
+    // 	);
+    // }
     return true;
   };
 
@@ -1266,14 +1269,15 @@ var Main = function Main(props) {
     themePatternData.canShow = getValues('hideThemePatterns');
     themePatternData.networkCanShow = true;
     if (dlxPatternWranglerAdmin.isMultisite) {
-      if (networkOptions.patternConfiguration === 'hybrid') {
-        if ('hide' === networkOptions.hideThemePatterns) {
-          themePatternData.canShow = false;
-          themePatternData.networkCanShow = false;
-        } else if ('show' === networkOptions.hideThemePatterns) {
-          themePatternData.canShow = true;
-          themePatternData.networkCanShow = false;
-        }
+      if ('hide' === networkOptions.hideThemePatterns) {
+        themePatternData.canShow = false;
+        themePatternData.networkCanShow = false;
+      } else if ('show' === networkOptions.hideThemePatterns) {
+        themePatternData.canShow = true;
+        themePatternData.networkCanShow = false;
+      } else {
+        themePatternData.canShow = getValues('hideThemePatterns');
+        themePatternData.networkCanShow = true;
       }
     }
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
@@ -1287,7 +1291,7 @@ var Main = function Main(props) {
           value = _ref10$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide Theme Patterns', 'pattern-wrangler'),
-          checked: themePatternData.canShow,
+          checked: value || 'default' === value,
           disabled: !themePatternData.networkCanShow,
           onChange: function onChange(boolValue) {
             _onChange10(boolValue);
@@ -1311,14 +1315,12 @@ var Main = function Main(props) {
     pluginPatternData.canShow = getValues('hidePluginPatterns');
     pluginPatternData.networkCanShow = true;
     if (dlxPatternWranglerAdmin.isMultisite) {
-      if (networkOptions.patternConfiguration === 'hybrid') {
-        if ('hide' === networkOptions.hidePluginPatterns) {
-          pluginPatternData.canShow = false;
-          pluginPatternData.networkCanShow = false;
-        } else if ('show' === networkOptions.hidePluginPatterns) {
-          pluginPatternData.canShow = true;
-          pluginPatternData.networkCanShow = false;
-        }
+      if ('hide' === networkOptions.hidePluginPatterns) {
+        pluginPatternData.canShow = false;
+        pluginPatternData.networkCanShow = false;
+      } else if ('show' === networkOptions.hidePluginPatterns) {
+        pluginPatternData.canShow = true;
+        pluginPatternData.networkCanShow = false;
       }
     }
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
@@ -1332,7 +1334,7 @@ var Main = function Main(props) {
           value = _ref11$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide Plugin Patterns', 'pattern-wrangler'),
-          checked: pluginPatternData.canShow,
+          checked: !pluginPatternData.canShow,
           disabled: !pluginPatternData.networkCanShow,
           onChange: function onChange(boolValue) {
             _onChange11(boolValue);
