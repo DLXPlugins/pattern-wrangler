@@ -300,7 +300,7 @@ class Patterns {
 		$hide_theme_patterns = (bool) $options['hideThemePatterns'];
 		$is_multisite        = Functions::is_multisite( false );
 		if ( $is_multisite ) {
-			$network_options = Options::get_network_options();
+			$network_options     = Options::get_network_options();
 			$hide_theme_patterns = 'hide' === $network_options['hideThemePatterns'] ? true : $hide_theme_patterns;
 			if ( 'show' === $network_options['hideThemePatterns'] ) {
 				$hide_theme_patterns = false;
@@ -350,9 +350,9 @@ class Patterns {
 		$options = Options::get_options();
 
 		$hide_plugin_patterns = (bool) $options['hidePluginPatterns'];
-		$is_multisite        = Functions::is_multisite( false );
+		$is_multisite         = Functions::is_multisite( false );
 		if ( $is_multisite ) {
-			$network_options = Options::get_network_options();
+			$network_options      = Options::get_network_options();
 			$hide_plugin_patterns = 'hide' === $network_options['hidePluginPatterns'] ? true : $hide_plugin_patterns;
 			if ( 'show' === $network_options['hidePluginPatterns'] ) {
 				$hide_plugin_patterns = false;
@@ -391,14 +391,28 @@ class Patterns {
 		// Set default attributes.
 		$atts = shortcode_atts(
 			array(
-				'slug' => '',
+				'slug'    => '',
+				'site_id' => 1,
 			),
 			$atts,
 			'wp_block'
 		);
 
+		$switched = false;
+		if ( is_multisite() ) {
+			$site_id = get_current_blog_id();
+			if ( $site_id !== (int) $atts['site_id'] ) {
+				switch_to_blog( (int) $atts['site_id'] );
+				$switched = true;
+			}
+		}
+
 		// Get the post by slug.
 		$post = get_page_by_path( $atts['slug'], OBJECT, 'wp_block' );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
 
 		// If no post is found, return nothing.
 		if ( ! $post ) {
@@ -603,16 +617,16 @@ class Patterns {
 		$hide_core_synced_patterns   = (bool) $options['hideCoreSyncedPatterns'];
 		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
 
-		$is_multisite        = Functions::is_multisite( false );
+		$is_multisite = Functions::is_multisite( false );
 		if ( $is_multisite ) {
-			$network_options = Options::get_network_options();
+			$network_options           = Options::get_network_options();
 			$hide_core_synced_patterns = 'hide' === $network_options['hideSyncedPatternsForNetwork'] ? true : $hide_core_synced_patterns;
 			if ( 'show' === $network_options['hideSyncedPatternsForNetwork'] ) {
 				$hide_core_synced_patterns = false;
 			}
 		}
 		if ( $is_multisite ) {
-			$network_options = Options::get_network_options();
+			$network_options             = Options::get_network_options();
 			$hide_core_unsynced_patterns = 'hide' === $network_options['hideUnsyncedPatternsForNetwork'] ? true : $hide_core_unsynced_patterns;
 			if ( 'show' === $network_options['hideUnsyncedPatternsForNetwork'] ) {
 				$hide_core_unsynced_patterns = false;

@@ -19,6 +19,12 @@
 
 namespace DLXPlugins\PatternWrangler;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'No direct access.' );
+}
+
+require_once __DIR__ . '/functions.php';
+
 define( 'DLXPW_PATTERN_WRANGLER_VERSION', '1.2.0' );
 define( 'DLXPW_PATTERN_WRANGLER_FILE', __FILE__ );
 
