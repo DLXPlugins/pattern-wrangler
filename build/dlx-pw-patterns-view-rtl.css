@@ -4367,4 +4367,7 @@ Hide erronous display when hittnig the back button on a filter change.
   padding-left: 48px !important;
 }.dlx-pw-modal-admin-row-input .components-base-control__field {
   position: relative;
+}.dlx-bulk-action-toolbar-top .dataviews-bulk-actions-footer__container {
+  padding: 24px 0;
+  justify-content: flex-start;
 }

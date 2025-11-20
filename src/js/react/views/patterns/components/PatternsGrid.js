@@ -26,7 +26,6 @@ import {
 	removeQueryArgs,
 	cleanForSlug,
 } from '@wordpress/url';
-import { BookPlus, Play } from 'lucide-react';
 import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
 import BeatLoader from 'react-spinners/BeatLoader';
 import Snackbar from './Snackbar';
@@ -800,7 +799,7 @@ const Interface = ( props ) => {
 			{
 				id: 'publish',
 				label: __( 'Publish Pattern', 'pattern-wrangler' ),
-				icon: <BookPlus />,
+				icon: 'yes-alt',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and disabled.
 					return pattern.isLocal && pattern.isDisabled;
@@ -815,7 +814,7 @@ const Interface = ( props ) => {
 			{
 				id: 'unpause',
 				label: __( 'Re-enable Pattern', 'pattern-wrangler' ),
-				icon: <Play />,
+				icon: 'controls-play',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and enabled.
 					return ! pattern.isLocal && pattern.isDisabled;
@@ -1396,6 +1395,8 @@ const Interface = ( props ) => {
 		// Only add search if it exists.
 		if ( newView.search ) {
 			changeQueryArgs.search = newView.search;
+		} else {
+			changeQueryArgs.search = '';
 		}
 
 		// Add sort parameters if they exist.
@@ -1956,6 +1957,9 @@ const Interface = ( props ) => {
 					</div>
 					<div className="dlx-patterns-view-filters-wrapper">
 						<DataViews.Filters />
+					</div>
+					<div className="dlx-bulk-action-toolbar-top">
+						<DataViews.BulkActionToolbar />
 					</div>
 					<DataViews.Layout />
 					<DataViews.BulkActionToolbar />
