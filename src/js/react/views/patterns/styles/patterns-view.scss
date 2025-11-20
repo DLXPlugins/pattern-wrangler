@@ -301,6 +301,7 @@ body div.updated.warning {
 	font-size: 12px;
 	font-style: italic;
 	color: #666;
+	margin-bottom: 8px;
 }
 
 /**
@@ -378,6 +379,24 @@ svg.lucide {
 		fill: unset !important;
 		color: currentColor !important;
 	}
+}
+.pattern-title-categories {
+	width: 100%;
+}
+.pattern-quick-links {
+	display: flex;
+	gap: 8px;
+	width: 100%;
+	justify-content: flex-start;
+	align-items: center;
+	font-size: 11px;
+}
+.pattern-quick-links button.components-button.is-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-start;
+	font-size: 11px;
+	width: unset;
 }
 
 /**

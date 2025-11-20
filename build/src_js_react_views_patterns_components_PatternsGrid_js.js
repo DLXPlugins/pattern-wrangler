@@ -1577,6 +1577,23 @@ var Interface = function Interface(props) {
     _useState36 = _slicedToArray(_useState35, 2),
     isDeleteModalOpen = _useState36[0],
     setIsDeleteModalOpen = _useState36[1];
+  var exportPattern = function exportPattern(item) {
+    var isLocal = item.isLocal;
+    var title = item.title;
+    var syncStatus = '';
+    if (isLocal) {
+      syncStatus = 'unsynced';
+    } else if ('synced' === item.patternType) {
+      syncStatus = 'synced';
+    }
+    var fileContent = JSON.stringify({
+      __file: 'wp_block',
+      title: title,
+      content: item.content,
+      syncStatus: syncStatus
+    }, null, 2);
+    (0,_wordpress_blob__WEBPACK_IMPORTED_MODULE_2__.downloadBlob)("".concat(title, ".json"), fileContent, 'application/json');
+  };
 
   /**
    * Returns a default view with query vars. Useful for setting or refreshing the view.
@@ -1622,6 +1639,52 @@ var Interface = function Interface(props) {
       }]
     };
   };
+
+  /**
+   * Returns the quick links for a pattern.
+   * @param {Object} item - The pattern item.
+   * @returns {JSX.Element|null} The quick links JSX element or null if no quick links are needed.
+   */
+  var getQuickLinks = function getQuickLinks(item) {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "pattern-quick-links"
+    }, item.isLocal && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
+      variant: "link",
+      onClick: function onClick(e) {
+        e.preventDefault();
+        setIsQuickEditModalOpen({
+          item: item
+        });
+      }
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Quick Edit', 'pattern-wrangler')), ' | ', /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
+      variant: "link",
+      onClick: function onClick(e) {
+        e.preventDefault();
+        // todo - launch modal to get code
+      }
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Get Code', 'pattern-wrangler')), ' | ', /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
+      variant: "link",
+      onClick: function onClick(e) {
+        e.preventDefault();
+        exportPattern(item);
+      }
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Export Pattern', 'pattern-wrangler'))), !item.isLocal && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
+      variant: "link",
+      onClick: function onClick(e) {
+        e.preventDefault();
+        setCopyPatternId(item.id);
+        setIsCopyToLocalModalOpen({
+          item: item
+        });
+      }
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Copy to Local', 'pattern-wrangler')), ' | ', /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
+      variant: "link",
+      onClick: function onClick(e) {
+        e.preventDefault();
+        exportPattern(item);
+      }
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Export Pattern', 'pattern-wrangler')))));
+  };
   var _useState37 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(getDefaultView()),
     _useState38 = _slicedToArray(_useState37, 2),
     view = _useState38[0],
@@ -1648,7 +1711,7 @@ var Interface = function Interface(props) {
             className: "pattern-title"
           }, item.title)), /*#__PURE__*/React.createElement("div", {
             className: "pattern-categories"
-          }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('No categories', 'pattern-wrangler')));
+          }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('No categories', 'pattern-wrangler')), getQuickLinks(item));
         }
         var currentCategories = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.select)(_store__WEBPACK_IMPORTED_MODULE_17__["default"]).getCategories();
         return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
@@ -1666,7 +1729,7 @@ var Interface = function Interface(props) {
           className: "pattern-title"
         }, item.title)), item.categorySlugs.length > 0 && Object.values(currentCategories).length > 0 && /*#__PURE__*/React.createElement("div", {
           className: "pattern-categories"
-        }, item.categorySlugs.map(function (category, index) {
+        }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Categories:', 'pattern-wrangler'), ' ', item.categorySlugs.map(function (category, index) {
           var _currentCategories$ca, _currentCategories$ca2;
           var catSlug = (category === null || category === void 0 ? void 0 : category.slug) || category.toString();
           if (!currentCategories.hasOwnProperty(catSlug)) {
@@ -1677,7 +1740,7 @@ var Interface = function Interface(props) {
             key: "category-".concat(index),
             className: "pattern-category"
           }, catLabel, ' ', index < item.categorySlugs.length - 1 && ', ');
-        }))));
+        })), getQuickLinks(item)));
       },
       enableSorting: true,
       enableHiding: false,
@@ -1922,8 +1985,10 @@ var Interface = function Interface(props) {
       icon: 'edit',
       callback: function callback(items) {
         var item = items[0];
-        setIsCopyToLocalModalOpen(true);
         setCopyPatternId(item.id);
+        setIsCopyToLocalModalOpen({
+          item: item
+        });
       },
       isEligible: function isEligible(pattern) {
         return !pattern.isLocal;
@@ -2890,7 +2955,7 @@ var Interface = function Interface(props) {
     categories: localCategories,
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Copy Pattern to Local', 'pattern-wrangler'),
     syncedDefaultStatus: 'unsynced',
-    copyPatternId: copyPatternId
+    copyPatternId: isCopyToLocalModalOpen.item.id
   }), isQuickEditModalOpen && /*#__PURE__*/React.createElement(_PatternCreateModal__WEBPACK_IMPORTED_MODULE_12__["default"], {
     isOpen: isQuickEditModalOpen,
     onRequestClose: function onRequestClose() {
@@ -3547,4 +3612,4 @@ function _createPatternFromFile() {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=b6f7434a400fa102195f
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=944c6f6d6e413bdb5891

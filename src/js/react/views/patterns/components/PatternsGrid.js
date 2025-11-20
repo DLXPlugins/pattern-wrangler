@@ -27,7 +27,7 @@ import {
 	cleanForSlug,
 } from '@wordpress/url';
 import { BookPlus, Play } from 'lucide-react';
-import { useDispatch,useSelect, dispatch, select } from '@wordpress/data';
+import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
 import PatternPauseModal from './PatternPauseModal';
@@ -279,6 +279,28 @@ const Interface = ( props ) => {
 	const [ isUnpauseModalOpen, setIsUnpauseModalOpen ] = useState( null );
 	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( null );
 
+	const exportPattern = ( item ) => {
+		const isLocal = item.isLocal;
+		const title = item.title;
+		let syncStatus = '';
+		if ( isLocal ) {
+			syncStatus = 'unsynced';
+		} else if ( 'synced' === item.patternType ) {
+			syncStatus = 'synced';
+		}
+		const fileContent = JSON.stringify(
+			{
+				__file: 'wp_block',
+				title,
+				content: item.content,
+				syncStatus,
+			},
+			null,
+			2
+		);
+		downloadBlob( `${ title }.json`, fileContent, 'application/json' );
+	};
+
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
 	 *
@@ -338,6 +360,77 @@ const Interface = ( props ) => {
 		};
 	};
 
+	/**
+	 * Returns the quick links for a pattern.
+	 * @param {Object} item - The pattern item.
+	 * @returns {JSX.Element|null} The quick links JSX element or null if no quick links are needed.
+	 */
+	const getQuickLinks = ( item ) => {
+		return (
+			<>
+				<div className="pattern-quick-links">
+					{ item.isLocal && (
+						<>
+							<Button
+								variant="link"
+								onClick={ ( e ) => {
+									e.preventDefault();
+									setIsQuickEditModalOpen( { item } );
+								} }
+							>
+								{ __( 'Quick Edit', 'pattern-wrangler' ) }
+							</Button>
+							{ ' | ' }
+							<Button
+								variant="link"
+								onClick={ ( e ) => {
+									e.preventDefault();
+									// todo - launch modal to get code
+								} }
+							>
+								{ __( 'Get Code', 'pattern-wrangler' ) }
+							</Button>
+							{ ' | ' }
+							<Button
+								variant="link"
+								onClick={ ( e ) => {
+									e.preventDefault();
+									exportPattern( item );
+								} }
+							>
+								{ __( 'Export Pattern', 'pattern-wrangler' ) }
+							</Button>
+						</>
+					) }
+					{ ! item.isLocal && (
+						<>
+							<Button
+								variant="link"
+								onClick={ ( e ) => {
+									e.preventDefault();
+									setCopyPatternId( item.id );
+									setIsCopyToLocalModalOpen( { item } );
+								} }
+							>
+								{ __( 'Copy to Local', 'pattern-wrangler' ) }
+							</Button>
+							{ ' | ' }
+							<Button
+								variant="link"
+								onClick={ ( e ) => {
+									e.preventDefault();
+									exportPattern( item );
+								} }
+							>
+								{ __( 'Export Pattern', 'pattern-wrangler' ) }
+							</Button>
+						</>
+					) }
+				</div>
+			</>
+		);
+	};
+
 	const [ view, setView ] = useState( getDefaultView() );
 
 	const fields = useMemo(
@@ -371,6 +464,7 @@ const Interface = ( props ) => {
 								<div className="pattern-categories">
 									{ __( 'No categories', 'pattern-wrangler' ) }
 								</div>
+								{ getQuickLinks( item ) }
 							</div>
 						);
 					}
@@ -402,6 +496,7 @@ const Interface = ( props ) => {
 								{ item.categorySlugs.length > 0 &&
 									Object.values( currentCategories ).length > 0 && (
 									<div className="pattern-categories">
+										{ __( 'Categories:', 'pattern-wrangler' ) }{ ' ' }
 										{ item.categorySlugs.map( ( category, index ) => {
 											const catSlug = category?.slug || category.toString();
 											if ( ! currentCategories.hasOwnProperty( catSlug ) ) {
@@ -409,8 +504,8 @@ const Interface = ( props ) => {
 											}
 
 											const catLabel =
-											currentCategories[ catSlug ]?.label ||
-											currentCategories[ catSlug ]?.name;
+													currentCategories[ catSlug ]?.label ||
+													currentCategories[ catSlug ]?.name;
 
 											return (
 												<span
@@ -424,6 +519,7 @@ const Interface = ( props ) => {
 										} ) }
 									</div>
 								) }
+								{ getQuickLinks( item ) }
 							</div>
 						</>
 					);
@@ -714,8 +810,8 @@ const Interface = ( props ) => {
 				icon: 'edit',
 				callback: ( items ) => {
 					const item = items[ 0 ];
-					setIsCopyToLocalModalOpen( true );
 					setCopyPatternId( item.id );
+					setIsCopyToLocalModalOpen( { item } );
 				},
 				isEligible: ( pattern ) => {
 					return ! pattern.isLocal;
@@ -1443,7 +1539,7 @@ const Interface = ( props ) => {
 							accept=".json"
 							variant="secondary"
 							className="dlx-patterns-view-quick-button"
-							onChange={ async ( event ) => {
+							onChange={ async( event ) => {
 								const file = event.target.files[ 0 ];
 								try {
 									// Post the new pattern to the REST API
@@ -1471,12 +1567,10 @@ const Interface = ( props ) => {
 											dispatch( patternsStore ).addPattern( getPatternResponse );
 										}
 									}
-								} catch ( err ) {
-								}
+								} catch ( err ) {}
 							} }
 						>
-							
-								{ __( 'Import Pattern From JSON File', 'pattern-wrangler' ) }
+							{ __( 'Import Pattern From JSON File', 'pattern-wrangler' ) }
 						</FormFileUpload>
 					</div>
 					<div className="dlx-patterns-view-grid">
@@ -1513,20 +1607,41 @@ const Interface = ( props ) => {
 									switch ( value ) {
 										case 'all':
 											patternUrl = removeQueryArgs( patternUrl, 'patternStatus' );
-											patternUrl = removeQueryArgs( patternUrl, 'patternRegisteredStatus' );
-											patternUrl = removeQueryArgs( patternUrl, 'patternLocalStatus' );
-											patternUrl = removeQueryArgs( patternUrl, 'patternLocalRegisteredStatus' );
+											patternUrl = removeQueryArgs(
+												patternUrl,
+												'patternRegisteredStatus'
+											);
+											patternUrl = removeQueryArgs(
+												patternUrl,
+												'patternLocalStatus'
+											);
+											patternUrl = removeQueryArgs(
+												patternUrl,
+												'patternLocalRegisteredStatus'
+											);
 											window.history.pushState( {}, '', patternUrl );
 											break;
 										case 'local':
-											patternUrl = removeQueryArgs( patternUrl, 'patternRegisteredStatus' );
-											patternUrl = removeQueryArgs( patternUrl, 'patternLocalRegisteredStatus' );
+											patternUrl = removeQueryArgs(
+												patternUrl,
+												'patternRegisteredStatus'
+											);
+											patternUrl = removeQueryArgs(
+												patternUrl,
+												'patternLocalRegisteredStatus'
+											);
 											window.history.pushState( {}, '', patternUrl );
 											break;
 										case 'registered':
 											patternUrl = removeQueryArgs( patternUrl, 'patternStatus' );
-											patternUrl = removeQueryArgs( patternUrl, 'patternLocalStatus' );
-											patternUrl = removeQueryArgs( patternUrl, 'patternLocalRegisteredStatus' );
+											patternUrl = removeQueryArgs(
+												patternUrl,
+												'patternLocalStatus'
+											);
+											patternUrl = removeQueryArgs(
+												patternUrl,
+												'patternLocalRegisteredStatus'
+											);
 											window.history.pushState( {}, '', patternUrl );
 											break;
 										default:
@@ -1754,7 +1869,8 @@ const Interface = ( props ) => {
 											hideLabelFromVision={ true }
 											value={
 												view?.filters?.find(
-													( filter ) => filter.field === 'patternLocalRegisteredStatus'
+													( filter ) =>
+														filter.field === 'patternLocalRegisteredStatus'
 												)?.value || 'both'
 											}
 											onChange={ ( value ) => {
@@ -1852,7 +1968,7 @@ const Interface = ( props ) => {
 					categories={ localCategories }
 					title={ __( 'Copy Pattern to Local', 'pattern-wrangler' ) }
 					syncedDefaultStatus={ 'unsynced' }
-					copyPatternId={ copyPatternId }
+					copyPatternId={ isCopyToLocalModalOpen.item.id }
 				/>
 			) }
 			{ isQuickEditModalOpen && (

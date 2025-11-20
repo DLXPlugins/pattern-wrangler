@@ -165,9 +165,20 @@ class Patterns {
 	 * Deregister any paused registered patterns.
 	 */
 	public function maybe_deregister_paused_registered_patterns() {
-		$route = \rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/all';
-		if ( isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( $_SERVER['REQUEST_URI'], $route ) ) {
-			// This is needed to unregister patterns everywhere except for the all patterns route.
+		// Skip de-registering patterns for the following routes.
+		$ignore_routes = array(
+			\rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/all/',
+			\rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/create/',
+			\rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/update/',
+
+		);
+		$ignore_routes = implode( '|', $ignore_routes );
+
+		// Strip params from the request URI and check if it matches any of the ignore routes.
+		$server_request_uri = $_SERVER['REQUEST_URI'] ?? '';
+		$server_request_uri = ltrim( explode( '?', $server_request_uri )[0], '/' );
+		if ( false !== strpos( $ignore_routes, $server_request_uri ) ) {
+			// Return early if the request URI matches any of the ignore routes.
 			return;
 		}
 
