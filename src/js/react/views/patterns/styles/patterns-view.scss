@@ -48,6 +48,7 @@ body div.updated.warning {
 
 .dlx-patterns-view-container-wrapper {
 	padding: 24px 48px;
+	padding-top: 0;
 
 	.dataviews-view-grid {
 		padding-left: 0;
@@ -275,7 +276,7 @@ body div.updated.warning {
 }
 
 .pattern-badge-synced {
-	background-color: #7462c6;
+	background-color: rgb(122, 0, 223);
 	color: #FFFFFF;
 	border-color: #ccffcc;
 }

@@ -4113,6 +4113,7 @@ body div.updated.warning {
   max-width: 100%;
 }.dlx-patterns-view-container-wrapper {
   padding: 24px 48px;
+  padding-top: 0;
 }.dlx-patterns-view-container-wrapper .dataviews-view-grid {
   padding-left: 0;
   padding-right: 0;
@@ -4272,7 +4273,7 @@ body div.updated.warning {
   color: #0066cc;
   border-color: #cce5ff;
 }.pattern-badge-synced {
-  background-color: #7462c6;
+  background-color: rgb(122, 0, 223);
   color: #FFFFFF;
   border-color: #ccffcc;
 }.pattern-badge-disabled {

@@ -1506,7 +1506,7 @@ var PatternsGrid = function PatternsGrid(props) {
 // const queryArgs = getQueryArgs( window.location.href );
 
 var Interface = function Interface(props) {
-  var _view$filters, _view$filters2, _view$filters3, _view$filters4, _view$filters5, _view$filters6;
+  var _view$filters, _view$filters2, _view$filters3, _view$filters4, _view$filters5, _view$filters6, _view$filters7, _view$filters8;
   var data = props.data;
   var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState12 = _slicedToArray(_useState11, 2),
@@ -1584,7 +1584,7 @@ var Interface = function Interface(props) {
    * @return {Object} The default view.
    */
   var getDefaultView = function getDefaultView() {
-    var _getQueryArgs, _getQueryArgs2, _getQueryArgs3, _getQueryArgs4, _getQueryArgs5;
+    var _getQueryArgs, _getQueryArgs2, _getQueryArgs3, _getQueryArgs4, _getQueryArgs5, _getQueryArgs6;
     return {
       type: 'grid',
       previewSize: 'large',
@@ -1616,6 +1616,9 @@ var Interface = function Interface(props) {
       }, {
         field: 'patternRegisteredStatus',
         value: ((_getQueryArgs5 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs5 === void 0 ? void 0 : _getQueryArgs5.patternRegisteredStatus) || 'both'
+      }, {
+        field: 'patternLocalRegisteredStatus',
+        value: ((_getQueryArgs6 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs6 === void 0 ? void 0 : _getQueryArgs6.patternLocalRegisteredStatus) || 'both'
       }]
     };
   };
@@ -1830,6 +1833,26 @@ var Interface = function Interface(props) {
       id: 'patternLocalStatus',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern Local Status', 'pattern-wrangler')
     }];
+  }, {
+    elements: [{
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Disabled Patterns', 'pattern-wrangler'),
+      value: 'disabled'
+    }, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Enabled Patterns', 'pattern-wrangler'),
+      value: 'enabled'
+    }, {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Both', 'pattern-wrangler'),
+      value: 'both'
+    }],
+    enableHiding: false,
+    enableSorting: false,
+    enableGlobalSearch: false,
+    filterBy: {
+      operators: ['is']
+    },
+    type: 'array',
+    id: 'patternLocalRegisteredStatus',
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Pattern Local and Registered Status', 'pattern-wrangler')
   }, []);
   var actions = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return [{
@@ -2150,6 +2173,29 @@ var Interface = function Interface(props) {
               }
             }
             break;
+          case 'patternLocalRegisteredStatus':
+            if (filter.value) {
+              var _patternTypeFilter3 = filters.find(function (f) {
+                return f.field === 'patternType';
+              });
+              if (_patternTypeFilter3 && _patternTypeFilter3.value === 'all' && filter.value) {
+                switch (filter.value) {
+                  case 'disabled':
+                    patternsCopy = patternsCopy.filter(function (pattern) {
+                      return pattern.isDisabled;
+                    });
+                    break;
+                  case 'enabled':
+                    patternsCopy = patternsCopy.filter(function (pattern) {
+                      return !pattern.isDisabled;
+                    });
+                    break;
+                  case 'both':
+                    break;
+                }
+              }
+            }
+            break;
         }
       });
     }
@@ -2279,10 +2325,10 @@ var Interface = function Interface(props) {
             break;
           case 'patternLocalStatus':
             if (filter.value) {
-              var _patternTypeFilter3 = filters.find(function (f) {
+              var _patternTypeFilter4 = filters.find(function (f) {
                 return f.field === 'patternType';
               });
-              if (_patternTypeFilter3 && _patternTypeFilter3.value === 'local' && filter.value) {
+              if (_patternTypeFilter4 && _patternTypeFilter4.value === 'local' && filter.value) {
                 switch (filter.value) {
                   case 'draft':
                   case 'paused':
@@ -2303,10 +2349,10 @@ var Interface = function Interface(props) {
             break;
           case 'patternRegisteredStatus':
             if (filter.value) {
-              var _patternTypeFilter4 = filters.find(function (f) {
+              var _patternTypeFilter5 = filters.find(function (f) {
                 return f.field === 'patternType';
               });
-              if (_patternTypeFilter4 && _patternTypeFilter4.value === 'registered' && filter.value) {
+              if (_patternTypeFilter5 && _patternTypeFilter5.value === 'registered' && filter.value) {
                 switch (filter.value) {
                   case 'paused':
                     patternsCopy = patternsCopy.filter(function (pattern) {
@@ -2316,6 +2362,29 @@ var Interface = function Interface(props) {
                   case 'unpaused':
                     patternsCopy = patternsCopy.filter(function (pattern) {
                       return !pattern.isDisabled && !pattern.isLocal;
+                    });
+                    break;
+                  case 'both':
+                    break;
+                }
+              }
+            }
+            break;
+          case 'patternLocalRegisteredStatus':
+            if (filter.value) {
+              var _patternTypeFilter6 = filters.find(function (f) {
+                return f.field === 'patternType';
+              });
+              if (_patternTypeFilter6 && _patternTypeFilter6.value === 'all' && filter.value) {
+                switch (filter.value) {
+                  case 'disabled':
+                    patternsCopy = patternsCopy.filter(function (pattern) {
+                      return pattern.isDisabled;
+                    });
+                    break;
+                  case 'enabled':
+                    patternsCopy = patternsCopy.filter(function (pattern) {
+                      return !pattern.isDisabled;
                     });
                     break;
                   case 'both':
@@ -2347,7 +2416,7 @@ var Interface = function Interface(props) {
    * @param {Object} newView The new view object.
    */
   var onChangeView = function onChangeView(newView) {
-    var _newView$sort5, _newView$filters, _newView$filters2, _newView$filters3, _newView$filters4;
+    var _newView$sort5, _newView$filters, _newView$filters2, _newView$filters3, _newView$filters4, _newView$filters5;
     // Create query args object with view state.
     var changeQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href);
     changeQueryArgs.paged = newView.page || 1;
@@ -2385,11 +2454,17 @@ var Interface = function Interface(props) {
     var patternLocalStatusFilter = (_newView$filters4 = newView.filters) === null || _newView$filters4 === void 0 ? void 0 : _newView$filters4.find(function (filter) {
       return filter.field === 'patternLocalStatus';
     });
-    if (patternRegisteredStatusFilter) {
+    var patternLocalRegisteredStatusFilter = (_newView$filters5 = newView.filters) === null || _newView$filters5 === void 0 ? void 0 : _newView$filters5.find(function (filter) {
+      return filter.field === 'patternLocalRegisteredStatus';
+    });
+    if (patternRegisteredStatusFilter && !patternLocalRegisteredStatusFilter) {
       changeQueryArgs.patternRegisteredStatus = patternRegisteredStatusFilter.value;
     }
-    if (patternLocalStatusFilter) {
+    if (patternLocalStatusFilter && !patternLocalRegisteredStatusFilter) {
       changeQueryArgs.patternLocalStatus = patternLocalStatusFilter.value;
+    }
+    if (patternLocalRegisteredStatusFilter) {
+      changeQueryArgs.patternLocalRegisteredStatus = patternLocalRegisteredStatusFilter.value;
     }
 
     // Update URL without page reload using addQueryArgs.
@@ -2589,15 +2664,18 @@ var Interface = function Interface(props) {
           patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(patternUrl, 'patternStatus');
           patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(patternUrl, 'patternRegisteredStatus');
           patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(patternUrl, 'patternLocalStatus');
+          patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(patternUrl, 'patternLocalRegisteredStatus');
           window.history.pushState({}, '', patternUrl);
           break;
         case 'local':
           patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(patternUrl, 'patternRegisteredStatus');
+          patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(patternUrl, 'patternLocalRegisteredStatus');
           window.history.pushState({}, '', patternUrl);
           break;
         case 'registered':
           patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(patternUrl, 'patternStatus');
           patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(patternUrl, 'patternLocalStatus');
+          patternUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(patternUrl, 'patternLocalRegisteredStatus');
           window.history.pushState({}, '', patternUrl);
           break;
         default:
@@ -2741,6 +2819,48 @@ var Interface = function Interface(props) {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Published', 'pattern-wrangler'),
     showTooltip: true,
     "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Published Patterns', 'pattern-wrangler')
+  }))),
+  // If patttern type is local, show synced|both|unsynced buttons.
+  (view === null || view === void 0 || (_view$filters7 = view.filters) === null || _view$filters7 === void 0 || (_view$filters7 = _view$filters7.find(function (filter) {
+    return filter.field === 'patternType';
+  })) === null || _view$filters7 === void 0 ? void 0 : _view$filters7.value) === 'all' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Disabled Status', 'pattern-wrangler'),
+    isAdaptiveWidth: true,
+    hideLabelFromVision: true,
+    value: (view === null || view === void 0 || (_view$filters8 = view.filters) === null || _view$filters8 === void 0 || (_view$filters8 = _view$filters8.find(function (filter) {
+      return filter.field === 'patternLocalRegisteredStatus';
+    })) === null || _view$filters8 === void 0 ? void 0 : _view$filters8.value) || 'both',
+    onChange: function onChange(value) {
+      var _myNewView$filters5;
+      var myNewView = _objectSpread({}, view);
+      // Merge with existing filters, replacing patternStatus if it exists
+      var existingFilters = ((_myNewView$filters5 = myNewView.filters) === null || _myNewView$filters5 === void 0 ? void 0 : _myNewView$filters5.filter(function (filter) {
+        return filter.field !== 'patternLocalRegisteredStatus';
+      })) || [];
+      myNewView.filters = [].concat(_toConsumableArray(existingFilters), [{
+        field: 'patternLocalRegisteredStatus',
+        operator: 'is',
+        value: value
+      }]);
+      // Reset to first page when filter changes
+      myNewView.page = 1;
+      onChangeView(myNewView);
+    }
+  }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "disabled",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Disabled', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Disabled Local and Registered Patterns', 'pattern-wrangler')
+  }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "both",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Both', 'pattern-wrangler'),
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Both Disabled and Enabled Local and Registered Patterns', 'pattern-wrangler'),
+    showTooltip: true
+  }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "enabled",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Enabled', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Enabled Local and Registered Patterns', 'pattern-wrangler')
   })))), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-layout-pagination-wrapper"
   }, /*#__PURE__*/React.createElement(_wordpress_dataviews__WEBPACK_IMPORTED_MODULE_21__["default"].ViewConfig, null), /*#__PURE__*/React.createElement(_wordpress_dataviews__WEBPACK_IMPORTED_MODULE_21__["default"].LayoutSwitcher, null))), /*#__PURE__*/React.createElement("div", {
@@ -3427,4 +3547,4 @@ function _createPatternFromFile() {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=6d7417d159951828c10e
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=b6f7434a400fa102195f
