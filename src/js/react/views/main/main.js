@@ -723,7 +723,7 @@ const Main = ( props ) => {
 								'Hide Plugin Patterns',
 								'pattern-wrangler'
 							) }
-							checked={ ! pluginPatternData.canShow }
+							checked={ value || 'default' === 'value' }
 							disabled={ ! pluginPatternData.networkCanShow }
 							onChange={ ( boolValue ) => {
 								onChange( boolValue );

@@ -1334,7 +1334,7 @@ var Main = function Main(props) {
           value = _ref11$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Hide Plugin Patterns', 'pattern-wrangler'),
-          checked: !pluginPatternData.canShow,
+          checked: value || 'default' === 'value',
           disabled: !pluginPatternData.networkCanShow,
           onChange: function onChange(boolValue) {
             _onChange11(boolValue);
