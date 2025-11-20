@@ -155,7 +155,7 @@ add_action(
 		);
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
-			'body { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .pattern-preview-wrapper > *:first-child { margin-top: 0 !important; padding-top: 0 !important; } .pattern-preview-wrapper { margin-top: 0 !important; padding-top: 0 !important; } .wp-site-blocks { margin-top: 0 !important; padding-top: 0 !important; }'
+			'body { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .pattern-preview-wrapper > *:first-child:not(.wp-block-group) { padding-top: 0 !important; } .pattern-preview-wrapper > *:first-child { margin-top: 0 !important; } .pattern-preview-wrapper { margin-top: 0 !important; padding-top: 0 !important; } .wp-site-blocks { margin-top: 0 !important; padding-top: 0 !important; }'
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
 
@@ -238,7 +238,7 @@ if ( ! wp_is_block_theme() ) {
 		<?php wp_head(); ?>
 	</head>
 
-	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; display: relative; box-sizing: border-box; width: 100%; padding: 48px; pointer-events: none;">
+	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; display: relative; box-sizing: border-box; width: 100%; padding: 24px;">
 	<?php wp_body_open(); ?>
 	<div class="wp-site-blocks">
 		<header class="wp-block-template-part site-header">
