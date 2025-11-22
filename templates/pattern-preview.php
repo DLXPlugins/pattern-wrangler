@@ -123,31 +123,23 @@ add_action(
 	'wp_enqueue_scripts',
 	function () {
 		// Enqueue core block styles.
-		wp_enqueue_style( 'wp-block-library' );
-		wp_enqueue_style( 'wp-block-library-theme' );
-
-		// Enqueue block styles.
-		if ( function_exists( 'wp_enqueue_global_styles' ) ) {
-			wp_enqueue_global_styles();
-		}
-
-		// Get theme styles.
-		if ( wp_style_is( 'global-styles', 'registered' ) ) {
-			wp_enqueue_style( 'global-styles' );
-		}
+		wp_enqueue_style( 'wp-block-library' ); // needed for preview.
+		wp_enqueue_style( 'wp-block-library-theme' ); // needed for preview.
 
 		// Get block styles.
-		if ( function_exists( 'wp_get_global_stylesheet' ) ) {
-			$styles = wp_get_global_stylesheet();
-			if ( ! empty( $styles ) ) {
+		if ( function_exists( 'wp_get_global_stylesheet' ) ) { // needed for preview.
+
+			$global_styles = wp_get_global_stylesheet( array( 'variables' ) );
+			wp_add_global_styles_for_blocks();
+			if ( ! empty( $global_styles ) && wp_style_is( 'global-styles', 'registered' ) ) {
 				wp_register_style( 'dlxpw-global-styles', false );
-				wp_add_inline_style( 'dlxpw-global-styles', $styles );
+				wp_add_inline_style( 'dlxpw-global-styles', $global_styles );
 				wp_enqueue_style( 'dlxpw-global-styles' );
 			}
 		}
 
 		// Load dashicons for social icons fallbacks.
-		wp_enqueue_style( 'dashicons' );
+		wp_enqueue_style( 'dashicons' ); // needed for preview.
 
 		wp_register_style(
 			'dlxpw-pattern-preview',
@@ -220,7 +212,7 @@ if ( ! wp_is_block_theme() ) {
 	?>
 	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1600px;">
 		<?php
-		echo apply_filters( 'the_content', $pattern_content );
+		echo wp_kses( $pattern_content, Functions::get_kses_allowed_html( true ) );
 		?>
 	</div>
 	<?php
@@ -244,9 +236,9 @@ if ( ! wp_is_block_theme() ) {
 		<header class="wp-block-template-part site-header">
 			<?php block_header_area(); ?>
 		</header>
-		<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1200px; margin: 0 auto; aspect-ratio: 1/1;">
+		<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto; aspect-ratio: 1/1;">
 			<?php
-			echo apply_filters( 'the_content', $pattern_content );
+			echo wp_kses( $blocks, Functions::get_kses_allowed_html( true ) );
 			?>
 		</div>
 	<?php

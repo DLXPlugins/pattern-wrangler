@@ -605,7 +605,7 @@ class Functions {
 	 * @param bool $svg Whether to add SVG data to KSES.
 	 */
 	public static function get_kses_allowed_html( $svg = true ) {
-		$allowed_tags = wp_kses_allowed_html();
+		$allowed_tags = wp_kses_allowed_html( 'post' );
 
 		$allowed_tags['nav']        = array(
 			'class' => array(),
@@ -663,6 +663,11 @@ class Functions {
 			'id'          => array(),
 			'xmls'        => array(),
 		);
+
+		// Add style attributes to allowed tags.
+		foreach ( $allowed_tags as $tag => $attributes ) {
+			$allowed_tags[ $tag ]['style'] = array();
+		}
 
 		return $allowed_tags;
 	}
