@@ -212,7 +212,11 @@ if ( ! wp_is_block_theme() ) {
 	?>
 	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1600px;">
 		<?php
-		echo wp_kses( $pattern_content, Functions::get_kses_allowed_html( true ) );
+		if ( wp_is_block_theme() ) {
+			echo wp_kses( $pattern_content, Functions::get_kses_allowed_html( true ) );
+		} else {
+			echo apply_filters( 'the_content', $pattern_content );
+		}
 		?>
 	</div>
 	<?php
@@ -238,7 +242,11 @@ if ( ! wp_is_block_theme() ) {
 		</header>
 		<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto; aspect-ratio: 1/1;">
 			<?php
-			echo wp_kses( $blocks, Functions::get_kses_allowed_html( true ) );
+			if ( wp_is_block_theme() ) {
+				echo wp_kses( $blocks, Functions::get_kses_allowed_html( true ) );
+			} else {
+				echo apply_filters( 'the_content', $blocks );
+			}
 			?>
 		</div>
 	<?php

@@ -667,6 +667,8 @@ class Functions {
 		// Add style attributes to allowed tags.
 		foreach ( $allowed_tags as $tag => $attributes ) {
 			$allowed_tags[ $tag ]['style'] = array();
+			$allowed_tags[ $tag ]['class'] = array();
+			$allowed_tags[ $tag ]['id'] = array();
 		}
 
 		return $allowed_tags;
