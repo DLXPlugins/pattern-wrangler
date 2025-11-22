@@ -237,14 +237,7 @@ const PatternsGrid = ( props ) => {
 		);
 	}
 
-	// Show empty state.
-	if ( ! data || ! data.patterns || data.patterns.length === 0 ) {
-		return (
-			<div className="dlx-patterns-view-empty">
-				<p>{ __( 'No patterns found.', 'pattern-wrangler' ) }</p>
-			</div>
-		);
-	}
+	console.log( data );
 	return <Interface data={ data } { ...props } />;
 };
 

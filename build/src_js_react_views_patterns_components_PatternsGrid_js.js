@@ -1736,13 +1736,7 @@ var PatternsGrid = function PatternsGrid(props) {
       }
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Retry', 'pattern-wrangler')));
   }
-
-  // Show empty state.
-  if (!data || !data.patterns || data.patterns.length === 0) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "dlx-patterns-view-empty"
-    }, /*#__PURE__*/React.createElement("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('No patterns found.', 'pattern-wrangler')));
-  }
+  console.log(data);
   return /*#__PURE__*/React.createElement(Interface, _extends({
     data: data
   }, props));
@@ -3495,8 +3489,11 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 var DEFAULT_STATE = {
   patterns: [],
-  categories: null,
-  data: null,
+  categories: [],
+  data: {
+    patterns: [],
+    categories: []
+  },
   loading: false,
   error: null
 };
@@ -3888,4 +3885,4 @@ function _createPatternFromFile() {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=6ae3341b39b10e175f2b
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=21f323cdc2afb3f9df04

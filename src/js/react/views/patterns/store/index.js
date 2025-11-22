@@ -4,8 +4,11 @@ import { addQueryArgs } from '@wordpress/url';
 
 const DEFAULT_STATE = {
 	patterns: [],
-	categories: null,
-	data: null,
+	categories: [],
+	data: {
+		patterns: [],
+		categories: [],
+	},
 	loading: false,
 	error: null,
 };
