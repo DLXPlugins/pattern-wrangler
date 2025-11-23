@@ -77,7 +77,6 @@ class Admin {
 	public function plugin_settings_link( $settings ) {
 		$setting_links = array(
 			'docs' => sprintf( '<a href="%s">%s</a>', esc_url( 'https://docs.dlxplugins.com/v/pattern-wrangler' ), esc_html__( 'Docs', 'pattern-wrangler' ) ),
-			'site' => sprintf( '<a href="%s" style="color: #f60098;">%s</a>', esc_url( 'https://dlxplugins.com/plugins/pattern-wrangler/' ), esc_html__( 'Plugin Home', 'pattern-wrangler' ) ),
 		);
 		if ( Functions::is_multisite( true ) ) {
 			$settings_link = sprintf( '<a href="%s">%s</a>', esc_url( Functions::get_network_settings_url() ), esc_html__( 'Settings', 'pattern-wrangler' ) );

@@ -79,10 +79,25 @@ class Functions {
 				case 'url':
 					return esc_url( $attributes[ $attribute ] );
 				case 'default':
-					return new \WP_Error( 'pattern_wrangler_unknown_type', __( 'Unknown type.', 'alerts-dlx' ) );
+					return new \WP_Error( 'pattern_wrangler_unknown_type', __( 'Unknown type.', 'pattern-wrangler' ) );
 			}
 		}
-		return new \WP_Error( 'pattern_wrangler_attribute_not_found', __( 'Attribute not found.', 'alerts-dlx' ) );
+		return new \WP_Error( 'pattern_wrangler_attribute_not_found', __( 'Attribute not found.', 'pattern-wrangler' ) );
+	}
+
+	/**
+	 * Get the REST URL for a given network.
+	 *
+	 * @param string $path The path to the REST URL.
+	 *
+	 * @return string The REST URL.
+	 */
+	public static function get_rest_url( $path = '' ) {
+		if ( self::is_multisite() ) {
+			$blog_id = get_current_blog_id();
+			return get_rest_url( $blog_id, $path );
+		}
+		return get_rest_url( null, $path );
 	}
 
 	/**
@@ -493,6 +508,9 @@ class Functions {
 			$hide_patterns_menu = true;
 		}
 		$options_url = admin_url( 'edit.php?post_type=wp_block&page=pattern-wrangler' );
+		if ( (bool) $options['enableEnhancedView'] ) {
+			$options_url = admin_url( 'admin.php?page=pattern-wrangler' );
+		}
 		if ( $hide_all_patterns && $hide_patterns_menu ) {
 			$options_url = admin_url( 'themes.php?page=pattern-wrangler' );
 		}

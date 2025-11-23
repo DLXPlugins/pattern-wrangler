@@ -709,7 +709,7 @@ class Rest {
 	 * @return string The REST endpoint.
 	 */
 	public static function get_rest_endpoint( $endpoint ) {
-		return rest_url( sprintf( 'dlxplugins/pattern-wrangler/v1/%s', $endpoint ) );
+		return Functions::get_rest_url( sprintf( 'dlxplugins/pattern-wrangler/v1/%s', $endpoint ) );
 	}
 
 	/**

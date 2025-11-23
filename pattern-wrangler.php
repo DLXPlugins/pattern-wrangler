@@ -11,7 +11,6 @@
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       pattern-wrangler
- * Domain Path:       /languages
  * Network:           true
  *
  * @package PatternWrangler
@@ -23,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'No direct access.' );
 }
 
-//require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/functions.php';
 
 define( 'DLXPW_PATTERN_WRANGLER_VERSION', '2.0.0-beta1' );
 define( 'DLXPW_PATTERN_WRANGLER_FILE', __FILE__ );
@@ -65,11 +64,6 @@ class PatternWrangler {
 	 * Class initializer.
 	 */
 	public function plugins_loaded() {
-		load_plugin_textdomain(
-			'pattern-wrangler',
-			false,
-			basename( __DIR__ ) . '/languages'
-		);
 
 		$admin = new Admin();
 		$admin->run();
