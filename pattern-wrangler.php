@@ -87,7 +87,7 @@ class PatternWrangler {
 
 		// Determine if blocks can run or not.
 		$options            = Options::get_options();
-		$can_disable_blocks = (bool) $options['disablePatternImporterBlock'];
+		$can_disable_blocks = ! (bool) $options['disablePatternImporterBlock'];
 		if ( ! $can_disable_blocks ) {
 			$blocks = new Blocks();
 			$blocks->run();
