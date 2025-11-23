@@ -1,14 +1,14 @@
-=== Pattern Wrangler - Manage WordPress Block Patterns Effortlessly ===
+=== Pattern Wrangler - Manage Block Patterns and Reusable Blocks ===
 Contributors: ronalfy
 Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.5
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 1.2.0
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Manage your block patterns efficiently with Pattern Wrangler.
+Manage your block patterns and reusable blocks efficiently with Pattern Wrangler.
 
 == Description ==
 

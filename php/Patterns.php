@@ -191,7 +191,7 @@ class Patterns {
 		$ignore_routes = implode( '|', $ignore_routes );
 
 		// Strip params from the request URI and check if it matches any of the ignore routes.
-		$server_request_uri = $_SERVER['REQUEST_URI'] ?? '';
+		$server_request_uri = ( isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' );
 		$server_request_uri = ltrim( explode( '?', $server_request_uri )[0], '/' );
 		if ( false !== strpos( $ignore_routes, $server_request_uri ) ) {
 			// Return early if the request URI matches any of the ignore routes.

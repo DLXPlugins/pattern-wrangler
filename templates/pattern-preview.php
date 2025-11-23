@@ -132,7 +132,7 @@ add_action(
 			$global_styles = wp_get_global_stylesheet( array( 'variables' ) );
 			wp_add_global_styles_for_blocks();
 			if ( ! empty( $global_styles ) && wp_style_is( 'global-styles', 'registered' ) ) {
-				wp_register_style( 'dlxpw-global-styles', false );
+				wp_register_style( 'dlxpw-global-styles', false, array(), Functions::get_plugin_version() );
 				wp_add_inline_style( 'dlxpw-global-styles', $global_styles );
 				wp_enqueue_style( 'dlxpw-global-styles' );
 			}
@@ -143,7 +143,9 @@ add_action(
 
 		wp_register_style(
 			'dlxpw-pattern-preview',
-			''
+			'',
+			array(),
+			Functions::get_plugin_version()
 		);
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
@@ -151,23 +153,22 @@ add_action(
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
 
-		// Output viewport Width from query var.
-		$viewport_width = isset( $_GET['viewport_width'] ) ? absint( $_GET['viewport_width'] ) : 1280;
-		$layout         = isset( $_GET['layout'] ) ? sanitize_text_field( $_GET['layout'] ) : 'grid';
 		wp_register_script(
 			'dlxpw-pattern-preview-js',
-			null
+			null,
+			array(),
+			Functions::get_plugin_version(),
+			true
 		);
 		wp_localize_script(
 			'dlxpw-pattern-preview-js',
 			'dlxPatternPreviewVars',
 			array(
 				'viewportWidth' => 1600,
-				'layout'        => $layout,
+				'layout'        => 'grid',
 				'retrieveNonce' => 'dlx-pattern-wrangler-get-all-patterns',
 			)
 		);
-		wp_print_scripts( 'dlxpw-pattern-preview-js' );
 	}
 );
 

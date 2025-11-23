@@ -585,7 +585,8 @@ class Admin {
 		if ( ! empty( $custom_css ) && is_admin() ) {
 			wp_register_style(
 				'dlx-pw-customizer-css-block-editor',
-				false
+				false,
+				Functions::get_plugin_version()
 			);
 			wp_enqueue_style( 'dlx-pw-customizer-css-block-editor' );
 			wp_add_inline_style( 'dlx-pw-customizer-css-block-editor', $custom_css );
