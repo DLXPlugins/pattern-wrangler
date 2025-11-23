@@ -610,7 +610,7 @@ const Main = ( props ) => {
 								'Allow Patterns to be imported via the Patterns Importer Block',
 								'pattern-wrangler'
 							) }
-							checked={ patternsBlockData.canUseBlock }
+							checked={ false === patternsBlockData.canUseBlock ? false : value }
 							disabled={ ! patternsBlockData.networkCanUseBlock }
 							help={ __(
 								'Disable the patterns importer block, which helps load in remote images.',

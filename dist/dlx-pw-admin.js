@@ -1245,7 +1245,7 @@ var Main = function Main(props) {
           value = _ref9$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Allow Patterns to be imported via the Patterns Importer Block', 'pattern-wrangler'),
-          checked: patternsBlockData.canUseBlock,
+          checked: false === patternsBlockData.canUseBlock ? false : value,
           disabled: !patternsBlockData.networkCanUseBlock,
           help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Disable the patterns importer block, which helps load in remote images.', 'pattern-wrangler'),
           onChange: function onChange(boolValue) {
