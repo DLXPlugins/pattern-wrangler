@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'No direct access.' );
 }
 if ( ! current_user_can( 'edit_posts' ) ) {
-	die( 'You do not have permissioni to preview this pattern.' );
+	die( 'You do not have permission to preview this pattern.' );
 }
 $nonce      = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_SPECIAL_CHARS ) );
 $pattern_id = absint( filter_input( INPUT_GET, 'pattern', FILTER_SANITIZE_SPECIAL_CHARS ) );

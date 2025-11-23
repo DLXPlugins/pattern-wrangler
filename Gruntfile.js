@@ -8,6 +8,7 @@ module.exports = function( grunt ) {
 				files: [
 					{ src: [ 'pattern-wrangler.php' ], dest: '/', filter: 'isFile' },
 					{ src: [ 'readme.txt' ], dest: '/', filter: 'isFile' },
+					{ src: [ 'functions.php' ], dest: '/', filter: 'isFile' },
 					{ src: [ 'assets/**' ], dest: '/' },
 					{ src: [ 'build/**' ], dest: '/' },
 					{ src: [ 'dist/**' ], dest: '/' },
