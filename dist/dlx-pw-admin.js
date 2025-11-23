@@ -1165,8 +1165,8 @@ var Main = function Main(props) {
    */
   var getShowPatternsExporterToggleControl = function getShowPatternsExporterToggleControl() {
     var patternsExporterData = {
-      canExport: false,
-      networkCanExport: false
+      canExport: getValues('makePatternsExportable'),
+      networkCanExport: true
     };
     if (dlxPatternWranglerAdmin.isMultisite) {
       if (networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only') {
@@ -1217,8 +1217,8 @@ var Main = function Main(props) {
    */
   var getShowPatternsImporterBlock = function getShowPatternsImporterBlock() {
     var patternsBlockData = {
-      canUseBlock: false,
-      networkCanUseBlock: false
+      canUseBlock: !getValues('disablePatternImporterBlock'),
+      networkCanUseBlock: true
     };
     if (dlxPatternWranglerAdmin.isMultisite) {
       if (networkOptions.patternConfiguration === 'hybrid' || networkOptions.patternConfiguration === 'network_only') {

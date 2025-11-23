@@ -502,8 +502,8 @@ const Main = ( props ) => {
 	 */
 	const getShowPatternsExporterToggleControl = () => {
 		const patternsExporterData = {
-			canExport: false,
-			networkCanExport: false,
+			canExport: getValues( 'makePatternsExportable' ),
+			networkCanExport: true,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
 			if (
@@ -573,8 +573,10 @@ const Main = ( props ) => {
 	 */
 	const getShowPatternsImporterBlock = () => {
 		const patternsBlockData = {
-			canUseBlock: false,
-			networkCanUseBlock: false,
+			canUseBlock: ! getValues(
+				'disablePatternImporterBlock'
+			),
+			networkCanUseBlock: true,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
 			if (
