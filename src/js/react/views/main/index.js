@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createRoot } from 'react-dom/client';
+import { createRoot } from 'react-dom';
 import { Popover, SlotFillProvider } from '@wordpress/components';
 import Main from './main';
 

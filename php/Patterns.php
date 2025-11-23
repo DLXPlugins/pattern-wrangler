@@ -17,6 +17,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Patterns {
 
 	/**
+	 * Holds the class instance.
+	 *
+	 * @var Patterns $instance
+	 */
+	private static $instance = null;
+
+	/**
+	 * Return an instance of the class
+	 *
+	 * @return Patterns class instance.
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
 	 * Class runner.
 	 */
 	public function run() {
@@ -46,8 +65,8 @@ class Patterns {
 		// Deregister any patterns that are uncategorized.
 		add_action( 'init', array( $this, 'maybe_deregister_uncategorized_patterns' ), 1003 );
 
-		// Deregister any patterns that are not synced.
-		add_action( 'init', array( $this, 'maybe_deregister_unsynced_patterns' ), 1004 );
+		// De-register any paused patterns.
+		add_action( 'rest_api_init', array( $this, 'maybe_deregister_paused_registered_patterns' ), 1005 );
 
 		// Deregister all pattenrs if all patterns are disabled.
 		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 2000 );
@@ -100,21 +119,19 @@ class Patterns {
 			add_action( 'after_setup_theme', array( $this, 'enable_menus_ui' ), 100 );
 		}
 
-		$hide_all_patterns = (bool) $options['hideAllPatterns'];
+		$hide_all_patterns = Functions::is_patterns_enabled_for_site() ? false : true;
 		if ( $hide_all_patterns ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			add_filter( 'should_load_remote_block_patterns', '__return_false' );
 		}
 
 		// Check if remote patterns is disabled.
-		$hide_remote_patterns = (bool) $options['hideRemotePatterns'];
-		if ( $hide_remote_patterns ) {
+		if ( ! Functions::is_remote_patterns_enabled_for_site() ) {
 			add_filter( 'should_load_remote_block_patterns', '__return_false' );
 		}
 
 		// Check if core patterns is disabled.
-		$hide_core_patterns = (bool) $options['hideCorePatterns'];
-		if ( $hide_core_patterns ) {
+		if ( Functions::is_core_patterns_enabled_for_site() ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
@@ -127,6 +144,13 @@ class Patterns {
 	 * Add admin notices to the patterns post type list view.
 	 */
 	public function add_admin_notices() {
+		$screen = get_current_screen();
+
+		// Make sure the notice only shows on the patterns settings screen page.
+		if ( 'patterns_page_pattern-wrangler' !== $screen->id ) {
+			return;
+		}
+
 		$options                     = Options::get_options();
 		$hide_core_synced_patterns   = (bool) $options['hideCoreSyncedPatterns'];
 		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
@@ -154,11 +178,36 @@ class Patterns {
 	}
 
 	/**
-	 * Deregister any patterns that are not synced.
+	 * Deregister any paused registered patterns.
 	 */
-	public function maybe_deregister_unsynced_patterns() {
-		$options                     = Options::get_options();
-		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
+	public function maybe_deregister_paused_registered_patterns() {
+		// Skip de-registering patterns for the following routes.
+		$ignore_routes = array(
+			\rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/all/',
+			\rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/create/',
+			\rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/update/',
+
+		);
+		$ignore_routes = implode( '|', $ignore_routes );
+
+		// Strip params from the request URI and check if it matches any of the ignore routes.
+		$server_request_uri = ( isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' );
+		$server_request_uri = ltrim( explode( '?', $server_request_uri )[0], '/' );
+		if ( false !== strpos( $ignore_routes, $server_request_uri ) ) {
+			// Return early if the request URI matches any of the ignore routes.
+			return;
+		}
+
+		// Get disabled patterns.
+		$options = Options::get_disabled_patterns();
+		foreach ( $options as $option ) {
+			$option = sanitize_text_field( $option );
+			if ( empty( $option ) ) {
+				continue;
+			}
+
+			unregister_block_pattern( $option );
+		}
 	}
 
 	/**
@@ -249,6 +298,14 @@ class Patterns {
 		$options = Options::get_options();
 
 		$hide_theme_patterns = (bool) $options['hideThemePatterns'];
+		$is_multisite        = Functions::is_multisite( false );
+		if ( $is_multisite ) {
+			$network_options     = Options::get_network_options();
+			$hide_theme_patterns = 'hide' === $network_options['hideThemePatterns'] ? true : $hide_theme_patterns;
+			if ( 'show' === $network_options['hideThemePatterns'] ) {
+				$hide_theme_patterns = false;
+			}
+		}
 		if ( $hide_theme_patterns ) {
 			// Get the active theme.
 			$theme = wp_get_theme();
@@ -293,6 +350,14 @@ class Patterns {
 		$options = Options::get_options();
 
 		$hide_plugin_patterns = (bool) $options['hidePluginPatterns'];
+		$is_multisite         = Functions::is_multisite( false );
+		if ( $is_multisite ) {
+			$network_options      = Options::get_network_options();
+			$hide_plugin_patterns = 'hide' === $network_options['hidePluginPatterns'] ? true : $hide_plugin_patterns;
+			if ( 'show' === $network_options['hidePluginPatterns'] ) {
+				$hide_plugin_patterns = false;
+			}
+		}
 		if ( $hide_plugin_patterns ) {
 
 			// Get all registered patterns.
@@ -326,14 +391,28 @@ class Patterns {
 		// Set default attributes.
 		$atts = shortcode_atts(
 			array(
-				'slug' => '',
+				'slug'    => '',
+				'site_id' => 1,
 			),
 			$atts,
 			'wp_block'
 		);
 
+		$switched = false;
+		if ( is_multisite() ) {
+			$site_id = get_current_blog_id();
+			if ( $site_id !== (int) $atts['site_id'] ) {
+				switch_to_blog( (int) $atts['site_id'] );
+				$switched = true;
+			}
+		}
+
 		// Get the post by slug.
 		$post = get_page_by_path( $atts['slug'], OBJECT, 'wp_block' );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
 
 		// If no post is found, return nothing.
 		if ( ! $post ) {
@@ -507,10 +586,8 @@ class Patterns {
 		// Get options.
 		$options = Options::get_options();
 
-		$hide_all_patterns = (bool) $options['hideAllPatterns'];
-
-		// Exit early if not enabled.
-		if ( ! $hide_all_patterns ) {
+		// Check if patterns are enabled for the current site. If not, deregister all patterns.
+		if ( Functions::is_patterns_enabled_for_site() ) {
 			return;
 		}
 
@@ -536,9 +613,25 @@ class Patterns {
 		// Get options.
 		$options = Options::get_options();
 
-		$hide_all_patterns           = (bool) $options['hideAllPatterns'];
+		$hide_all_patterns           = Functions::is_patterns_enabled_for_site() ? false : true;
 		$hide_core_synced_patterns   = (bool) $options['hideCoreSyncedPatterns'];
 		$hide_core_unsynced_patterns = (bool) $options['hideCoreUnsyncedPatterns'];
+
+		$is_multisite = Functions::is_multisite( false );
+		if ( $is_multisite ) {
+			$network_options           = Options::get_network_options();
+			$hide_core_synced_patterns = 'hide' === $network_options['hideSyncedPatternsForNetwork'] ? true : $hide_core_synced_patterns;
+			if ( 'show' === $network_options['hideSyncedPatternsForNetwork'] ) {
+				$hide_core_synced_patterns = false;
+			}
+		}
+		if ( $is_multisite ) {
+			$network_options             = Options::get_network_options();
+			$hide_core_unsynced_patterns = 'hide' === $network_options['hideUnsyncedPatternsForNetwork'] ? true : $hide_core_unsynced_patterns;
+			if ( 'show' === $network_options['hideUnsyncedPatternsForNetwork'] ) {
+				$hide_core_unsynced_patterns = false;
+			}
+		}
 
 		// Exit early if not enabled.
 		if ( $hide_all_patterns ) {

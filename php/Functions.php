@@ -32,14 +32,14 @@ class Functions {
 		$is_network_admin = false;
 		if ( $network_admin ) {
 			if ( is_network_admin() ) {
-				if ( is_multisite() && is_plugin_active_for_network( self::get_plugin_slug() ) ) {
+				if ( is_multisite() && is_plugin_active_for_network( self::get_plugin_file() ) ) {
 					return true;
 				}
 			} else {
 				return false;
 			}
 		}
-		if ( is_multisite() && is_plugin_active_for_network( self::get_plugin_slug() ) ) {
+		if ( is_multisite() && is_plugin_active_for_network( self::get_plugin_file() ) ) {
 			return true;
 		}
 		return false;
@@ -79,10 +79,25 @@ class Functions {
 				case 'url':
 					return esc_url( $attributes[ $attribute ] );
 				case 'default':
-					return new \WP_Error( 'pattern_wrangler_unknown_type', __( 'Unknown type.', 'alerts-dlx' ) );
+					return new \WP_Error( 'pattern_wrangler_unknown_type', __( 'Unknown type.', 'pattern-wrangler' ) );
 			}
 		}
-		return new \WP_Error( 'pattern_wrangler_attribute_not_found', __( 'Attribute not found.', 'alerts-dlx' ) );
+		return new \WP_Error( 'pattern_wrangler_attribute_not_found', __( 'Attribute not found.', 'pattern-wrangler' ) );
+	}
+
+	/**
+	 * Get the REST URL for a given network.
+	 *
+	 * @param string $path The path to the REST URL.
+	 *
+	 * @return string The REST URL.
+	 */
+	public static function get_rest_url( $path = '' ) {
+		if ( self::is_multisite() ) {
+			$blog_id = get_current_blog_id();
+			return get_rest_url( $blog_id, $path );
+		}
+		return get_rest_url( null, $path );
 	}
 
 	/**
@@ -166,7 +181,8 @@ class Functions {
 
 		// Loop through all patterns and increment a count for each category. Since core tax pattern categories have a count for core patterns.
 		foreach ( $pattern_registry as $pattern ) {
-			$pattern_categories = $pattern['categories'];
+			$pattern_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
+
 			foreach ( $pattern_categories as $category ) {
 				if ( isset( $all_categories[ $category ] ) ) {
 					++$all_categories[ $category ]['count'];
@@ -178,6 +194,228 @@ class Functions {
 			'registered' => $all_categories,
 			'categories' => $pattern_categories_taxonomy,
 		);
+	}
+
+
+	/**
+	 * Check if a pattern ID is valid.
+	 *
+	 * @param string $pattern_id The pattern ID.
+	 *
+	 * @return string|int The sanitized pattern ID or 0 if invalid.
+	 */
+	public static function get_sanitized_pattern_id( $pattern_id ) {
+		if ( ! preg_match( '/^(\d+|[a-zA-Z0-9\/_-]+)$/', $pattern_id ) ) {
+			return 0;
+		}
+		return $pattern_id;
+	}
+
+	/**
+	 * Check if local patterns are enabled.
+	 *
+	 * This is useful in Multisite to check if local patterns are enabled for a site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return bool true if enabled, false if disabled.
+	 */
+	public static function has_local_patterns_enabled( $site_id = 1 ) {
+		$has_local_patterns = false;
+		if ( Functions::is_multisite( false ) ) {
+			$options = Options::get_network_options();
+
+			// Get local site options for local patterns.
+			$local_site_option = get_blog_option( $site_id, 'dlx_pattern_configuration', 'hybrid' );
+			if ( 'hybrid' === $local_site_option || 'local_only' === $local_site_option ) {
+				$has_local_patterns = true;
+			}
+
+			// Local options take priority over network options when set per site.
+			if ( ! $has_local_patterns && ! Functions::is_patterns_enabled_for_site( $site_id ) && ( 'disabled' === $options['patternConfiguration'] || 'network_only' === $options['patternConfiguration'] ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Get the default site ID for patterns.
+	 *
+	 * @return int The site ID.
+	 */
+	public static function get_network_default_patterns_site_id() {
+		$default_site_id = 1;
+		if ( Functions::is_multisite( false ) ) {
+			$options         = Options::get_network_options();
+			$default_site_id = absint( $options['patternMothershipSiteId'] );
+		}
+
+		return $default_site_id;
+	}
+
+	/**
+	 * Check if paterns are enabled for the current site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return bool true if enabled, false if disabled.
+	 */
+	public static function is_patterns_enabled_for_site( $site_id = 1 ) {
+		$options           = Options::get_options();
+		$hide_all_patterns = (bool) $options['hideAllPatterns'] ?? false;
+		$is_multisite      = Functions::is_multisite( false );
+
+		if ( $is_multisite ) {
+			// Get network values.
+			$network_options   = Options::get_network_options();
+			$hide_all_patterns = 'hide' === $network_options['hideAllPatterns'];
+
+			// Get the site ID. We might need this later.
+			if ( 0 === $site_id ) {
+				$site_id = get_current_blog_id();
+			}
+		}
+
+		/**
+		 * Allow plugin authors to override the network setting.
+		 *
+		 * @param bool $hide_all_patterns The network setting.
+		 * @param int  $site_id         The site ID.
+		 * @param bool $is_multisite    Whether the site is on a multisite install.
+		 *
+		 * @return bool true if hiding patterns, false if not.
+		 */
+		$hide_all_patterns = apply_filters( 'dlxpw_hide_all_patterns', $hide_all_patterns, $site_id, true );
+
+		// Return the value.
+		if ( $hide_all_patterns ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Check if core patterns are enabled for the current site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return bool true if enabled, false if disabled.
+	 */
+	public static function is_core_patterns_enabled_for_site( $site_id = 1 ) {
+		$options            = Options::get_options();
+		$hide_core_patterns = (bool) $options['hideCorePatterns'] ?? false;
+		$is_multisite       = Functions::is_multisite( false );
+
+		if ( $is_multisite ) {
+			// Get network values.
+			$network_options    = Options::get_network_options();
+			$hide_core_patterns = 'hide' === $network_options['hideCorePatterns'] ?? false;
+
+			// Get the site ID. We might need this later.
+			if ( 0 === $site_id ) {
+				$site_id = get_current_blog_id();
+			}
+		}
+
+		/**
+		 * Allow plugin authors to override the local/network setting.
+		 *
+		 * @param bool $hide_core_patterns The network setting.
+		 * @param int  $site_id         The site ID.
+		 * @param bool $is_multisite    Whether the site is on a multisite install.
+		 *
+		 * @return bool true if hiding patterns, false if not.
+		 */
+		$hide_core_patterns = apply_filters( 'dlxpw_hide_core_patterns', $hide_core_patterns, $site_id, true );
+
+		// Return the value.
+		if ( $hide_core_patterns ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Check if remote patterns are enabled for the current site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return bool true if enabled, false if disabled.
+	 */
+	public static function is_remote_patterns_enabled_for_site( $site_id = 1 ) {
+		$options              = Options::get_options();
+		$hide_remote_patterns = (bool) $options['hideRemotePatterns'] ?? false;
+		$is_multisite         = Functions::is_multisite( false );
+
+		if ( $is_multisite ) {
+			// Get network values.
+			$network_options      = Options::get_network_options();
+			$hide_remote_patterns = 'hide' === $network_options['hideRemotePatterns'] ? true : false;
+
+			// Get the site ID. We might need this later.
+			if ( 0 === $site_id ) {
+				$site_id = get_current_blog_id();
+			}
+		}
+
+		/**
+		 * Allow plugin authors to override the local/network setting.
+		 *
+		 * @param bool $hide_remote_patterns The network setting.
+		 * @param int  $site_id         The site ID.
+		 * @param bool $is_multisite    Whether the site is on a multisite install.
+		 *
+		 * @return bool true if hiding patterns, false if not.
+		 */
+		$hide_remote_patterns = apply_filters( 'dlxpw_hide_remote_patterns', $hide_remote_patterns, $site_id, true );
+
+		// Return the value.
+		if ( $hide_remote_patterns ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Get a pattern by ID.
+	 *
+	 * @param string|int $pattern_id The pattern ID.
+	 *
+	 * @return string|null The pattern content or null if not found.
+	 */
+	public static function get_pattern_by_id( $pattern_id ) {
+		// Perform query.
+		if ( is_numeric( $pattern_id ) ) {
+			global $wp_query;
+			$temp     = $wp_query;
+			$wp_query = new \WP_Query(
+				array(
+					'p'         => $pattern_id,
+					'post_type' => 'wp_block',
+				)
+			);
+			if ( ! $wp_query->have_posts() ) {
+				return null;
+			} else {
+				$wp_query->the_post();
+				$pattern_content = $wp_query->post->post_content;
+			}
+			$wp_query = $temp;
+		} elseif ( empty( $pattern_content ) && $pattern_id ) {
+			$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+			foreach ( $registered_patterns as $pattern ) {
+				if ( $pattern_id === $pattern['slug'] || $pattern_id === $pattern['name'] ) {
+					$pattern_content = $pattern['content'];
+					return $pattern_content;
+					break;
+				}
+			}
+			if ( ! isset( $pattern_content ) ) {
+				return null;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -264,12 +502,38 @@ class Functions {
 	 */
 	public static function get_settings_url( $tab = '', $sub_tab = '' ) {
 		$options            = Options::get_options();
-		$hide_all_patterns  = (bool) $options['hideAllPatterns'] ?? false;
+		$hide_all_patterns  = ! Functions::is_patterns_enabled_for_site();
 		$hide_patterns_menu = (bool) $options['hidePatternsMenu'] ?? false;
-		$options_url        = admin_url( 'edit.php?post_type=wp_block&page=pattern-wrangler' );
+		if ( Functions::is_multisite( false ) && $hide_all_patterns ) {
+			$hide_patterns_menu = true;
+		}
+		$options_url = admin_url( 'edit.php?post_type=wp_block&page=pattern-wrangler' );
+		if ( (bool) $options['enableEnhancedView'] ) {
+			$options_url = admin_url( 'admin.php?page=pattern-wrangler' );
+		}
 		if ( $hide_all_patterns && $hide_patterns_menu ) {
 			$options_url = admin_url( 'themes.php?page=pattern-wrangler' );
 		}
+
+		if ( ! empty( $tab ) ) {
+			$options_url = add_query_arg( array( 'tab' => sanitize_title( $tab ) ), $options_url );
+			if ( ! empty( $sub_tab ) ) {
+				$options_url = add_query_arg( array( 'subtab' => sanitize_title( $sub_tab ) ), $options_url );
+			}
+		}
+		return $options_url;
+	}
+
+	/**
+	 * Return the URL to the admin screen
+	 *
+	 * @param string $tab     Tab path to load.
+	 * @param string $sub_tab Subtab path to load.
+	 *
+	 * @return string URL to admin screen. Output is not escaped.
+	 */
+	public static function get_network_settings_url( $tab = '', $sub_tab = '' ) {
+		$options_url = network_admin_url( 'settings.php?page=pattern-wrangler' );
 
 		if ( ! empty( $tab ) ) {
 			$options_url = add_query_arg( array( 'tab' => sanitize_title( $tab ) ), $options_url );
@@ -298,6 +562,21 @@ class Functions {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Get the name of a network site.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return string The site name.
+	 */
+	public static function get_network_site_name( $site_id ) {
+		$site = get_site( $site_id );
+		if ( ! $site ) {
+			return 'Unknown';
+		}
+		return $site->blogname;
 	}
 
 	/**
@@ -344,7 +623,7 @@ class Functions {
 	 * @param bool $svg Whether to add SVG data to KSES.
 	 */
 	public static function get_kses_allowed_html( $svg = true ) {
-		$allowed_tags = wp_kses_allowed_html();
+		$allowed_tags = wp_kses_allowed_html( 'post' );
 
 		$allowed_tags['nav']        = array(
 			'class' => array(),
@@ -402,6 +681,13 @@ class Functions {
 			'id'          => array(),
 			'xmls'        => array(),
 		);
+
+		// Add style attributes to allowed tags.
+		foreach ( $allowed_tags as $tag => $attributes ) {
+			$allowed_tags[ $tag ]['style'] = array();
+			$allowed_tags[ $tag ]['class'] = array();
+			$allowed_tags[ $tag ]['id'] = array();
+		}
 
 		return $allowed_tags;
 	}

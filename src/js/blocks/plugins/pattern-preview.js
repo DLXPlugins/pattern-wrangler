@@ -1,44 +1,54 @@
 import { __ } from '@wordpress/i18n';
+import { Button, Tooltip } from '@wordpress/components';
 import { registerPlugin } from '@wordpress/plugins';
-import { useSelect } from '@wordpress/data';
-
-// Try to get ActionItem, but don't fail if it's not available
-let PluginPreviewMenuItem;
-try {
-	const { PluginPreviewMenuItem: ImportedPluginPreviewMenuItem } = require( '@wordpress/editor' );
-	PluginPreviewMenuItem = ImportedPluginPreviewMenuItem;
-} catch ( e ) {
-	// ActionItem not available
-}
+import { PluginPostStatusInfo } from '@wordpress/editor';
 
 /**
  * Render a Preview Button.
  *
- * @return {Object|null} The rendered component or null if ActionItem not available.
+ * @return {Object} The rendered component.
  */
 const PatternPreviewButton = () => {
-	// Return early if ActionItem isn't available
-	if ( ! PluginPreviewMenuItem ) {
-		return null;
-	}
-
 	return (
-		<PluginPreviewMenuItem
+		<PluginPostStatusInfo
 			icon="external"
 			label={ __( 'Preview Pattern', 'pattern-wrangler' ) }
-			onClick={ () => {
-				window.open( dlxPatternWranglerPreview.previewUrl, '_blank' );
-			} }
+			className="dlx-pw-preview-sidebar"
 		>
-			{ __( 'Preview Pattern', 'pattern-wrangler' ) }
-		</PluginPreviewMenuItem>
+			<div className="dlx-pw-preview-sidebar-content">
+				<Tooltip
+					text={ __( 'Preview Pattern in new tab', 'pattern-wrangler' ) }
+				>
+					<Button
+						variant="tertiary"
+						href={ dlxPatternWranglerPreview.previewUrl }
+						target="_blank"
+						icon="external"
+						iconPosition="right"
+						rel="noopener noreferrer"
+						className="button button-secondary"
+						showTooltip={ true }
+						style={ {
+							margin: 0,
+							display: 'inline-flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							padding: '0.5em 1em',
+							fontSize: '1em',
+							fontWeight: 'normal',
+							lineHeight: '1.5',
+							textDecoration: 'none',
+						} }
+						aria-label={ __( 'Preview Pattern in new tab', 'pattern-wrangler' ) }
+					>
+						{ __( 'Preview Pattern', 'pattern-wrangler' ) }
+					</Button>
+				</Tooltip>
+			</div>
+		</PluginPostStatusInfo>
 	);
 };
 
-// Only register if ActionItem is available
-if ( PluginPreviewMenuItem ) {
-	registerPlugin( 'dlx-pattern-wrangler-preview-button', {
-		render: PatternPreviewButton,
-	} );
-}
-
+registerPlugin( 'dlx-pattern-wrangler-preview-button', {
+	render: PatternPreviewButton,
+} );

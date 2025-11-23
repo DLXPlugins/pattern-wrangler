@@ -11,25 +11,48 @@ module.exports = ( env ) => {
 				...defaultConfig.module,
 				rules: [ ...defaultConfig.module.rules ],
 			},
+			output: {
+				...defaultConfig.output,
+				clean: true,
+			},
 			mode: env.mode,
 			devtool: 'production' === env.mode ? false : 'source-map',
 			entry: {
 				index: '/src/index.js',
 				'dlx-pw-preview': './src/js/blocks/plugins/pattern-preview.js',
 				'dlx-pw-fancybox': './src/js/fancybox/index.js',
+				'dlx-pw-patterns-view': [
+					'./src/js/react/views/patterns/index.js',
+				],
+			},
+			resolve: {
+				alias: {
+					React: path.resolve(
+						'node_modules/@wordpress/components/node_modules/react'
+					),
+					'react-dom': path.resolve(
+						'node_modules/@wordpress/components/node_modules/react-dom'
+					),
+				},
 			},
 		},
 		{
 			entry: {
 				'dlx-pw-admin': './src/js/react/views/main/index.js',
-				'dlx-pw-admin-license': './src/js/react/views/license/index.js',
+				'dlx-pw-network-admin-settings':
+					'./src/js/react/views/network-settings/index.js',
 				'dlx-pw-admin-css': './src/scss/admin.scss',
 				'dlx-pw-post-utilities': './src/js/utils/index.js',
 				'dlx-pw-admin-utils-css': './src/scss/admin-utils.scss',
 			},
 			resolve: {
 				alias: {
-					react: path.resolve( 'node_modules/react' ),
+					React: path.resolve(
+						'node_modules/@wordpress/components/node_modules/react'
+					),
+					'react-dom': path.resolve(
+						'node_modules/@wordpress/components/node_modules/react-dom'
+					),
 				},
 			},
 			mode: env.mode,
@@ -101,7 +124,11 @@ module.exports = ( env ) => {
 					},
 				],
 			},
-			plugins: [ new RemoveEmptyScriptsPlugin(), new MiniCssExtractPlugin(), new DependencyExtractionWebpackPlugin() ],
+			plugins: [
+				new RemoveEmptyScriptsPlugin(),
+				new MiniCssExtractPlugin(),
+				new DependencyExtractionWebpackPlugin(),
+			],
 		},
 	];
 };

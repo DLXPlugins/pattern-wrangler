@@ -24,6 +24,8 @@ const SaveResetButtons = ( props ) => {
 		errors,
 		isDirty,
 		dirtyFields,
+		saveAction = 'dlx_pw_save_options',
+		resetAction = 'dlx_pw_reset_options',
 		trigger,
 	} = props;
 
@@ -38,7 +40,7 @@ const SaveResetButtons = ( props ) => {
 	 * Save the options by setting promise as state.
 	 */
 	const saveOptions = async () => {
-		const saveOptionsPromise = SendCommand( 'dlx_pw_save_options', { formData: formValues } );
+		const saveOptionsPromise = SendCommand( saveAction, { formData: formValues } );
 		setSavePromise( saveOptionsPromise );
 		setSaving( true );
 		await saveOptionsPromise;
@@ -49,7 +51,7 @@ const SaveResetButtons = ( props ) => {
 	 * Reset the options by setting promise as state.
 	 */
 	const resetOptions = async () => {
-		const resetOptionsPromise = SendCommand( 'dlx_pw_reset_options', { formData: formValues } );
+		const resetOptionsPromise = SendCommand( resetAction, { formData: formValues } );
 		setResetPromise( resetOptionsPromise );
 		setResetting( true );
 		const resetResponse = await resetOptionsPromise;

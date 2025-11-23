@@ -80,7 +80,7 @@ class Blocks {
 			$domain = wp_parse_url( $image_url, PHP_URL_HOST );
 
 			// If we're on same domain, bail successfully.
-			if ( $domain === $_SERVER['HTTP_HOST'] ) {
+			if ( ( isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '' ) === $domain ) {
 				\wp_send_json_success(
 					array(
 						'attachmentId'  => 0,
@@ -191,7 +191,7 @@ class Blocks {
 			'dlx-pw-pattern-inserter-block',
 			'dlxPWPatternInserter',
 			array(
-				'restUrl'   => rest_url( 'dlxplugins/pattern-wrangler/v1' ),
+				'restUrl'   => Functions::get_rest_url( 'dlxplugins/pattern-wrangler/v1' ),
 				'restNonce' => wp_create_nonce( 'wp_rest' ),
 			)
 		);
