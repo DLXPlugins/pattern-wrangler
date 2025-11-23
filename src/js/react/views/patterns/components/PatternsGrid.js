@@ -237,7 +237,6 @@ const PatternsGrid = ( props ) => {
 		);
 	}
 
-	console.log( data );
 	return <Interface data={ data } { ...props } />;
 };
 
@@ -604,7 +603,6 @@ const Interface = ( props ) => {
 				id: 'categories',
 				label: __( 'Categories', 'pattern-wrangler' ),
 				render: ( { item } ) => {
-					console.log( 'item', item );
 					return null;
 				},
 				enableSorting: false,
