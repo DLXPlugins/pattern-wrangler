@@ -183,9 +183,9 @@ class Patterns {
 	public function maybe_deregister_paused_registered_patterns() {
 		// Skip de-registering patterns for the following routes.
 		$ignore_routes = array(
-			\rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/all/',
-			\rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/create/',
-			\rest_get_url_prefix() . '/dlxplugins/pattern-wrangler/v1/patterns/update/',
+			Functions::get_rest_url( '/dlxplugins/pattern-wrangler/v1/patterns/all/' ),
+			Functions::get_rest_url( '/dlxplugins/pattern-wrangler/v1/patterns/create/' ),
+			Functions::get_rest_url( '/dlxplugins/pattern-wrangler/v1/patterns/update/' ),
 
 		);
 		$ignore_routes = implode( '|', $ignore_routes );
