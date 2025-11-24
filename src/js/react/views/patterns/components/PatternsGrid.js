@@ -877,12 +877,39 @@ const Interface = ( props ) => {
 				id: 'copy',
 				label: __( 'Copy Pattern', 'pattern-wrangler' ),
 				icon: 'edit',
-				callback: ( items ) => {
+				callback: async ( items ) => {
 					const copyContent = items[ 0 ].content.trim();
+					let copied = false;
 					try {
-						const copyBlob = new Blob( [ copyContent ], { type: 'text/html' } );
-						const data = [ new ClipboardItem( { [ copyBlob.type ]: copyBlob } ) ];
-						navigator.clipboard.write( data );
+						// Modern API attempt first
+						if ( navigator.clipboard?.writeText ) {
+							try {
+								await navigator.clipboard.writeText( copyContent );
+								copied = true;
+							} catch ( err ) {
+								// Fail silently and fall back
+							}
+						}
+
+						// Fallback for older Safari / insecure contexts
+						if ( ! copied ) {
+							const textarea = document.createElement( 'textarea' );
+							textarea.value = copyContent;
+							textarea.style.position = 'fixed';
+							textarea.style.opacity = '0';
+							textarea.style.pointerEvents = 'none';
+							document.body.appendChild( textarea );
+
+							textarea.select();
+							try {
+								document.execCommand( 'copy' );
+								copied = true;
+							} catch ( err ) {
+								// worst case, no copy
+							}
+
+							document.body.removeChild( textarea );
+						}
 
 						setSnackbar( {
 							isVisible: true,
@@ -939,17 +966,6 @@ const Interface = ( props ) => {
 		],
 		[ categories, patterns ]
 	);
-
-	// const { data, isLoading, error } = useQuery( {
-	// 	queryKey: [ 'all-patterns', view.perPage, view.page, view.search, view.sort ],
-	// 	queryFn: () =>
-	// 		fetchPatterns( {
-	// 			perPage: view.perPage,
-	// 			page: view.page,
-	// 			search: view.search,
-	// 			sort: view.sort,
-	// 		} ),
-	// } );
 
 	/**
 	 * Get the total count of filtered patterns without pagination.
