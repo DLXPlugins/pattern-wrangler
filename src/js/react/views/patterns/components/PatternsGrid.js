@@ -261,6 +261,12 @@ const Interface = ( props ) => {
 		};
 	} );
 
+	const { assets } = useSelect( () => {
+		return {
+			assets: select( patternsStore ).getAssets(),
+		};
+	} );
+
 	const [ localCategories, setLocalCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
 	const [ snackbar, setSnackbar ] = useState( {
@@ -616,6 +622,23 @@ const Interface = ( props ) => {
 					return {
 						label: category.label || category.name,
 						value: category.slug,
+					};
+				} ),
+			},
+			{
+				id: 'assets',
+				label: __( 'Pattern Source', 'pattern-wrangler' ),
+				render: ( { item } ) => {
+					return null;
+				},
+				enableGlobalSearch: true,
+				filterBy: {
+					operators: [ 'is' ],
+				},
+				elements: Object.values( select( patternsStore ).getAssets() || [] ).map( ( asset ) => {
+					return {
+						label: asset.label,
+						value: asset.slug,
 					};
 				} ),
 			},
@@ -994,6 +1017,15 @@ const Interface = ( props ) => {
 							}
 						}
 						break;
+					case 'assets':
+						if ( filter.value ) {
+							if ( filter.operator === 'is' ) {
+								patternsCopy = patternsCopy.filter( ( pattern ) => {
+									return pattern.asset === filter.value;
+								} );
+							}
+						}
+						break;
 					case 'patternType':
 						if ( filter.value ) {
 							switch ( filter.value ) {
@@ -1214,6 +1246,13 @@ const Interface = ( props ) => {
 									return ! hasExcludedCategory;
 								} );
 							}
+						}
+						break;
+					case 'assets':
+						if ( filter.value ) {
+							patternsCopy = patternsCopy.filter( ( pattern ) => {
+								return pattern.asset === filter.value;
+							} );
 						}
 						break;
 					case 'patternType':

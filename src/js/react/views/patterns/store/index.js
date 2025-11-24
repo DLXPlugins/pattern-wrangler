@@ -5,9 +5,11 @@ import { addQueryArgs } from '@wordpress/url';
 const DEFAULT_STATE = {
 	patterns: [],
 	categories: [],
+	assets: [],
 	data: {
 		patterns: [],
 		categories: [],
+		assets: [],
 	},
 	loading: false,
 	error: null,
@@ -66,17 +68,24 @@ const actions = {
 			categories,
 		};
 	},
+	setAssets( assets ) {
+		return {
+			type: 'SET_ASSETS',
+			assets,
+		};
+	},
 	setData( data ) {
 		return {
 			type: 'SET_DATA',
 			data,
 		};
 	},
-	setAllData( patterns, categories, data ) {
+	setAllData( patterns, categories, assets, data ) {
 		return {
 			type: 'SET_ALL_DATA',
 			patterns,
 			categories,
+			assets,
 			data,
 		};
 	},
@@ -106,7 +115,7 @@ const actions = {
 				} );
 
 				if ( response ) {
-					dispatch( actions.setAllData( response.patterns, response.categories, response ) );
+					dispatch( actions.setAllData( response.patterns, response.categories, response.assets, response ) );
 				} else {
 					dispatch( actions.setError( 'Failed to fetch data' ) );
 				}
@@ -133,6 +142,7 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 					...state,
 					patterns: action.patterns,
 					categories: action.categories,
+					assets: action.assets,
 					data: action.data,
 					loading: false,
 					error: null,
@@ -208,6 +218,11 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 					...state,
 					data: action.data,
 				};
+			case 'SET_ASSETS':
+				return {
+					...state,
+					assets: action.assets,
+				};
 			case 'SET_LOADING':
 				return {
 					...state,
@@ -278,6 +293,9 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 		},
 		getCategories( state ) {
 			return state.categories;
+		},
+		getAssets( state ) {
+			return state.assets;
 		},
 		getData( state ) {
 			return state.data;

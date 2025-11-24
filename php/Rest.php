@@ -559,13 +559,64 @@ class Rest {
 		 *
 		 * @param int $default_viewport_width The default viewport width.
 		 */
-		$default_viewport_width = apply_filters( 'dlxpw_pattern_preview_viewport_width', 1200 );
+		$default_viewport_width = apply_filters( 'dlxpw_pattern_preview_viewport_width', 1400 );
+
+		// Get active theme.
+		$active_theme      = wp_get_theme()->get_stylesheet();
+		$active_theme_name = wp_get_theme()->get( 'Name' );
+
+		// Get active plugin slugs.
+		$active_plugin_slugs = array();
+		$plugins             = get_option( 'active_plugins', array() );
+		foreach ( $plugins as $plugin_file ) {
+			$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_file;
+			$info        = get_plugin_data( $plugin_path );
+
+			$active_plugin_slugs[ sanitize_key( dirname( $plugin_file ) ) ] = sanitize_text_field( $info['Name'] );
+		}
+
+		// Get Assets.
+		$assets = array(); // key/pair of theme name and array of assets.
 
 		// Process registered patterns.
 		foreach ( $registered_patterns as $pattern ) {
 			// If pattern is remote, ignore it.
 			if ( false === $pattern['inserter'] ) {
 				continue;
+			}
+
+			// Check if pattern is from the theme.
+			$has_asset  = false;
+			$asset_slug = '';
+			if ( str_starts_with( $pattern['name'], $active_theme ) ) {
+				$has_asset               = true;
+				$asset_slug              = $active_theme;
+				$assets[ $active_theme ] = array(
+					'label' => $active_theme_name,
+					'slug'  => $active_theme,
+				);
+			}
+
+			// Check if pattern is from an active plugin. Try to match slug.
+			foreach ( $active_plugin_slugs as $plugin_slug => $plugin_name ) {
+				if ( str_starts_with( $pattern['name'], $plugin_slug ) || ( isset( $pattern['source'] ) && strstr( $pattern['source'], $plugin_slug ) ) ) {
+					$has_asset              = true;
+					$asset_slug             = $plugin_slug;
+					$assets[ $plugin_slug ] = array(
+						'label' => $plugin_name,
+						'slug'  => $plugin_slug,
+					);
+					break;
+				}
+			}
+
+			if ( isset( $pattern['source_url'] ) && strstr( $pattern['source_url'], 'wooblockpatterns' ) ) {
+				$has_asset             = true;
+				$asset_slug            = 'woocommerce';
+				$assets[ $asset_slug ] = array(
+					'label' => 'WooCommerce',
+					'slug'  => $asset_slug,
+				);
 			}
 
 			// Map categories to their names.
@@ -580,7 +631,6 @@ class Rest {
 				}
 			}
 
-			$preview_image                = $this->get_pattern_preview( $pattern['name'], $pattern['name'] );
 			$patterns[ $pattern['name'] ] = array(
 				'id'            => Functions::get_sanitized_pattern_id( $pattern['name'] ),
 				'title'         => $pattern['title'],
@@ -591,17 +641,16 @@ class Rest {
 				'isDisabled'    => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
 				'isLocal'       => false,
 				'syncStatus'    => 'registered',
-				'preview'       => $preview_image,
 				'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
 				'patternType'   => 'registered',
 				'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
 				'siteId'        => get_current_blog_id(),
+				'asset'         => $has_asset ? $asset_slug : null,
 			);
 		}
 
 		// Process local patterns.
 		foreach ( $local_patterns as $pattern ) {
-			$preview_image                   = $this->get_pattern_preview( $pattern->post_title, $pattern->post_name, $pattern->ID );
 			$patterns[ $pattern->post_name ] = array(
 				'id'            => $pattern->ID,
 				'title'         => $pattern->post_title,
@@ -612,11 +661,11 @@ class Rest {
 				'isDisabled'    => 'draft' === $pattern->post_status,
 				'isLocal'       => true,
 				'syncStatus'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
-				'preview'       => $preview_image,
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
 				'patternType'   => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
 				'siteId'        => get_current_blog_id(),
+				'asset'         => null,
 			);
 		}
 
@@ -638,37 +687,9 @@ class Rest {
 			array(
 				'patterns'   => $patterns,
 				'categories' => $all_categories,
+				'assets'     => $assets,
 			)
 		);
-	}
-
-	/**
-	 * Get the pattern preview image for a pattern.
-	 *
-	 * @param string $title The pattern title.
-	 * @param string $slug The pattern slug.
-	 * @param int    $pattern_id The pattern ID.
-	 * @return string The pattern preview image URL. Empty string if no preview image is found.
-	 */
-	private function get_pattern_preview( $title, $slug, $pattern_id = 0 ) {
-		$upload_dir  = wp_upload_dir();
-		$preview_dir = $upload_dir['basedir'] . '/pw-pattern-previews';
-
-		// Create directory if it doesn't exist.
-		if ( ! file_exists( $preview_dir ) ) {
-			return '';
-		}
-
-		$filename     = sanitize_file_name( $slug . '-' . md5( sanitize_text_field( $title ) . sanitize_title( $slug ) . $pattern_id ) . '.png' );
-		$preview_path = $preview_dir . '/' . $filename;
-		$preview_url  = $upload_dir['baseurl'] . '/pw-pattern-previews/' . $filename;
-
-		// Return existing preview if it exists.
-		if ( file_exists( $preview_path ) ) {
-			return $preview_url;
-		}
-
-		return '';
 	}
 
 	/**
