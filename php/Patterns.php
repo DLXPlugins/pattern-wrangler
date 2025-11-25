@@ -365,15 +365,34 @@ class Patterns {
 			$all_patterns = $patterns->get_all_registered();
 
 			// Loop through all patterns and deregister any that are from active plugins.
+			$plugins = get_plugins();
 			foreach ( $all_patterns as $index => $pattern ) {
 				// Check the path for the `plugins` folder.
-				$file_path = $pattern['filePath'] ?? '';
-				if ( empty( $file_path ) ) {
+				$file_path   = $pattern['filePath'] ?? '';
+				$source      = $pattern['source'] ?? '';
+				$is_wp_block = isset( $pattern['post_type'] ) && 'wp_block' === $pattern['post_type'];
+				if ( empty( $file_path ) && empty( $source ) && ! $is_wp_block ) {
+
+					// Get the pattern name.
+					$pattern_name = $pattern['name'];
+
+					// If a plugin slug is found in the pattern name, deregister the pattern.
+					foreach ( $plugins as $plugin_file => $plugin_data ) {
+						$plugin_slug = dirname( $plugin_file );
+						if ( false !== strpos( $pattern_name, $plugin_slug ) ) {
+							unregister_block_pattern( $pattern_name );
+						}
+					}
 					continue;
 				}
 
-				// Deregister any with the plugin in their path.
-				if ( false !== strpos( $file_path, '/plugins' ) ) {
+				// If wp_block post type, make sure the path is not in the themes folder.
+				if ( $is_wp_block && false !== strpos( $file_path, 'themes' ) && false !== strpos( $source, 'themes' ) ) {
+					continue;
+				}
+
+				// Deregister any with the plugin in their path or if wp_block post type.
+				if ( $is_wp_block || false !== strpos( $file_path, '/plugins' ) || false !== strpos( $source, 'plugins' ) ) {
 					unregister_block_pattern( $pattern['name'] );
 				}
 			}
