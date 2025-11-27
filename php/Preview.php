@@ -62,6 +62,9 @@ class Preview {
 				return wp_create_nonce( 'preview-pattern_' . $pattern_id );
 			}
 		);
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_die( 'You do not have permission to preview this pattern.' );
+		}
 
 		// Get the pattern preview HTML.
 		ob_start();
