@@ -88,27 +88,6 @@ class Rest {
 		);
 
 		/**
-		 * For retrieving a pattern by ID.
-		 */
-		register_rest_route(
-			'dlxplugins/pattern-wrangler/v1',
-			'/patterns/get/(?P<id>\d+)',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'rest_get_pattern' ),
-				'args'                => array(
-					'id' => array(
-						'type'     => 'integer',
-						'required' => true,
-					),
-				),
-				'permission_callback' => function () {
-					return current_user_can( 'edit_posts' );
-				},
-			)
-		);
-
-		/**
 		 * For updating a pattern.
 		 */
 		register_rest_route(
@@ -167,44 +146,6 @@ class Rest {
 				},
 			)
 		);
-	}
-
-	/**
-	 * Get a pattern by ID.
-	 *
-	 * @param WP_REST_Request $request The REST request.
-	 *
-	 * @return WP_REST_Response The REST response.
-	 */
-	public function rest_get_pattern( $request ) {
-		// Check nonce and permissions.
-		if ( ! current_user_can( 'edit_others_posts' ) ) {
-			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to delete patterns.' ) );
-		}
-
-		$pattern_id = $request->get_param( 'id' );
-
-		$pattern = get_post( $pattern_id );
-
-		// Process local patterns.
-		$preview_image  = $this->get_pattern_preview( $pattern->post_title, $pattern->post_name, $pattern->ID );
-		$return_pattern = array(
-			'id'            => $pattern->ID,
-			'title'         => $pattern->post_title,
-			'slug'          => $pattern->post_name,
-			'content'       => $pattern->post_content,
-			'categories'    => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
-			'categorySlugs' => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
-			'isDisabled'    => 'draft' === $pattern->post_status,
-			'isLocal'       => true,
-			'syncStatus'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
-			'preview'       => $preview_image,
-			// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
-			'patternType'   => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
-			'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
-		);
-
-		return rest_ensure_response( $return_pattern );
 	}
 
 	/**
