@@ -219,11 +219,10 @@ class Rest {
 				return rest_ensure_response( array( 'error' => 'Invalid nonce for pattern ' . $pattern_id ) );
 			}
 
-			if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
-				return rest_ensure_response( array( 'error' => 'User does not have permission to publish pattern ' . $pattern_id ) );
-			}
-
 			if ( is_numeric( $pattern_id ) && 0 !== $pattern_id ) {
+				if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
+					return rest_ensure_response( array( 'error' => 'User does not have permission to publish pattern ' . $pattern_id ) );
+				}
 				wp_update_post(
 					array(
 						'ID'          => $pattern_id,
@@ -231,6 +230,9 @@ class Rest {
 					)
 				);
 			} else {
+				if ( ! current_user_can( 'edit_others_posts' ) ) {
+					return rest_ensure_response( array( 'error' => 'User does not have permission to disable pattern ' . $pattern_id ) );
+				}
 				$disabled_patterns   = Options::get_disabled_patterns();
 				$disabled_patterns[] = sanitize_text_field( $pattern_id );
 				$disabled_patterns   = array_unique( $disabled_patterns );
@@ -260,11 +262,10 @@ class Rest {
 				return rest_ensure_response( array( 'error' => 'Invalid nonce for pattern ' . $pattern_id ) );
 			}
 
-			if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
-				return rest_ensure_response( array( 'error' => 'User does not have permission to publish pattern ' . $pattern_id ) );
-			}
-
 			if ( is_numeric( $pattern_id ) && 0 !== $pattern_id ) {
+				if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
+					return rest_ensure_response( array( 'error' => 'User does not have permission to publish pattern ' . $pattern_id ) );
+				}
 				wp_update_post(
 					array(
 						'ID'          => $pattern_id,
@@ -272,6 +273,9 @@ class Rest {
 					)
 				);
 			} else {
+				if ( ! current_user_can( 'edit_others_posts' ) ) {
+					return rest_ensure_response( array( 'error' => 'User does not have permission to publish pattern ' . $pattern_id ) );
+				}
 				// Not numeric, so a slug, so let's remove it from the disabled patterns.
 				$disabled_patterns = Options::get_disabled_patterns();
 				$disabled_patterns = array_diff( $disabled_patterns, array( sanitize_text_field( $pattern_id ) ) );

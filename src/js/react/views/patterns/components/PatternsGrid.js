@@ -2084,6 +2084,15 @@ const Interface = ( props ) => {
 					onPause={ ( pauseResponse, itemIdsAndNonces ) => {
 						dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
 						setIsPauseModalOpen( null );
+						setSnackbar( {
+							isVisible: true,
+							message: __( 'Patterns disabled', 'pattern-wrangler' ),
+							title: __( 'Patterns Disabled', 'pattern-wrangler' ),
+							type: 'success',
+							onClose: () => {
+								setSnackbar( { isVisible: false } );
+							},
+						} );
 					} }
 					onRequestClose={ () => setIsPauseModalOpen( null ) }
 				/>
@@ -2094,6 +2103,15 @@ const Interface = ( props ) => {
 					onPublish={ ( publishResponse, itemIdsAndNonces ) => {
 						dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
 						setIsPublishModalOpen( null );
+						setSnackbar( {
+							isVisible: true,
+							message: __( 'Patterns published', 'pattern-wrangler' ),
+							title: __( 'Patterns Published', 'pattern-wrangler' ),
+							type: 'success',
+							onClose: () => {
+								setSnackbar( { isVisible: false } );
+							},
+						} );
 					} }
 					onRequestClose={ () => setIsPublishModalOpen( null ) }
 				/>
@@ -2104,6 +2122,15 @@ const Interface = ( props ) => {
 					onReenable={ ( reenableResponse, itemIdsAndNonces ) => {
 						dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
 						setIsUnpauseModalOpen( null );
+						setSnackbar( {
+							isVisible: true,
+							message: __( 'Patterns re-enabled', 'pattern-wrangler' ),
+							title: __( 'Patterns Re-enabled', 'pattern-wrangler' ),
+							type: 'success',
+							onClose: () => {
+								setSnackbar( { isVisible: false } );
+							},
+						} );
 					} }
 					onRequestClose={ () => setIsUnpauseModalOpen( null ) }
 				/>

@@ -3326,6 +3326,17 @@ var Interface = function Interface(props) {
     onPause: function onPause(pauseResponse, itemIdsAndNonces) {
       (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_18__["default"]).disablePatterns(itemIdsAndNonces);
       setIsPauseModalOpen(null);
+      setSnackbar({
+        isVisible: true,
+        message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Patterns disabled', 'pattern-wrangler'),
+        title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Patterns Disabled', 'pattern-wrangler'),
+        type: 'success',
+        onClose: function onClose() {
+          setSnackbar({
+            isVisible: false
+          });
+        }
+      });
     },
     onRequestClose: function onRequestClose() {
       return setIsPauseModalOpen(null);
@@ -3335,6 +3346,17 @@ var Interface = function Interface(props) {
     onPublish: function onPublish(publishResponse, itemIdsAndNonces) {
       (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_18__["default"]).enablePatterns(itemIdsAndNonces);
       setIsPublishModalOpen(null);
+      setSnackbar({
+        isVisible: true,
+        message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Patterns published', 'pattern-wrangler'),
+        title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Patterns Published', 'pattern-wrangler'),
+        type: 'success',
+        onClose: function onClose() {
+          setSnackbar({
+            isVisible: false
+          });
+        }
+      });
     },
     onRequestClose: function onRequestClose() {
       return setIsPublishModalOpen(null);
@@ -3344,6 +3366,17 @@ var Interface = function Interface(props) {
     onReenable: function onReenable(reenableResponse, itemIdsAndNonces) {
       (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_18__["default"]).enablePatterns(itemIdsAndNonces);
       setIsUnpauseModalOpen(null);
+      setSnackbar({
+        isVisible: true,
+        message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Patterns re-enabled', 'pattern-wrangler'),
+        title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Patterns Re-enabled', 'pattern-wrangler'),
+        type: 'success',
+        onClose: function onClose() {
+          setSnackbar({
+            isVisible: false
+          });
+        }
+      });
     },
     onRequestClose: function onRequestClose() {
       return setIsUnpauseModalOpen(null);
@@ -3983,4 +4016,4 @@ function _createPatternFromFile() {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=85e2f39ec1386bf03423
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=5a0c8427723651c0b3f3

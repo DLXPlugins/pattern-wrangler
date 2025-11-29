@@ -645,9 +645,15 @@ class Functions {
 		);
 		$allowed_tags['div']        = array(
 			'class' => array(),
+			'id'    => array(),
+			'style' => array(),
+			'data-*' => array(),
 		);
 		$allowed_tags['span']       = array(
 			'class' => array(),
+			'id'    => array(),
+			'style' => array(),
+			'data-*' => array(),
 		);
 
 		if ( ! $svg ) {
