@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'No direct access.' );
 }
 if ( ! current_user_can( 'edit_posts' ) ) {
-	die( 'You do not have permissioni to preview this pattern.' );
+	die( 'You do not have permission to preview this pattern.' );
 }
 
 /**

@@ -97,7 +97,7 @@ class Rest {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_update_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'edit_others_posts' );
+					return current_user_can( 'edit_posts' );
 				},
 			)
 		);
@@ -112,7 +112,7 @@ class Rest {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_delete_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'edit_others_posts' );
+					return current_user_can( 'delete_posts' );
 				},
 			)
 		);
@@ -127,7 +127,7 @@ class Rest {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_pause_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'edit_others_posts' );
+					return current_user_can( 'publish_posts' );
 				},
 			)
 		);
@@ -142,7 +142,29 @@ class Rest {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_publish_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'edit_others_posts' );
+					return current_user_can( 'publish_posts' );
+				},
+			)
+		);
+
+
+		/**
+		 * For retrieving a pattern by ID. Useful when importing patterns via json.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/patterns/get/(?P<id>\d+)',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'rest_get_pattern' ),
+				'args'                => array(
+					'id' => array(
+						'type'     => 'integer',
+						'required' => true,
+					),
+				),
+				'permission_callback' => function () {
+					return current_user_can( 'publish_posts' );
 				},
 			)
 		);
@@ -156,10 +178,6 @@ class Rest {
 	 * @return WP_REST_Response The REST response.
 	 */
 	public function rest_delete_pattern( $request ) {
-		// Check nonce and permissions.
-		if ( ! current_user_can( 'edit_others_posts' ) ) {
-			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to delete patterns.' ) );
-		}
 
 		$items = $request->get_param( 'items' );
 
@@ -169,6 +187,10 @@ class Rest {
 
 			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) ) {
 				return rest_ensure_response( array( 'error' => 'Invalid nonce for pattern ' . $pattern_id ) );
+			}
+
+			if ( ! current_user_can( 'delete_post', $pattern_id ) ) {
+				return rest_ensure_response( array( 'error' => 'User does not have permission to delete pattern ' . $pattern_id ) );
 			}
 
 			// Delete the pattern.
@@ -186,10 +208,6 @@ class Rest {
 	 * @return WP_REST_Response The REST response.
 	 */
 	public function rest_pause_pattern( $request ) {
-		// Check nonce and permissions.
-		if ( ! current_user_can( 'edit_others_posts' ) ) {
-			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to pause patterns.' ) );
-		}
 
 		$items = $request->get_param( 'items' );
 
@@ -199,6 +217,10 @@ class Rest {
 
 			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) ) {
 				return rest_ensure_response( array( 'error' => 'Invalid nonce for pattern ' . $pattern_id ) );
+			}
+
+			if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
+				return rest_ensure_response( array( 'error' => 'User does not have permission to publish pattern ' . $pattern_id ) );
 			}
 
 			if ( is_numeric( $pattern_id ) && 0 !== $pattern_id ) {
@@ -227,10 +249,6 @@ class Rest {
 	 * @return WP_REST_Response The REST response.
 	 */
 	public function rest_publish_pattern( $request ) {
-		// Check nonce and permissions.
-		if ( ! current_user_can( 'edit_others_posts' ) ) {
-			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to publish patterns.' ) );
-		}
 
 		$items = $request->get_param( 'items' );
 
@@ -240,6 +258,10 @@ class Rest {
 
 			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) ) {
 				return rest_ensure_response( array( 'error' => 'Invalid nonce for pattern ' . $pattern_id ) );
+			}
+
+			if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
+				return rest_ensure_response( array( 'error' => 'User does not have permission to publish pattern ' . $pattern_id ) );
 			}
 
 			if ( is_numeric( $pattern_id ) && 0 !== $pattern_id ) {
@@ -270,7 +292,7 @@ class Rest {
 	public function rest_create_pattern( $request ) {
 		// Check nonce and permissions.
 		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
-		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-create-pattern' ) || ! current_user_can( 'manage_options' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-create-pattern' ) || ! current_user_can( 'publish_posts' ) ) {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
 		}
 
@@ -339,7 +361,7 @@ class Rest {
 		// Check nonce and permissions.
 		$nonce      = sanitize_text_field( $request->get_param( 'patternNonce' ) );
 		$pattern_id = absint( $request->get_param( 'patternId' ) );
-		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) || ! current_user_can( 'edit_others_posts' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) || ! current_user_can( 'edit_post', $pattern_id ) ) {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to edit patterns.' ) );
 		}
 
@@ -415,7 +437,7 @@ class Rest {
 	public function rest_get_all_patterns() {
 		// Check nonce and permissions.
 		$nonce = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ) );
-		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-get-patterns' ) || ! current_user_can( 'manage_options' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-get-patterns' ) || ! current_user_can( 'edit_posts' ) ) {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to view patterns.' ) );
 		}
 
@@ -519,79 +541,84 @@ class Rest {
 		// Get Assets.
 		$assets = array(); // key/pair of theme name and array of assets.
 
-		// Process registered patterns.
-		foreach ( $registered_patterns as $pattern ) {
-			// If pattern is remote, ignore it.
-			if ( false === $pattern['inserter'] ) {
-				continue;
-			}
+		// Process registered patterns. Skip if user isn't editor or above.
+		if ( current_user_can( 'edit_others_posts' ) ) {
+			foreach ( $registered_patterns as $pattern ) {
+				// If pattern is remote, ignore it.
+				if ( false === $pattern['inserter'] ) {
+					continue;
+				}
 
-			// Check if pattern is from the theme.
-			$has_asset  = false;
-			$asset_slug = '';
-			if ( str_starts_with( $pattern['name'], $active_theme ) ) {
-				$has_asset               = true;
-				$asset_slug              = $active_theme;
-				$assets[ $active_theme ] = array(
-					'label' => $active_theme_name,
-					'slug'  => $active_theme,
-				);
-			}
-
-			// Check if pattern is from an active plugin. Try to match slug.
-			foreach ( $active_plugin_slugs as $plugin_slug => $plugin_name ) {
-				if ( str_starts_with( $pattern['name'], $plugin_slug ) || ( isset( $pattern['source'] ) && strstr( $pattern['source'], $plugin_slug ) ) ) {
-					$has_asset              = true;
-					$asset_slug             = $plugin_slug;
-					$assets[ $plugin_slug ] = array(
-						'label' => $plugin_name,
-						'slug'  => $plugin_slug,
+				// Check if pattern is from the theme.
+				$has_asset  = false;
+				$asset_slug = '';
+				if ( str_starts_with( $pattern['name'], $active_theme ) ) {
+					$has_asset               = true;
+					$asset_slug              = $active_theme;
+					$assets[ $active_theme ] = array(
+						'label' => $active_theme_name,
+						'slug'  => $active_theme,
 					);
-					break;
 				}
-			}
 
-			if ( isset( $pattern['source_url'] ) && strstr( $pattern['source_url'], 'wooblockpatterns' ) ) {
-				$has_asset             = true;
-				$asset_slug            = 'woocommerce';
-				$assets[ $asset_slug ] = array(
-					'label' => 'WooCommerce',
-					'slug'  => $asset_slug,
+				// Check if pattern is from an active plugin. Try to match slug.
+				foreach ( $active_plugin_slugs as $plugin_slug => $plugin_name ) {
+					if ( str_starts_with( $pattern['name'], $plugin_slug ) || ( isset( $pattern['source'] ) && strstr( $pattern['source'], $plugin_slug ) ) ) {
+						$has_asset              = true;
+						$asset_slug             = $plugin_slug;
+						$assets[ $plugin_slug ] = array(
+							'label' => $plugin_name,
+							'slug'  => $plugin_slug,
+						);
+						break;
+					}
+				}
+
+				if ( isset( $pattern['source_url'] ) && strstr( $pattern['source_url'], 'wooblockpatterns' ) ) {
+					$has_asset             = true;
+					$asset_slug            = 'woocommerce';
+					$assets[ $asset_slug ] = array(
+						'label' => 'WooCommerce',
+						'slug'  => $asset_slug,
+					);
+				}
+
+				// Map categories to their names.
+				$categories     = array();
+				$category_slugs = array();
+				foreach ( $pattern['categories'] as $category ) {
+					$category_registry = \WP_Block_Pattern_Categories_Registry::get_instance();
+					$category          = $category_registry->get_registered( $category );
+					if ( $category ) {
+						$categories[]     = $category['label'];
+						$category_slugs[] = sanitize_title( $category['name'] );
+					}
+				}
+
+				$patterns[ $pattern['name'] ] = array(
+					'id'            => Functions::get_sanitized_pattern_id( $pattern['name'] ),
+					'title'         => $pattern['title'],
+					'slug'          => $pattern['name'],
+					'content'       => $pattern['content'],
+					'categories'    => $categories,
+					'categorySlugs' => $category_slugs,
+					'isDisabled'    => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
+					'isLocal'       => false,
+					'syncStatus'    => 'registered',
+					'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
+					'patternType'   => 'registered',
+					'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
+					'siteId'        => get_current_blog_id(),
+					'asset'         => $has_asset ? $asset_slug : null,
 				);
 			}
-
-			// Map categories to their names.
-			$categories     = array();
-			$category_slugs = array();
-			foreach ( $pattern['categories'] as $category ) {
-				$category_registry = \WP_Block_Pattern_Categories_Registry::get_instance();
-				$category          = $category_registry->get_registered( $category );
-				if ( $category ) {
-					$categories[]     = $category['label'];
-					$category_slugs[] = sanitize_title( $category['name'] );
-				}
-			}
-
-			$patterns[ $pattern['name'] ] = array(
-				'id'            => Functions::get_sanitized_pattern_id( $pattern['name'] ),
-				'title'         => $pattern['title'],
-				'slug'          => $pattern['name'],
-				'content'       => $pattern['content'],
-				'categories'    => $categories,
-				'categorySlugs' => $category_slugs,
-				'isDisabled'    => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
-				'isLocal'       => false,
-				'syncStatus'    => 'registered',
-				'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
-				'patternType'   => 'registered',
-				'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
-				'siteId'        => get_current_blog_id(),
-				'asset'         => $has_asset ? $asset_slug : null,
-			);
 		}
 
 		// Process local patterns.
 		foreach ( $local_patterns as $pattern ) {
+			if ( ! current_user_can( 'edit_post', $pattern->ID ) ) {
+				continue;
+			}
 			$patterns[ $pattern->post_name ] = array(
 				'id'            => $pattern->ID,
 				'title'         => $pattern->post_title,
@@ -663,6 +690,50 @@ class Rest {
 
 		wp_send_json_success( $return );
 	}
+
+
+	/**
+	 * Get a pattern by ID.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_get_pattern( $request ) {
+		// Check nonce and permissions.
+		if ( ! current_user_can( 'publish_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to delete patterns.' ) );
+		}
+
+		$pattern_id = $request->get_param( 'id' );
+
+		if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
+			return rest_ensure_response( array( 'error' => 'User does not have permission to get pattern ' . $pattern_id ) );
+		}
+
+		$pattern = get_post( $pattern_id );
+
+		// Process local patterns.
+		$return_pattern = array(
+			'id'            => $pattern->ID,
+			'title'         => $pattern->post_title,
+			'slug'          => $pattern->post_name,
+			'content'       => $pattern->post_content,
+			'categories'    => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
+			'categorySlugs' => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
+			'isDisabled'    => 'draft' === $pattern->post_status,
+			'isLocal'       => true,
+			'syncStatus'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+			// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
+			'patternType'   => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+			'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
+			'siteId'        => get_current_blog_id(),
+			'asset'         => null,
+		);
+
+		return rest_ensure_response( $return_pattern );
+	}
+
 
 	/**
 	 * Get the REST endpoint.

@@ -78,7 +78,7 @@ class Admin {
 				 * @param bool $allow_override Allow override the redirect.
 				 */
 				$allow_override = apply_filters( 'dlxpw_allow_redirect_wp_block_post_type', 1 === $allow_override );
-				if ( ! $allow_override ) {
+				if ( $allow_override ) {
 					return;
 				}
 				wp_safe_redirect( admin_url( 'admin.php?page=pattern-wrangler-view' ) );
@@ -380,7 +380,7 @@ class Admin {
 			add_menu_page(
 				__( 'Patterns', 'pattern-wrangler' ),
 				__( 'Patterns', 'pattern-wrangler' ),
-				'manage_options',
+				'edit_posts',
 				'edit.php?post_type=wp_block',
 				'',
 				'dashicons-layout',
@@ -399,7 +399,7 @@ class Admin {
 			$enhanced_patterns_hook = add_menu_page(
 				__( 'All Patterns', 'pattern-wrangler' ),
 				__( 'Patterns', 'pattern-wrangler' ),
-				'manage_options',
+				'edit_posts',
 				'pattern-wrangler-view',
 				array( $this, 'enhanced_patterns_view' ),
 				'dashicons-layout',
@@ -421,7 +421,7 @@ class Admin {
 			$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
 			__( 'Categories', 'pattern-wrangler' ),
 			__( 'Categories', 'pattern-wrangler' ),
-			'edit_posts',
+			'edit_others_posts',
 			'edit-tags.php?taxonomy=wp_pattern_category&post_type=wp_block',
 			'',
 			5
@@ -431,7 +431,7 @@ class Admin {
 			$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
 			__( 'Settings', 'pattern-wrangler' ),
 			__( 'Settings', 'pattern-wrangler' ),
-			'edit_posts',
+			'manage_options',
 			'pattern-wrangler',
 			array( $this, 'admin_page' ),
 			10
