@@ -384,6 +384,7 @@ const Interface = ( props ) => {
 										variant="link"
 										onClick={ ( e ) => {
 											e.preventDefault();
+											e.stopPropagation();
 											setIsQuickEditModalOpen( { item } );
 										} }
 									>
@@ -394,6 +395,7 @@ const Interface = ( props ) => {
 										variant="link"
 										onClick={ ( e ) => {
 											e.preventDefault();
+											e.stopPropagation();
 											setIsGetCodeModalOpen( { item } );
 										} }
 									>
@@ -406,6 +408,7 @@ const Interface = ( props ) => {
 								variant="link"
 								onClick={ ( e ) => {
 									e.preventDefault();
+									e.stopPropagation();
 									exportPattern( item );
 								} }
 							>
@@ -419,6 +422,7 @@ const Interface = ( props ) => {
 								variant="link"
 								onClick={ ( e ) => {
 									e.preventDefault();
+									e.stopPropagation();
 									setCopyPatternId( item.id );
 									setIsCopyToLocalModalOpen( { item } );
 								} }
@@ -430,6 +434,7 @@ const Interface = ( props ) => {
 								variant="link"
 								onClick={ ( e ) => {
 									e.preventDefault();
+									e.stopPropagation();
 									exportPattern( item );
 								} }
 							>

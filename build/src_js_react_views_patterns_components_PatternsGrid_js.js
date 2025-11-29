@@ -1905,6 +1905,7 @@ var Interface = function Interface(props) {
       variant: "link",
       onClick: function onClick(e) {
         e.preventDefault();
+        e.stopPropagation();
         setIsQuickEditModalOpen({
           item: item
         });
@@ -1913,6 +1914,7 @@ var Interface = function Interface(props) {
       variant: "link",
       onClick: function onClick(e) {
         e.preventDefault();
+        e.stopPropagation();
         setIsGetCodeModalOpen({
           item: item
         });
@@ -1921,12 +1923,14 @@ var Interface = function Interface(props) {
       variant: "link",
       onClick: function onClick(e) {
         e.preventDefault();
+        e.stopPropagation();
         exportPattern(item);
       }
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Export Pattern', 'pattern-wrangler'))), !item.isLocal && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
       variant: "link",
       onClick: function onClick(e) {
         e.preventDefault();
+        e.stopPropagation();
         setCopyPatternId(item.id);
         setIsCopyToLocalModalOpen({
           item: item
@@ -1936,6 +1940,7 @@ var Interface = function Interface(props) {
       variant: "link",
       onClick: function onClick(e) {
         e.preventDefault();
+        e.stopPropagation();
         exportPattern(item);
       }
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Export Pattern', 'pattern-wrangler')))));
@@ -3978,4 +3983,4 @@ function _createPatternFromFile() {
 /***/ })
 
 }]);
-//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=0b5087aec09431a033c2
+//# sourceMappingURL=src_js_react_views_patterns_components_PatternsGrid_js.js.map?ver=b81e40e2e8cc0881b50f
