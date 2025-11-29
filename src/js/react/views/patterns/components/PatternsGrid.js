@@ -627,7 +627,7 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'assets',
-				label: __( 'Pattern Source', 'pattern-wrangler' ),
+				label: __( 'Filter Patterns by Source', 'pattern-wrangler' ),
 				render: ( { item } ) => {
 					return null;
 				},
@@ -1649,7 +1649,7 @@ const Interface = ( props ) => {
 					</div>
 					<div className="dlx-patterns-view-grid">
 						<div className="dlx-patterns-view-search-filters-wrapper">
-							<DataViews.Search />
+							<DataViews.Search label={ __( 'Search Patterns', 'pattern-wrangler' ) } />
 							<DataViews.FiltersToggle />
 						</div>
 						<div className="dlx-patterns-view-button-actions-wrapper">

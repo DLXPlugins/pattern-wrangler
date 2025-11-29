@@ -193,22 +193,28 @@ const PatternCreateModal = ( props ) => {
 								control={ control }
 								name="patternCategories[]"
 								render={ ( { field } ) => (
-									<FormTokenField
-										label={ __( 'Categories', 'pattern-wrangler' ) }
-										help={ __(
-											'Enter the categories of the pattern.',
-											'pattern-wrangler'
-										) }
-										value={ field.value }
-										onChange={ ( tokens ) => {
-											field.onChange( tokens );
-										} }
-										tokenizeOnSpace={ false }
-										allowMultiple={ true }
-										placeholder={ __( 'Add a category', 'pattern-wrangler' ) }
-										suggestions={ categories }
-										disabled={ isSaving }
-									/>
+									<>
+										<FormTokenField
+											label={ __( 'Categories', 'pattern-wrangler' ) }
+											help={ __(
+												'Enter the categories of the pattern.',
+												'pattern-wrangler'
+											) }
+											value={ field.value }
+											onChange={ ( tokens ) => {
+												field.onChange( tokens );
+											} }
+											tokenizeOnSpace={ false }
+											allowMultiple={ true }
+											placeholder={ __( 'Add a category', 'pattern-wrangler' ) }
+											suggestions={ categories }
+											disabled={ isSaving }
+											__experimentalShowHowTo={ false }
+										/>
+										<p className="description">
+											{ __( 'Separate with commas or press the Enter key.', 'pattern-wrangler' ) }
+										</p>
+									</>
 								) }
 							/>
 						</div>
