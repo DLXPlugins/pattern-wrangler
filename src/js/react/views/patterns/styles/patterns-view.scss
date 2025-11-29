@@ -465,3 +465,22 @@ Hide erronous display when hittnig the back button on a filter change.
 		}
 	}
 }
+.dataviews-bulk-actions-footer__container {
+	margin-bottom: 48px;
+}
+.dataviews-pagination {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	background: #fff;
+	padding: 16px;
+	border-radius: 4px;
+	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+	justify-content: flex-end;
+	align-items: center;
+	gap: 8px;
+	font-size: 11px;
+	font-weight: 500;
+	text-transform: uppercase;
+	z-index: 1;
+}
