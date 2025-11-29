@@ -684,9 +684,15 @@ class Functions {
 
 		// Add style attributes to allowed tags.
 		foreach ( $allowed_tags as $tag => $attributes ) {
-			$allowed_tags[ $tag ]['style'] = array();
-			$allowed_tags[ $tag ]['class'] = array();
-			$allowed_tags[ $tag ]['id'] = array();
+			if ( ! isset( $allowed_tags[ $tag ]['style'] ) ) {
+				$allowed_tags[ $tag ]['style']  = array();
+			}
+			if ( ! isset( $allowed_tags[ $tag ]['class'] ) ) {
+				$allowed_tags[ $tag ]['class']  = array();
+			}
+			if ( ! isset( $allowed_tags[ $tag ]['id'] ) ) {
+				$allowed_tags[ $tag ]['id']     = array();
+			}
 		}
 
 		return $allowed_tags;

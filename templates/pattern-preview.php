@@ -216,7 +216,7 @@ if ( ! wp_is_block_theme() ) {
 		if ( wp_is_block_theme() ) {
 			echo wp_kses( $pattern_content, Functions::get_kses_allowed_html( true ) );
 		} else {
-			echo wp_kses_post( do_blocks( $pattern_content ) );
+			echo wp_kses( do_blocks( $pattern_content ), Functions::get_kses_allowed_html( true ) );
 		}
 		?>
 	</div>
@@ -246,7 +246,7 @@ if ( ! wp_is_block_theme() ) {
 			if ( wp_is_block_theme() ) {
 				echo wp_kses( $blocks, Functions::get_kses_allowed_html( true ) );
 			} else {
-				echo wp_kses_post( do_blocks( $pattern_content ) );
+				echo wp_kses( do_blocks( $pattern_content ), Functions::get_kses_allowed_html( true ) );
 			}
 			?>
 		</div>
