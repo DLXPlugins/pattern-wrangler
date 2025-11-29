@@ -1,5 +1,6 @@
 @import '../../../../../../node_modules/@wordpress/dataviews/build-style/style.css';
 @import '../../../../../../node_modules/@wordpress/components/build-style/style.css';
+@import '../../../../../scss/breakpoints-mixin.scss';
 
 @keyframes dlx-pw-rotate {
 	100% {
@@ -83,8 +84,13 @@ body div.updated.warning {
 }
 .dlx-patterns-view-button-actions-wrapper {
 	display: grid;
-	grid-template-columns: auto auto 1fr;
+	grid-template-columns: 1fr;
 	gap: 24px;
+	row-gap: 12px;
+
+	@include respond-to('medium') {
+		grid-template-columns: auto auto 1fr;
+	}
 
 	.components-toggle-group-control {
 		border: 1px solid #eaeaea;
@@ -92,24 +98,31 @@ body div.updated.warning {
 		background-color: #fff;
 		box-shadow: 0 0 0 1px #eaeaea;
 	}
+
+	.components-base-control__field {
+		margin-bottom: 0;
+	}
 }
 .dlx-patterns-view-search-filters-wrapper {
 	display: flex;
 	align-items: center;
 	flex-direction: row;
-	gap: calc(8px);
+	gap: calc(12px);
 	justify-content: start;
 }
 .dlx-patterns-view-grid {
 	display: grid;
-	grid-template-columns: auto 1fr auto;
-	gap: 8px;
+	grid-template-columns: 1fr;
+	gap: 12px;
 	align-items: center;
 
 	padding-bottom: 16px;
-	
+
+	@include respond-to('medium') {
+		grid-template-columns: auto 1fr auto;
+	}
 }
-.dlx-patterns-view-filters-wrapper {
+dlx-patterns-view-filters-wrapper {
 	padding-bottom: 16px;
 }
 .pattern-preview-iframe-wrapper {

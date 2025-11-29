@@ -4084,7 +4084,7 @@ body.lockscroll {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 3px rgba(0, 0, 0, 0.04), 0 6px 6px rgba(0, 0, 0, 0.03), 0 8px 8px rgba(0, 0, 0, 0.02);
 }.components-tooltip__shortcut {
   margin-left: 8px;
-}@keyframes dlx-pw-rotate {
+}/* Responsive styles - In hindsight, should've used mobile-first *//* Mixin from: https://css-tricks.com/snippets/sass/mixin-manage-breakpoints/ *//* It's only used here, so no external file for mixin? */@keyframes dlx-pw-rotate {
   100% {
     transform: rotate(360deg);
   }
@@ -4137,26 +4137,37 @@ body div.updated.warning {
   padding-bottom: 16px;
 }.dlx-patterns-view-button-actions-wrapper {
   display: grid;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: 1fr;
   gap: 24px;
+  row-gap: 12px;
+}@media (min-width: 48em) {
+  .dlx-patterns-view-button-actions-wrapper {
+    grid-template-columns: auto auto 1fr;
+  }
 }.dlx-patterns-view-button-actions-wrapper .components-toggle-group-control {
   border: 1px solid #eaeaea;
   border-radius: 4px;
   background-color: #fff;
   box-shadow: 0 0 0 1px #eaeaea;
+}.dlx-patterns-view-button-actions-wrapper .components-base-control__field {
+  margin-bottom: 0;
 }.dlx-patterns-view-search-filters-wrapper {
   display: flex;
   align-items: center;
   flex-direction: row;
-  gap: 8px;
+  gap: 12px;
   justify-content: start;
 }.dlx-patterns-view-grid {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 8px;
+  grid-template-columns: 1fr;
+  gap: 12px;
   align-items: center;
   padding-bottom: 16px;
-}.dlx-patterns-view-filters-wrapper {
+}@media (min-width: 48em) {
+  .dlx-patterns-view-grid {
+    grid-template-columns: auto 1fr auto;
+  }
+}dlx-patterns-view-filters-wrapper {
   padding-bottom: 16px;
 }.pattern-preview-iframe-wrapper {
   position: relative;
