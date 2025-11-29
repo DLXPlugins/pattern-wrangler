@@ -26,6 +26,9 @@ class Admin {
 		// Init the admin menu.
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 100 );
 
+		// Maybe redirect wp_block post type to patterns page.
+		add_action( 'admin_init', array( $this, 'maybe_redirect_wp_block_post_type' ) );
+
 		add_action( 'current_screen', array( $this, 'set_category_submenu_current' ) );
 
 		// For saving the options.
@@ -55,6 +58,33 @@ class Admin {
 		// Since by default wp_custom_css_cb is add_action wp_head, just remove_action.
 		if ( ! (bool) $options['loadCustomizerCSSFrontend'] ) {
 			remove_action( 'wp_head', 'wp_custom_css_cb', 101 );
+		}
+	}
+
+	/**
+	 * Maybe redirect wp_block post type to patterns page.
+	 */
+	public function maybe_redirect_wp_block_post_type() {
+		global $pagenow;
+		if ( 'edit.php' === $pagenow && 'wp_block' === sanitize_text_field( wp_unslash( filter_input( INPUT_GET, 'post_type', FILTER_SANITIZE_SPECIAL_CHARS ) ) ) ) {
+			$options              = Options::get_options();
+			$enable_enhanced_view = (bool) $options['enableEnhancedView'] ?? false;
+			if ( $enable_enhanced_view ) {
+				// Allow override query var.
+				$allow_override = absint( filter_input( INPUT_GET, 'override', FILTER_VALIDATE_INT ) );
+				/**
+				 * Filter to allow override the redirect.
+				 *
+				 * @param bool $allow_override Allow override the redirect.
+				 */
+				$allow_override = apply_filters( 'dlxpw_allow_redirect_wp_block_post_type', 1 === $allow_override );
+				if ( ! $allow_override ) {
+					return;
+				}
+				wp_safe_redirect( admin_url( 'admin.php?page=pattern-wrangler-view' ) );
+				exit;
+			}
+			exit;
 		}
 	}
 
