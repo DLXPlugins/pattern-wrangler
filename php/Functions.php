@@ -682,18 +682,14 @@ class Functions {
 			'xmls'        => array(),
 		);
 
-		// Add style attributes to allowed tags.
-		foreach ( $allowed_tags as $tag => $attributes ) {
-			if ( ! isset( $allowed_tags[ $tag ]['style'] ) ) {
-				$allowed_tags[ $tag ]['style']  = array();
-			}
-			if ( ! isset( $allowed_tags[ $tag ]['class'] ) ) {
-				$allowed_tags[ $tag ]['class']  = array();
-			}
-			if ( ! isset( $allowed_tags[ $tag ]['id'] ) ) {
-				$allowed_tags[ $tag ]['id']     = array();
-			}
-		}
+		$allowed_tags['style'] = array(
+			'type'   => array(),
+			'media'  => array(),
+			'title'  => array(),
+			'class'  => array(),
+			'id'     => array(),
+			'data-*' => array(),
+		);
 
 		return $allowed_tags;
 	}
