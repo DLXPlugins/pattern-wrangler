@@ -53,7 +53,13 @@ if ( is_numeric( $pattern_id ) ) {
 		$wp_query->the_post();
 		$pattern_content = $wp_query->post->post_content;
 	}
+	if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
+		die( 'You do not have permission to preview this pattern.' );
+	}
 } elseif ( empty( $pattern_content ) && $pattern_id ) {
+	if ( ! current_user_can( 'edit_others_posts' ) ) {
+		die( 'You do not have permission to preview this pattern.' );
+	}
 	$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 	foreach ( $registered_patterns as $pattern ) {
 		if ( $pattern_id === $pattern['slug'] || $pattern_id === $pattern['name'] ) {
