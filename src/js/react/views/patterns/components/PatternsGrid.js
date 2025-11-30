@@ -636,7 +636,9 @@ const Interface = ( props ) => {
 				render: ( { item } ) => {
 					return null;
 				},
+				enableHiding: false,
 				enableGlobalSearch: true,
+				enableSorting: false,
 				filterBy: {
 					operators: [ 'is' ],
 				},
