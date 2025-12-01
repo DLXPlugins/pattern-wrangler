@@ -10156,6 +10156,19 @@ var Interface = function Interface(props) {
             value: category.slug
           };
         });
+        // If categories are empty, unset the category filter.
+        if (originalLocalCategories.length === 0) {
+          // Unset fieldIndex from fields.
+          fields.splice(fieldsIndex, 1);
+        }
+
+        // If assets are empty, unset the assets filter.
+        if (Object.values(data.assets).length === 0) {
+          // Unset fieldIndex from fields.
+          fields.splice(fields.findIndex(function (field) {
+            return field.id === 'assets';
+          }), 1);
+        }
         var newViewCopy = _objectSpread(_objectSpread({}, view), {}, {
           fields: _toConsumableArray(fields)
         });
