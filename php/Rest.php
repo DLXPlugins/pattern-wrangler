@@ -549,7 +549,7 @@ class Rest {
 		if ( current_user_can( 'edit_others_posts' ) ) {
 			foreach ( $registered_patterns as $pattern ) {
 				// If pattern is remote, ignore it.
-				if ( false === $pattern['inserter'] ) {
+				if ( isset( $pattern['inserter'] ) && false === $pattern['inserter'] ) {
 					continue;
 				}
 
