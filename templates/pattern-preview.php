@@ -216,7 +216,7 @@ if ( ! wp_is_block_theme() ) {
 	}
 	\setup_postdata( $current_post );
 	?>
-	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1600px;">
+	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1600px; margin: 0 auto;">
 		<?php
 		if ( wp_is_block_theme() ) {
 			echo wp_kses( $pattern_content, Functions::get_kses_allowed_html( true ) );
