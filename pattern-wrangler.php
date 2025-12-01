@@ -101,6 +101,8 @@ class PatternWrangler {
 		 * @since 1.0.0
 		 */
 		do_action( 'dlxplugins_pw_loaded' );
+
+		add_action( 'init', array( $this, 'init' ), 1 );
 	}
 
 	/**
@@ -108,7 +110,17 @@ class PatternWrangler {
 	 */
 	public function init() {
 
-		// Nothing here yet.
+		// If doing Ajax and admin preview.
+		if ( wp_doing_ajax() && 'dlxpw_pattern_preview' === sanitize_text_field( filter_input( INPUT_GET, 'action', FILTER_SANITIZE_SPECIAL_CHARS ) ) ) {
+			// Set global current screen to not is admin request. This should only apply to the PW preview screen Ajax request.
+			if ( ! isset( $GLOBALS['current_screen'] ) ) {
+				$GLOBALS['current_screen'] = new class() {
+					public function in_admin() {
+						return false;
+					}
+				};
+			}
+		}
 	}
 }
 
