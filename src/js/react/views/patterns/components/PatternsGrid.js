@@ -427,7 +427,7 @@ const Interface = ( props ) => {
 									setIsCopyToLocalModalOpen( { item } );
 								} }
 							>
-								{ __( 'Copy to Local', 'pattern-wrangler' ) }
+								{ __( 'Copy to New Pattern', 'pattern-wrangler' ) }
 							</Button>
 							{ ' | ' }
 							<Button
@@ -853,7 +853,7 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'copy-to-local',
-				label: __( 'Copy to Local Pattern', 'pattern-wrangler' ),
+				label: __( 'Copy to New Pattern', 'pattern-wrangler' ),
 				icon: 'edit',
 				callback: ( items ) => {
 					const item = items[ 0 ];
@@ -882,7 +882,7 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'copy',
-				label: __( 'Copy Pattern', 'pattern-wrangler' ),
+				label: __( 'Copy Pattern to Clipboard', 'pattern-wrangler' ),
 				icon: 'edit',
 				callback: async ( items ) => {
 					const copyContent = items[ 0 ].content.trim();
