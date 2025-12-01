@@ -96,7 +96,7 @@ if ( empty( $posts ) ) {
 	$posts = get_posts(
 		array(
 			'post_type'      => 'post',
-			'posts_per_page' => 1,
+			'posts_per_page' => 4,
 			'post_status'    => 'publish',
 		)
 	);
@@ -110,8 +110,7 @@ if ( ! empty( $posts ) ) {
 			'post_type' => 'any',
 		)
 	);
-	$post     = $posts[0];
-	\setup_postdata( $posts[0] );
+	// Do not set up post data here, it messed up the preview.
 
 }
 /**
