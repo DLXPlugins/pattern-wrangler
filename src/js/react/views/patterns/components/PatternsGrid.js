@@ -360,7 +360,7 @@ const Interface = ( props ) => {
 					field: 'patternLocalRegisteredStatus',
 					value:
 						getQueryArgs( window.location.href )?.patternLocalRegisteredStatus ||
-						'both',
+						'enabled',
 				},
 			],
 		};

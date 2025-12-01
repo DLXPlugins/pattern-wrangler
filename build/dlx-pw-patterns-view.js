@@ -9116,7 +9116,7 @@ var Interface = function Interface(props) {
         value: ((_getQueryArgs5 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs5 === void 0 ? void 0 : _getQueryArgs5.patternRegisteredStatus) || 'both'
       }, {
         field: 'patternLocalRegisteredStatus',
-        value: ((_getQueryArgs6 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs6 === void 0 ? void 0 : _getQueryArgs6.patternLocalRegisteredStatus) || 'both'
+        value: ((_getQueryArgs6 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs6 === void 0 ? void 0 : _getQueryArgs6.patternLocalRegisteredStatus) || 'enabled'
       }]
     };
   };
