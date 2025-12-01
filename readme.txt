@@ -4,7 +4,7 @@ Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 2.0.0
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,14 +102,22 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Screenshots ==
 
-1. An example of an organized Patterns screen.
-2. Enhanced Patterns List View with shortcode and category/sync columns.
+1. Enhanced Patterns View Screen.
+2. An example of an organized Patterns screen.
 3. Map registered categories to terms, or rename for better organization or translations.
 4. Enable the Customizer UI, and load Additional CSS in the block editor.
 5. Hide all patterns, or hide them from core, remote, themes, or plugins.
-6. Preview a Pattern on the frontend.
 
 == Changelog ==
+
+= 2.0.2 =
+* Released 2025-11-30
+* Wording update: Changed copy local patterns to "Copy to New Pattern." Changed Copy Pattern to "Copy Pattern to Clipboard".
+* Bug fix: Changing default view to "All|Enabled" as some were asking why I was still showing disabled/paused patterns.
+* Bug fix: Remove filters if there aren't any to filter by.
+* Bug fix: Preview was rendering as an admin request, preventing some block plugins from rendering.
+* Bug fix: Preview was setting post data, causing some block plugins to output wrong styles.
+* Bug fix: Fixing undefined variable in REST call.
 
 = 2.0.0 =
 * Released 2025-11-29
@@ -169,5 +177,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.0.0 =
-New Patterns View screen, showing local and registered patterns together. This new screen allows you to selectively disable or enable individual patterns, as well as perform a variety of shortcuts to aid in the pattern curation experience. The ability to filter through categories and pattern sources (such as WooCommerce) allows for quick searching, particularly if you have dozens if not hundreds of patterns. A real-time preview is available for each pattern, and shortcuts such as copying a registered pattern to a local one are available. Please give the new Patterns screen a try.
+= 2.0.2 =
+This update sets the default view to enabled. Some copy updates. Several bug fixes involving the preview.

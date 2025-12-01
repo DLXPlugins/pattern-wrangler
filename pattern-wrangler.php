@@ -4,7 +4,7 @@
  * Plugin URI:        https://dlxplugins.com/plugins/pattern-wrangler/
  * Description:       Manage your block patterns.
  * Version:           2.0.2
- * Requires at least: 6.5
+ * Requires at least: 6.8
  * Requires PHP:      7.2
  * Author:            DLX Plugins
  * Author URI:        https://dlxplugins.com
