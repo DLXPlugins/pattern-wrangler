@@ -268,9 +268,13 @@ class Functions {
 
 		if ( $is_multisite ) {
 			// Get network values.
-			$network_options   = Options::get_network_options();
-			$hide_all_patterns = 'hide' === $network_options['hideAllPatterns'];
-
+			$network_options           = Options::get_network_options();
+			$network_hide_all_patterns = $network_options['hideAllPatterns'];
+			if ( 'hide' === $network_hide_all_patterns ) {
+				$hide_all_patterns = true;
+			} elseif ( 'show' === $network_hide_all_patterns ) {
+				$hide_all_patterns = false;
+			}
 			// Get the site ID. We might need this later.
 			if ( 0 === $site_id ) {
 				$site_id = get_current_blog_id();
@@ -644,15 +648,15 @@ class Functions {
 			'title' => array(),
 		);
 		$allowed_tags['div']        = array(
-			'class' => array(),
-			'id'    => array(),
-			'style' => array(),
+			'class'  => array(),
+			'id'     => array(),
+			'style'  => array(),
 			'data-*' => array(),
 		);
 		$allowed_tags['span']       = array(
-			'class' => array(),
-			'id'    => array(),
-			'style' => array(),
+			'class'  => array(),
+			'id'     => array(),
+			'style'  => array(),
 			'data-*' => array(),
 		);
 
