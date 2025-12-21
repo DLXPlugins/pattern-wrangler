@@ -4,7 +4,7 @@ Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 2.0.5
+Stable tag: 2.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -94,6 +94,12 @@ Yes! You can use the `[wp_block slug="pattern-slug"]` shortcode <a href="https:/
 
 Yes, Pattern Wrangler sits outside of the Full-site Editor in the Patterns menu item. This Patterns screen allows you to configure both local and registered patterns together, curating what is shown inside FSE. 
 
+= Does this plugin work on WordPress.(com)? =
+
+No, this plugin works best with self-hosted installs (normal installs).
+
+This plugin uses newer APIs (DataViews) that WordPress.com doesn't allow a custom version of, and the one that ships with Core isn't at the latest version, so the plugin can't get rid of the dependency.
+
 = The preview for a pattern isn't working or is formatted wrong. =
 
 I've done my best for previews in 2.0, and I know the finished result isn't perfect. The preview feature took several months of solo-developer time, and I've put my best foot forward. I know there will be preview bugs, but with patience, I'm sure we can fix the quirks together.
@@ -111,6 +117,11 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 5. Hide all patterns, or hide them from core, remote, themes, or plugins.
 
 == Changelog ==
+
+= 2.0.9 =
+* Released 2025-12-21
+* Bug fix: Disabling the enhanced patterns view could lead to a white screen because of a mis-placed PHP exit module.
+* Bug fix: Removing JS debug error notices.
 
 = 2.0.5 =
 * Released 2025-12-20
@@ -184,5 +195,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.0.5 =
-Bug fix for Multisite UI when disabling patterns. Adding option to disable the customizer.
+= 2.0.9 =
+Disabling the enhanced patterns view could lead to a white screen because of a mis-placed PHP exit module. Removing JS debug warnings.
