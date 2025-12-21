@@ -14,6 +14,8 @@ Manage your block patterns, registered patterns, and reusable blocks efficiently
 
 Pattern Wrangler makes managing WordPress block patterns easy, and is designed for both hybrid classic/block themes, block themes, and is compatible with most page builders through its shortcode support. Pattern Wrangler allows you to curate the pattern experience for your clients, controlling down to the pattern what the client sees in the block editor.
 
+https://www.youtube.com/watch?v=tFnnki9ZOLg
+
 Here are the major features:
 
 * **New Patterns Screen** - A new Patterns screen now shows at a glance all of the patterns available for your site. You can sort through both local and registered patterns, and selectively disable or enable whatever patterns you'd like your client to see. A real-time preview is available by clicking on the pattern. 
