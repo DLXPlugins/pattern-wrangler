@@ -16,6 +16,8 @@ Pattern Wrangler makes managing WordPress block patterns easy, and is designed f
 
 https://www.youtube.com/watch?v=tFnnki9ZOLg
 
+> ❤️ <a href="https://app.instawp.io/launch?s=pattern-wrangler-20-demo&d=v2">Spin up a free demo</a>.
+
 Here are the major features:
 
 * **New Patterns Screen** - A new Patterns screen now shows at a glance all of the patterns available for your site. You can sort through both local and registered patterns, and selectively disable or enable whatever patterns you'd like your client to see. A real-time preview is available by clicking on the pattern. 
