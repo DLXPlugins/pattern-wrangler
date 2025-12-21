@@ -4,7 +4,7 @@ Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 2.0.2
+Stable tag: 2.0.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -110,6 +110,11 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Changelog ==
 
+= 2.0.5 =
+* Released 2025-12-20
+* Bug fix: Multisite installs wouldn't show a proper override for hiding patterns.
+* New feature: Can disable the customizer if needed on single and Multisite installs.
+
 = 2.0.2 =
 * Released 2025-11-30
 * Wording update: Changed copy local patterns to "Copy to New Pattern." Changed Copy Pattern to "Copy Pattern to Clipboard".
@@ -177,5 +182,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.0.2 =
-This update sets the default view to enabled. Some copy updates. Several bug fixes involving the preview.
+= 2.0.5 =
+Bug fix for Multisite UI when disabling patterns. Adding option to disable the customizer.
