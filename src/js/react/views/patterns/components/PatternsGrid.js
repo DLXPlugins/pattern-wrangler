@@ -750,32 +750,32 @@ const Interface = ( props ) => {
 				id: 'patternLocalStatus',
 				label: __( 'Pattern Local Status', 'pattern-wrangler' ),
 			},
-		],
-		{
-			elements: [
-				{
-					label: __( 'Disabled Patterns', 'pattern-wrangler' ),
-					value: 'disabled',
+			{
+				elements: [
+					{
+						label: __( 'Disabled Patterns', 'pattern-wrangler' ),
+						value: 'disabled',
+					},
+					{
+						label: __( 'Enabled Patterns', 'pattern-wrangler' ),
+						value: 'enabled',
+					},
+					{
+						label: __( 'Both', 'pattern-wrangler' ),
+						value: 'both',
+					},
+				],
+				enableHiding: false,
+				enableSorting: false,
+				enableGlobalSearch: false,
+				filterBy: {
+					operators: [ 'is' ],
 				},
-				{
-					label: __( 'Enabled Patterns', 'pattern-wrangler' ),
-					value: 'enabled',
-				},
-				{
-					label: __( 'Both', 'pattern-wrangler' ),
-					value: 'both',
-				},
-			],
-			enableHiding: false,
-			enableSorting: false,
-			enableGlobalSearch: false,
-			filterBy: {
-				operators: [ 'is' ],
+				type: 'array',
+				id: 'patternLocalRegisteredStatus',
+				label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
 			},
-			type: 'array',
-			id: 'patternLocalRegisteredStatus',
-			label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
-		},
+		],
 		[]
 	);
 

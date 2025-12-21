@@ -185,8 +185,7 @@ add_action(
 		header( 'Access-Control-Allow-Methods: GET, OPTIONS' );
 		header( 'Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept' );
 
-		// Add CSP and base tag.
-		echo '<meta http-equiv="Content-Security-Policy" content="default-src *; font-src * data:; img-src * data:; style-src * \'unsafe-inline\'; script-src * \'unsafe-inline\' \'unsafe-eval\';">';
+		// Add base tag.
 		echo '<base href="' . esc_url( home_url() ) . '">';
 	},
 	1 // Priority 1 to ensure it runs early.
