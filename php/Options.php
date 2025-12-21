@@ -76,7 +76,6 @@ class Options {
 				case 'disablePatternImporterBlock':
 				case 'allowFrontendPatternPreview':
 				case 'hideUncategorizedPatterns':
-				case 'showCustomizerUI':
 				case 'loadCustomizerCSSBlockEditor':
 				case 'loadCustomizerCSSFrontend':
 				case 'makePatternsExportable':
@@ -144,8 +143,30 @@ class Options {
 		}
 		$options = get_option( self::$options_key, array() );
 
-		$defaults      = self::get_defaults();
-		$options       = wp_parse_args( $options, $defaults );
+		$defaults = self::get_defaults();
+		$options  = wp_parse_args( $options, $defaults );
+
+		// Maybe migrate showCustomizerUI option.
+		if ( isset( $options['showCustomizerUI'] ) ) {
+			// Only migrate if the value is not already a valid string value.
+			if ( ! in_array( $options['showCustomizerUI'], array( 'hide', 'show', 'default' ), true ) ) {
+				switch ( $options['showCustomizerUI'] ) {
+					case '1':
+					case true:
+					case 'true':
+						$options['showCustomizerUI'] = 'show';
+						break;
+					case '0':
+					case false:
+					case 'false':
+						// Customizer was set to false, which acted as a default.
+						// We need to set it to default to avoid confusion.
+						$options['showCustomizerUI'] = 'default';
+						break;
+				}
+			}
+		}
+
 		self::$options = $options;
 		return $options;
 	}
@@ -191,7 +212,7 @@ class Options {
 			'categories'                   => array(),
 			'allowFrontendPatternPreview'  => true,
 			'hideUncategorizedPatterns'    => false,
-			'showCustomizerUI'             => true,
+			'showCustomizerUI'             => 'default',
 			'showMenusUI'                  => true,
 			'loadCustomizerCSSBlockEditor' => false,
 			'loadCustomizerCSSFrontend'    => true,

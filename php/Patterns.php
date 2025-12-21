@@ -107,10 +107,23 @@ class Patterns {
 		// Add the wp_block shortcode.
 		add_shortcode( 'wp_block', array( $this, 'shortcode_pattern_callback' ) );
 
-		// Show the customizer UI if enabled.
-		$show_customizer_ui = (bool) $options['showCustomizerUI'];
-		if ( $show_customizer_ui ) {
+		// Show/hide the customizer UI if enabled.
+		$show_customizer_ui = sanitize_text_field( $options['showCustomizerUI'] );
+		if ( 'show' === $show_customizer_ui ) {
 			add_action( 'customize_register', '__return_true' );
+		} elseif ( 'hide' === $show_customizer_ui ) {
+			// Remove the customize_register action and prevent access to the customizer.
+			add_filter(
+				'map_meta_cap',
+				function ( $caps, $cap ) {
+					if ( 'customize' === $cap ) {
+						return array( 'do_not_allow' );
+					}
+					return $caps;
+				},
+				10,
+				2
+			);
 		}
 
 		// Show the menu UI if enabled.

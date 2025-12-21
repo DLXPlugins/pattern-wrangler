@@ -3,21 +3,19 @@ import React, { Suspense, useState, useEffect } from 'react';
 import {
 	ToggleControl,
 	TextControl,
-	Tooltip,
 	SelectControl,
 	PanelBody,
 	Popover,
 	Button,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
-import { useAsyncResource } from 'use-async-resource';
 import { Info, AlertTriangle } from 'lucide-react';
 
 import { __, _n } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
-import classNames from 'classnames';
 
 // Local imports.
-import SendCommand from '../../utils/SendCommand';
 import Notice from '../../components/Notice';
 import SaveResetButtons from '../../components/SaveResetButtons';
 
@@ -958,17 +956,39 @@ const Main = ( props ) => {
 											name="showCustomizerUI"
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
-												<ToggleControl
+												<ToggleGroupControl
 													label={ __( 'Show Customizer UI', 'pattern-wrangler' ) }
-													checked={ value }
-													onChange={ ( boolValue ) => {
-														onChange( boolValue );
+													isAdaptiveWidth={ true }
+													value={ value }
+													onChange={ ( newValue ) => {
+														onChange( newValue );
 													} }
-													help={ __(
-														'This will show the customizer UI in the Appearance menu if enabled.',
-														'pattern-wrangler'
-													) }
-												/>
+												>
+													<ToggleGroupControlOption
+														value="hide"
+														label={ __( 'Hide', 'pattern-wrangler' ) }
+														showTooltip={ true }
+														aria-label={ __(
+															'Hide Customizer UI',
+															'pattern-wrangler'
+														) }
+													/>
+													<ToggleGroupControlOption
+														value="default"
+														label={ __( 'Default', 'pattern-wrangler' ) }
+														showTooltip={ true }
+														aria-label={ __( 'No Change.', 'pattern-wrangler' ) }
+													/>
+													<ToggleGroupControlOption
+														value="show"
+														label={ __( 'Show', 'pattern-wrangler' ) }
+														showTooltip={ true }
+														aria-label={ __(
+															'Show All Patterns',
+															'pattern-wrangler'
+														) }
+													/>
+												</ToggleGroupControl>
 											) }
 										/>
 									</div>
