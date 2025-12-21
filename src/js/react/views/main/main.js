@@ -764,9 +764,13 @@ const Main = ( props ) => {
 			allPatternsDisabled: false,
 			networkAllPatternsDisabled: false,
 		};
+		console.log( networkOptions.hideAllPatterns );
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
 			if ( networkOptions.patternConfiguration === 'disabled' || 'hide' === networkOptions.hideAllPatterns ) {
 				hideAllPatternsData.allPatternsDisabled = true;
+				hideAllPatternsData.networkAllPatternsDisabled = true;
+			} else if ( 'show' === networkOptions.hideAllPatterns ) {
+				hideAllPatternsData.allPatternsDisabled = false;
 				hideAllPatternsData.networkAllPatternsDisabled = true;
 			} else {
 				hideAllPatternsData.allPatternsDisabled = getValues( 'hideAllPatterns' );
