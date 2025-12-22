@@ -121,7 +121,7 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 == Changelog ==
 
 = 2.1.0 =
-* Released 2025-12-21
+* Released 2025-12-22
 * Bug fix: Disabling the enhanced patterns view could lead to a white screen because of a mis-placed PHP exit module.
 * Bug fix: Removing JS debug error notices.
 * Bug fix: There was a trailing slash added to admin-ajax.php causing previews to 404 on some installs, particularly Local.
