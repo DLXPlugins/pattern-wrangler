@@ -164,7 +164,7 @@ const popPatternPreview = ( item ) => {
 	const viewportWidth = item.viewportWidth || 1200;
 
 	const previewUrl = item?.id
-		? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+		? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
 		: '';
 
 	Fancybox.show( [
@@ -551,7 +551,7 @@ const Interface = ( props ) => {
 					const viewportWidth = item.viewportWidth || 1200;
 
 					const previewUrl = item?.id
-						? `${ ajaxurl }/?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+						? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
 						: '';
 
 					// Determine badge type based on pattern properties.
