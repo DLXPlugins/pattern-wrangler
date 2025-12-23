@@ -4,7 +4,7 @@ Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,10 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Changelog ==
 
+= 2.1.1 =
+* Released 2025-12-22
+* Hot fix: Disabling/enabling patterns would error out on some installs.
+
 = 2.1.0 =
 * Released 2025-12-22
 * Bug fix: Disabling the enhanced patterns view could lead to a white screen because of a mis-placed PHP exit module.
@@ -198,5 +202,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.1.0 =
-Disabling the enhanced patterns view could lead to a white screen because of a mis-placed PHP exit module. Removing JS debug warnings. Removing trailing slash added to admin-ajax causing previews to fail.
+= 2.1.1 =
+Hot fix: Disabling/enabling patterns would error out on some installs.
