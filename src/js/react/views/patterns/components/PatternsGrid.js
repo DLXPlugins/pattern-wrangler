@@ -1536,9 +1536,16 @@ const Interface = ( props ) => {
 				const fieldsIndex = fields.findIndex(
 					( field ) => field.id === 'categories'
 				);
+
+				// Check if the field exists before trying to modify it.
+				if ( fieldsIndex === -1 ) {
+					setLoading( false );
+					return;
+				}
+
 				const originalLocalCategories = [];
 				let maybeDuplicateLabel = '';
-				fields[ fieldsIndex ].elements = Object.values( data.categories ).map(
+				const categoryElements = Object.values( data.categories ).map(
 					( category ) => {
 						let catLabel = category.label;
 						if ( maybeDuplicateLabel === category.label ) {
@@ -1557,21 +1564,33 @@ const Interface = ( props ) => {
 						};
 					}
 				);
-				// If categories are empty, unset the category filter.
+
+				// Create a new fields array instead of mutating the existing one.
+				let updatedFields = [ ...fields ];
+
+				// Update the categories field elements.
+				updatedFields[ fieldsIndex ] = {
+					...updatedFields[ fieldsIndex ],
+					elements: categoryElements,
+				};
+
+				// If categories are empty, remove the category filter.
 				if ( originalLocalCategories.length === 0 ) {
-					// Unset fieldIndex from fields.
-					fields.splice( fieldsIndex, 1 );
+					updatedFields = updatedFields.filter(
+						( field ) => field.id !== 'categories'
+					);
 				}
 
-				// If assets are empty, unset the assets filter.
-				if ( Object.values( data.assets ).length === 0 ) {
-					// Unset fieldIndex from fields.
-					fields.splice( fields.findIndex( ( field ) => field.id === 'assets' ), 1 );
+				// If assets are empty, remove the assets filter.
+				if ( Object.values( data.assets || {} ).length === 0 ) {
+					updatedFields = updatedFields.filter(
+						( field ) => field.id !== 'assets'
+					);
 				}
 
 				const newViewCopy = {
 					...view,
-					fields: [ ...fields ],
+					fields: updatedFields,
 				};
 				// Force view to re-render.
 				setLocalCategories( originalLocalCategories );
