@@ -487,9 +487,12 @@ class Rest {
 		// Get registered categories into shape. Registerd are label arrays.
 		$registered_categories_arr = array();
 		foreach ( $registered_categories as $registered_category ) {
+			// Decode HTML entities to prevent double encoding in React.
+			$category_label        = wp_specialchars_decode( $registered_category['label'], ENT_QUOTES );
+			$category_custom_label = isset( $registered_category['customLabel'] ) ? wp_specialchars_decode( $registered_category['customLabel'], ENT_QUOTES ) : $category_label;
 			$registered_categories_arr[ sanitize_title( $registered_category['slug'] ) ] = array(
-				'label'       => $registered_category['label'],
-				'customLabel' => isset( $registered_category['customLabel'] ) ? $registered_category['customLabel'] : $registered_category['label'],
+				'label'       => $category_label,
+				'customLabel' => $category_custom_label,
 				'slug'        => $registered_category['slug'],
 				'enabled'     => true,
 				'count'       => 0,

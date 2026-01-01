@@ -4,7 +4,7 @@ Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,8 +120,12 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Changelog ==
 
+= 2.1.3 =
+* Released 2025-12-31
+* Bug fix: Fixed category names with special characters (such as >) displaying as HTML entities in the pattern grid view.
+
 = 2.1.2 =
-* Released 2025-12-23
+* Released 2025-12-31
 * Bug fix: Fixed category names with special characters (such as >) displaying as HTML entities in the pattern grid view.
 
 = 2.1.1 =
@@ -206,5 +210,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.1.2 =
+= 2.1.3 =
 Bug fix: Fixed category names with special characters (such as >) displaying as HTML entities in the pattern grid view.

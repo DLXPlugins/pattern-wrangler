@@ -626,7 +626,7 @@ const Interface = ( props ) => {
 				},
 				elements: Object.values( categories ).map( ( category ) => {
 					return {
-						label: category.label || category.name,
+						label: category.customLabel || category.label || category.name,
 						value: category.slug,
 					};
 				} ),
@@ -1548,15 +1548,16 @@ const Interface = ( props ) => {
 				let maybeDuplicateLabel = '';
 				const categoryElements = Object.values( data.categories ).map(
 					( category ) => {
-						let catLabel = category.label;
-						if ( maybeDuplicateLabel === category.label ) {
+						const categoryLabel = category.customLabel || category.label || category.name;
+						let catLabel = categoryLabel;
+						if ( maybeDuplicateLabel === categoryLabel ) {
 							catLabel = `${ catLabel } (${ category.count + 1 })`;
 						}
-						maybeDuplicateLabel = category.label;
+						maybeDuplicateLabel = categoryLabel;
 						if ( ! category.registered ) {
 							originalLocalCategories.push( {
 								id: category.id,
-								label: category.label,
+								label: categoryLabel,
 							} );
 						}
 						return {

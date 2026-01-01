@@ -155,12 +155,16 @@ class Functions {
 			}
 
 			// Loop through custom categories, and determine if a category is on or off.
-			$category_enabled                    = isset( $custom_pattern_categories[ $category['name'] ]['enabled'] ) ? (bool) $custom_pattern_categories[ $category['name'] ]['enabled'] : true;
-			$category_custom                     = isset( $custom_pattern_categories[ $category['name'] ]['customLabel'] ) ? $custom_pattern_categories[ $category['name'] ]['customLabel'] : $category['label'];
+			$category_enabled = isset( $custom_pattern_categories[ $category['name'] ]['enabled'] ) ? (bool) $custom_pattern_categories[ $category['name'] ]['enabled'] : true;
+			// Decode HTML entities to prevent double encoding in React.
+			$category_label_decoded = wp_specialchars_decode( $category['label'], ENT_QUOTES );
+			$category_custom_raw    = isset( $custom_pattern_categories[ $category['name'] ]['customLabel'] ) ? $custom_pattern_categories[ $category['name'] ]['customLabel'] : '';
+			// Decode customLabel if it exists, otherwise use the decoded label.
+			$category_custom                     = ! empty( $category_custom_raw ) ? wp_specialchars_decode( $category_custom_raw, ENT_QUOTES ) : $category_label_decoded;
 			$category_mapped_to                  = isset( $custom_pattern_categories[ $category['name'] ]['mappedTo'] ) ? $custom_pattern_categories[ $category['name'] ]['mappedTo'] : false;
 			$all_categories[ $category['name'] ] = array(
-				'label'       => $category['label'],
-				'customLabel' => ! empty( $category_custom ) ? $category_custom : $category['label'],
+				'label'       => $category_label_decoded,
+				'customLabel' => $category_custom,
 				'enabled'     => $category_enabled,
 				'slug'        => $category['name'],
 				'count'       => $category['count'] ?? 0,
