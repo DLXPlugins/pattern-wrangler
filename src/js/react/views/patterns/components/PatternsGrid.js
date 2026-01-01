@@ -520,6 +520,7 @@ const Interface = ( props ) => {
 											}
 
 											const catLabel =
+													currentCategories[ catSlug ]?.customLabel ||
 													currentCategories[ catSlug ]?.label ||
 													currentCategories[ catSlug ]?.name;
 

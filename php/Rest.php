@@ -147,7 +147,6 @@ class Rest {
 			)
 		);
 
-
 		/**
 		 * For retrieving a pattern by ID. Useful when importing patterns via json.
 		 */
@@ -402,10 +401,12 @@ class Rest {
 		foreach ( $terms_affected_ids as $term_id ) {
 			$category_term = get_term( $term_id, 'wp_pattern_category' );
 			if ( $category_term ) {
-				$terms_affected_slugs[]                                   = sanitize_text_field( $category_term->name );
+				// Decode HTML entities to prevent double encoding in React.
+				$category_name          = wp_specialchars_decode( $category_term->name, ENT_QUOTES );
+				$terms_affected_slugs[] = sanitize_text_field( $category_name );
 				$terms_affected[ sanitize_title( $category_term->slug ) ] = array(
-					'label'       => sanitize_text_field( $category_term->name ),
-					'customLabel' => sanitize_text_field( $category_term->name ),
+					'label'       => sanitize_text_field( $category_name ),
+					'customLabel' => sanitize_text_field( $category_name ),
 					'slug'        => sanitize_title( $category_term->slug ),
 					'enabled'     => true,
 					'count'       => absint( $category_term->count ),
@@ -488,7 +489,7 @@ class Rest {
 		foreach ( $registered_categories as $registered_category ) {
 			$registered_categories_arr[ sanitize_title( $registered_category['slug'] ) ] = array(
 				'label'       => $registered_category['label'],
-				'customLabel' => $registered_category['label'],
+				'customLabel' => isset( $registered_category['customLabel'] ) ? $registered_category['customLabel'] : $registered_category['label'],
 				'slug'        => $registered_category['slug'],
 				'enabled'     => true,
 				'count'       => 0,
@@ -501,9 +502,11 @@ class Rest {
 		// Get local categories into shape. Terms are objects.
 		$local_categories_arr = array();
 		foreach ( $local_categories as $local_category ) {
+			// Decode HTML entities to prevent double encoding in React.
+			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
 			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
-				'label'       => $local_category->name,
-				'customLabel' => $local_category->name,
+				'label'       => $category_name,
+				'customLabel' => $category_name,
 				'slug'        => $local_category->slug,
 				'enabled'     => true,
 				'count'       => $local_category->count,
