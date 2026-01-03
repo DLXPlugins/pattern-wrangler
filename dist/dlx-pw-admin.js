@@ -1557,12 +1557,12 @@ var Main = function Main(props) {
         _onChange19 = _ref19$field.onChange,
         value = _ref19$field.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
-        label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Show Menus UI', 'pattern-wrangler'),
+        label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Force Show Menus UI', 'pattern-wrangler'),
         checked: value,
         onChange: function onChange(boolValue) {
           _onChange19(boolValue);
         },
-        help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This will show the menus UI in the Appearance menu if enabled.', 'pattern-wrangler')
+        help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This will show the menus UI in the Appearance settings menu if enabled. Disabilng this will not hide the menu item.', 'pattern-wrangler')
       });
     }
   })), getShowPatternsImporterBlock(), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {

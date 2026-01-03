@@ -1047,13 +1047,13 @@ const Main = ( props ) => {
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
 												<ToggleControl
-													label={ __( 'Show Menus UI', 'pattern-wrangler' ) }
+													label={ __( 'Force Show Menus UI', 'pattern-wrangler' ) }
 													checked={ value }
 													onChange={ ( boolValue ) => {
 														onChange( boolValue );
 													} }
 													help={ __(
-														'This will show the menus UI in the Appearance menu if enabled.',
+														'This will show the menus UI in the Appearance settings menu if enabled. Disabilng this will not hide the menu item.',
 														'pattern-wrangler'
 													) }
 												/>
