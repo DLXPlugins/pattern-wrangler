@@ -247,9 +247,10 @@ const Interface = ( props ) => {
 	const { data } = props;
 
 	const [ selectedItems, setSelectedItems ] = useState( [] );
-	const { patterns } = useSelect( ( select ) => {
+	const { patterns, doNotShowAgain } = useSelect( ( newSelect ) => {
 		return {
-			patterns: select( patternsStore ).getPatterns(),
+			patterns: newSelect( patternsStore ).getPatterns(),
+			doNotShowAgain: newSelect( patternsStore ).getDoNotShowAgain(),
 		};
 	} );
 
@@ -2146,8 +2147,9 @@ const Interface = ( props ) => {
 			{ isPauseModalOpen && (
 				<PatternPauseModal
 					items={ isPauseModalOpen.items }
-					onPause={ ( pauseResponse, itemIdsAndNonces ) => {
+					onPause={ ( pauseResponse, itemIdsAndNonces, showAgain ) => {
 						dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
+						dispatch( patternsStore ).setDoNotShowAgain( showAgain );
 						setIsPauseModalOpen( null );
 						setSnackbar( {
 							isVisible: true,
@@ -2159,6 +2161,7 @@ const Interface = ( props ) => {
 							},
 						} );
 					} }
+					doNotShowAgain={ doNotShowAgain }
 					onRequestClose={ () => setIsPauseModalOpen( null ) }
 				/>
 			) }
@@ -2184,8 +2187,9 @@ const Interface = ( props ) => {
 			{ isUnpauseModalOpen && (
 				<PatternUnpauseModal
 					items={ isUnpauseModalOpen.items }
-					onReenable={ ( reenableResponse, itemIdsAndNonces ) => {
+					onReenable={ ( reenableResponse, itemIdsAndNonces, showAgain ) => {
 						dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
+						dispatch( patternsStore ).setDoNotShowAgain( showAgain );
 						setIsUnpauseModalOpen( null );
 						setSnackbar( {
 							isVisible: true,
@@ -2197,16 +2201,28 @@ const Interface = ( props ) => {
 							},
 						} );
 					} }
+					doNotShowAgain={ doNotShowAgain }
 					onRequestClose={ () => setIsUnpauseModalOpen( null ) }
 				/>
 			) }
 			{ isDeleteModalOpen && (
 				<PatternDeleteModal
 					items={ isDeleteModalOpen.items }
-					onDelete={ ( deleteResponse, itemIdsAndNonces ) => {
+					onDelete={ ( deleteResponse, itemIdsAndNonces, showAgain ) => {
+						dispatch( patternsStore ).setDoNotShowAgain( showAgain );
 						dispatch( patternsStore ).deletePatterns( itemIdsAndNonces );
 						setIsDeleteModalOpen( null );
+						setSnackbar( {
+							isVisible: true,
+							message: __( 'Patterns deleted', 'pattern-wrangler' ),
+							title: __( 'Patterns Deleted', 'pattern-wrangler' ),
+							type: 'success',
+							onClose: () => {
+								setSnackbar( { isVisible: false } );
+							},
+						} );
 					} }
+					doNotShowAgain={ doNotShowAgain }
 					onRequestClose={ () => setIsDeleteModalOpen( null ) }
 				/>
 			) }

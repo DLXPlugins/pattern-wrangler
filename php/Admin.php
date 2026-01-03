@@ -554,6 +554,7 @@ class Admin {
 					'networkAdminSettingsUrl' => Functions::get_network_settings_url(),
 					'isUserNetworkAdmin'      => current_user_can( 'manage_network' ),
 					'getSiteBaseUrl'          => esc_url( admin_url() ),
+					'doNotShowAgain'          => get_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true ) ?? false,
 				)
 			);
 			\wp_set_script_translations( 'dlx-pw-patterns-view', 'pattern-wrangler' );

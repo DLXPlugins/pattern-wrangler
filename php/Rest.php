@@ -178,7 +178,8 @@ class Rest {
 	 */
 	public function rest_delete_pattern( $request ) {
 
-		$items = $request->get_param( 'items' );
+		$items             = $request->get_param( 'items' );
+		$do_not_show_again = filter_var( $request->get_param( 'doNotShowAgain' ), FILTER_VALIDATE_BOOLEAN );
 
 		foreach ( $items as $item ) {
 			$pattern_id = $item['id'];
@@ -196,6 +197,12 @@ class Rest {
 			wp_delete_post( $pattern_id, true );
 		}
 
+		if ( $do_not_show_again ) {
+			if ( current_user_can( 'publish_posts' ) ) {
+				update_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true );
+			}
+		}
+
 		return rest_ensure_response( array( 'success' => true ) );
 	}
 
@@ -208,7 +215,8 @@ class Rest {
 	 */
 	public function rest_pause_pattern( $request ) {
 
-		$items = $request->get_param( 'items' );
+		$items             = $request->get_param( 'items' );
+		$do_not_show_again = filter_var( $request->get_param( 'doNotShowAgain' ), FILTER_VALIDATE_BOOLEAN );
 
 		foreach ( $items as $item ) {
 			$pattern_id = $item['id'];
@@ -238,6 +246,11 @@ class Rest {
 				Options::set_disabled_patterns( $disabled_patterns );
 			}
 		}
+		if ( $do_not_show_again ) {
+			if ( current_user_can( 'publish_posts' ) ) {
+				update_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true );
+			}
+		}
 
 		return rest_ensure_response( array( 'success' => true ) );
 	}
@@ -251,7 +264,8 @@ class Rest {
 	 */
 	public function rest_publish_pattern( $request ) {
 
-		$items = $request->get_param( 'items' );
+		$items             = $request->get_param( 'items' );
+		$do_not_show_again = filter_var( $request->get_param( 'doNotShowAgain' ), FILTER_VALIDATE_BOOLEAN );
 
 		foreach ( $items as $item ) {
 			$pattern_id = $item['id'];
@@ -279,6 +293,11 @@ class Rest {
 				$disabled_patterns = Options::get_disabled_patterns();
 				$disabled_patterns = array_diff( $disabled_patterns, array( sanitize_text_field( $pattern_id ) ) );
 				Options::set_disabled_patterns( array_values( $disabled_patterns ) );
+			}
+		}
+		if ( $do_not_show_again ) {
+			if ( current_user_can( 'publish_posts' ) ) {
+				update_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true );
 			}
 		}
 

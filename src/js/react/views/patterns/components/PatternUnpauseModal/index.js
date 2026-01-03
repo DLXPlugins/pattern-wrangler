@@ -1,29 +1,17 @@
 // eslint-disable-next-line no-unused-vars
 import React, { Suspense, useState, useEffect } from 'react';
 import {
-	ToggleControl,
-	TextControl,
-	Tooltip,
-	SelectControl,
-	PanelBody,
-	Popover,
-	BaseControl,
 	Modal,
 	Button,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	FormTokenField,
+	CheckboxControl,
 } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
-import { useAsyncResource } from 'use-async-resource';
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 import { __, _n } from '@wordpress/i18n';
-import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
-import classnames from 'classnames';
+import { useForm, useWatch, useFormState } from 'react-hook-form';
 
 // Local imports.
-import SendCommand from '../../../../utils/SendCommand';
 import Notice from '../../../../components/Notice';
 
 /**
@@ -46,15 +34,12 @@ import Notice from '../../../../components/Notice';
  */
 const PatternUnpauseModal = ( props ) => {
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ doNotShowAgain, setDoNotShowAgain ] = useState( props.doNotShowAgain || false );
+
 
 	const {
 		control,
-		getValues,
 		handleSubmit,
-		reset,
-		setError,
-		trigger,
-		setValue,
 	} = useForm( {
 		defaultValues: {
 			items: props.items || [],
@@ -63,7 +48,7 @@ const PatternUnpauseModal = ( props ) => {
 		},
 	} );
 	const formValues = useWatch( { control } );
-	const { errors, isDirty, dirtyFields } = useFormState( {
+	const { errors } = useFormState( {
 		control,
 	} );
 
@@ -83,11 +68,21 @@ const PatternUnpauseModal = ( props ) => {
 			method: 'POST',
 			data: {
 				items: itemIdsAndNonces,
+				doNotShowAgain,
 			},
 		} );
-		props.onReenable( response, itemIdsAndNonces );
+		props.onReenable( response, itemIdsAndNonces, doNotShowAgain );
 		setIsSaving( false );
 	};
+
+	useEffect( () => {
+		if ( props.doNotShowAgain ) {
+			onSubmit( formValues );
+		}
+	}, [] );
+	if ( props.doNotShowAgain ) {
+		return null;
+	}
 
 	/**
 	 * Get the button text.
@@ -123,6 +118,19 @@ const PatternUnpauseModal = ( props ) => {
 			>
 				<div className="dlx-pw-modal-content">
 					<form onSubmit={ handleSubmit( onSubmit )}>
+						<div className="dlx-pw-modal-admin-row">
+							<p>
+								{ __( 'Are you sure you want to re-enable this pattern? You can always disable it later.', 'pattern-wrangler' ) }
+							</p>
+						</div>
+						<div className="dlx-pw-modal-admin-row">
+							<CheckboxControl
+								label={ __( 'Do not show this confirmation again.', 'pattern-wrangler' ) }
+								checked={ doNotShowAgain }
+								onChange={ ( value ) => setDoNotShowAgain( value ) }
+								disabled={ isSaving }
+							/>
+						</div>
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
 							<Button variant="primary" type="submit" disabled={ isSaving }>
 								{ getButtonText() }
