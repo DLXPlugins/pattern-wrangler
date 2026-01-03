@@ -537,6 +537,14 @@ class Rest {
 		// Merge the registered and local categories.
 		$all_categories = array_merge( $registered_categories_arr, $local_categories_arr ); // We don't care about duplicates here.
 
+		// Sort by label.
+		uasort(
+			$all_categories,
+			function ( $a, $b ) {
+				return strcasecmp( $a['label'], $b['label'] );
+			}
+		);
+
 		set_transient( 'dlx_all_categories_cache', $all_categories, HOUR_IN_SECONDS );
 
 		// Placeholder for patterns.
