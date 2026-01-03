@@ -215,8 +215,8 @@ class Functions {
 		if ( $dismissed_rating ) {
 			return false;
 		}
-		$days_since_activation = time() - $activation_date;
-		if ( $days_since_activation >= 60 ) {
+		$days_since_activation = ( time() - $activation_date ) / DAY_IN_SECONDS;
+		if ( $days_since_activation >= 30 ) {
 			return true;
 		}
 		return false;
