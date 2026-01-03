@@ -4,7 +4,7 @@ Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 2.1.3
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,15 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Changelog ==
 
+= 2.2.0 =
+* Released 2026-01-03
+* Enhancement: Pagination now displays the total number of patterns.
+* Enhancement: When copying a registered pattern to a local pattern, you can optionally disable the registered source.
+* Enhancement: Added a "Don't show again" option for pattern deletion confirmations (stored per user).
+* Bug Fix: Resolved an issue where mapped categories were not applied correctly in the Patterns View.
+* Bug Fix: Fixed an error that could occur when a pattern was unregistered and no longer present in the registry.
+* ❤️ Please help spread the word about this plugin through your kind review.
+
 = 2.1.3 =
 * Released 2025-12-31
 * Bug fix: Fixed category names with special characters (such as >) displaying as HTML entities in the pattern grid view.
@@ -210,5 +219,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.1.3 =
-Bug fix: Fixed category names with special characters (such as >) displaying as HTML entities in the pattern grid view.
+= 2.2.0 =
+Improves pagination clarity, adds optional per-user confirmation preferences, adds optional disable registered pattern when copying, and fixes issues with mapped categories and unregistered patterns. This is a maintenance and stability release.
