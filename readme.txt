@@ -123,10 +123,11 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 = 2.2.0 =
 * Released 2026-01-03
 * Enhancement: Pagination now displays the total number of patterns.
-* Enhancement: When copying a registered pattern to a local pattern, you can optionally disable the registered source.
+* Enhancement: When copying a registered pattern to a local pattern, you can optionally disable the registered pattern.
 * Enhancement: Added a "Don't show again" option for pattern deletion confirmations (stored per user).
-* Bug Fix: Resolved an issue where mapped categories were not applied correctly in the Patterns View.
+* Bug Fix: Resolved an issue where mapped categories were not displaying correctly in the Patterns View.
 * Bug Fix: Fixed an error that could occur when a pattern was unregistered and no longer present in the registry.
+* Bug Fix: Categories in the Patterns View are now sorted alphabetically.
 * ❤️ Please help spread the word about this plugin through your kind review.
 
 = 2.1.3 =
