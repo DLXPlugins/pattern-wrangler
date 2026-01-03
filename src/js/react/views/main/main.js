@@ -10,7 +10,7 @@ import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
-import { Info, AlertTriangle } from 'lucide-react';
+import { Info, Heart } from 'lucide-react';
 
 import { __, _n } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
@@ -18,6 +18,7 @@ import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 // Local imports.
 import Notice from '../../components/Notice';
 import SaveResetButtons from '../../components/SaveResetButtons';
+import SendCommand from '../../utils/SendCommand';
 
 const usePatternCategories = ( props ) => {
 	const { getValues } = props;
@@ -171,6 +172,8 @@ const Main = ( props ) => {
 	const data = dlxPatternWranglerAdmin.options;
 	const networkOptions = dlxPatternWranglerAdmin.networkOptions;
 
+	const [ showRatingsNag, setShowRatingsNag ] = useState( dlxPatternWranglerAdmin.canShowRatingsNag );
+
 	const {
 		control,
 		handleSubmit,
@@ -228,6 +231,17 @@ const Main = ( props ) => {
 				} ) }
 			</ul>
 		);
+	};
+
+	/**
+	 * Dismiss the ratings nag.
+	 */
+	const dismissRatingsNag = async () => {
+		SendCommand( 'dlx_pw_dismiss_ratings_nag', {
+			nonce: dlxPatternWranglerAdmin.dismissRatingsNagNonce,
+		} ).then( ( response ) => {
+			console.log( response );
+		} );
 	};
 
 	/**
@@ -762,7 +776,6 @@ const Main = ( props ) => {
 			allPatternsDisabled: false,
 			networkAllPatternsDisabled: false,
 		};
-		console.log( networkOptions.hideAllPatterns );
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
 			if ( networkOptions.patternConfiguration === 'disabled' || 'hide' === networkOptions.hideAllPatterns ) {
 				hideAllPatternsData.allPatternsDisabled = true;
@@ -829,6 +842,43 @@ const Main = ( props ) => {
 						'pattern-wrangler'
 					) }
 				</p>
+				{ showRatingsNag && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						status="rating"
+						icon={ () => <Heart /> }
+						dismissible={ true }
+						onRemove={ () => {
+							setShowRatingsNag( false );
+							dismissRatingsNag();
+						} }
+					>
+						{ __( 'Thank you for using Pattern Wrangler! Please show your support by leaving a kind review on WordPress.org.', 'pattern-wrangler' ) }
+						<div className="dlx-admin-component-row-button buttons-ratings-nag">
+							<Button
+								variant="secondary"
+								href="https://wordpress.org/support/plugin/pattern-wrangler/reviews/#new-post"
+								target="_blank"
+								className="dlx__btn-rating"
+								onClick={ () => {
+									setShowRatingsNag( false );
+									dismissRatingsNag();
+								} }
+							>
+								{ __( 'Leave a Review', 'pattern-wrangler' ) }
+							</Button>
+							<Button
+								variant="link"
+								onClick={ () => {
+									setShowRatingsNag( false );
+									dismissRatingsNag();
+								} }
+							>
+								{ __( 'Do not show this again', 'pattern-wrangler' ) }
+							</Button>
+						</div>
+					</Notice>
+				) }
 				{ dlxPatternWranglerAdmin.isMultisite &&
 					dlxPatternWranglerAdmin.isUserNetworkAdmin && (
 					<Notice

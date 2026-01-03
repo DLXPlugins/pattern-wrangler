@@ -3949,6 +3949,8 @@ svg.lucide line {
   --dlx-pw-admin--color-notice--warning-alt: #e8a931;
   --dlx-pw-admin--color-notice--error: #f5e5e4;
   --dlx-pw-admin--color-notice--error-alt: #bc2b2c;
+  --dlx-pw-admin--color-notice--rating: #ff00f7;
+  --dlx-pw-admin--color-notice--rating-alt: #b1b1b1;
 }
 
 /* Error Notices */
@@ -4029,6 +4031,16 @@ svg.lucide line {
 }
 .dlx-pw-admin__notice.dlx-pw-admin__notice-type--success svg path {
   fill: var(--dlx-pw-admin--color-notice--success-alt);
+}
+.dlx-pw-admin__notice.dlx-pw-admin__notice-type--rating {
+  background-color: var(--dlx-pw-admin--color-notice--rating-alt);
+}
+.dlx-pw-admin__notice.dlx-pw-admin__notice-type--rating .components-notice {
+  border-left-color: var(--dlx-pw-admin--color-notice--rating);
+}
+.dlx-pw-admin__notice.dlx-pw-admin__notice-type--rating svg path {
+  fill: var(--dlx-pw-admin--color-notice--rating) !important;
+  stroke: var(--dlx-pw-admin--color-notice--rating) !important;
 }
 .dlx-pw-admin__notice.dlx-pw-admin__notice-type--info {
   background-color: var(--dlx-pw-admin--color-notice--info);
@@ -4252,6 +4264,10 @@ div.can-revoke {
   justify-content: space-between;
   align-items: center;
 }
+.dlx-admin-component-row-button.buttons-ratings-nag {
+  margin-top: 16px;
+  justify-content: flex-start;
+}
 .dlx-admin-component-row-button.no-flex {
   display: block;
 }
@@ -4358,6 +4374,20 @@ div.can-revoke {
   background: #ece6e6;
   color: #822700;
   border-color: #822700;
+}
+.dlx-admin-component-row-button a.dlx__btn-secondary.dlx__btn-rating,
+.dlx-admin-component-row-button a.components-button.dlx__btn-rating,
+.dlx-admin-component-row-button button.dlx__btn-rating {
+  background: #ff00f7;
+  color: #FFF;
+  border-color: #ff00f7;
+}
+.dlx-admin-component-row-button a.dlx__btn-secondary.dlx__btn-rating:hover,
+.dlx-admin-component-row-button a.components-button.dlx__btn-rating:hover,
+.dlx-admin-component-row-button button.dlx__btn-rating:hover {
+  background: #ffffff;
+  color: #ff00f7;
+  border-color: #ff00f7;
 }
 .dlx-admin-component-row-button a.dlx__btn-secondary.sce__btn-action,
 .dlx-admin-component-row-button a.components-button.sce__btn-action,

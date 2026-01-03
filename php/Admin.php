@@ -43,6 +43,9 @@ class Admin {
 		// For reseeting the network options.
 		add_action( 'wp_ajax_dlx_pw_reset_network_settings', array( $this, 'ajax_reset_network_options' ) );
 
+		// For dismissing the ratings nag.
+		add_action( 'wp_ajax_dlx_pw_dismiss_ratings_nag', array( $this, 'ajax_dismiss_ratings_nag' ) );
+
 		// For initializing settings links on the plugins screen.
 		add_action( 'admin_init', array( $this, 'init_settings_links' ) );
 
@@ -119,6 +122,20 @@ class Admin {
 		} else {
 			return array_merge( $setting_links, $settings );
 		}
+	}
+
+	/**
+	 * Dismiss the ratings nag.
+	 */
+	public function ajax_dismiss_ratings_nag() {
+		// Get nonce.
+		$nonce = sanitize_text_field( filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_SPECIAL_CHARS ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-admin-dismiss-ratings-nag' ) || ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array() );
+		}
+		update_user_meta( get_current_user_id(), 'dlx_pw_dismissed_rating', true );
+		// Dismiss the ratings nag.
+		wp_send_json_success( array() );
 	}
 
 	/**
@@ -506,6 +523,8 @@ class Admin {
 					'isMultisite'             => Functions::is_multisite(),
 					'networkAdminSettingsUrl' => Functions::get_network_settings_url(),
 					'isUserNetworkAdmin'      => current_user_can( 'manage_network' ),
+					'canShowRatingsNag'       => Functions::can_show_ratings_nag(),
+					'dismissRatingsNagNonce'  => wp_create_nonce( 'dlx-pw-admin-dismiss-ratings-nag' ),
 				)
 			);
 			\wp_set_script_translations( 'dlx-pw-admin', 'pattern-wrangler' );

@@ -200,6 +200,28 @@ class Functions {
 		);
 	}
 
+	/**
+	 * Check if the ratings nag can be shown.
+	 *
+	 * @return bool true if can be shown, false if not.
+	 */
+	public static function can_show_ratings_nag() {
+		$activation_date = get_option( 'dlx_pw_activation_date' );
+		if ( ! $activation_date ) {
+			update_option( 'dlx_pw_activation_date', time() );
+		}
+		// Check user meta if rating has been dismissed.
+		$dismissed_rating = (bool) get_user_meta( get_current_user_id(), 'dlx_pw_dismissed_rating', true );
+		if ( $dismissed_rating ) {
+			return false;
+		}
+		$days_since_activation = time() - $activation_date;
+		if ( $days_since_activation >= 60 ) {
+			return true;
+		}
+		return false;
+	}
+
 
 	/**
 	 * Check if a pattern ID is valid.

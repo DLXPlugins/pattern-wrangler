@@ -131,3 +131,13 @@ add_action(
 		$pattern_wrangler->plugins_loaded();
 	}
 );
+
+/**
+ * Run action on activation.
+ */
+register_activation_hook(
+	__FILE__,
+	function () {
+		update_option( 'dlx_pw_activation_date', time() );
+	}
+);
