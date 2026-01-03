@@ -213,9 +213,19 @@ class Patterns {
 
 		// Get disabled patterns.
 		$options = Options::get_disabled_patterns();
+
+		// Get the registered patterns.
+		$patterns                 = \WP_Block_Patterns_Registry::get_instance();
+		$all_patterns             = $patterns->get_all_registered();
+		$registered_pattern_slugs = array();
+		foreach ( $all_patterns as $pattern ) {
+			$registered_pattern_slugs[] = $pattern['name'];
+		}
+
+		// Loop through all patterns and deregister any that are disabled.
 		foreach ( $options as $option ) {
 			$option = sanitize_text_field( $option );
-			if ( empty( $option ) ) {
+			if ( empty( $option ) || ! in_array( $option, $registered_pattern_slugs, true ) ) {
 				continue;
 			}
 
