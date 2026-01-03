@@ -236,11 +236,10 @@ const Main = ( props ) => {
 	/**
 	 * Dismiss the ratings nag.
 	 */
-	const dismissRatingsNag = async () => {
+	const dismissRatingsNag = async() => {
 		SendCommand( 'dlx_pw_dismiss_ratings_nag', {
 			nonce: dlxPatternWranglerAdmin.dismissRatingsNagNonce,
-		} ).then( ( response ) => {
-			console.log( response );
+		} ).then( () => {
 		} );
 	};
 
