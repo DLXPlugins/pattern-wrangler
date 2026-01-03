@@ -119,14 +119,21 @@ class Functions {
 	/**
 	 * Get the pattern categories.
 	 *
+	 * @param bool $after_filters Whether to get categories after filters.
 	 * @return array The pattern categories.
 	 */
-	public static function get_pattern_categories() {
+	public static function get_pattern_categories( $after_filters = false ) {
 		$options = Options::get_options();
 
 		// Get registered block categories.
 		$pattern_categories = Patterns::get_instance();
 		$pattern_categories = $pattern_categories->get_registered_categories();
+
+		// If after filters, get registered categories *after* filters.
+		if ( $after_filters ) {
+			$pattern_categories = \WP_Block_Pattern_Categories_Registry::get_instance();
+			$pattern_categories = $pattern_categories->get_all_registered();
+		}
 
 		// Get all registered block patterns. We'll use this for a count.
 		$pattern_registry = \WP_Block_Patterns_Registry::get_instance();

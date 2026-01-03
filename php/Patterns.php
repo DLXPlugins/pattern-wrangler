@@ -75,6 +75,9 @@ class Patterns {
 		// De-register any paused patterns.
 		add_action( 'rest_api_init', array( $this, 'maybe_deregister_paused_registered_patterns' ), 1005 );
 
+		// Get registered categories *before* filters.
+		add_action( 'init', array( $this, 'get_registered_categories' ), 800 );
+
 		// Deregister all pattenrs if all patterns are disabled.
 		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 2000 );
 
@@ -161,7 +164,7 @@ class Patterns {
 	}
 
 	/**
-	 * Get registered categories *after* filters.
+	 * Get registered categories *before* filters.
 	 *
 	 * @return WP_Block_Pattern_Categories_Registry
 	 */

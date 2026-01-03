@@ -493,7 +493,7 @@ class Rest {
 		$local_patterns = get_posts( $post_args );
 
 		// Get registered and local categories.
-		$categories = Functions::get_pattern_categories();
+		$categories = Functions::get_pattern_categories( true );
 
 		// Merge the registered and local categories.
 		$registered_categories = $categories['registered'];

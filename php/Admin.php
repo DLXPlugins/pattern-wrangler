@@ -327,7 +327,7 @@ class Admin {
 		}
 		$options = Options::get_options();
 
-		$categories            = Functions::get_pattern_categories();
+		$categories            = Functions::get_pattern_categories( false );
 		$options['registered'] = $categories['registered'];
 		$options['categories'] = $categories['categories'];
 
@@ -493,7 +493,7 @@ class Admin {
 	public function enqueue_admin_scripts() {
 		// Retrieve local options.
 		$options               = Options::get_options();
-		$categories            = Functions::get_pattern_categories();
+		$categories            = Functions::get_pattern_categories( false );
 		$options['registered'] = $categories['registered'];
 		$options['categories'] = $categories['categories'];
 
