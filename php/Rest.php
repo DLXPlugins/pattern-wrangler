@@ -299,10 +299,11 @@ class Rest {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
 		}
 
-		$pattern_title       = sanitize_text_field( $request->get_param( 'patternTitle' ) );
-		$pattern_categories  = Functions::sanitize_array_recursive( $request->get_param( 'patternCategories' ) ); // Cats are in format, [name, id].
-		$pattern_sync_status = sanitize_text_field( $request->get_param( 'patternSyncStatus' ) );
-		$pattern_copy_id     = sanitize_text_field( $request->get_param( 'patternCopyId' ) ); // 0 if not copying.
+		$pattern_title              = sanitize_text_field( $request->get_param( 'patternTitle' ) );
+		$pattern_categories         = Functions::sanitize_array_recursive( $request->get_param( 'patternCategories' ) ); // Cats are in format, [name, id].
+		$pattern_sync_status        = sanitize_text_field( $request->get_param( 'patternSyncStatus' ) );
+		$pattern_copy_id            = sanitize_text_field( $request->get_param( 'patternCopyId' ) ); // 0 if not copying.
+		$disable_registered_pattern = filter_var( $request->get_param( 'disableRegisteredPattern' ), FILTER_VALIDATE_BOOLEAN );
 
 		// Get categories into right format.
 		$categories = array();
@@ -336,6 +337,14 @@ class Rest {
 			} else {
 				$terms_to_add[] = sanitize_text_field( $category['name'] );
 			}
+		}
+
+		// If disable registered pattern, disable the pattern.
+		if ( $disable_registered_pattern ) {
+			$disabled_patterns   = Options::get_disabled_patterns();
+			$disabled_patterns[] = sanitize_text_field( $pattern_copy_id );
+			$disabled_patterns   = array_unique( $disabled_patterns );
+			Options::set_disabled_patterns( $disabled_patterns );
 		}
 
 		// Add terms.

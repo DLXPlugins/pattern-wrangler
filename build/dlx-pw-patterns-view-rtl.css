@@ -4336,6 +4336,8 @@ body div.updated.warning {
 }.dlx-pw-snackbar.components-snackbar.dlx-pw-snackbar-warning {
   background: #FFC107;
   color: #000;
+}.dlx-pw-modal-admin-row {
+  margin-bottom: 16px;
 }.dlx-pw-modal-admin-row-buttons {
   display: flex;
   gap: 8px;

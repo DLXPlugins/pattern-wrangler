@@ -7481,6 +7481,10 @@ var PatternCreateModal = function PatternCreateModal(props) {
     _useState10 = _slicedToArray(_useState9, 2),
     isEditMode = _useState10[0],
     setIsEditMode = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState12 = _slicedToArray(_useState11, 2),
+    disableRegisteredPattern = _useState12[0],
+    setDisableRegisteredPattern = _useState12[1];
   var _useForm = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_8__.useForm)({
       defaultValues: {
         patternId: props.patternId || 0,
@@ -7547,7 +7551,8 @@ var PatternCreateModal = function PatternCreateModal(props) {
                 patternTitle: formData.patternTitle,
                 patternCategories: newCategories,
                 patternSyncStatus: formData.patternSyncStatus,
-                patternCopyId: formData.patternCopyId
+                patternCopyId: formData.patternCopyId,
+                disableRegisteredPattern: disableRegisteredPattern
               }
             });
           case 5:
@@ -7673,6 +7678,16 @@ var PatternCreateModal = function PatternCreateModal(props) {
         disabled: syncedDisabled
       })));
     }
+  })), copyPatternId !== 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "dlx-pw-modal-admin-row"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Disable Registered Pattern', 'pattern-wrangler'),
+    checked: disableRegisteredPattern,
+    onChange: function onChange(value) {
+      return setDisableRegisteredPattern(value);
+    },
+    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Disable the registered pattern when you copy it to local.', 'pattern-wrangler'),
+    disabled: isSaving
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
