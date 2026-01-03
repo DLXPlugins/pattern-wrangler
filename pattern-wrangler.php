@@ -3,7 +3,7 @@
  * Plugin Name:       Pattern Wrangler
  * Plugin URI:        https://dlxplugins.com/plugins/pattern-wrangler/
  * Description:       Manage your block patterns.
- * Version:           2.1.3
+ * Version:           2.2.0
  * Requires at least: 6.8
  * Requires PHP:      7.2
  * Author:            DLX Plugins
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/functions.php';
 
-define( 'DLXPW_PATTERN_WRANGLER_VERSION', '2.1.3' );
+define( 'DLXPW_PATTERN_WRANGLER_VERSION', '2.2.0' );
 define( 'DLXPW_PATTERN_WRANGLER_FILE', __FILE__ );
 
 // Support for site-level autoloading.
@@ -129,5 +129,15 @@ add_action(
 	function () {
 		$pattern_wrangler = PatternWrangler::get_instance();
 		$pattern_wrangler->plugins_loaded();
+	}
+);
+
+/**
+ * Run action on activation.
+ */
+register_activation_hook(
+	__FILE__,
+	function () {
+		update_option( 'dlx_pw_activation_date', time() );
 	}
 );

@@ -13,6 +13,7 @@ const DEFAULT_STATE = {
 	},
 	loading: false,
 	error: null,
+	doNotShowAgain: dlxEnhancedPatternsView.doNotShowAgain || false,
 };
 
 const actions = {
@@ -99,6 +100,12 @@ const actions = {
 		return {
 			type: 'SET_ERROR',
 			error,
+		};
+	},
+	setDoNotShowAgain( doNotShowAgain ) {
+		return {
+			type: 'SET_DO_NOT_SHOW_AGAIN',
+			doNotShowAgain,
 		};
 	},
 	fetchData() {
@@ -282,6 +289,11 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 						patterns: updatedDeletedPatterns,
 					},
 				};
+			case 'SET_DO_NOT_SHOW_AGAIN':
+				return {
+					...state,
+					doNotShowAgain: action.doNotShowAgain,
+				};
 			default:
 				return state;
 		}
@@ -305,6 +317,9 @@ const patternsStore = createReduxStore( 'dlxplugins/pattern-wrangler/patterns', 
 		},
 		getError( state ) {
 			return state.error;
+		},
+		getDoNotShowAgain( state ) {
+			return state.doNotShowAgain;
 		},
 	},
 } );

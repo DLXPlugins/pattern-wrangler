@@ -368,6 +368,9 @@ dlx-patterns-view-filters-wrapper {
 		color: #000;
 	}
  }
+ .dlx-pw-modal-admin-row {
+	margin-bottom: 16px;
+ }
 
  .dlx-pw-modal-admin-row-buttons {
 	display: flex;
@@ -484,12 +487,16 @@ Hide erronous display when hittnig the back button on a filter change.
 .dlx-bulk-action-toolbar-top .dataviews-bulk-actions-footer__container {
 	margin-bottom: 0;
 }
-.dataviews-pagination {
+.dlx-patterns-view-pagination-wrapper {
 	position: fixed;
 	bottom: 0;
 	right: 0;
 	background: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
 	padding: 16px;
+	padding-top: 24px;
 	border-radius: 4px;
 	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 	justify-content: flex-end;
@@ -498,5 +505,15 @@ Hide erronous display when hittnig the back button on a filter change.
 	font-size: 11px;
 	font-weight: 500;
 	text-transform: uppercase;
+	border-top: 1px solid #333;
 	z-index: 1;
+}
+.dlx-patterns-view-pagination-item-total-items {
+	position: absolute;
+	right: 24px;
+	top: 6px;
+	font-size: 12px;
+	font-weight: 400;
+	color: #7b7b7b;
+	text-transform: none;
 }

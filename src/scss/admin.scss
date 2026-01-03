@@ -386,6 +386,8 @@ svg.lucide {
 	--dlx-pw-admin--color-notice--warning-alt: #e8a931;
 	--dlx-pw-admin--color-notice--error: #f5e5e4;
 	--dlx-pw-admin--color-notice--error-alt: #bc2b2c;
+	--dlx-pw-admin--color-notice--rating: #ff00f7;
+	--dlx-pw-admin--color-notice--rating-alt: #b1b1b1;
 }
 
 
@@ -483,7 +485,20 @@ svg.lucide {
 		}
 
 		svg path {
-			fill: var(--dlx-pw-admin--color-notice--success-alt);
+			fill: var(--dlx-pw-admin--color-notice--success-alt)
+		}
+	}
+
+	&.dlx-pw-admin__notice-type--rating {
+		background-color: var(--dlx-pw-admin--color-notice--rating-alt);
+
+		.components-notice {
+			border-left-color: var(--dlx-pw-admin--color-notice--rating);
+		}
+
+		svg path {
+			fill: var(--dlx-pw-admin--color-notice--rating) !important;
+			stroke: var(--dlx-pw-admin--color-notice--rating) !important;
 		}
 	}
 
@@ -759,6 +774,11 @@ div.can-revoke {
 	justify-content: space-between;
 	align-items: center;
 
+	&.buttons-ratings-nag {
+		margin-top: 16px;
+		justify-content: flex-start;
+	}
+
 	&.no-flex {
 		display: block;
 	}
@@ -853,6 +873,17 @@ div.can-revoke {
 				background: #ece6e6;
 				color: #822700;
 				border-color: #822700;
+			}
+		}
+		&.dlx__btn-rating {
+			background: #ff00f7;
+			color: #FFF;
+			border-color: #ff00f7;
+
+			&:hover {
+				background: #ffffff;
+				color: #ff00f7;
+				border-color: #ff00f7;
 			}
 		}
 
