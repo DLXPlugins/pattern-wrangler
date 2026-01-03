@@ -11,7 +11,7 @@ import { downloadBlob } from '@wordpress/blob';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import { escapeAttribute } from '@wordpress/escape-html';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
-import { __ } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 import {
 	Button,
 	__experimentalToggleGroupControl as ToggleGroupControl,
@@ -247,9 +247,10 @@ const Interface = ( props ) => {
 	const { data } = props;
 
 	const [ selectedItems, setSelectedItems ] = useState( [] );
-	const { patterns } = useSelect( ( select ) => {
+	const { patterns, doNotShowAgain } = useSelect( ( newSelect ) => {
 		return {
-			patterns: select( patternsStore ).getPatterns(),
+			patterns: newSelect( patternsStore ).getPatterns(),
+			doNotShowAgain: newSelect( patternsStore ).getDoNotShowAgain(),
 		};
 	} );
 
@@ -1610,6 +1611,25 @@ const Interface = ( props ) => {
 		}
 	}, [ data ] );
 
+	/**
+	 * Get the total number of items for the current view.
+	 *
+	 * @return {number} The total number of items for the current view.
+	 */
+	const totalItems = useMemo( () => {
+		return getFilteredPatternsCount( view );
+	}, [ view ] );
+
+	/**
+	 * Check if pagination is needed.
+	 *
+	 * @return {boolean} True if pagination is needed, false otherwise.
+	 */
+	const hasPagination = useMemo( () => {
+		return getFilteredPatternsCount( view ) > view.perPage;
+	}, [ view ] );
+
+
 	if ( loading ) {
 		return <>Loading...</>;
 	}
@@ -2053,7 +2073,18 @@ const Interface = ( props ) => {
 					</div>
 					<DataViews.Layout />
 					<DataViews.BulkActionToolbar />
-					<DataViews.Pagination />
+					{
+						hasPagination && (
+							<div className="dlx-patterns-view-pagination-wrapper">
+								<div className="dlx-patterns-view-pagination-item dlx-patterns-view-pagination-item-total-items">
+									<span>{ totalItems } { _n( 'Item', 'Items', totalItems, 'pattern-wrangler' ) }</span>
+								</div>
+								<div className="dlx-patterns-view-pagination-item">
+									<DataViews.Pagination />
+								</div>
+							</div>
+						)
+					}
 				</DataViews>
 
 				{ snackbar.isVisible && (
@@ -2116,8 +2147,9 @@ const Interface = ( props ) => {
 			{ isPauseModalOpen && (
 				<PatternPauseModal
 					items={ isPauseModalOpen.items }
-					onPause={ ( pauseResponse, itemIdsAndNonces ) => {
+					onPause={ ( pauseResponse, itemIdsAndNonces, showAgain ) => {
 						dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
+						dispatch( patternsStore ).setDoNotShowAgain( showAgain );
 						setIsPauseModalOpen( null );
 						setSnackbar( {
 							isVisible: true,
@@ -2129,6 +2161,7 @@ const Interface = ( props ) => {
 							},
 						} );
 					} }
+					doNotShowAgain={ doNotShowAgain }
 					onRequestClose={ () => setIsPauseModalOpen( null ) }
 				/>
 			) }
@@ -2154,8 +2187,9 @@ const Interface = ( props ) => {
 			{ isUnpauseModalOpen && (
 				<PatternUnpauseModal
 					items={ isUnpauseModalOpen.items }
-					onReenable={ ( reenableResponse, itemIdsAndNonces ) => {
+					onReenable={ ( reenableResponse, itemIdsAndNonces, showAgain ) => {
 						dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
+						dispatch( patternsStore ).setDoNotShowAgain( showAgain );
 						setIsUnpauseModalOpen( null );
 						setSnackbar( {
 							isVisible: true,
@@ -2167,16 +2201,28 @@ const Interface = ( props ) => {
 							},
 						} );
 					} }
+					doNotShowAgain={ doNotShowAgain }
 					onRequestClose={ () => setIsUnpauseModalOpen( null ) }
 				/>
 			) }
 			{ isDeleteModalOpen && (
 				<PatternDeleteModal
 					items={ isDeleteModalOpen.items }
-					onDelete={ ( deleteResponse, itemIdsAndNonces ) => {
+					onDelete={ ( deleteResponse, itemIdsAndNonces, showAgain ) => {
+						dispatch( patternsStore ).setDoNotShowAgain( showAgain );
 						dispatch( patternsStore ).deletePatterns( itemIdsAndNonces );
 						setIsDeleteModalOpen( null );
+						setSnackbar( {
+							isVisible: true,
+							message: __( 'Patterns deleted', 'pattern-wrangler' ),
+							title: __( 'Patterns Deleted', 'pattern-wrangler' ),
+							type: 'success',
+							onClose: () => {
+								setSnackbar( { isVisible: false } );
+							},
+						} );
 					} }
+					doNotShowAgain={ doNotShowAgain }
 					onRequestClose={ () => setIsDeleteModalOpen( null ) }
 				/>
 			) }

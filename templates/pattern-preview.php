@@ -184,6 +184,7 @@ add_action(
 		header( 'Access-Control-Allow-Origin: *' );
 		header( 'Access-Control-Allow-Methods: GET, OPTIONS' );
 		header( 'Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept' );
+		header( 'Content-Security-Policy: default-src *; worker-src * blob:; font-src * data:; img-src * data:; style-src * \'unsafe-inline\'; script-src * \'unsafe-inline\' \'unsafe-eval\'; connect-src * data:; frame-src * data:;' );
 
 		// Add base tag.
 		echo '<base href="' . esc_url( home_url() ) . '">';

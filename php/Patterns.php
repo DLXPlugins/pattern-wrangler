@@ -24,6 +24,13 @@ class Patterns {
 	private static $instance = null;
 
 	/**
+	 * Holds the registered categories *before* filters. Can access after `init` action.
+	 *
+	 * @var WP_Block_Pattern_Categories_Registry $registered_categories_registry
+	 */
+	private static $registered_categories_registry = null;
+
+	/**
 	 * Return an instance of the class
 	 *
 	 * @return Patterns class instance.
@@ -154,6 +161,20 @@ class Patterns {
 	}
 
 	/**
+	 * Get registered categories *after* filters.
+	 *
+	 * @return WP_Block_Pattern_Categories_Registry
+	 */
+	public function get_registered_categories() {
+		if ( null === self::$registered_categories_registry ) {
+			$pattern_categories                   = \WP_Block_Pattern_Categories_Registry::get_instance();
+			$pattern_categories                   = $pattern_categories->get_all_registered();
+			self::$registered_categories_registry = $pattern_categories;
+		}
+		return self::$registered_categories_registry;
+	}
+
+	/**
 	 * Add admin notices to the patterns post type list view.
 	 */
 	public function add_admin_notices() {
@@ -213,9 +234,19 @@ class Patterns {
 
 		// Get disabled patterns.
 		$options = Options::get_disabled_patterns();
+
+		// Get the registered patterns.
+		$patterns                 = \WP_Block_Patterns_Registry::get_instance();
+		$all_patterns             = $patterns->get_all_registered();
+		$registered_pattern_slugs = array();
+		foreach ( $all_patterns as $pattern ) {
+			$registered_pattern_slugs[] = $pattern['name'];
+		}
+
+		// Loop through all patterns and deregister any that are disabled.
 		foreach ( $options as $option ) {
 			$option = sanitize_text_field( $option );
-			if ( empty( $option ) ) {
+			if ( empty( $option ) || ! in_array( $option, $registered_pattern_slugs, true ) ) {
 				continue;
 			}
 

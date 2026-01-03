@@ -41,19 +41,6 @@ class Rest {
 	 */
 	public function rest_api_register() {
 
-		// todo - for multisite site pattern library.
-		// register_rest_route(
-		// 'dlxplugins/pattern-wrangler/v1',
-		// '/search/sites',
-		// array(
-		// 'methods'             => 'POST',
-		// 'permission_callback' => array( $this, 'rest_get_users_permissions_callback' ),
-		// 'callback'            => array( $this, 'rest_get_sites' ),
-		// 'sanitize_callback'   => array( $this, 'rest_api_sanitize' ),
-		// 'validate_callback'   => array( $this, 'rest_api_validate' ),
-		// )
-		// );
-
 		/**
 		 * For retrieving site patterns for a site.
 		 */
@@ -178,7 +165,8 @@ class Rest {
 	 */
 	public function rest_delete_pattern( $request ) {
 
-		$items = $request->get_param( 'items' );
+		$items             = $request->get_param( 'items' );
+		$do_not_show_again = filter_var( $request->get_param( 'doNotShowAgain' ), FILTER_VALIDATE_BOOLEAN );
 
 		foreach ( $items as $item ) {
 			$pattern_id = $item['id'];
@@ -196,6 +184,12 @@ class Rest {
 			wp_delete_post( $pattern_id, true );
 		}
 
+		if ( $do_not_show_again ) {
+			if ( current_user_can( 'publish_posts' ) ) {
+				update_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true );
+			}
+		}
+
 		return rest_ensure_response( array( 'success' => true ) );
 	}
 
@@ -208,7 +202,8 @@ class Rest {
 	 */
 	public function rest_pause_pattern( $request ) {
 
-		$items = $request->get_param( 'items' );
+		$items             = $request->get_param( 'items' );
+		$do_not_show_again = filter_var( $request->get_param( 'doNotShowAgain' ), FILTER_VALIDATE_BOOLEAN );
 
 		foreach ( $items as $item ) {
 			$pattern_id = $item['id'];
@@ -238,6 +233,11 @@ class Rest {
 				Options::set_disabled_patterns( $disabled_patterns );
 			}
 		}
+		if ( $do_not_show_again ) {
+			if ( current_user_can( 'publish_posts' ) ) {
+				update_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true );
+			}
+		}
 
 		return rest_ensure_response( array( 'success' => true ) );
 	}
@@ -251,7 +251,8 @@ class Rest {
 	 */
 	public function rest_publish_pattern( $request ) {
 
-		$items = $request->get_param( 'items' );
+		$items             = $request->get_param( 'items' );
+		$do_not_show_again = filter_var( $request->get_param( 'doNotShowAgain' ), FILTER_VALIDATE_BOOLEAN );
 
 		foreach ( $items as $item ) {
 			$pattern_id = $item['id'];
@@ -281,6 +282,11 @@ class Rest {
 				Options::set_disabled_patterns( array_values( $disabled_patterns ) );
 			}
 		}
+		if ( $do_not_show_again ) {
+			if ( current_user_can( 'publish_posts' ) ) {
+				update_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true );
+			}
+		}
 
 		return rest_ensure_response( array( 'success' => true ) );
 	}
@@ -299,10 +305,11 @@ class Rest {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
 		}
 
-		$pattern_title       = sanitize_text_field( $request->get_param( 'patternTitle' ) );
-		$pattern_categories  = Functions::sanitize_array_recursive( $request->get_param( 'patternCategories' ) ); // Cats are in format, [name, id].
-		$pattern_sync_status = sanitize_text_field( $request->get_param( 'patternSyncStatus' ) );
-		$pattern_copy_id     = sanitize_text_field( $request->get_param( 'patternCopyId' ) ); // 0 if not copying.
+		$pattern_title              = sanitize_text_field( $request->get_param( 'patternTitle' ) );
+		$pattern_categories         = Functions::sanitize_array_recursive( $request->get_param( 'patternCategories' ) ); // Cats are in format, [name, id].
+		$pattern_sync_status        = sanitize_text_field( $request->get_param( 'patternSyncStatus' ) );
+		$pattern_copy_id            = sanitize_text_field( $request->get_param( 'patternCopyId' ) ); // 0 if not copying.
+		$disable_registered_pattern = filter_var( $request->get_param( 'disableRegisteredPattern' ), FILTER_VALIDATE_BOOLEAN );
 
 		// Get categories into right format.
 		$categories = array();
@@ -336,6 +343,14 @@ class Rest {
 			} else {
 				$terms_to_add[] = sanitize_text_field( $category['name'] );
 			}
+		}
+
+		// If disable registered pattern, disable the pattern.
+		if ( $disable_registered_pattern ) {
+			$disabled_patterns   = Options::get_disabled_patterns();
+			$disabled_patterns[] = sanitize_text_field( $pattern_copy_id );
+			$disabled_patterns   = array_unique( $disabled_patterns );
+			Options::set_disabled_patterns( $disabled_patterns );
 		}
 
 		// Add terms.
@@ -496,7 +511,7 @@ class Rest {
 				'slug'        => $registered_category['slug'],
 				'enabled'     => true,
 				'count'       => 0,
-				'mappedTo'    => false,
+				'mappedTo'    => $registered_category['mappedTo'] ?? false,
 				'registered'  => true,
 				'id'          => 0,
 			);
@@ -597,11 +612,10 @@ class Rest {
 				$categories     = array();
 				$category_slugs = array();
 				foreach ( $pattern['categories'] as $category ) {
-					$category_registry = \WP_Block_Pattern_Categories_Registry::get_instance();
-					$category          = $category_registry->get_registered( $category );
-					if ( $category ) {
-						$categories[]     = $category['label'];
-						$category_slugs[] = sanitize_title( $category['name'] );
+					if ( array_key_exists( $category, $all_categories ) ) {
+						$cat              = $all_categories[ $category ];
+						$categories[]     = $cat['label'];
+						$category_slugs[] = sanitize_title( $cat['slug'] );
 					}
 				}
 

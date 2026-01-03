@@ -57,6 +57,7 @@ const PatternCreateModal = ( props ) => {
 	const [ syncedDisabled ] = useState( props.syncedDisabled || false );
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ isEditMode, setIsEditMode ] = useState( props.isEditMode || false );
+	const [ disableRegisteredPattern, setDisableRegisteredPattern ] = useState( false );
 
 	const {
 		control,
@@ -123,6 +124,7 @@ const PatternCreateModal = ( props ) => {
 				patternCategories: newCategories,
 				patternSyncStatus: formData.patternSyncStatus,
 				patternCopyId: formData.patternCopyId,
+				disableRegisteredPattern,
 			},
 		} );
 		if ( response?.error ) {
@@ -252,6 +254,22 @@ const PatternCreateModal = ( props ) => {
 								) }
 							/>
 						</div>
+						{
+							copyPatternId !== 0 && (
+								<div className="dlx-pw-modal-admin-row">
+									<ToggleControl
+										label={ __( 'Disable Registered Pattern', 'pattern-wrangler' ) }
+										checked={ disableRegisteredPattern }
+										onChange={ ( value ) => setDisableRegisteredPattern( value ) }
+										help={ __(
+											'Disable the registered pattern when you copy it to local.',
+											'pattern-wrangler'
+										) }
+										disabled={ isSaving }
+									/>
+								</div>
+							)
+						}
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
 							<Button variant="primary" type="submit" disabled={ isSaving }>
 								{ getButtonText() }

@@ -125,8 +125,8 @@ class Functions {
 		$options = Options::get_options();
 
 		// Get registered block categories.
-		$pattern_categories = \WP_Block_Pattern_Categories_Registry::get_instance();
-		$pattern_categories = $pattern_categories->get_all_registered();
+		$pattern_categories = Patterns::get_instance();
+		$pattern_categories = $pattern_categories->get_registered_categories();
 
 		// Get all registered block patterns. We'll use this for a count.
 		$pattern_registry = \WP_Block_Patterns_Registry::get_instance();
@@ -198,6 +198,28 @@ class Functions {
 			'registered' => $all_categories,
 			'categories' => $pattern_categories_taxonomy,
 		);
+	}
+
+	/**
+	 * Check if the ratings nag can be shown.
+	 *
+	 * @return bool true if can be shown, false if not.
+	 */
+	public static function can_show_ratings_nag() {
+		$activation_date = get_option( 'dlx_pw_activation_date' );
+		if ( ! $activation_date ) {
+			update_option( 'dlx_pw_activation_date', time() );
+		}
+		// Check user meta if rating has been dismissed.
+		$dismissed_rating = (bool) get_user_meta( get_current_user_id(), 'dlx_pw_dismissed_rating', true );
+		if ( $dismissed_rating ) {
+			return false;
+		}
+		$days_since_activation = ( time() - $activation_date ) / DAY_IN_SECONDS;
+		if ( $days_since_activation >= 30 ) {
+			return true;
+		}
+		return false;
 	}
 
 

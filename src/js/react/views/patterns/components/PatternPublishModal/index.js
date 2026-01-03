@@ -46,15 +46,10 @@ import Notice from '../../../../components/Notice';
  */
 const PatternPublishModal = ( props ) => {
 	const [ isSaving, setIsSaving ] = useState( false );
-
+	const [ doNotShowAgain, setDoNotShowAgain ] = useState( props.doNotShowAgain || false );
 	const {
 		control,
-		getValues,
 		handleSubmit,
-		reset,
-		setError,
-		trigger,
-		setValue,
 	} = useForm( {
 		defaultValues: {
 			items: props.items || [],
@@ -63,7 +58,7 @@ const PatternPublishModal = ( props ) => {
 		},
 	} );
 	const formValues = useWatch( { control } );
-	const { errors, isDirty, dirtyFields } = useFormState( {
+	const { errors } = useFormState( {
 		control,
 	} );
 
@@ -83,12 +78,21 @@ const PatternPublishModal = ( props ) => {
 			method: 'POST',
 			data: {
 				items: itemIdsAndNonces,
+				doNotShowAgain,
 			},
 		} );
 		props.onPublish( response, itemIdsAndNonces );
 		setIsSaving( false );
 	};
 
+	useEffect( () => {
+		if ( props.doNotShowAgain ) {
+			onSubmit( formValues );
+		}
+	}, [] );
+	if ( props.doNotShowAgain ) {
+		return null;
+	}
 	/**
 	 * Get the button text.
 	 *
