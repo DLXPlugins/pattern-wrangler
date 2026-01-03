@@ -41,19 +41,6 @@ class Rest {
 	 */
 	public function rest_api_register() {
 
-		// todo - for multisite site pattern library.
-		// register_rest_route(
-		// 'dlxplugins/pattern-wrangler/v1',
-		// '/search/sites',
-		// array(
-		// 'methods'             => 'POST',
-		// 'permission_callback' => array( $this, 'rest_get_users_permissions_callback' ),
-		// 'callback'            => array( $this, 'rest_get_sites' ),
-		// 'sanitize_callback'   => array( $this, 'rest_api_sanitize' ),
-		// 'validate_callback'   => array( $this, 'rest_api_validate' ),
-		// )
-		// );
-
 		/**
 		 * For retrieving site patterns for a site.
 		 */

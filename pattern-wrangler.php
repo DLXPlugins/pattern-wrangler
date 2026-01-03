@@ -115,6 +115,11 @@ class PatternWrangler {
 			// Set global current screen to not is admin request. This should only apply to the PW preview screen Ajax request.
 			if ( ! isset( $GLOBALS['current_screen'] ) ) {
 				$GLOBALS['current_screen'] = new class() {
+					/**
+					 * Check if in admin.
+					 *
+					 * @return bool
+					 */
 					public function in_admin() {
 						return false;
 					}

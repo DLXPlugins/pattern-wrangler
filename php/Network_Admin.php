@@ -25,23 +25,6 @@ class Network_Admin {
 
 		// Init the network admin menu.
 		add_action( 'network_admin_menu', array( $this, 'add_network_admin_menu' ), 100 );
-
-		// Add site state to URL column.
-		// add_filter( 'display_site_states', array( $this, 'add_pattern_source_state' ), 10, 2 );
-
-		// Add sites list table column.
-		// add_filter( 'wpmu_blogs_columns', array( $this, 'add_patterns_column' ) );
-
-		// Add content to the custom column.
-		// add_action( 'manage_sites_custom_column', array( $this, 'manage_patterns_column' ), 10, 2 );
-
-		// add_action( 'network_site_info_form', array( $this, 'add_pattern_configuration_field' ) );
-
-		// For hooking into the save action of the site info screen.
-		// add_action( 'wp_update_site', array( $this, 'save_site_configuration' ) );
-
-		// Save pattern configuration.
-		// add_action( 'wpmu_update_blog_options', array( $this, 'save_pattern_configuration' ) );
 	}
 
 	/**
