@@ -125,8 +125,8 @@ class Functions {
 		$options = Options::get_options();
 
 		// Get registered block categories.
-		$pattern_categories = \WP_Block_Pattern_Categories_Registry::get_instance();
-		$pattern_categories = $pattern_categories->get_all_registered();
+		$pattern_categories = Patterns::get_instance();
+		$pattern_categories = $pattern_categories->get_registered_categories();
 
 		// Get all registered block patterns. We'll use this for a count.
 		$pattern_registry = \WP_Block_Patterns_Registry::get_instance();

@@ -24,6 +24,13 @@ class Patterns {
 	private static $instance = null;
 
 	/**
+	 * Holds the registered categories *before* filters. Can access after `init` action.
+	 *
+	 * @var WP_Block_Pattern_Categories_Registry $registered_categories_registry
+	 */
+	private static $registered_categories_registry = null;
+
+	/**
 	 * Return an instance of the class
 	 *
 	 * @return Patterns class instance.
@@ -151,6 +158,20 @@ class Patterns {
 
 		// Add any admin notices to the patterns post type list view.
 		add_action( 'admin_notices', array( $this, 'add_admin_notices' ) );
+	}
+
+	/**
+	 * Get registered categories *after* filters.
+	 *
+	 * @return WP_Block_Pattern_Categories_Registry
+	 */
+	public function get_registered_categories() {
+		if ( null === self::$registered_categories_registry ) {
+			$pattern_categories                   = \WP_Block_Pattern_Categories_Registry::get_instance();
+			$pattern_categories                   = $pattern_categories->get_all_registered();
+			self::$registered_categories_registry = $pattern_categories;
+		}
+		return self::$registered_categories_registry;
 	}
 
 	/**

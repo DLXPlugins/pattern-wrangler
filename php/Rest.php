@@ -524,7 +524,7 @@ class Rest {
 				'slug'        => $registered_category['slug'],
 				'enabled'     => true,
 				'count'       => 0,
-				'mappedTo'    => false,
+				'mappedTo'    => $registered_category['mappedTo'] ?? false,
 				'registered'  => true,
 				'id'          => 0,
 			);
@@ -625,11 +625,10 @@ class Rest {
 				$categories     = array();
 				$category_slugs = array();
 				foreach ( $pattern['categories'] as $category ) {
-					$category_registry = \WP_Block_Pattern_Categories_Registry::get_instance();
-					$category          = $category_registry->get_registered( $category );
-					if ( $category ) {
-						$categories[]     = $category['label'];
-						$category_slugs[] = sanitize_title( $category['name'] );
+					if ( array_key_exists( $category, $all_categories ) ) {
+						$cat              = $all_categories[ $category ];
+						$categories[]     = $cat['label'];
+						$category_slugs[] = sanitize_title( $cat['slug'] );
 					}
 				}
 
