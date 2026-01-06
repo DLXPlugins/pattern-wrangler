@@ -112,11 +112,13 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Screenshots ==
 
-1. Enhanced Patterns View Screen.
-2. An example of an organized Patterns screen.
-3. Map registered categories to terms, or rename for better organization or translations.
-4. Enable the Customizer UI, and load Additional CSS in the block editor.
-5. Hide all patterns, or hide them from core, remote, themes, or plugins.
+1. Enhanced Patterns View Screen, showing local and registered patterns together in an easily sortable interface.
+2. Contextual shortcuts allow you to quickly edit, disable, and enable patterns. Shortcuts such as Copy Pattern to Clipboard and Export to JSON are also present.
+3. Filter by all available registered and local categories, or even plugins such as WooCommerce.
+4. Admin option for hiding all patterns, disabling remote, theme, plugin, unsynced, synced, and uncategorized patterns.
+5. Customizer options such as hiding or showing the customizer UI. Miscellaneous options such as showing the menus UI, and allowing patterns to be exported.
+6. Map registered categories to local categories to prevent duplicates when viewing the block patterns.
+7. An organized patterns view, demonstrating a trimmed down library and less category clutter.
 
 == Changelog ==
 
