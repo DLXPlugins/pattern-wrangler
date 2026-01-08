@@ -651,13 +651,20 @@ class Rest {
 			if ( ! current_user_can( 'edit_post', $pattern->ID ) ) {
 				continue;
 			}
+			$categories      = get_the_terms( $pattern->ID, 'wp_pattern_category' );
+			$category_labels = array();
+			$category_slugs  = array();
+			foreach ( $categories as $category ) {
+				$category_labels[] = sanitize_text_field( $category->name );
+				$category_slugs[]  = sanitize_title( $category->slug );
+			}
 			$patterns[ $pattern->post_name ] = array(
 				'id'            => $pattern->ID,
 				'title'         => $pattern->post_title,
 				'slug'          => $pattern->post_name,
 				'content'       => $pattern->post_content,
-				'categories'    => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
-				'categorySlugs' => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
+				'categories'    => $category_labels,
+				'categorySlugs' => $category_slugs,
 				'isDisabled'    => 'draft' === $pattern->post_status,
 				'isLocal'       => true,
 				'syncStatus'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
