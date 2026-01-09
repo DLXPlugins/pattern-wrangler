@@ -213,7 +213,7 @@ var CategoriesListView = function CategoriesListView(props) {
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Retry', 'pattern-wrangler')));
   }
   return /*#__PURE__*/React.createElement(Interface, _extends({
-    data: data
+    data: categories
   }, props));
 };
 
@@ -221,43 +221,30 @@ var CategoriesListView = function CategoriesListView(props) {
 // const queryArgs = getQueryArgs( window.location.href );
 
 var Interface = function Interface(props) {
-  var data = props.data;
+  var categories = props.categories;
   var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     selectedItems = _useState2[0],
     setSelectedItems = _useState2[1];
   var _useSelect2 = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.useSelect)(function (newSelect) {
       return {
-        categories: newSelect(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).getCategories(),
-        doNotShowAgain: newSelect(patternsStore).getDoNotShowAgain()
+        registeredCategories: newSelect(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).getRegisteredCategories(),
+        localCategories: newSelect(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).getLocalCategories(),
+        doNotShowAgain: newSelect(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).getDoNotShowAgain()
       };
     }),
-    categories = _useSelect2.categories,
+    registeredCategories = _useSelect2.registeredCategories,
+    localCategories = _useSelect2.localCategories,
     doNotShowAgain = _useSelect2.doNotShowAgain;
-  var _useState3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState4 = _slicedToArray(_useState3, 2),
-    localCategories = _useState4[0],
-    setLocalCategories = _useState4[1];
-  var _useState5 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState6 = _slicedToArray(_useState5, 2),
-    registeredCategories = _useState6[0],
-    setRegisteredCategories = _useState6[1];
-  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
-    _useState8 = _slicedToArray(_useState7, 2),
-    loading = _useState8[0],
-    setLoading = _useState8[1];
-  var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
       isVisible: false,
       message: '',
       title: '',
       type: ''
     }),
-    _useState10 = _slicedToArray(_useState9, 2),
-    snackbar = _useState10[0],
-    setSnackbar = _useState10[1];
-  if (loading) {
-    return /*#__PURE__*/React.createElement(React.Fragment, null, "Loading...");
-  }
+    _useState4 = _slicedToArray(_useState3, 2),
+    snackbar = _useState4[0],
+    setSnackbar = _useState4[1];
   return /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-container-wrapper"
   }, /*#__PURE__*/React.createElement("div", {
@@ -484,6 +471,8 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 var DEFAULT_STATE = {
   categories: [],
+  registeredCategories: [],
+  localCategories: [],
   loading: true,
   error: null,
   doNotShowAgain: dlxEnhancedCategoriesView.doNotShowAgain || false
@@ -493,6 +482,18 @@ var actions = {
     return {
       type: 'SET_CATEGORIES',
       categories: categories
+    };
+  },
+  setRegisteredCategories: function setRegisteredCategories(registeredCategories) {
+    return {
+      type: 'SET_REGISTERED_CATEGORIES',
+      registeredCategories: registeredCategories
+    };
+  },
+  setLocalCategories: function setLocalCategories(localCategories) {
+    return {
+      type: 'SET_LOCAL_CATEGORIES',
+      localCategories: localCategories
     };
   },
   setLoading: function setLoading(loading) {
@@ -535,6 +536,8 @@ var actions = {
               response = _context.sent;
               if (response) {
                 dispatch(actions.setCategories(response.categories));
+                dispatch(actions.setRegisteredCategories(response.registeredCategories));
+                dispatch(actions.setLocalCategories(response.localCategories));
               } else {
                 dispatch(actions.setError('Failed to fetch data'));
               }
@@ -569,6 +572,14 @@ var categoriesStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRedu
         return _objectSpread(_objectSpread({}, state), {}, {
           categories: action.categories
         });
+      case 'SET_REGISTERED_CATEGORIES':
+        return _objectSpread(_objectSpread({}, state), {}, {
+          registeredCategories: action.registeredCategories
+        });
+      case 'SET_LOCAL_CATEGORIES':
+        return _objectSpread(_objectSpread({}, state), {}, {
+          localCategories: action.localCategories
+        });
       case 'SET_LOADING':
         return _objectSpread(_objectSpread({}, state), {}, {
           loading: action.loading
@@ -589,6 +600,12 @@ var categoriesStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRedu
   selectors: {
     getCategories: function getCategories(state) {
       return state.categories;
+    },
+    getRegisteredCategories: function getRegisteredCategories(state) {
+      return state.registeredCategories;
+    },
+    getLocalCategories: function getLocalCategories(state) {
+      return state.localCategories;
     },
     getLoading: function getLoading(state) {
       return state.loading;

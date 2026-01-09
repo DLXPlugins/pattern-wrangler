@@ -4,6 +4,8 @@ import { addQueryArgs } from '@wordpress/url';
 
 const DEFAULT_STATE = {
 	categories: [],
+	registeredCategories: [],
+	localCategories: [],
 	loading: true,
 	error: null,
 	doNotShowAgain: dlxEnhancedCategoriesView.doNotShowAgain || false,
@@ -14,6 +16,18 @@ const actions = {
 		return {
 			type: 'SET_CATEGORIES',
 			categories,
+		};
+	},
+	setRegisteredCategories( registeredCategories ) {
+		return {
+			type: 'SET_REGISTERED_CATEGORIES',
+			registeredCategories,
+		};
+	},
+	setLocalCategories( localCategories ) {
+		return {
+			type: 'SET_LOCAL_CATEGORIES',
+			localCategories,
 		};
 	},
 	setLoading( loading ) {
@@ -49,6 +63,8 @@ const actions = {
 
 				if ( response ) {
 					dispatch( actions.setCategories( response.categories ) );
+					dispatch( actions.setRegisteredCategories( response.registeredCategories ) );
+					dispatch( actions.setLocalCategories( response.localCategories ) );
 				} else {
 					dispatch( actions.setError( 'Failed to fetch data' ) );
 				}
@@ -68,6 +84,16 @@ const categoriesStore = createReduxStore( 'dlxplugins/pattern-wrangler/categorie
 				return {
 					...state,
 					categories: action.categories,
+				};
+			case 'SET_REGISTERED_CATEGORIES':
+				return {
+					...state,
+					registeredCategories: action.registeredCategories,
+				};
+			case 'SET_LOCAL_CATEGORIES':
+				return {
+					...state,
+					localCategories: action.localCategories,
 				};
 			case 'SET_LOADING':
 				return {
@@ -92,6 +118,12 @@ const categoriesStore = createReduxStore( 'dlxplugins/pattern-wrangler/categorie
 	selectors: {
 		getCategories( state ) {
 			return state.categories;
+		},
+		getRegisteredCategories( state ) {
+			return state.registeredCategories;
+		},
+		getLocalCategories( state ) {
+			return state.localCategories;
 		},
 		getLoading( state ) {
 			return state.loading;

@@ -78,36 +78,30 @@ const CategoriesListView = ( props ) => {
 		);
 	}
 
-	return <Interface data={ data } { ...props } />;
+	return <Interface data={ categories } { ...props } />;
 };
 
 // Get query args from current URL.
 // const queryArgs = getQueryArgs( window.location.href );
 
 const Interface = ( props ) => {
-	const { data } = props;
+	const { categories } = props;
 
 	const [ selectedItems, setSelectedItems ] = useState( [] );
-	const { categories, doNotShowAgain } = useSelect( ( newSelect ) => {
+	const { registeredCategories, localCategories, doNotShowAgain } = useSelect( ( newSelect ) => {
 		return {
-			categories: newSelect( categoriesStore ).getCategories(),
-			doNotShowAgain: newSelect( patternsStore ).getDoNotShowAgain(),
+			registeredCategories: newSelect( categoriesStore ).getRegisteredCategories(),
+			localCategories: newSelect( categoriesStore ).getLocalCategories(),
+			doNotShowAgain: newSelect( categoriesStore ).getDoNotShowAgain(),
 		};
 	} );
 
-	const [ localCategories, setLocalCategories ] = useState( [] );
-	const [ registeredCategories, setRegisteredCategories ] = useState( [] );
-	const [ loading, setLoading ] = useState( true );
 	const [ snackbar, setSnackbar ] = useState( {
 		isVisible: false,
 		message: '',
 		title: '',
 		type: '',
 	} );
-
-	if ( loading ) {
-		return <>Loading...</>;
-	}
 
 	return (
 		<div className="dlx-patterns-view-container-wrapper">

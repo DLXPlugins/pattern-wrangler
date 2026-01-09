@@ -60,6 +60,24 @@ class Rest {
 		);
 
 		/**
+		 * For retrieving site pattern categories for a site.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/all',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'rest_get_all_categories' ),
+					'permission_callback' => function () {
+						return current_user_can( 'edit_others_posts' );
+					},
+
+				),
+			)
+		);
+
+		/**
 		 * For creating a pattern.
 		 */
 		register_rest_route(
@@ -695,6 +713,93 @@ class Rest {
 				'patterns'   => $patterns,
 				'categories' => $all_categories,
 				'assets'     => $assets,
+			)
+		);
+	}
+
+	/**
+	 * Get all patterns with previews.
+	 */
+	public function rest_get_all_categories() {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-get-categories' ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to view categories.' ) );
+		}
+
+		// Check transient first.
+		$all_categories = get_transient( 'dlx_all_categories_cache' );
+		if ( false !== $all_categories && false ) {
+			return rest_ensure_response(
+				array(
+					'categories' => $all_categories,
+				)
+			);
+		}
+
+		// Get registered categories.
+		$registered_categories = \WP_Block_Pattern_Categories_Registry::get_instance()->get_all_registered();
+
+		// Get registered and local categories.
+		$categories = Functions::get_pattern_categories( true );
+
+		// Merge the registered and local categories.
+		$registered_categories = $categories['registered'];
+		$local_categories      = $categories['categories'];
+
+		// Get registered categories into shape. Registerd are label arrays.
+		$registered_categories_arr = array();
+		foreach ( $registered_categories as $registered_category ) {
+			// Decode HTML entities to prevent double encoding in React.
+			$category_label        = wp_specialchars_decode( $registered_category['label'], ENT_QUOTES );
+			$category_custom_label = isset( $registered_category['customLabel'] ) ? wp_specialchars_decode( $registered_category['customLabel'], ENT_QUOTES ) : $category_label;
+			$registered_categories_arr[ sanitize_title( $registered_category['slug'] ) ] = array(
+				'label'       => $category_label,
+				'customLabel' => $category_custom_label,
+				'slug'        => $registered_category['slug'],
+				'enabled'     => true,
+				'count'       => 0,
+				'mappedTo'    => $registered_category['mappedTo'] ?? false,
+				'registered'  => true,
+				'id'          => 0,
+			);
+		}
+
+		// Get local categories into shape. Terms are objects.
+		$local_categories_arr = array();
+		foreach ( $local_categories as $local_category ) {
+			// Decode HTML entities to prevent double encoding in React.
+			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
+			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
+				'label'       => $category_name,
+				'customLabel' => $category_name,
+				'slug'        => $local_category->slug,
+				'enabled'     => true,
+				'count'       => $local_category->count,
+				'mappedTo'    => false,
+				'registered'  => false,
+				'id'          => $local_category->term_id,
+			);
+		}
+
+		// Merge the registered and local categories.
+		$all_categories = array_merge( $registered_categories_arr, $local_categories_arr ); // We don't care about duplicates here.
+
+		// Sort by label.
+		uasort(
+			$all_categories,
+			function ( $a, $b ) {
+				return strcasecmp( $a['label'], $b['label'] );
+			}
+		);
+
+		set_transient( 'dlx_all_categories_cache', $all_categories, HOUR_IN_SECONDS );
+
+		return rest_ensure_response(
+			array(
+				'categories'           => $all_categories,
+				'registeredCategories' => $registered_categories,
+				'localCategories'      => $local_categories,
 			)
 		);
 	}
