@@ -1506,6 +1506,15 @@ const Interface = ( props ) => {
 			newUrl = removeQueryArgs( newUrl, 'search' );
 		}
 
+		// If no filters are set, add a patternType and patternLocalRegisteredStatus filters with value 'all' and 'enabled' respectively.
+		if ( newView.filters?.length === 0 ) {
+			newView.filters = [
+				...newView.filters,
+				{ field: 'patternType', operator: 'is', value: 'all' },
+				{ field: 'patternLocalRegisteredStatus', operator: 'is', value: 'enabled' },
+			];
+		}
+
 		setPatternsDisplay( getPatternsForDisplay( newView ) );
 
 		window.history.pushState( {}, '', newUrl );
@@ -1994,8 +2003,8 @@ const Interface = ( props ) => {
 							}
 							{
 								// If patttern type is local, show synced|both|unsynced buttons.
-								view?.filters?.find( ( filter ) => filter.field === 'patternType' )
-									?.value === 'all' && (
+								( view?.filters?.find( ( filter ) => filter.field === 'patternType' )
+									?.value === 'all' ) && (
 									<>
 										<ToggleGroupControl
 											label={ __( 'Disabled Status', 'pattern-wrangler' ) }
