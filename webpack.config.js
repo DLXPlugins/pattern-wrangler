@@ -24,6 +24,9 @@ module.exports = ( env ) => {
 				'dlx-pw-patterns-view': [
 					'./src/js/react/views/patterns/index.js',
 				],
+				'dlx-pw-categories-view': [
+					'./src/js/react/views/categories/index.js',
+				],
 			},
 			resolve: {
 				alias: {
