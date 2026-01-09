@@ -4,7 +4,7 @@ Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -122,6 +122,12 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Changelog ==
 
+= 2.2.1 =
+* Released 2026-01-08
+* Bug fix: Local categories weren't displaying correctly when filtering.
+* Bug fix: Clicking reset when filtering now returns to the default view (Showing All, Enabled).
+* ❤️ Please help spread the word about this plugin through your kind review.
+
 = 2.2.0 =
 * Released 2026-01-03
 * Enhancement: Pagination now displays the total number of patterns.
@@ -130,7 +136,6 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 * Bug Fix: Resolved an issue where mapped categories were not displaying correctly in the Patterns View.
 * Bug Fix: Fixed an error that could occur when a pattern was unregistered and no longer present in the registry.
 * Bug Fix: Categories in the Patterns View are now sorted alphabetically.
-* ❤️ Please help spread the word about this plugin through your kind review.
 
 = 2.1.3 =
 * Released 2025-12-31
@@ -222,5 +227,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.2.0 =
-Improves pagination clarity, adds optional per-user confirmation preferences, adds optional disable registered pattern when copying, and fixes issues with mapped categories and unregistered patterns. This is a maintenance and stability release.
+= 2.2.1 =
+Two bug fixes involving filters in the Patterns View: Local categories now show correctly, and clicking reset now returns to the default view.
