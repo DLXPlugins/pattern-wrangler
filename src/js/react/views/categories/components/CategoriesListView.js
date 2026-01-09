@@ -78,7 +78,7 @@ const CategoriesListView = ( props ) => {
 		);
 	}
 
-	return <Interface data={ categories } { ...props } />;
+	return <Interface categories={ categories } { ...props } />;
 };
 
 // Get query args from current URL.
@@ -96,12 +96,161 @@ const Interface = ( props ) => {
 		};
 	} );
 
+	const [ view, setView ] = useState( {
+		filters: [
+			{ field: 'categoryType', operator: 'is', value: 'both' },
+			{ field: 'categoryLocalRegisteredStatus', operator: 'is', value: 'enabled' },
+		],
+	} );
+	const [ categoriesDisplay, setCategoriesDisplay ] = useState( [] );
+
 	const [ snackbar, setSnackbar ] = useState( {
 		isVisible: false,
 		message: '',
 		title: '',
 		type: '',
 	} );
+
+	/**
+	 * Retrieve a list of modified patterns based on query vars and the current view.
+	 *
+	 * @param {Object} newView The new view object.
+	 * @return {Array} The patterns for display.
+	 */
+	const getCategoriesForDisplay = ( newView ) => {
+		let categoriesCopy = { ...categories };
+
+		// Filter by categories.
+		const filters = newView?.filters || [];
+		if ( filters.length > 0 ) {
+			filters.forEach( ( filter ) => {
+				switch ( filter.field ) {
+					case 'categoryType':
+						if ( filter.value ) {
+							switch ( filter.value ) {
+								case 'both':
+									break;
+								case 'local':
+									categoriesCopy = Object.values( categoriesCopy ).filter(
+										( category ) => category.registered
+									);
+									break;
+								case 'registered':
+									categoriesCopy = Object.values( categoriesCopy ).filter(
+										( category ) => ! category.registered
+									);
+									break;
+							}
+						}
+						break;
+					case 'categoryRegisteredStatus':
+						if ( filter.value ) {
+							switch ( filter.value ) {
+								case 'enabled':
+									categoriesCopy = Object.values( categoriesCopy ).filter( ( category ) => {
+										return category.enabled;
+									} );
+									break;
+								case 'disabled':
+									categoriesCopy = Object.values( categoriesCopy ).filter( ( category ) => {
+										return ! category.enabled;
+									} );
+									break;
+								case 'both':
+									break;
+							}
+						}
+						break;
+					case 'categoryLocalRegisteredStatus':
+						if ( filter.value ) {
+							switch ( filter.value ) {
+								case 'enabled':
+									categoriesCopy = Object.values( categoriesCopy ).filter( ( category ) => {
+										return category.enabled;
+									} );
+									break;
+								case 'disabled':
+									categoriesCopy = Object.values( categoriesCopy ).filter( ( category ) => {
+										return ! category.enabled;
+									} );
+									break;
+								case 'both':
+									break;
+							}
+						}
+						break;
+				}
+			} );
+		}
+		return categoriesCopy;
+	};
+
+	/**
+	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.
+	 *
+	 * @param {Object} newView The new view object.
+	 */
+	const onChangeView = ( newView ) => {
+		// Create query args object with view state.
+		const changeQueryArgs = getQueryArgs( window.location.href );
+
+		// Get the category type from filters.
+		const categoryTypeFilter = newView.filters?.find(
+			( filter ) => filter.field === 'categoryType'
+		);
+		if ( categoryTypeFilter ) {
+			changeQueryArgs.categoryType = categoryTypeFilter.value;
+		}
+
+		// Get registered/local category disabled/enabled status from filters.
+		const categoryRegisteredStatusFilter = newView.filters?.find(
+			( filter ) => filter.field === 'categoryRegisteredStatus'
+		);
+		const categoryLocalStatusFilter = newView.filters?.find(
+			( filter ) => filter.field === 'categoryLocalStatus'
+		);
+		const categoryLocalRegisteredStatusFilter = newView.filters?.find(
+			( filter ) => filter.field === 'categoryLocalRegisteredStatus'
+		);
+
+		if ( categoryRegisteredStatusFilter ) {
+			changeQueryArgs.categoryRegisteredStatus = categoryRegisteredStatusFilter.value;
+		}
+		if ( categoryLocalStatusFilter ) {
+			changeQueryArgs.categoryLocalStatus = categoryLocalStatusFilter.value;
+		}
+		if ( categoryLocalRegisteredStatusFilter ) {
+			changeQueryArgs.categoryLocalRegisteredStatus = categoryLocalRegisteredStatusFilter.value;
+		}
+
+		// Update URL without page reload using addQueryArgs.
+		let newUrl = addQueryArgs( window.location.pathname, changeQueryArgs );
+		if ( getQueryArgs( window.location.href ).search && ! newView.search ) {
+			newUrl = removeQueryArgs( newUrl, 'search' );
+		}
+
+		// If no filters are set, add a patternType and patternLocalRegisteredStatus filters with value 'all' and 'enabled' respectively.
+		if ( newView.filters?.length === 0 ) {
+			newView.filters = [
+				...newView.filters,
+				{ field: 'categoryType', operator: 'is', value: 'all' },
+				{ field: 'categoryLocalRegisteredStatus', operator: 'is', value: 'enabled' },
+			];
+		}
+
+		setCategoriesDisplay( getCategoriesForDisplay( newView ) );
+
+		window.history.pushState( {}, '', newUrl );
+
+		setView( {
+			...newView,
+			...changeQueryArgs,
+		} );
+	};
+
+	useEffect( () => {
+		onChangeView( view );
+	}, [] );
 
 	return (
 		<div className="dlx-patterns-view-container-wrapper">
@@ -119,6 +268,211 @@ const Interface = ( props ) => {
 					>
 						{ __( 'Add New Category', 'pattern-wrangler' ) }
 					</Button>
+				</div>
+				<div className="dlx-patterns-view-grid">
+					<div className="dlx-patterns-view-button-actions-wrapper">
+						<ToggleGroupControl
+							label={ __( 'Category Type', 'pattern-wrangler' ) }
+							isAdaptiveWidth={ true }
+							hideLabelFromVision={ true }
+							value={
+								view?.filters?.find(
+									( filter ) => filter.field === 'categoryType'
+								)?.value || 'both'
+							}
+							onChange={ ( value ) => {
+								const myNewView = { ...view };
+								// Merge with existing filters, replacing patternType if it exists
+								const existingFilters =
+										myNewView.filters?.filter(
+											( filter ) => filter.field !== 'categoryType'
+										) || [];
+								myNewView.filters = [
+									...existingFilters,
+									{ field: 'categoryType', operator: 'is', value },
+								];
+								onChangeView( myNewView );
+
+								let categoryUrl = window.location.href;
+								switch ( value ) {
+									case 'all':
+										categoryUrl = removeQueryArgs( categoryUrl, 'categoryRegisteredStatus' );
+										categoryUrl = removeQueryArgs( categoryUrl, 'categoryLocalRegisteredStatus' );
+										window.history.pushState( {}, '', categoryUrl );
+										break;
+									case 'local':
+										categoryUrl = removeQueryArgs( categoryUrl, 'categoryRegisteredStatus' );
+										categoryUrl = removeQueryArgs( categoryUrl, 'categoryLocalRegisteredStatus' );
+										window.history.pushState( {}, '', categoryUrl );
+										break;
+									case 'registered':
+										categoryUrl = removeQueryArgs( categoryUrl, 'categoryRegisteredStatus' );
+										categoryUrl = removeQueryArgs( categoryUrl, 'categoryLocalRegisteredStatus' );
+										window.history.pushState( {}, '', categoryUrl );
+										break;
+									default:
+										break;
+								}
+							} }
+						>
+							<ToggleGroupControlOption
+								value="local"
+								label={ __( 'Local', 'pattern-wrangler' ) }
+								showTooltip={ true }
+								aria-label={ __(
+									'Show Only Local Categories',
+									'pattern-wrangler'
+								) }
+							/>
+							<ToggleGroupControlOption
+								value="both"
+								label={ __( 'Both', 'pattern-wrangler' ) }
+								showTooltip={ true }
+								aria-label={ __( 'Show All Categories', 'pattern-wrangler' ) }
+							/>
+							<ToggleGroupControlOption
+								value="registered"
+								label={ __( 'Registered', 'pattern-wrangler' ) }
+								showTooltip={ true }
+								aria-label={ __(
+									'Show Only Registered Categories',
+									'pattern-wrangler'
+								) }
+							/>
+						</ToggleGroupControl>
+						{
+							// If patttern type is local, show synced|both|unsynced buttons.
+							view?.filters?.find( ( filter ) => filter.field === 'categoryType' )
+								?.value === 'registered' && (
+								<>
+									<ToggleGroupControl
+										label={ __( 'Category Registered Status', 'pattern-wrangler' ) }
+										isAdaptiveWidth={ true }
+										hideLabelFromVision={ true }
+										value={
+											view?.filters?.find(
+												( filter ) => filter.field === 'categoryRegisteredStatus'
+											)?.value || 'both'
+										}
+										onChange={ ( value ) => {
+											const myNewView = { ...view };
+											// Merge with existing filters, replacing patternStatus if it exists
+											const existingFilters =
+													myNewView.filters?.filter(
+														( filter ) =>
+															filter.field !== 'categoryRegisteredStatus'
+													) || [];
+											myNewView.filters = [
+												...existingFilters,
+												{
+													field: 'categoryRegisteredStatus',
+													operator: 'is',
+													value,
+												},
+											];
+											// Reset to first page when filter changes
+											myNewView.page = 1;
+											onChangeView( myNewView );
+										} }
+									>
+										<ToggleGroupControlOption
+											value="disabled"
+											label={ __( 'Disabled', 'pattern-wrangler' ) }
+											showTooltip={ true }
+											aria-label={ __(
+												'Show Only Disabled Categories',
+												'pattern-wrangler'
+											) }
+										/>
+										<ToggleGroupControlOption
+											value="both"
+											label={ __( 'Both', 'pattern-wrangler' ) }
+											aria-label={ __(
+												'Show Both Disabled and Enabled Categories',
+												'pattern-wrangler'
+											) }
+											showTooltip={ true }
+										/>
+										<ToggleGroupControlOption
+											value="enabled"
+											label={ __( 'Enabled', 'pattern-wrangler' ) }
+											showTooltip={ true }
+											aria-label={ __(
+												'Show Only Enabled Categories',
+												'pattern-wrangler'
+											) }
+										/>
+									</ToggleGroupControl>
+								</>
+							)
+						}
+						{
+							// If patttern type is local, show synced|both|unsynced buttons.
+							view?.filters?.find( ( filter ) => filter.field === 'categoryType' )
+								?.value === 'both' && (
+								<>
+									<ToggleGroupControl
+										label={ __( 'Category Status', 'pattern-wrangler' ) }
+										isAdaptiveWidth={ true }
+										hideLabelFromVision={ true }
+										value={
+											view?.filters?.find(
+												( filter ) => filter.field === 'categoryStatus'
+											)?.value || 'both'
+										}
+										onChange={ ( value ) => {
+											const myNewView = { ...view };
+											// Merge with existing filters, replacing patternStatus if it exists
+											const existingFilters =
+													myNewView.filters?.filter(
+														( filter ) =>
+															filter.field !== 'categoryLocalRegisteredStatus'
+													) || [];
+											myNewView.filters = [
+												...existingFilters,
+												{
+													field: 'categoryLocalRegisteredStatus',
+													operator: 'is',
+													value,
+												},
+											];
+											// Reset to first page when filter changes
+											myNewView.page = 1;
+											onChangeView( myNewView );
+										} }
+									>
+										<ToggleGroupControlOption
+											value="disabled"
+											label={ __( 'Disabled', 'pattern-wrangler' ) }
+											showTooltip={ true }
+											aria-label={ __(
+												'Show Only Disabled Categories',
+												'pattern-wrangler'
+											) }
+										/>
+										<ToggleGroupControlOption
+											value="both"
+											label={ __( 'Both', 'pattern-wrangler' ) }
+											aria-label={ __(
+												'Show Both Disabled and Enabled Categories',
+												'pattern-wrangler'
+											) }
+											showTooltip={ true }
+										/>
+										<ToggleGroupControlOption
+											value="enabled"
+											label={ __( 'Enabled', 'pattern-wrangler' ) }
+											showTooltip={ true }
+											aria-label={ __(
+												'Show Only Enabled Categories',
+												'pattern-wrangler'
+											) }
+										/>
+									</ToggleGroupControl>
+								</>
+							)
+						}
+					</div>
 				</div>
 				{ snackbar.isVisible && (
 					<Snackbar

@@ -146,6 +146,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Snackbar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Snackbar */ "./src/js/react/views/categories/components/Snackbar/index.js");
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../store */ "./src/js/react/views/categories/store/index.js");
 /* harmony import */ var _utils_createPatternFromFile__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../utils/createPatternFromFile */ "./src/js/react/views/categories/utils/createPatternFromFile.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -213,7 +223,7 @@ var CategoriesListView = function CategoriesListView(props) {
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Retry', 'pattern-wrangler')));
   }
   return /*#__PURE__*/React.createElement(Interface, _extends({
-    data: categories
+    categories: categories
   }, props));
 };
 
@@ -221,6 +231,7 @@ var CategoriesListView = function CategoriesListView(props) {
 // const queryArgs = getQueryArgs( window.location.href );
 
 var Interface = function Interface(props) {
+  var _view$filters, _view$filters2, _view$filters3, _view$filters4, _view$filters5;
   var categories = props.categories;
   var _useState = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
@@ -237,14 +248,170 @@ var Interface = function Interface(props) {
     localCategories = _useSelect2.localCategories,
     doNotShowAgain = _useSelect2.doNotShowAgain;
   var _useState3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      filters: [{
+        field: 'categoryType',
+        operator: 'is',
+        value: 'both'
+      }, {
+        field: 'categoryLocalRegisteredStatus',
+        operator: 'is',
+        value: 'enabled'
+      }]
+    }),
+    _useState4 = _slicedToArray(_useState3, 2),
+    view = _useState4[0],
+    setView = _useState4[1];
+  var _useState5 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState6 = _slicedToArray(_useState5, 2),
+    categoriesDisplay = _useState6[0],
+    setCategoriesDisplay = _useState6[1];
+  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
       isVisible: false,
       message: '',
       title: '',
       type: ''
     }),
-    _useState4 = _slicedToArray(_useState3, 2),
-    snackbar = _useState4[0],
-    setSnackbar = _useState4[1];
+    _useState8 = _slicedToArray(_useState7, 2),
+    snackbar = _useState8[0],
+    setSnackbar = _useState8[1];
+
+  /**
+   * Retrieve a list of modified patterns based on query vars and the current view.
+   *
+   * @param {Object} newView The new view object.
+   * @return {Array} The patterns for display.
+   */
+  var getCategoriesForDisplay = function getCategoriesForDisplay(newView) {
+    var categoriesCopy = _objectSpread({}, categories);
+
+    // Filter by categories.
+    var filters = (newView === null || newView === void 0 ? void 0 : newView.filters) || [];
+    if (filters.length > 0) {
+      filters.forEach(function (filter) {
+        switch (filter.field) {
+          case 'categoryType':
+            if (filter.value) {
+              switch (filter.value) {
+                case 'both':
+                  break;
+                case 'local':
+                  categoriesCopy = Object.values(categoriesCopy).filter(function (category) {
+                    return category.registered;
+                  });
+                  break;
+                case 'registered':
+                  categoriesCopy = Object.values(categoriesCopy).filter(function (category) {
+                    return !category.registered;
+                  });
+                  break;
+              }
+            }
+            break;
+          case 'categoryRegisteredStatus':
+            if (filter.value) {
+              switch (filter.value) {
+                case 'enabled':
+                  categoriesCopy = Object.values(categoriesCopy).filter(function (category) {
+                    return category.enabled;
+                  });
+                  break;
+                case 'disabled':
+                  categoriesCopy = Object.values(categoriesCopy).filter(function (category) {
+                    return !category.enabled;
+                  });
+                  break;
+                case 'both':
+                  break;
+              }
+            }
+            break;
+          case 'categoryLocalRegisteredStatus':
+            if (filter.value) {
+              switch (filter.value) {
+                case 'enabled':
+                  categoriesCopy = Object.values(categoriesCopy).filter(function (category) {
+                    return category.enabled;
+                  });
+                  break;
+                case 'disabled':
+                  categoriesCopy = Object.values(categoriesCopy).filter(function (category) {
+                    return !category.enabled;
+                  });
+                  break;
+                case 'both':
+                  break;
+              }
+            }
+            break;
+        }
+      });
+    }
+    return categoriesCopy;
+  };
+
+  /**
+   * When a view is changed, we need to adjust the fields and showMedia based on the view type.
+   *
+   * @param {Object} newView The new view object.
+   */
+  var onChangeView = function onChangeView(newView) {
+    var _newView$filters, _newView$filters2, _newView$filters3, _newView$filters4, _newView$filters5;
+    // Create query args object with view state.
+    var changeQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href);
+
+    // Get the category type from filters.
+    var categoryTypeFilter = (_newView$filters = newView.filters) === null || _newView$filters === void 0 ? void 0 : _newView$filters.find(function (filter) {
+      return filter.field === 'categoryType';
+    });
+    if (categoryTypeFilter) {
+      changeQueryArgs.categoryType = categoryTypeFilter.value;
+    }
+
+    // Get registered/local category disabled/enabled status from filters.
+    var categoryRegisteredStatusFilter = (_newView$filters2 = newView.filters) === null || _newView$filters2 === void 0 ? void 0 : _newView$filters2.find(function (filter) {
+      return filter.field === 'categoryRegisteredStatus';
+    });
+    var categoryLocalStatusFilter = (_newView$filters3 = newView.filters) === null || _newView$filters3 === void 0 ? void 0 : _newView$filters3.find(function (filter) {
+      return filter.field === 'categoryLocalStatus';
+    });
+    var categoryLocalRegisteredStatusFilter = (_newView$filters4 = newView.filters) === null || _newView$filters4 === void 0 ? void 0 : _newView$filters4.find(function (filter) {
+      return filter.field === 'categoryLocalRegisteredStatus';
+    });
+    if (categoryRegisteredStatusFilter) {
+      changeQueryArgs.categoryRegisteredStatus = categoryRegisteredStatusFilter.value;
+    }
+    if (categoryLocalStatusFilter) {
+      changeQueryArgs.categoryLocalStatus = categoryLocalStatusFilter.value;
+    }
+    if (categoryLocalRegisteredStatusFilter) {
+      changeQueryArgs.categoryLocalRegisteredStatus = categoryLocalRegisteredStatusFilter.value;
+    }
+
+    // Update URL without page reload using addQueryArgs.
+    var newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.addQueryArgs)(window.location.pathname, changeQueryArgs);
+    if ((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).search && !newView.search) {
+      newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(newUrl, 'search');
+    }
+
+    // If no filters are set, add a patternType and patternLocalRegisteredStatus filters with value 'all' and 'enabled' respectively.
+    if (((_newView$filters5 = newView.filters) === null || _newView$filters5 === void 0 ? void 0 : _newView$filters5.length) === 0) {
+      newView.filters = [].concat(_toConsumableArray(newView.filters), [{
+        field: 'categoryType',
+        operator: 'is',
+        value: 'all'
+      }, {
+        field: 'categoryLocalRegisteredStatus',
+        operator: 'is',
+        value: 'enabled'
+      }]);
+    }
+    setCategoriesDisplay(getCategoriesForDisplay(newView));
+    window.history.pushState({}, '', newUrl);
+    setView(_objectSpread(_objectSpread({}, newView), changeQueryArgs));
+  };
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    onChangeView(view);
+  }, []);
   return /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-container-wrapper"
   }, /*#__PURE__*/React.createElement("div", {
@@ -259,7 +426,151 @@ var Interface = function Interface(props) {
     onClick: function onClick() {
       // setIsAddNewPatternModalOpen( true );
     }
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Add New Category', 'pattern-wrangler'))), snackbar.isVisible && /*#__PURE__*/React.createElement(_Snackbar__WEBPACK_IMPORTED_MODULE_11__["default"], {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Add New Category', 'pattern-wrangler'))), /*#__PURE__*/React.createElement("div", {
+    className: "dlx-patterns-view-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "dlx-patterns-view-button-actions-wrapper"
+  }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Category Type', 'pattern-wrangler'),
+    isAdaptiveWidth: true,
+    hideLabelFromVision: true,
+    value: (view === null || view === void 0 || (_view$filters = view.filters) === null || _view$filters === void 0 || (_view$filters = _view$filters.find(function (filter) {
+      return filter.field === 'categoryType';
+    })) === null || _view$filters === void 0 ? void 0 : _view$filters.value) || 'both',
+    onChange: function onChange(value) {
+      var _myNewView$filters;
+      var myNewView = _objectSpread({}, view);
+      // Merge with existing filters, replacing patternType if it exists
+      var existingFilters = ((_myNewView$filters = myNewView.filters) === null || _myNewView$filters === void 0 ? void 0 : _myNewView$filters.filter(function (filter) {
+        return filter.field !== 'categoryType';
+      })) || [];
+      myNewView.filters = [].concat(_toConsumableArray(existingFilters), [{
+        field: 'categoryType',
+        operator: 'is',
+        value: value
+      }]);
+      onChangeView(myNewView);
+      var categoryUrl = window.location.href;
+      switch (value) {
+        case 'all':
+          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus');
+          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryLocalRegisteredStatus');
+          window.history.pushState({}, '', categoryUrl);
+          break;
+        case 'local':
+          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus');
+          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryLocalRegisteredStatus');
+          window.history.pushState({}, '', categoryUrl);
+          break;
+        case 'registered':
+          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus');
+          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryLocalRegisteredStatus');
+          window.history.pushState({}, '', categoryUrl);
+          break;
+        default:
+          break;
+      }
+    }
+  }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "local",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Local', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Local Categories', 'pattern-wrangler')
+  }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "both",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Both', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show All Categories', 'pattern-wrangler')
+  }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "registered",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Registered', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Registered Categories', 'pattern-wrangler')
+  })),
+  // If patttern type is local, show synced|both|unsynced buttons.
+  (view === null || view === void 0 || (_view$filters2 = view.filters) === null || _view$filters2 === void 0 || (_view$filters2 = _view$filters2.find(function (filter) {
+    return filter.field === 'categoryType';
+  })) === null || _view$filters2 === void 0 ? void 0 : _view$filters2.value) === 'registered' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Category Registered Status', 'pattern-wrangler'),
+    isAdaptiveWidth: true,
+    hideLabelFromVision: true,
+    value: (view === null || view === void 0 || (_view$filters3 = view.filters) === null || _view$filters3 === void 0 || (_view$filters3 = _view$filters3.find(function (filter) {
+      return filter.field === 'categoryRegisteredStatus';
+    })) === null || _view$filters3 === void 0 ? void 0 : _view$filters3.value) || 'both',
+    onChange: function onChange(value) {
+      var _myNewView$filters2;
+      var myNewView = _objectSpread({}, view);
+      // Merge with existing filters, replacing patternStatus if it exists
+      var existingFilters = ((_myNewView$filters2 = myNewView.filters) === null || _myNewView$filters2 === void 0 ? void 0 : _myNewView$filters2.filter(function (filter) {
+        return filter.field !== 'categoryRegisteredStatus';
+      })) || [];
+      myNewView.filters = [].concat(_toConsumableArray(existingFilters), [{
+        field: 'categoryRegisteredStatus',
+        operator: 'is',
+        value: value
+      }]);
+      // Reset to first page when filter changes
+      myNewView.page = 1;
+      onChangeView(myNewView);
+    }
+  }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "disabled",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Disabled', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Disabled Categories', 'pattern-wrangler')
+  }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "both",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Both', 'pattern-wrangler'),
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Both Disabled and Enabled Categories', 'pattern-wrangler'),
+    showTooltip: true
+  }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "enabled",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Enabled', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Enabled Categories', 'pattern-wrangler')
+  }))),
+  // If patttern type is local, show synced|both|unsynced buttons.
+  (view === null || view === void 0 || (_view$filters4 = view.filters) === null || _view$filters4 === void 0 || (_view$filters4 = _view$filters4.find(function (filter) {
+    return filter.field === 'categoryType';
+  })) === null || _view$filters4 === void 0 ? void 0 : _view$filters4.value) === 'both' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Category Status', 'pattern-wrangler'),
+    isAdaptiveWidth: true,
+    hideLabelFromVision: true,
+    value: (view === null || view === void 0 || (_view$filters5 = view.filters) === null || _view$filters5 === void 0 || (_view$filters5 = _view$filters5.find(function (filter) {
+      return filter.field === 'categoryStatus';
+    })) === null || _view$filters5 === void 0 ? void 0 : _view$filters5.value) || 'both',
+    onChange: function onChange(value) {
+      var _myNewView$filters3;
+      var myNewView = _objectSpread({}, view);
+      // Merge with existing filters, replacing patternStatus if it exists
+      var existingFilters = ((_myNewView$filters3 = myNewView.filters) === null || _myNewView$filters3 === void 0 ? void 0 : _myNewView$filters3.filter(function (filter) {
+        return filter.field !== 'categoryLocalRegisteredStatus';
+      })) || [];
+      myNewView.filters = [].concat(_toConsumableArray(existingFilters), [{
+        field: 'categoryLocalRegisteredStatus',
+        operator: 'is',
+        value: value
+      }]);
+      // Reset to first page when filter changes
+      myNewView.page = 1;
+      onChangeView(myNewView);
+    }
+  }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "disabled",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Disabled', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Disabled Categories', 'pattern-wrangler')
+  }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "both",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Both', 'pattern-wrangler'),
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Both Disabled and Enabled Categories', 'pattern-wrangler'),
+    showTooltip: true
+  }), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
+    value: "enabled",
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Enabled', 'pattern-wrangler'),
+    showTooltip: true,
+    "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Enabled Categories', 'pattern-wrangler')
+  }))))), snackbar.isVisible && /*#__PURE__*/React.createElement(_Snackbar__WEBPACK_IMPORTED_MODULE_11__["default"], {
     isVisible: snackbar.isVisible,
     message: snackbar.message,
     title: snackbar.title,
