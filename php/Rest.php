@@ -520,6 +520,10 @@ class Rest {
 		// Get registered categories into shape. Registerd are label arrays.
 		$registered_categories_arr = array();
 		foreach ( $registered_categories as $registered_category ) {
+			// Skip disabled or empty categories.
+			if ( ! (bool) $registered_category['enabled'] || 0 === $registered_category['count'] ) {
+				continue;
+			}
 			// Decode HTML entities to prevent double encoding in React.
 			$category_label        = wp_specialchars_decode( $registered_category['label'], ENT_QUOTES );
 			$category_custom_label = isset( $registered_category['customLabel'] ) ? wp_specialchars_decode( $registered_category['customLabel'], ENT_QUOTES ) : $category_label;
@@ -527,8 +531,8 @@ class Rest {
 				'label'       => $category_label,
 				'customLabel' => $category_custom_label,
 				'slug'        => $registered_category['slug'],
-				'enabled'     => true,
-				'count'       => 0,
+				'enabled'     => isset( $registered_category['enabled'] ) ? $registered_category['enabled'] : true,
+				'count'       => isset( $registered_category['count'] ) ? $registered_category['count'] : 0,
 				'mappedTo'    => $registered_category['mappedTo'] ?? false,
 				'registered'  => true,
 				'id'          => 0,
@@ -538,6 +542,10 @@ class Rest {
 		// Get local categories into shape. Terms are objects.
 		$local_categories_arr = array();
 		foreach ( $local_categories as $local_category ) {
+			// Skip disabled or empty categories.
+			if ( 0 === absint( $local_category->count ) ) {
+				continue;
+			}
 			// Decode HTML entities to prevent double encoding in React.
 			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
 			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
@@ -638,8 +646,8 @@ class Rest {
 				$categories     = array();
 				$category_slugs = array();
 				foreach ( $pattern['categories'] as $category ) {
-					if ( array_key_exists( $category, $all_categories ) ) {
-						$cat              = $all_categories[ $category ];
+					if ( array_key_exists( sanitize_title( $category ), $all_categories ) ) {
+						$cat              = $all_categories[ sanitize_title( $category ) ];
 						$categories[]     = $cat['label'];
 						$category_slugs[] = sanitize_title( $cat['slug'] );
 					}
