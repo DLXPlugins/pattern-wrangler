@@ -113,6 +113,12 @@ class Functions {
 				'count'      => true,
 			)
 		);
+
+		// Get lables into shape.
+		$categories_arr = array();
+		foreach ( $categories as &$category ) {
+			$category->name = html_entity_decode( $category->name, ENT_QUOTES );
+		}
 		return $categories;
 	}
 
