@@ -3,11 +3,6 @@ import React, { Suspense, useState, useEffect } from 'react';
 import {
 	ToggleControl,
 	TextControl,
-	Tooltip,
-	SelectControl,
-	PanelBody,
-	Popover,
-	BaseControl,
 	Modal,
 	Button,
 	__experimentalToggleGroupControl as ToggleGroupControl,
@@ -15,15 +10,14 @@ import {
 	FormTokenField,
 } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
-import { useAsyncResource } from 'use-async-resource';
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
+import { escapeHTML } from '@wordpress/escape-html';
 
 import { __, _n } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
-import classnames from 'classnames';
+import { cleanForSlug } from '@wordpress/url';
 
 // Local imports.
-import SendCommand from '../../../../utils/SendCommand';
 import Notice from '../../../../components/Notice';
 
 /**
@@ -50,7 +44,10 @@ const PatternCreateModal = ( props ) => {
 		return category.label || category.name;
 	} );
 	const localPatternCategories = ( props.patternCategories || [] ).map( ( category ) => {
-		return category.label || category.name;
+		const categorySlug = cleanForSlug( category.label || category.name || category );
+		// Find category label from slug.
+		const categoryObject = originalCategories.find( ( c ) => cleanForSlug( c.label || c.name ) === categorySlug );
+		return escapeHTML( categoryObject.label );
 	} );
 	const [ copyPatternId ] = useState( props.copyPatternId || 0 );
 	const [ syncedDefaultStatus ] = useState( props.syncedDefaultStatus || 'synced' );
