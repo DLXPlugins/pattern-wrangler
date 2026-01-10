@@ -185,6 +185,8 @@ const Interface = ( props ) => {
 		return categoriesCopy;
 	};
 
+	console.log( 'categoriesDisplay', categories );
+
 	/**
 	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.
 	 *
@@ -417,8 +419,8 @@ const Interface = ( props ) => {
 										hideLabelFromVision={ true }
 										value={
 											view?.filters?.find(
-												( filter ) => filter.field === 'categoryStatus'
-											)?.value || 'both'
+												( filter ) => filter.field === 'categoryLocalRegisteredStatus'
+											)?.value || 'enabled'
 										}
 										onChange={ ( value ) => {
 											const myNewView = { ...view };

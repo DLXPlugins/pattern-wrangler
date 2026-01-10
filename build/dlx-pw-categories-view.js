@@ -348,6 +348,7 @@ var Interface = function Interface(props) {
     }
     return categoriesCopy;
   };
+  console.log('categoriesDisplay', categories);
 
   /**
    * When a view is changed, we need to adjust the fields and showMedia based on the view type.
@@ -537,8 +538,8 @@ var Interface = function Interface(props) {
     isAdaptiveWidth: true,
     hideLabelFromVision: true,
     value: (view === null || view === void 0 || (_view$filters5 = view.filters) === null || _view$filters5 === void 0 || (_view$filters5 = _view$filters5.find(function (filter) {
-      return filter.field === 'categoryStatus';
-    })) === null || _view$filters5 === void 0 ? void 0 : _view$filters5.value) || 'both',
+      return filter.field === 'categoryLocalRegisteredStatus';
+    })) === null || _view$filters5 === void 0 ? void 0 : _view$filters5.value) || 'enabled',
     onChange: function onChange(value) {
       var _myNewView$filters3;
       var myNewView = _objectSpread({}, view);
