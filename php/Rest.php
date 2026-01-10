@@ -726,7 +726,9 @@ class Rest {
 	}
 
 	/**
-	 * Get all patterns with previews.
+	 * Get all categories.
+	 *
+	 * @return WP_REST_Response The REST response.
 	 */
 	public function rest_get_all_categories() {
 		// Check nonce and permissions.
@@ -766,7 +768,7 @@ class Rest {
 				'customLabel' => $category_custom_label,
 				'slug'        => $registered_category['slug'],
 				'enabled'     => true,
-				'count'       => 0,
+				'count'       => isset( $registered_category['count'] ) ? $registered_category['count'] : 0,
 				'mappedTo'    => $registered_category['mappedTo'] ?? false,
 				'registered'  => true,
 				'id'          => 0,
