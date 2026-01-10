@@ -4,7 +4,7 @@ Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -122,6 +122,12 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Changelog ==
 
+= 2.2.2 =
+* Released 2026-01-10
+* Bug fix: Registered categories weren't displaying in the card view.
+* Bug fix: Local categories when renamed with special characters were erroring in quick-edit view.
+* Bug fix: Empty categories are no longer shown in the filter view.
+
 = 2.2.1 =
 * Released 2026-01-08
 * Bug fix: Local categories weren't displaying correctly when filtering.
@@ -227,5 +233,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.2.1 =
-Two bug fixes involving filters in the Patterns View: Local categories now show correctly, and clicking reset now returns to the default view.
+= 2.2.2 =
+Bug fixes for registered categories not showing in the card view. Empty categories were showing in filters. Quick edit was showing invalid characters for some categories, while not opening because of mismatched slugs.
