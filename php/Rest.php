@@ -751,7 +751,7 @@ class Rest {
 		$registered_categories = \WP_Block_Pattern_Categories_Registry::get_instance()->get_all_registered();
 
 		// Get registered and local categories.
-		$categories = Functions::get_pattern_categories( true );
+		$categories = Functions::get_pattern_categories( false );
 
 		// Merge the registered and local categories.
 		$registered_categories = $categories['registered'];
