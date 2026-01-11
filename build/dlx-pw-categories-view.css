@@ -3726,9 +3726,16 @@ svg.lucide line {
   opacity: 1;
   pointer-events: auto;
 }
-.dlx-patterns-view-category-card:hover .dlx-patterns-view-category-card__checkbox {
+.dlx-patterns-view-category-card:hover .dlx-patterns-view-category-card__checkbox, .dlx-patterns-view-category-card:focus-within .dlx-patterns-view-category-card__checkbox {
   opacity: 1;
   pointer-events: auto;
+}
+.dlx-patterns-view-category-card .invisible-until-hover {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+.dlx-patterns-view-category-card:hover .invisible-until-hover, .dlx-patterns-view-category-card:focus-within .invisible-until-hover {
+  opacity: 1;
 }
 .dlx-pw-modal-admin-row .is-required label {
   position: relative;

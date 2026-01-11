@@ -368,9 +368,19 @@ svg.lucide {
 		opacity: 1;
 		pointer-events: auto;
 	}
-	&:hover &__checkbox {
+	&:hover &__checkbox,
+	&:focus-within &__checkbox {
 		opacity: 1;
 		pointer-events: auto;
+	}
+
+	.invisible-until-hover {
+		opacity: 0;
+		transition: opacity 0.3s ease-in-out;
+	}
+	&:hover .invisible-until-hover,
+	&:focus-within .invisible-until-hover {
+		opacity: 1;
 	}
 }
 .dlx-pw-modal-admin-row {

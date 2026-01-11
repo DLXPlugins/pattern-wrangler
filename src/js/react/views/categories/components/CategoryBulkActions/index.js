@@ -37,9 +37,6 @@ const CategoryBulkActions = ( props ) => {
 					</>
 				) }
 			/>
-			<div className="dlx-patterns-view-category-card__header">
-				{ __( 'Category Bulk Actions', 'pattern-wrangler' ) }
-			</div>
 		</div>
 	);
 };

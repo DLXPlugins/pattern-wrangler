@@ -712,9 +712,7 @@ var CategoryBulkActions = function CategoryBulkActions(props) {
         indeterminate: categoriesSelectedCount > 0 && categoriesSelectedCount < categories.length
       }));
     }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "dlx-patterns-view-category-card__header"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Category Bulk Actions', 'pattern-wrangler')));
+  }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CategoryBulkActions);
 
@@ -797,12 +795,12 @@ var CategoryCard = function CategoryCard(props) {
       variant: "tertiary",
       isDestructive: true,
       icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_5__["default"], null),
-      className: "dlx-patterns-view-category-card__action-button"
+      className: "dlx-patterns-view-category-card__action-button invisible-until-hover"
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Delete Category', 'pattern-wrangler')), category.registered && category.enabled && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "tertiary",
       isDestructive: true,
       icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_6__["default"], null),
-      className: "dlx-patterns-view-category-card__action-button"
+      className: "dlx-patterns-view-category-card__action-button invisible-until-hover"
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Disable Category', 'pattern-wrangler')), category.enabled && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "secondary",
       icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_7__["default"], null),

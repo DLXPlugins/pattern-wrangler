@@ -57,7 +57,7 @@ const CategoryCard = ( props ) => {
 							variant="tertiary"
 							isDestructive={ true }
 							icon={ <Trash2 /> }
-							className="dlx-patterns-view-category-card__action-button"
+							className="dlx-patterns-view-category-card__action-button invisible-until-hover"
 						>
 							{ __( 'Delete Category', 'pattern-wrangler' ) }
 						</Button>
@@ -69,7 +69,7 @@ const CategoryCard = ( props ) => {
 							variant="tertiary"
 							isDestructive={ true }
 							icon={ <Ban /> }
-							className="dlx-patterns-view-category-card__action-button"
+							className="dlx-patterns-view-category-card__action-button invisible-until-hover"
 						>
 							{ __( 'Disable Category', 'pattern-wrangler' ) }
 						</Button>
