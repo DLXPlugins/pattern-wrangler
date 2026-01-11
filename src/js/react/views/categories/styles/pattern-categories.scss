@@ -1,4 +1,3 @@
-@import '../../../../../../node_modules/@wordpress/dataviews/build-style/style.css';
 @import '../../../../../../node_modules/@wordpress/components/build-style/style.css';
 @import '../../../../../scss/breakpoints-mixin.scss';
 
@@ -103,92 +102,6 @@ body div.updated.warning {
 		margin-bottom: 0;
 	}
 }
-.dlx-patterns-view-search-filters-wrapper {
-	display: flex;
-	align-items: center;
-	flex-direction: row;
-	gap: calc(12px);
-	justify-content: start;
-}
-.dlx-patterns-view-grid {
-	display: grid;
-	grid-template-columns: 1fr;
-	gap: 12px;
-	align-items: center;
-
-	padding-bottom: 16px;
-
-	@include respond-to('medium') {
-		grid-template-columns: auto 1fr auto;
-	}
-}
-dlx-patterns-view-filters-wrapper {
-	padding-bottom: 16px;
-}
-.pattern-preview-iframe-wrapper {
-	position: relative;
-	width: 100%;
-	height: 100%;
-}
-
-.dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__media {
-	min-height: 293px;
-}
-// Pattern preview iframe styles.
-.pattern-preview-wrapper {
-	display: flex;
-	box-sizing: inherit;
-	align-items: center;
-	border-radius: 4px;
-	flex-direction: column;
-	height: 100%;
-	justify-content: center;
-	overflow: hidden;
-}
-
-.pattern-preview-iframe-scale-container {
-	height: 100%;
-	width: 100%;
-}
-
-.pattern-preview-iframe-wrapper {
-	height: 100%;
-}
-.pattern-preview-iframe-scale-container-wrapper {
-	position: relative;
-	left: 0;
-	margin: 0;
-	min-height: auto;
-	overflow: visible;
-	text-align: initial;
-	top: 0;
-	transform-origin: top left;
-	width: 100%;
-	height: 100%;
-	pointer-events: none;
-}
-.pattern-preview-iframe-scale-wrapper {
-	height: 100%;
-	width: 100%;
-}
-
-.pattern-preview-iframe-wrapper iframe {
-	display: absolute;
-	top: 0;
-	left: 0;
-}
-
-.pattern-preview-iframe-link {
-	display: block;
-	width: 100%;
-	height: 100%;
-	text-decoration: none;
-	color: inherit;
-}
-
-.pattern-preview-iframe-link:hover {
-	text-decoration: none;
-}
 
 .dlx-patterns-view-header {
 	padding-left: 76px;
@@ -198,64 +111,6 @@ dlx-patterns-view-filters-wrapper {
 		margin-bottom: 0;
 	}
 }
-
-/* Hide the preview toggle slider */
-.dataviews-settings-section__content.components-grid .components-range-control {
-	display: none;
-}
-.dataviews-view-grid .dataviews-view-grid__card {
-	overflow: hidden;
-}
-.dataviews-view-grid .dataviews-view-grid__card {
-	width: 100%;
-	max-width: 400px;
-}
-.dataviews-view-grid.dataviews-view-grid {
-	grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-	column-gap: 32px;
-	gap: 32px;
-}
-
-
-.dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__title-field {
-	display: flex;
-	padding-left: 16px;
-	white-space: unset;
-
-	.pattern-title {
-		font-size: 16px;
-		margin-bottom: 8px;
-
-		button {
-			font-size: 16px;
-		}
-	}
-}
-
-.dlx-patterns-view-container .dataviews-view-grid__card {
-	display: grid;
-	grid-template-rows: 1fr;
-}
-.pattern-preview-iframe-link {
-	display: block;
-	width: 100%;
-	height: 100%;
-}
-.dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__media {
-    background-color: #FFFFFF;
-    border-radius: 4px;
-    position: relative;
-    width: 100%;
-	aspect-ratio: 1 / 1;
-	overflow: hidden;
-}
-.fancybox__iframe {
-	width: 85vw !important;
-}
-.has-iframe .fancybox__content iframe {
-	overflow: scroll;
-}
-
 
 // Pattern badge styles.
 .pattern-badge {
@@ -311,12 +166,6 @@ dlx-patterns-view-filters-wrapper {
 	border-color: #ffd9b3;
 }
 
-.pattern-categories {
-	font-size: 12px;
-	font-style: italic;
-	color: #666;
-	margin-bottom: 8px;
-}
 
 /**
  * Snackbar styles.
@@ -400,120 +249,104 @@ svg.lucide {
 .pattern-title-categories {
 	width: 100%;
 }
-.pattern-quick-links {
-	display: flex;
-	gap: 8px;
-	width: 100%;
-	justify-content: flex-start;
-	align-items: center;
-	font-size: 11px;
+.dlx-patterns-view-categories-list {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 16px;
+	margin-top: 24px;
 }
-.pattern-quick-links button.components-button.is-link {
-	display: inline-flex;
-	align-items: center;
-	justify-content: flex-start;
-	font-size: 11px;
-	width: unset;
-}
-
-/**
-Hide erronous display when hittnig the back button on a filter change.
-*/
-.dataviews-view-grid__title-actions ~ .components-h-stack  {
-	display: none;
-}
-.dlx-pw-copy-shortcode {
-	position: absolute;
-	top: calc(11px/2 + 1.4em);
-	right: 0;
-	height: 32px;
-}
-.dlx-pw-modal-admin-row-input input.components-text-control__input {
-	padding-right: 48px !important;
-}
-.dlx-pw-modal-admin-row-input .components-base-control__field {
+.dlx-patterns-view-category-card {
+	background: #FAFAFA;
+	color: #333333;
+	border: 1px solid #bbbbbb;
 	position: relative;
-}
-.dlx-bulk-action-toolbar-top .dataviews-bulk-actions-footer__container {
-	padding: 24px 0;
-	justify-content: flex-start;
-}
+	padding: 40px 16px;
+	font-size: 16px;
 
-.dataviews-filters__visibility-toggle {
-	position: relative;
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	width: unset !important; // Override the default width.
-
-	&.is-pressed {
-		padding: 4px 8px !important;
+	&.is-disabled {
+		background: #FFFFFF;
+		color: #959595;
 	}
 
-	// Hide the original SVG.
-	svg {
-		display: none;
+	&__header {
+		position: absolute;
+		top: 16px;
+		right: 12px;
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		justify-content: flex-end;
+		z-index: 1;
 	}
 
-	// Add the data:image as a background-image using ::before pseudo-element.
-	&::before {
-		content: '';
+	&__enabled-status {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		background-color: #be2121;
+		color: #FFFFFF;
+		padding: 4px 8px;
+		border-radius: 4px;
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		line-height: 1;
+		white-space: nowrap;
+	}
+	&__enabled-status-icon {
+		width: 12px;
+		height: 12px;
+		color: #be2121;
+	}
+
+	&__type {
 		display: inline-block;
-		width: 24px;
-		height: 24px;
-		flex-shrink: 0;
-		background-image: url('data:image/svg+xml,<svg id="fi_4502383" height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg"><path d="m16 133.612h260.513c7.186 29.034 33.45 50.627 64.673 50.627s57.487-21.593 64.673-50.627h90.141c8.836 0 16-7.164 16-16s-7.164-16-16-16h-90.142c-7.185-29.034-33.449-50.628-64.673-50.628s-57.488 21.594-64.673 50.628h-260.512c-8.836 0-16 7.164-16 16s7.164 16 16 16zm325.186-50.628c19.094 0 34.628 15.534 34.628 34.627 0 19.094-15.534 34.628-34.628 34.628s-34.628-15.534-34.628-34.628c0-19.093 15.534-34.627 34.628-34.627zm-325.186 189.016h90.142c7.186 29.034 33.449 50.627 64.673 50.627s57.487-21.593 64.673-50.627h260.512c8.836 0 16-7.164 16-16s-7.164-16-16-16h-260.513c-7.186-29.034-33.449-50.628-64.673-50.628s-57.487 21.594-64.673 50.628h-90.141c-8.836 0-16 7.164-16 16s7.163 16 16 16zm154.814-50.628c19.094 0 34.628 15.534 34.628 34.628 0 19.093-15.534 34.627-34.628 34.627s-34.628-15.534-34.628-34.627c0-19.094 15.534-34.628 34.628-34.628zm325.186 157.016h-90.142c-7.186-29.034-33.449-50.628-64.673-50.628s-57.487 21.594-64.673 50.628h-260.512c-8.836 0-16 7.164-16 16s7.164 16 16 16h260.513c7.186 29.034 33.449 50.628 64.673 50.628s57.487-21.594 64.673-50.628h90.141c8.836 0 16-7.164 16-16s-7.163-16-16-16zm-154.814 50.628c-19.094 0-34.628-15.534-34.628-34.628s15.534-34.628 34.628-34.628 34.628 15.534 34.628 34.628-15.534 34.628-34.628 34.628z"></path></svg>');
-		background-size: contain;
-		background-repeat: no-repeat;
-		background-position: center;
+		padding: 4px 8px;
+		border-radius: 4px;
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		line-height: 1;
+		white-space: nowrap;
+		border: 1px solid transparent;
 	}
-
-	// Add "Filter" text using ::after pseudo-element.
-	&::after {
-		content: 'Filter';
-		display: inline-block;
-	}
-
-	// Pressed state styling - uses different SVG with white fill.
-	&.is-pressed {
-		&::before {
-			background-image: url('data:image/svg+xml,<svg id="fi_4502383" height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg"><path fill="%23fff" d="m16 133.612h260.513c7.186 29.034 33.45 50.627 64.673 50.627s57.487-21.593 64.673-50.627h90.141c8.836 0 16-7.164 16-16s-7.164-16-16-16h-90.142c-7.185-29.034-33.449-50.628-64.673-50.628s-57.488 21.594-64.673 50.628h-260.512c-8.836 0-16 7.164-16 16s7.164 16 16 16zm325.186-50.628c19.094 0 34.628 15.534 34.628 34.627 0 19.094-15.534 34.628-34.628 34.628s-34.628-15.534-34.628-34.628c0-19.093 15.534-34.627 34.628-34.627zm-325.186 189.016h90.142c7.186 29.034 33.449 50.627 64.673 50.627s57.487-21.593 64.673-50.627h260.512c8.836 0 16-7.164 16-16s-7.164-16-16-16h-260.513c-7.186-29.034-33.449-50.628-64.673-50.628s-57.487 21.594-64.673 50.628h-90.141c-8.836 0-16 7.164-16 16s7.163 16 16 16zm154.814-50.628c19.094 0 34.628 15.534 34.628 34.628 0 19.093-15.534 34.627-34.628 34.627s-34.628-15.534-34.628-34.627c0-19.094 15.534-34.628 34.628-34.628zm325.186 157.016h-90.142c-7.186-29.034-33.449-50.628-64.673-50.628s-57.487 21.594-64.673 50.628h-260.512c-8.836 0-16 7.164-16 16s7.164 16 16 16h260.513c7.186 29.034 33.449 50.628 64.673 50.628s57.487-21.594 64.673-50.628h90.141c8.836 0 16-7.164 16-16s-7.163-16-16-16zm-154.814 50.628c-19.094 0-34.628-15.534-34.628-34.628s15.534-34.628 34.628-34.628 34.628 15.534 34.628 34.628-15.534 34.628-34.628 34.628z"></path></svg>');
+	
+	&.is-local {
+		.dlx-patterns-view-category-card__type {
+			background-color: #696969;
+			color: #FFFFFF;
 		}
 	}
-}
-.dataviews-bulk-actions-footer__container {
-	margin-bottom: 48px;
-}
-.dlx-bulk-action-toolbar-top .dataviews-bulk-actions-footer__container {
-	margin-bottom: 0;
-}
-.dlx-patterns-view-pagination-wrapper {
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	background: #fff;
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	padding: 16px;
-	padding-top: 24px;
-	border-radius: 4px;
-	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-	justify-content: flex-end;
-	align-items: center;
-	gap: 8px;
-	font-size: 11px;
-	font-weight: 500;
-	text-transform: uppercase;
-	border-top: 1px solid #333;
-	z-index: 1;
-}
-.dlx-patterns-view-pagination-item-total-items {
-	position: absolute;
-	right: 24px;
-	top: 6px;
-	font-size: 12px;
-	font-weight: 400;
-	color: #7b7b7b;
-	text-transform: none;
+	&.is-registered {
+		.dlx-patterns-view-category-card__type {
+			background-color: #696969;
+			color: #FFFFFF;
+		}
+	}
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	&__label {
+		font-size: 1.4em;
+	}
+	&__slug {
+		font-size: 0.9em;
+		color: #777777;
+		font-style: italic;
+	}
+	&__actions {
+		position: absolute;
+		bottom: 16px;
+		right: 12px;
+		display: flex;
+		gap: 8px;
+		justify-content: flex-end;
+		align-items: center;
+		margin-top: 16px;
+	}
 }

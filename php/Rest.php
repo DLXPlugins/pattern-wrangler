@@ -767,7 +767,7 @@ class Rest {
 				'label'       => $category_label,
 				'customLabel' => $category_custom_label,
 				'slug'        => $registered_category['slug'],
-				'enabled'     => true,
+				'enabled'     => $registered_category['enabled'] ?? true,
 				'count'       => isset( $registered_category['count'] ) ? $registered_category['count'] : 0,
 				'mappedTo'    => $registered_category['mappedTo'] ?? false,
 				'registered'  => true,

@@ -30,7 +30,7 @@ import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
 import BeatLoader from 'react-spinners/BeatLoader';
 import Snackbar from './Snackbar';
 import categoriesStore from '../store';
-import createPatternFromFile from '../utils/createPatternFromFile';
+import CategoryCard from './CategoryCard';
 
 const CategoriesListView = ( props ) => {
 	const { categories, loading, error } = useSelect( ( newSelect ) => {
@@ -132,12 +132,12 @@ const Interface = ( props ) => {
 									break;
 								case 'local':
 									categoriesCopy = Object.values( categoriesCopy ).filter(
-										( category ) => category.registered
+										( category ) => ! category.registered
 									);
 									break;
 								case 'registered':
 									categoriesCopy = Object.values( categoriesCopy ).filter(
-										( category ) => ! category.registered
+										( category ) => category.registered
 									);
 									break;
 							}
@@ -182,10 +182,8 @@ const Interface = ( props ) => {
 				}
 			} );
 		}
-		return categoriesCopy;
+		return Object.values( categoriesCopy );
 	};
-
-	console.log( 'categoriesDisplay', categories );
 
 	/**
 	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.
@@ -254,6 +252,16 @@ const Interface = ( props ) => {
 		onChangeView( view );
 	}, [] );
 
+	const CategoryList = useMemo( () => {
+		return categoriesDisplay.map( ( category ) => {
+			return (
+				<CategoryCard key={ category.slug } category={ category } />
+			);
+		} );
+	}, [ categoriesDisplay ] );
+
+	console.log( 'categoriesDisplay', categoriesDisplay );
+
 	return (
 		<div className="dlx-patterns-view-container-wrapper">
 			<div className="dlx-patterns-view-container">
@@ -271,7 +279,7 @@ const Interface = ( props ) => {
 						{ __( 'Add New Category', 'pattern-wrangler' ) }
 					</Button>
 				</div>
-				<div className="dlx-patterns-view-grid">
+				<div className="dlx-patterns-view-categories">
 					<div className="dlx-patterns-view-button-actions-wrapper">
 						<ToggleGroupControl
 							label={ __( 'Category Type', 'pattern-wrangler' ) }
@@ -474,6 +482,9 @@ const Interface = ( props ) => {
 								</>
 							)
 						}
+					</div>
+					<div className="dlx-patterns-view-categories-list">
+						{ CategoryList }
 					</div>
 				</div>
 				{ snackbar.isVisible && (
