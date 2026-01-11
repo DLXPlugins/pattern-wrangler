@@ -3621,6 +3621,11 @@ svg.lucide line {
   gap: 16px;
   margin-top: 24px;
 }
+@media (min-width: 48em) {
+  .dlx-patterns-view-categories-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 .dlx-patterns-view-category-card {
   background: #FAFAFA;
   color: #333333;
@@ -3680,8 +3685,8 @@ svg.lucide line {
   color: #FFFFFF;
 }
 .dlx-patterns-view-category-card.is-registered .dlx-patterns-view-category-card__type {
-  background-color: #696969;
-  color: #FFFFFF;
+  background-color: #f0f8ff;
+  color: #0066cc;
 }
 .dlx-patterns-view-category-card__content {
   display: flex;

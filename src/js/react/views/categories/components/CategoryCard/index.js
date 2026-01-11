@@ -1,5 +1,5 @@
 import { __, _n } from '@wordpress/i18n';
-import { AlertCircle, Edit, Trash2 } from 'lucide-react';
+import { AlertCircle, ArrowRight, Edit, Eye, Trash2 } from 'lucide-react';
 import { Button } from '@wordpress/components';
 import classnames from 'classnames';
 const CategoryCard = ( props ) => {
@@ -14,13 +14,17 @@ const CategoryCard = ( props ) => {
 		if ( ! category.registered ) {
 			string = __( 'Local', 'pattern-wrangler' );
 		}
-		string +=
-			' ' +
-			'(' +
-			category.count +
-			' ' +
-			_n( 'Pattern', 'Patterns', category.count, 'pattern-wrangler' ) +
-			')';
+		if ( category.count === 0 ) {
+			string += ' ' + '(' + __( 'Empty', 'pattern-wrangler' ) + ')';
+		} else {
+			string +=
+				' ' +
+				'(' +
+				category.count +
+				' ' +
+				_n( 'Pattern', 'Patterns', category.count, 'pattern-wrangler' ) +
+				')';
+		}
 		return string;
 	};
 
@@ -57,13 +61,63 @@ const CategoryCard = ( props ) => {
 					)
 				}
 				{
-					category.enabled && (
+					category.registered && category.enabled && (
 						<Button
 							variant="tertiary"
+							isDestructive={ true }
+							icon={ <Trash2 /> }
+							className="dlx-patterns-view-category-card__action-button"
+						>
+							{ __( 'Disable Category', 'pattern-wrangler' ) }
+						</Button>
+					)
+				}
+				{
+					category.enabled && (
+						<Button
+							variant="secondary"
 							icon={ <Edit /> }
 							className="dlx-patterns-view-category-card__action-button"
 						>
 							{ __( 'Edit', 'pattern-wrangler' ) }
+						</Button>
+					)
+				}
+				{
+					( ! category.enabled && category.mappedTo ) && (
+						<Button
+							variant="tertiary"
+							className="dlx-patterns-view-category-card__action-button"
+							label={ __( 'Manage how this registered category maps to local categories', 'pattern-wrangler' ) }
+							showTooltip={ true }
+						>
+							{ __( 'Edit Mapping', 'pattern-wrangler' ) }
+						</Button>
+					)
+				}
+				{
+					( ! category.enabled && ! category.mappedTo ) && (
+						<Button
+							variant="tertiary"
+							icon={ <ArrowRight /> }
+							className="dlx-patterns-view-category-card__action-button"
+							label={ __( 'Map to Category', 'pattern-wrangler' ) }
+							showTooltip={ true }
+						>
+							{ __( 'Map', 'pattern-wrangler' ) }
+						</Button>
+					)
+				}
+				{
+					( ! category.enabled && category.registered ) && (
+						<Button
+							variant="secondary"
+							icon={ <Eye /> }
+							className="dlx-patterns-view-category-card__action-button"
+							label={ __( 'Re-Enable Category', 'pattern-wrangler' ) }
+							showTooltip={ true }
+						>
+							{ __( 'Re-Enable', 'pattern-wrangler' ) }
 						</Button>
 					)
 				}

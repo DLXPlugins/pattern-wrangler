@@ -254,6 +254,9 @@ svg.lucide {
 	grid-template-columns: 1fr;
 	gap: 16px;
 	margin-top: 24px;
+	@include respond-to('medium') {
+		grid-template-columns: 1fr 1fr;
+	}
 }
 .dlx-patterns-view-category-card {
 	background: #FAFAFA;
@@ -321,8 +324,8 @@ svg.lucide {
 	}
 	&.is-registered {
 		.dlx-patterns-view-category-card__type {
-			background-color: #696969;
-			color: #FFFFFF;
+			background-color: #f0f8ff;
+			color: #0066cc;
 		}
 	}
 	&__content {
