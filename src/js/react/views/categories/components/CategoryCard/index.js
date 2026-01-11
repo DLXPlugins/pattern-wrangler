@@ -1,5 +1,5 @@
 import { __, _n } from '@wordpress/i18n';
-import { AlertCircle, ArrowRight, Edit, Eye, Trash2 } from 'lucide-react';
+import { AlertCircle, ArrowRight, Edit, Eye, Trash2, Ban } from 'lucide-react';
 import { Button } from '@wordpress/components';
 import classnames from 'classnames';
 const CategoryCard = ( props ) => {
@@ -65,7 +65,7 @@ const CategoryCard = ( props ) => {
 						<Button
 							variant="tertiary"
 							isDestructive={ true }
-							icon={ <Trash2 /> }
+							icon={ <Ban /> }
 							className="dlx-patterns-view-category-card__action-button"
 						>
 							{ __( 'Disable Category', 'pattern-wrangler' ) }
