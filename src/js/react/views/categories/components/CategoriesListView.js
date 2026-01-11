@@ -89,10 +89,8 @@ const Interface = ( props ) => {
 	const { categories } = props;
 
 	const [ selectedItems, setSelectedItems ] = useState( [] );
-	const { registeredCategories, localCategories, doNotShowAgain } = useSelect( ( newSelect ) => {
+	const { doNotShowAgain } = useSelect( ( newSelect ) => {
 		return {
-			registeredCategories: newSelect( categoriesStore ).getRegisteredCategories(),
-			localCategories: newSelect( categoriesStore ).getLocalCategories(),
 			doNotShowAgain: newSelect( categoriesStore ).getDoNotShowAgain(),
 		};
 	} );
@@ -253,7 +251,7 @@ const Interface = ( props ) => {
 
 	useEffect( () => {
 		onChangeView( view );
-	}, [] );
+	}, [ categories ] );
 
 	const CategoryList = useMemo( () => {
 		return categoriesDisplay.map( ( category ) => {
@@ -261,7 +259,7 @@ const Interface = ( props ) => {
 				<CategoryCard key={ category.slug } category={ category } />
 			);
 		} );
-	}, [ categoriesDisplay ] );
+	}, [ categoriesDisplay, categories ] );
 
 	return (
 		<div className="dlx-patterns-view-container-wrapper">
@@ -509,8 +507,8 @@ const Interface = ( props ) => {
 						isOpen={ isAddNewCategoryModalOpen.isOpen }
 						onRequestClose={ () => setIsAddNewCategoryModalOpen( false ) }
 						termId={ isAddNewCategoryModalOpen.termId }
-						onCreate={ ( category ) => {
-							//dispatch( categoriesStore ).upsertCategory( category );
+						onCreate={ ( createResponse ) => {
+							dispatch( categoriesStore ).addCategory( createResponse.category );
 							setIsAddNewCategoryModalOpen( false );
 							setSnackbar( {
 								isVisible: true,

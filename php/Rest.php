@@ -523,10 +523,36 @@ class Rest {
 		}
 
 		// Create the category.
-		$term_id = wp_insert_term( $term_title, 'wp_pattern_category', array( 'slug' => $term_slug ) );
+		$maybe_term = wp_insert_term( $term_title, 'wp_pattern_category', array( 'slug' => $term_slug ) );
+
+		if ( is_wp_error( $maybe_term ) ) {
+			return rest_ensure_response( array( 'error' => 'Failed to create category.' ) );
+		}
+		$term_id = $maybe_term['term_id'];
+
+		$term = get_term_by( 'id', $term_id, 'wp_pattern_category' );
+		if ( ! $term ) {
+			return rest_ensure_response( array( 'error' => 'Failed to create and retrieve category.' ) );
+		}
+
+		$category = array(
+			'label'       => wp_specialchars_decode( $term->name, ENT_QUOTES ),
+			'customLabel' => wp_specialchars_decode( $term->name, ENT_QUOTES ),
+			'slug'        => sanitize_title( $term->slug ),
+			'enabled'     => true,
+			'count'       => 0,
+			'mappedTo'    => false,
+			'registered'  => false,
+			'id'          => absint( $term_id ),
+		);
 
 		// Return the category ID.
-		return rest_ensure_response( array( 'termId' => $term_id ) );
+		return rest_ensure_response(
+			array(
+				'termId'   => $term_id,
+				'category' => $category,
+			)
+		);
 	}
 
 	/**

@@ -241,13 +241,9 @@ var Interface = function Interface(props) {
     setSelectedItems = _useState2[1];
   var _useSelect2 = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.useSelect)(function (newSelect) {
       return {
-        registeredCategories: newSelect(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).getRegisteredCategories(),
-        localCategories: newSelect(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).getLocalCategories(),
         doNotShowAgain: newSelect(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).getDoNotShowAgain()
       };
     }),
-    registeredCategories = _useSelect2.registeredCategories,
-    localCategories = _useSelect2.localCategories,
     doNotShowAgain = _useSelect2.doNotShowAgain;
   var _useState3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState4 = _slicedToArray(_useState3, 2),
@@ -417,7 +413,7 @@ var Interface = function Interface(props) {
   };
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     onChangeView(view);
-  }, []);
+  }, [categories]);
   var CategoryList = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return categoriesDisplay.map(function (category) {
       return /*#__PURE__*/React.createElement(_CategoryCard__WEBPACK_IMPORTED_MODULE_13__["default"], {
@@ -425,7 +421,7 @@ var Interface = function Interface(props) {
         category: category
       });
     });
-  }, [categoriesDisplay]);
+  }, [categoriesDisplay, categories]);
   return /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-container-wrapper"
   }, /*#__PURE__*/React.createElement("div", {
@@ -605,8 +601,8 @@ var Interface = function Interface(props) {
       return setIsAddNewCategoryModalOpen(false);
     },
     termId: isAddNewCategoryModalOpen.termId,
-    onCreate: function onCreate(category) {
-      //dispatch( categoriesStore ).upsertCategory( category );
+    onCreate: function onCreate(createResponse) {
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).addCategory(createResponse.category);
       setIsAddNewCategoryModalOpen(false);
       setSnackbar({
         isVisible: true,
@@ -821,7 +817,8 @@ var CategoryCreateModal = function CategoryCreateModal(props) {
     control = _useForm.control,
     handleSubmit = _useForm.handleSubmit,
     setError = _useForm.setError,
-    setValue = _useForm.setValue;
+    setValue = _useForm.setValue,
+    getValues = _useForm.getValues;
   var formValues = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_7__.useWatch)({
     control: control
   });
@@ -917,6 +914,13 @@ var CategoryCreateModal = function CategoryCreateModal(props) {
         value: field.value,
         onChange: function onChange(value) {
           return field.onChange(value);
+        },
+        onBlur: function onBlur() {
+          var currentSlug = getValues('termSlug');
+          if ('' === currentSlug) {
+            var slug = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_3__.cleanForSlug)(field.value);
+            setValue('termSlug', slug);
+          }
         },
         disabled: isSaving
       });
@@ -1172,8 +1176,6 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 var DEFAULT_STATE = {
   categories: [],
-  registeredCategories: [],
-  localCategories: [],
   loading: true,
   error: null,
   doNotShowAgain: dlxEnhancedCategoriesView.doNotShowAgain || false
@@ -1183,18 +1185,6 @@ var actions = {
     return {
       type: 'SET_CATEGORIES',
       categories: categories
-    };
-  },
-  setRegisteredCategories: function setRegisteredCategories(registeredCategories) {
-    return {
-      type: 'SET_REGISTERED_CATEGORIES',
-      registeredCategories: registeredCategories
-    };
-  },
-  setLocalCategories: function setLocalCategories(localCategories) {
-    return {
-      type: 'SET_LOCAL_CATEGORIES',
-      localCategories: localCategories
     };
   },
   setLoading: function setLoading(loading) {
@@ -1237,8 +1227,6 @@ var actions = {
               response = _context.sent;
               if (response) {
                 dispatch(actions.setCategories(response.categories));
-                dispatch(actions.setRegisteredCategories(response.registeredCategories));
-                dispatch(actions.setLocalCategories(response.localCategories));
               } else {
                 dispatch(actions.setError('Failed to fetch data'));
               }
@@ -1262,6 +1250,18 @@ var actions = {
         return _ref2.apply(this, arguments);
       };
     }();
+  },
+  addCategory: function addCategory(category) {
+    return {
+      type: 'ADD_CATEGORY',
+      category: category
+    };
+  },
+  updateCategory: function updateCategory(category) {
+    return {
+      type: 'UPDATE_CATEGORY',
+      category: category
+    };
   }
 };
 var categoriesStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)('dlxplugins/pattern-wrangler/categories', {
@@ -1272,14 +1272,6 @@ var categoriesStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRedu
       case 'SET_CATEGORIES':
         return _objectSpread(_objectSpread({}, state), {}, {
           categories: action.categories
-        });
-      case 'SET_REGISTERED_CATEGORIES':
-        return _objectSpread(_objectSpread({}, state), {}, {
-          registeredCategories: action.registeredCategories
-        });
-      case 'SET_LOCAL_CATEGORIES':
-        return _objectSpread(_objectSpread({}, state), {}, {
-          localCategories: action.localCategories
         });
       case 'SET_LOADING':
         return _objectSpread(_objectSpread({}, state), {}, {
@@ -1292,6 +1284,23 @@ var categoriesStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRedu
       case 'SET_DO_NOT_SHOW_AGAIN':
         return _objectSpread(_objectSpread({}, state), {}, {
           doNotShowAgain: action.doNotShowAgain
+        });
+      case 'ADD_CATEGORY':
+        var currentCategories = _objectSpread({}, state.categories);
+        currentCategories[action.category.slug] = action.category;
+
+        // Sort by label.
+        var sortedCategories = Object.values(currentCategories).sort(function (a, b) {
+          return a.label.localeCompare(b.label);
+        });
+        return _objectSpread(_objectSpread({}, state), {}, {
+          categories: sortedCategories
+        });
+      case 'UPDATE_CATEGORY':
+        return _objectSpread(_objectSpread({}, state), {}, {
+          categories: state.categories.map(function (category) {
+            return category.id === action.category.id ? action.category : category;
+          })
         });
       default:
         return state;

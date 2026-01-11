@@ -27,7 +27,7 @@ const CategoryCreateModal = ( props ) => {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ isEditMode, setIsEditMode ] = useState( props.isEditMode || false );
 
-	const { control, handleSubmit, setError, setValue } = useForm( {
+	const { control, handleSubmit, setError, setValue, getValues } = useForm( {
 		defaultValues: {
 			termId: props.termId || 0,
 			termNonce: props.termNonce || '',
@@ -119,6 +119,13 @@ const CategoryCreateModal = ( props ) => {
 										}
 										value={ field.value }
 										onChange={ ( value ) => field.onChange( value ) }
+										onBlur={ () => {
+											const currentSlug = getValues( 'termSlug' );
+											if ( '' === currentSlug ) {
+												const slug = cleanForSlug( field.value );
+												setValue( 'termSlug', slug );
+											}
+										} }
 										disabled={ isSaving }
 									/>
 								) }
