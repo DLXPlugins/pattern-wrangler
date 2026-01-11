@@ -33,6 +33,7 @@ import Snackbar from './Snackbar';
 import categoriesStore from '../store';
 import CategoryCard from './CategoryCard';
 import CategoryCreateModal from './CategoryCreateModal';
+import CategoryBulkActions from './CategoryBulkActions';
 
 const CategoriesListView = ( props ) => {
 	const { categories, loading, error } = useSelect( ( newSelect ) => {
@@ -289,7 +290,7 @@ const Interface = ( props ) => {
 		return (
 			<>
 				<div className="dlx-patterns-view-button-actions-wrapper">
-					Category Bulk Actions.
+					<CategoryBulkActions categories={ categoriesDisplay } />
 				</div>
 			</>
 		);

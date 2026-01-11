@@ -352,6 +352,18 @@ svg.lucide {
 		align-items: center;
 		margin-top: 16px;
 	}
+	&__checkbox {
+		position: absolute;
+		top: 16px;
+		opacity: 0;
+		transition: opacity 0.3s ease-in-out;
+		z-index: 1;
+		pointer-events: none;
+	}
+	&:hover &__checkbox {
+		opacity: 1;
+		pointer-events: auto;
+	}
 }
 .dlx-pw-modal-admin-row {
 	.is-required label {

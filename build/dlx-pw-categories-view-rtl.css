@@ -3700,6 +3700,18 @@ svg.lucide line {
   align-items: center;
   margin-top: 16px;
 }
+.dlx-patterns-view-category-card__checkbox {
+  position: absolute;
+  top: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1;
+  pointer-events: none;
+}
+.dlx-patterns-view-category-card:hover .dlx-patterns-view-category-card__checkbox {
+  opacity: 1;
+  pointer-events: auto;
+}
 .dlx-pw-modal-admin-row .is-required label {
   position: relative;
 }

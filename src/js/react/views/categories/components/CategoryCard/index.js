@@ -1,9 +1,12 @@
 import { __, _n } from '@wordpress/i18n';
 import { AlertCircle, ArrowRight, Edit, Eye, Trash2, Ban } from 'lucide-react';
-import { Button } from '@wordpress/components';
+import { useFormContext, Controller, useWatch } from 'react-hook-form';
+import { Button, CheckboxControl } from '@wordpress/components';
 import classnames from 'classnames';
 const CategoryCard = ( props ) => {
 	const { category } = props;
+	const { control, getValues } = useFormContext();
+	const formValues = useWatch( { control } ); // needed for re-rendering when the form values change.
 	/**
 	 * Get the category type.
 	 *
@@ -132,9 +135,24 @@ const CategoryCard = ( props ) => {
 					'is-local': ! category.registered,
 					'is-enabled': category.enabled,
 					'is-disabled': ! category.enabled,
+					'is-selected': formValues[ `categoriesSelected[${ category.slug }]` ] || false,
 				} )
 			}
 		>
+			<div className="dlx-patterns-view-category-card__checkbox">
+				<Controller
+					key={ category.slug }
+					control={ control }
+					name={ `categoriesSelected[${ category.slug }]` }
+					render={ ( { field } ) => (
+						<CheckboxControl
+							checked={ field.value || false }
+							onChange={ field.onChange }
+							aria-label={ __( 'Select category', 'pattern-wrangler' ) + ' ' + category.label }
+						/>
+					) }
+				/>
+			</div>
 			<div className="dlx-patterns-view-category-card__header">
 				{ getCategoryEnabledStatus() }
 				<div className="dlx-patterns-view-category-card__type">
