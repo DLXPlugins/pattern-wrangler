@@ -31,6 +31,7 @@ import BeatLoader from 'react-spinners/BeatLoader';
 import Snackbar from './Snackbar';
 import categoriesStore from '../store';
 import CategoryCard from './CategoryCard';
+import CategoryCreateModal from './CategoryCreateModal';
 
 const CategoriesListView = ( props ) => {
 	const { categories, loading, error } = useSelect( ( newSelect ) => {
@@ -95,6 +96,8 @@ const Interface = ( props ) => {
 			doNotShowAgain: newSelect( categoriesStore ).getDoNotShowAgain(),
 		};
 	} );
+
+	const [ isAddNewCategoryModalOpen, setIsAddNewCategoryModalOpen ] = useState( false );
 
 	const [ view, setView ] = useState( {
 		filters: [
@@ -260,8 +263,6 @@ const Interface = ( props ) => {
 		} );
 	}, [ categoriesDisplay ] );
 
-	console.log( 'categoriesDisplay', categoriesDisplay );
-
 	return (
 		<div className="dlx-patterns-view-container-wrapper">
 			<div className="dlx-patterns-view-container">
@@ -273,7 +274,10 @@ const Interface = ( props ) => {
 						variant="primary"
 						className="dlx-patterns-view-quick-button"
 						onClick={ () => {
-							// setIsAddNewPatternModalOpen( true );
+							setIsAddNewCategoryModalOpen( {
+								isOpen: true,
+								termId: 0,
+							} );
 						} }
 					>
 						{ __( 'Add New Category', 'pattern-wrangler' ) }
@@ -496,6 +500,23 @@ const Interface = ( props ) => {
 						onClose={ () => {
 							setSnackbar( {
 								isVisible: false,
+							} );
+						} }
+					/>
+				) }
+				{ isAddNewCategoryModalOpen.isOpen && (
+					<CategoryCreateModal
+						isOpen={ isAddNewCategoryModalOpen.isOpen }
+						onRequestClose={ () => setIsAddNewCategoryModalOpen( false ) }
+						termId={ isAddNewCategoryModalOpen.termId }
+						onCreate={ ( category ) => {
+							dispatch( categoriesStore ).upsertCategory( category );
+							setIsAddNewCategoryModalOpen( false );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Category created successfully.', 'pattern-wrangler' ),
+								title: __( 'Category Created', 'pattern-wrangler' ),
+								type: 'success',
 							} );
 						} }
 					/>

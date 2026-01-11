@@ -97,6 +97,36 @@ class Rest {
 		 */
 		register_rest_route(
 			'dlxplugins/pattern-wrangler/v1',
+			'/categories/update',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_update_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For creating a pattern.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/create',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_create_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For updating a pattern.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
 			'/patterns/update',
 			array(
 				'methods'             => 'POST',
@@ -467,6 +497,36 @@ class Rest {
 				'categorySlugs' => array_values( $terms_affected ),
 			)
 		);
+	}
+
+	/**
+	 * Create a category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_create_category( $request ) {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-create-category' ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
+		}
+
+		$term_title = sanitize_text_field( wp_strip_all_tags( $request->get_param( 'termTitle' ) ) );
+		$term_slug  = sanitize_title( $request->get_param( 'termSlug' ) );
+
+		// See if the term already exists.
+		$maybe_term = get_term_by( 'slug', $term_slug, 'wp_pattern_category' );
+		if ( $maybe_term ) {
+			return rest_ensure_response( array( 'error' => 'Category already exists.' ) );
+		}
+
+		// Create the category.
+		$term_id = wp_insert_term( $term_title, 'wp_pattern_category', array( 'slug' => $term_slug ) );
+
+		// Return the category ID.
+		return rest_ensure_response( array( 'termId' => $term_id ) );
 	}
 
 	/**
