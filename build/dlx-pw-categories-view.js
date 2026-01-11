@@ -143,6 +143,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_10__);
 /* harmony import */ var react_spinners_BeatLoader__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! react-spinners/BeatLoader */ "./node_modules/react-spinners/BeatLoader.js");
 /* harmony import */ var react_spinners_BeatLoader__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(react_spinners_BeatLoader__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var react_hook_form__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! react-hook-form */ "./node_modules/react-hook-form/dist/index.esm.mjs");
 /* harmony import */ var _Snackbar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Snackbar */ "./src/js/react/views/categories/components/Snackbar/index.js");
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../store */ "./src/js/react/views/categories/store/index.js");
 /* harmony import */ var _CategoryCard__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./CategoryCard */ "./src/js/react/views/categories/components/CategoryCard/index.js");
@@ -165,6 +166,7 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 /* eslint-disable react/no-unknown-property */
+
 
 
 
@@ -276,6 +278,17 @@ var Interface = function Interface(props) {
     _useState10 = _slicedToArray(_useState9, 2),
     snackbar = _useState10[0],
     setSnackbar = _useState10[1];
+
+  /**
+   * Get the default values for the form.
+   *
+   * @return {Object} The default values object.
+   */
+  var getDefaultValues = function getDefaultValues() {
+    return {
+      categoriesSelected: []
+    };
+  };
 
   /**
    * Retrieve a list of modified patterns based on query vars and the current view.
@@ -411,6 +424,22 @@ var Interface = function Interface(props) {
     window.history.pushState({}, '', newUrl);
     setView(_objectSpread(_objectSpread({}, newView), changeQueryArgs));
   };
+
+  // Default values will be reset when async data loads (in SocialNetworksPanel).
+  var methods = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_16__.useForm)({
+    defaultValues: getDefaultValues(),
+    // Start with empty defaults, will be reset when data loads.
+    mode: 'onBlur',
+    // Validate on blur for better UX in popovers.
+    reValidateMode: 'onChange',
+    // Re-validate and clear errors immediately when user starts typing.
+    shouldUnregister: false,
+    // Keep fields registered even when not rendered.
+    resetOptions: {
+      keepDirtyValues: false,
+      keepErrors: false
+    }
+  });
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     onChangeView(view);
   }, [categories]);
@@ -422,6 +451,11 @@ var Interface = function Interface(props) {
       });
     });
   }, [categoriesDisplay, categories]);
+  var getBulkActions = function getBulkActions() {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "dlx-patterns-view-button-actions-wrapper"
+    }, "Category Bulk Actions."));
+  };
   return /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-container-wrapper"
   }, /*#__PURE__*/React.createElement("div", {
@@ -441,7 +475,7 @@ var Interface = function Interface(props) {
     }
   }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Add New Category', 'pattern-wrangler'))), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-categories"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_16__.FormProvider, methods, /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-button-actions-wrapper"
   }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControl, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Category Type', 'pattern-wrangler'),
@@ -583,9 +617,9 @@ var Interface = function Interface(props) {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Enabled', 'pattern-wrangler'),
     showTooltip: true,
     "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Show Only Enabled Categories', 'pattern-wrangler')
-  })))), /*#__PURE__*/React.createElement("div", {
+  })))), getBulkActions(), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-categories-list"
-  }, CategoryList)), snackbar.isVisible && /*#__PURE__*/React.createElement(_Snackbar__WEBPACK_IMPORTED_MODULE_11__["default"], {
+  }, CategoryList), getBulkActions())), snackbar.isVisible && /*#__PURE__*/React.createElement(_Snackbar__WEBPACK_IMPORTED_MODULE_11__["default"], {
     isVisible: snackbar.isVisible,
     message: snackbar.message,
     title: snackbar.title,
