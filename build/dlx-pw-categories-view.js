@@ -606,7 +606,7 @@ var Interface = function Interface(props) {
     },
     termId: isAddNewCategoryModalOpen.termId,
     onCreate: function onCreate(category) {
-      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).upsertCategory(category);
+      //dispatch( categoriesStore ).upsertCategory( category );
       setIsAddNewCategoryModalOpen(false);
       setSnackbar({
         isVisible: true,

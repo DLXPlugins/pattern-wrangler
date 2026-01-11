@@ -510,7 +510,7 @@ const Interface = ( props ) => {
 						onRequestClose={ () => setIsAddNewCategoryModalOpen( false ) }
 						termId={ isAddNewCategoryModalOpen.termId }
 						onCreate={ ( category ) => {
-							dispatch( categoriesStore ).upsertCategory( category );
+							//dispatch( categoriesStore ).upsertCategory( category );
 							setIsAddNewCategoryModalOpen( false );
 							setSnackbar( {
 								isVisible: true,
