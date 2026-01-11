@@ -3627,6 +3627,9 @@ svg.lucide line {
   background: #FFFFFF;
   color: #959595;
 }
+.dlx-patterns-view-category-card.is-selected {
+  border-color: #0066cc;
+}
 .dlx-patterns-view-category-card__header {
   position: absolute;
   top: 16px;
@@ -3707,6 +3710,10 @@ svg.lucide line {
   transition: opacity 0.3s ease-in-out;
   z-index: 1;
   pointer-events: none;
+}
+.dlx-patterns-view-category-card.is-selected .dlx-patterns-view-category-card__checkbox {
+  opacity: 1;
+  pointer-events: auto;
 }
 .dlx-patterns-view-category-card:hover .dlx-patterns-view-category-card__checkbox {
   opacity: 1;

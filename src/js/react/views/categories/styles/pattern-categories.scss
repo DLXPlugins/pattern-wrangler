@@ -271,6 +271,10 @@ svg.lucide {
 		color: #959595;
 	}
 
+	&.is-selected {
+		border-color: #0066cc;
+	}
+
 	&__header {
 		position: absolute;
 		top: 16px;
@@ -359,6 +363,10 @@ svg.lucide {
 		transition: opacity 0.3s ease-in-out;
 		z-index: 1;
 		pointer-events: none;
+	}
+	&.is-selected &__checkbox {
+		opacity: 1;
+		pointer-events: auto;
 	}
 	&:hover &__checkbox {
 		opacity: 1;

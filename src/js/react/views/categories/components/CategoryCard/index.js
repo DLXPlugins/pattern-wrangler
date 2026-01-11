@@ -135,7 +135,7 @@ const CategoryCard = ( props ) => {
 					'is-local': ! category.registered,
 					'is-enabled': category.enabled,
 					'is-disabled': ! category.enabled,
-					'is-selected': formValues[ `categoriesSelected[${ category.slug }]` ] || false,
+					'is-selected': getValues( `categoriesSelected[${ category.slug }]` ) || false,
 				} )
 			}
 		>

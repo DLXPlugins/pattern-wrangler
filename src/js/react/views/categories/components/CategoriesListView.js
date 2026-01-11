@@ -122,6 +122,7 @@ const Interface = ( props ) => {
 	const getDefaultValues = () => {
 		return {
 			categoriesSelected: [],
+			bulkActionSelected: false,
 		};
 	};
 
