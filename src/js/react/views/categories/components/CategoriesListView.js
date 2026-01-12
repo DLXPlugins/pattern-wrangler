@@ -703,8 +703,8 @@ const Interface = ( props ) => {
 						isOpen={ isAddNewCategoryModalOpen.isOpen }
 						onRequestClose={ () => setIsAddNewCategoryModalOpen( false ) }
 						termId={ isAddNewCategoryModalOpen.termId }
-						onCreate={ ( createResponse ) => {
-							dispatch( categoriesStore ).addCategory( createResponse.category );
+						onCreate={ ( createdCategory ) => {
+							dispatch( categoriesStore ).addCategory( createdCategory );
 							setIsAddNewCategoryModalOpen( false );
 							setSnackbar( {
 								isVisible: true,
@@ -744,10 +744,13 @@ const Interface = ( props ) => {
 					<CategoryCreateModal
 						isOpen={ isEditCategoryModalOpen.isOpen }
 						onRequestClose={ () => setIsEditCategoryModalOpen( false ) }
-						termId={ isEditCategoryModalOpen.termId }
+						termId={ isEditCategoryModalOpen.category.id }
+						termTitle={ isEditCategoryModalOpen.category.label }
+						termSlug={ isEditCategoryModalOpen.category.slug }
+						termNonce={ isEditCategoryModalOpen.category.editNonce }
 						isEditMode={ true }
-						onEdit={ ( editResponse ) => {
-							dispatch( categoriesStore ).updateCategory( editResponse.category );
+						onEdit={ ( editedCategory ) => {
+							dispatch( categoriesStore ).updateCategory( editedCategory );
 							setIsEditCategoryModalOpen( false );
 							setSnackbar( {
 								isVisible: true,

@@ -32,7 +32,7 @@ const CategoryCreateModal = ( props ) => {
 			termId: props.termId || 0,
 			termNonce: props.termNonce || '',
 			termTitle: props.termTitle || '',
-			termSlug: cleanForSlug( props.termTitle || '' ),
+			termSlug: props.termSlug || cleanForSlug( props.termTitle || '' ),
 		},
 	} );
 	const formValues = useWatch( { control } );
@@ -53,17 +53,23 @@ const CategoryCreateModal = ( props ) => {
 			data: {
 				termId: formData.termId,
 				termNonce: formData.termNonce,
-				nonce: dlxEnhancedCategoriesView.createNonce,
 				termTitle: formData.termTitle,
 				termSlug: formData.termSlug,
+				nonce: dlxEnhancedCategoriesView.createNonce,
 			},
 		} );
 		if ( response?.error ) {
 			setError( 'termTitle', { message: response.error } );
+			setIsSaving( false );
+			return;
+		}
+		if ( isEditMode ) {
+			props.onEdit( response.category );
 		} else {
-			props.onCreate( response );
+			props.onCreate( response.category );
 		}
 		setIsSaving( false );
+		props.onRequestClose();
 	};
 
 	/**

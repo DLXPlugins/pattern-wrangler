@@ -544,6 +544,71 @@ class Rest {
 			'mappedTo'    => false,
 			'registered'  => false,
 			'id'          => absint( $term_id ),
+			'editNonce'   => wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $term_id ),
+		);
+
+		// Return the category ID.
+		return rest_ensure_response(
+			array(
+				'termId'   => $term_id,
+				'category' => $category,
+			)
+		);
+	}
+
+	/**
+	 * Update a category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_update_category( $request ) {
+		// Check nonce and permissions.
+		$nonce   = sanitize_text_field( $request->get_param( 'termNonce' ) );
+		$term_id = absint( $request->get_param( 'termId' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . $request->get_param( 'termId' ) ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
+		}
+
+		$term_title = sanitize_text_field( wp_strip_all_tags( $request->get_param( 'termTitle' ) ) );
+		$term_slug  = sanitize_title( $request->get_param( 'termSlug' ) );
+
+		// See if the term already exists.
+		$maybe_term = get_term_by( 'id', $term_id, 'wp_pattern_category' );
+		if ( ! $maybe_term ) {
+			return rest_ensure_response( array( 'error' => 'Category not found.' ) );
+		}
+
+		// Update the category.
+		$maybe_term = wp_update_term(
+			$term_id,
+			'wp_pattern_category',
+			array(
+				'name' => $term_title,
+				'slug' => $term_slug,
+			)
+		);
+
+		if ( is_wp_error( $maybe_term ) ) {
+			return rest_ensure_response( array( 'error' => 'Failed to update category. It may already exist.' ) );
+		}
+
+		$term = get_term_by( 'id', $term_id, 'wp_pattern_category' );
+		if ( ! $term ) {
+			return rest_ensure_response( array( 'error' => 'Failed to update and retrieve category.' ) );
+		}
+
+		$category = array(
+			'label'       => wp_specialchars_decode( $term->name, ENT_QUOTES ),
+			'customLabel' => wp_specialchars_decode( $term->name, ENT_QUOTES ),
+			'slug'        => sanitize_title( $term->slug ),
+			'enabled'     => true,
+			'count'       => absint( $term->count ),
+			'mappedTo'    => false,
+			'registered'  => false,
+			'id'          => absint( $term_id ),
+			'editNonce'   => wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $term_id ),
 		);
 
 		// Return the category ID.
@@ -858,6 +923,7 @@ class Rest {
 				'mappedTo'    => $registered_category['mappedTo'] ?? false,
 				'registered'  => true,
 				'id'          => 0,
+				'editNonce'   => wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $registered_category['slug'] ),
 			);
 		}
 
@@ -875,6 +941,7 @@ class Rest {
 				'mappedTo'    => false,
 				'registered'  => false,
 				'id'          => $local_category->term_id,
+				'editNonce'   => wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $local_category->term_id ),
 			);
 		}
 

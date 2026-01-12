@@ -728,8 +728,8 @@ var Interface = function Interface(props) {
       return setIsAddNewCategoryModalOpen(false);
     },
     termId: isAddNewCategoryModalOpen.termId,
-    onCreate: function onCreate(createResponse) {
-      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).addCategory(createResponse.category);
+    onCreate: function onCreate(createdCategory) {
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).addCategory(createdCategory);
       setIsAddNewCategoryModalOpen(false);
       setSnackbar({
         isVisible: true,
@@ -758,10 +758,13 @@ var Interface = function Interface(props) {
     onRequestClose: function onRequestClose() {
       return setIsEditCategoryModalOpen(false);
     },
-    termId: isEditCategoryModalOpen.termId,
+    termId: isEditCategoryModalOpen.category.id,
+    termTitle: isEditCategoryModalOpen.category.label,
+    termSlug: isEditCategoryModalOpen.category.slug,
+    termNonce: isEditCategoryModalOpen.category.editNonce,
     isEditMode: true,
-    onEdit: function onEdit(editResponse) {
-      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).updateCategory(editResponse.category);
+    onEdit: function onEdit(editedCategory) {
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).updateCategory(editedCategory);
       setIsEditCategoryModalOpen(false);
       setSnackbar({
         isVisible: true,
@@ -1093,7 +1096,7 @@ var CategoryCreateModal = function CategoryCreateModal(props) {
         termId: props.termId || 0,
         termNonce: props.termNonce || '',
         termTitle: props.termTitle || '',
-        termSlug: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_3__.cleanForSlug)(props.termTitle || '')
+        termSlug: props.termSlug || (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_3__.cleanForSlug)(props.termTitle || '')
       }
     }),
     control = _useForm.control,
@@ -1125,22 +1128,31 @@ var CategoryCreateModal = function CategoryCreateModal(props) {
               data: {
                 termId: formData.termId,
                 termNonce: formData.termNonce,
-                nonce: dlxEnhancedCategoriesView.createNonce,
                 termTitle: formData.termTitle,
-                termSlug: formData.termSlug
+                termSlug: formData.termSlug,
+                nonce: dlxEnhancedCategoriesView.createNonce
               }
             });
           case 4:
             response = _context.sent;
-            if (response !== null && response !== void 0 && response.error) {
-              setError('termTitle', {
-                message: response.error
-              });
+            if (!(response !== null && response !== void 0 && response.error)) {
+              _context.next = 9;
+              break;
+            }
+            setError('termTitle', {
+              message: response.error
+            });
+            setIsSaving(false);
+            return _context.abrupt("return");
+          case 9:
+            if (isEditMode) {
+              props.onEdit(response.category);
             } else {
-              props.onCreate(response);
+              props.onCreate(response.category);
             }
             setIsSaving(false);
-          case 7:
+            props.onRequestClose();
+          case 12:
           case "end":
             return _context.stop();
         }
@@ -1641,6 +1653,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/url */ "@wordpress/url");
 /* harmony import */ var _wordpress_url__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_url__WEBPACK_IMPORTED_MODULE_2__);
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -1744,6 +1762,7 @@ var actions = {
 };
 var categoriesStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)('dlxplugins/pattern-wrangler/categories', {
   reducer: function reducer() {
+    var _Object$values$find;
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_STATE;
     var action = arguments.length > 1 ? arguments[1] : undefined;
     switch (action.type) {
@@ -1765,23 +1784,41 @@ var categoriesStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRedu
         });
       case 'ADD_CATEGORY':
         var currentCategories = _objectSpread({}, state.categories);
+        console.log(action);
         currentCategories[action.category.slug] = action.category;
 
-        // Sort by label.
-        var sortedCategories = Object.values(currentCategories).sort(function (a, b) {
+        // Sort by label while preserving slug keys.
+        var sortedCategories = Object.fromEntries(Object.entries(currentCategories).sort(function (_ref3, _ref4) {
+          var _ref5 = _slicedToArray(_ref3, 2),
+            a = _ref5[1];
+          var _ref6 = _slicedToArray(_ref4, 2),
+            b = _ref6[1];
           return a.label.localeCompare(b.label);
-        });
+        }));
         return _objectSpread(_objectSpread({}, state), {}, {
           categories: sortedCategories
         });
       case 'UPDATE_CATEGORY':
         var currentUpdatedCategories = _objectSpread({}, state.categories);
+
+        // Retrieve by ID and get the old slug.
+        var categorySlug = (_Object$values$find = Object.values(currentUpdatedCategories).find(function (category) {
+          return category.id === action.category.id;
+        })) === null || _Object$values$find === void 0 ? void 0 : _Object$values$find.slug;
+        // Unset the category with the old slug as the slug might've changed.
+        delete currentUpdatedCategories[categorySlug];
+
+        // Set the new category with the new slug.
         currentUpdatedCategories[action.category.slug] = action.category;
 
-        // Sort by label.
-        var sortedUpdatedCategories = Object.values(currentUpdatedCategories).sort(function (a, b) {
+        // Sort by label while preserving slug keys.
+        var sortedUpdatedCategories = Object.fromEntries(Object.entries(currentUpdatedCategories).sort(function (_ref7, _ref8) {
+          var _ref9 = _slicedToArray(_ref7, 2),
+            a = _ref9[1];
+          var _ref10 = _slicedToArray(_ref8, 2),
+            b = _ref10[1];
           return a.label.localeCompare(b.label);
-        });
+        }));
         return _objectSpread(_objectSpread({}, state), {}, {
           categories: sortedUpdatedCategories
         });
