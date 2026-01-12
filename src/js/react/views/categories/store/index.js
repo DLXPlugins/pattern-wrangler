@@ -1,6 +1,6 @@
 import { createReduxStore, register } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
-import { addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, cleanForSlug } from '@wordpress/url';
 
 const DEFAULT_STATE = {
 	categories: [],
@@ -74,6 +74,12 @@ const actions = {
 			category,
 		};
 	},
+	updateRegisteredCategory( category ) {
+		return {
+			type: 'UPDATE_REGISTERED_CATEGORY',
+			category,
+		};
+	},
 };
 
 const categoriesStore = createReduxStore(
@@ -103,7 +109,6 @@ const categoriesStore = createReduxStore(
 					};
 				case 'ADD_CATEGORY':
 					const currentCategories = { ...state.categories };
-					console.log( action );
 					currentCategories[ action.category.slug ] = action.category;
 
 					// Sort by label while preserving slug keys.
@@ -137,6 +142,30 @@ const categoriesStore = createReduxStore(
 					return {
 						...state,
 						categories: sortedUpdatedCategories,
+					};
+				case 'UPDATE_REGISTERED_CATEGORY':
+					const currentUpdatedRegisteredCategories = { ...state.categories };
+
+					// Retrieve by ID and get the old slug.
+					let registeredCategorySlug = Object.values( currentUpdatedRegisteredCategories ).find( ( category ) => category.slug === action.category.slug && category.registered )?.slug;
+
+					registeredCategorySlug = cleanForSlug( 'registered-' + registeredCategorySlug );
+
+					delete currentUpdatedRegisteredCategories[ registeredCategorySlug ];
+
+					// Set the new category with the new slug.
+					currentUpdatedRegisteredCategories[ registeredCategorySlug ] = action.category;
+
+					// Sort by label while preserving slug keys.
+					const sortedUpdatedRegisteredCategories = Object.fromEntries(
+						Object.entries( currentUpdatedRegisteredCategories ).sort(
+							( [ , a ], [ , b ] ) => a.label.localeCompare( b.label )
+						)
+					);
+
+					return {
+						...state,
+						categories: sortedUpdatedRegisteredCategories,
 					};
 				default:
 					return state;

@@ -93,7 +93,7 @@ class Rest {
 		);
 
 		/**
-		 * For updating a pattern.
+		 * For updating a pattern category.
 		 */
 		register_rest_route(
 			'dlxplugins/pattern-wrangler/v1',
@@ -108,7 +108,7 @@ class Rest {
 		);
 
 		/**
-		 * For creating a pattern.
+		 * For creating a pattern category.
 		 */
 		register_rest_route(
 			'dlxplugins/pattern-wrangler/v1',
@@ -116,6 +116,36 @@ class Rest {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_create_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For pausing/disabling a registeredpattern category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/edit-registered',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_edit_registered_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For pausing/disabling a registeredpattern category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/pause',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_pause_category' ),
 				'permission_callback' => function () {
 					return current_user_can( 'edit_others_posts' );
 				},
@@ -557,6 +587,64 @@ class Rest {
 	}
 
 	/**
+	 * Edit a registered category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_edit_registered_category( $request ) {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( $request->get_param( 'termNonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . sanitize_text_field( $request->get_param( 'termSlug' ) ) ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
+		}
+
+		$term_title = sanitize_text_field( wp_strip_all_tags( $request->get_param( 'termTitle' ) ) );
+		$term_slug  = sanitize_text_field( $request->get_param( 'termSlug' ) );
+
+		// Get registered categories.
+		$categories            = Functions::get_pattern_categories( false );
+		$registered_categories = $categories['registered'];
+
+		$registered_category = array_filter(
+			$registered_categories,
+			function ( $category ) use ( $term_slug ) {
+				return $category['slug'] === $term_slug;
+			}
+		);
+		if ( empty( $registered_category ) ) {
+			return rest_ensure_response( array( 'error' => 'Category not found.' ) );
+		}
+		$registered_category   = current( $registered_category );
+		$category              = array(
+			'label'       => sanitize_text_field( $registered_category['label'] ),
+			'customLabel' => sanitize_text_field( $term_title ),
+			'slug'        => sanitize_text_field( $registered_category['slug'] ),
+			'enabled'     => $registered_category['enabled'],
+			'count'       => $registered_category['count'],
+			'mappedTo'    => $registered_category['mappedTo'],
+		);
+		$category              = Functions::sanitize_array_recursive( $category );
+		$options               = Options::get_options();
+		$options['categories'] = $options['categories'] ?? array();
+		$options['categories'][ sanitize_text_field( $registered_category['slug'] ) ] = $category;
+
+		Options::update_options( $options );
+
+		// Add extra options to the category.
+		$category['editNonce']  = wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $term_slug );
+		$category['registered'] = true;
+
+		// Return the category ID.
+		return rest_ensure_response(
+			array(
+				'category' => $category,
+			)
+		);
+	}
+
+	/**
 	 * Update a category.
 	 *
 	 * @param WP_REST_Request $request The REST request.
@@ -910,7 +998,7 @@ class Rest {
 			// Decode HTML entities to prevent double encoding in React.
 			$category_label        = wp_specialchars_decode( $registered_category['label'], ENT_QUOTES );
 			$category_custom_label = isset( $registered_category['customLabel'] ) ? wp_specialchars_decode( $registered_category['customLabel'], ENT_QUOTES ) : $category_label;
-			$registered_categories_arr[ sanitize_title( $registered_category['slug'] ) ] = array(
+			$registered_categories_arr[ sanitize_title( 'registered-' . $registered_category['slug'] ) ] = array(
 				'label'       => $category_label,
 				'customLabel' => $category_custom_label,
 				'slug'        => $registered_category['slug'],

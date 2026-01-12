@@ -184,7 +184,7 @@ const CategoryCard = ( props ) => {
 			</div>
 			<div className="dlx-patterns-view-category-card__content">
 				<div className="dlx-patterns-view-category-card__label">
-					{ category.label }
+					{ category.customLabel || category.label }
 				</div>
 				<div className="dlx-patterns-view-category-card__slug">
 					{ category.slug }

@@ -35,6 +35,7 @@ import categoriesStore from '../store';
 import CategoryCard from './CategoryCard';
 import CategoryCreateModal from './CategoryCreateModal';
 import CategoryDeleteModal from './CategoryDeleteModal';
+import RegisteredCategoryEditModal from './RegisteredCategoryEditModal';
 import CategoryBulkActions from './CategoryBulkActions';
 
 const CategoriesListView = ( props ) => {
@@ -92,7 +93,6 @@ const CategoriesListView = ( props ) => {
 const Interface = ( props ) => {
 	const { categories } = props;
 
-	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const { doNotShowAgain } = useSelect( ( newSelect ) => {
 		return {
 			doNotShowAgain: newSelect( categoriesStore ).getDoNotShowAgain(),
@@ -104,6 +104,7 @@ const Interface = ( props ) => {
 	const [ isDeleteCategoryModalOpen, setIsDeleteCategoryModalOpen ] =
 		useState( false );
 	const [ isEditCategoryModalOpen, setIsEditCategoryModalOpen ] = useState( false );
+	const [ isEditRegisteredCategoryModalOpen, setIsEditRegisteredCategoryModalOpen ] = useState( false );
 
 	const [ view, setView ] = useState( {
 		filters: [
@@ -400,6 +401,12 @@ const Interface = ( props ) => {
 					} }
 					onEditCategory={ ( categoryToEdit ) => {
 						setIsEditCategoryModalOpen( {
+							isOpen: true,
+							category: categoryToEdit,
+						} );
+					} }
+					onEditRegisteredCategory={ ( categoryToEdit ) => {
+						setIsEditRegisteredCategoryModalOpen( {
 							isOpen: true,
 							category: categoryToEdit,
 						} );
@@ -758,6 +765,25 @@ const Interface = ( props ) => {
 									'Category edited successfully.',
 									'pattern-wrangler'
 								),
+								title: __( 'Category Edited', 'pattern-wrangler' ),
+								type: 'success',
+							} );
+						} }
+					/>
+				) }
+				{ isEditRegisteredCategoryModalOpen.isOpen && (
+					<RegisteredCategoryEditModal
+						isOpen={ isEditRegisteredCategoryModalOpen.isOpen }
+						onRequestClose={ () => setIsEditRegisteredCategoryModalOpen( false ) }
+						termTitle={ isEditRegisteredCategoryModalOpen.category.customLabel || isEditRegisteredCategoryModalOpen.category.label }
+						termSlug={ isEditRegisteredCategoryModalOpen.category.slug }
+						termNonce={ isEditRegisteredCategoryModalOpen.category.editNonce }
+						onEditRegisteredCategory={ ( editedCategory ) => {
+							dispatch( categoriesStore ).updateRegisteredCategory( editedCategory );
+							setIsEditRegisteredCategoryModalOpen( false );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Category edited successfully.', 'pattern-wrangler' ),
 								title: __( 'Category Edited', 'pattern-wrangler' ),
 								type: 'success',
 							} );
