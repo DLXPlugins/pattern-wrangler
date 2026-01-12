@@ -21,7 +21,6 @@ import Notice from '../../../../components/Notice';
  * @return {Object} The rendered component.
  */
 const CategoryDeleteModal = ( props ) => {
-	console.log( props );
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ doNotShowAgain, setDoNotShowAgain ] = useState(
 		props.doNotShowAgain || false
@@ -118,10 +117,9 @@ const CategoryDeleteModal = ( props ) => {
 					<form onSubmit={ handleSubmit( onSubmit ) }>
 						<div className="dlx-pw-modal-admin-row">
 							<p className="description">
-								{ __(
-									'Are you sure you want to delete this category? This action cannot be undone.',
-									'pattern-wrangler'
-								) }
+								{
+									props.items.length > 1 ? __( 'Are you sure you want to delete these categories? This action cannot be undone.', 'pattern-wrangler' ) : __( 'Are you sure you want to delete this category? This action cannot be undone.', 'pattern-wrangler' )
+								}
 							</p>
 						</div>
 						<div className="dlx-pw-modal-admin-row">

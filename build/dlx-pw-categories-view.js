@@ -188,6 +188,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
 
 
 
+
 var CategoriesListView = function CategoriesListView(props) {
   var _useSelect = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.useSelect)(function (newSelect) {
       return {
@@ -259,7 +260,11 @@ var Interface = function Interface(props) {
     _useState6 = _slicedToArray(_useState5, 2),
     isDeleteCategoryModalOpen = _useState6[0],
     setIsDeleteCategoryModalOpen = _useState6[1];
-  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState7 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState8 = _slicedToArray(_useState7, 2),
+    isEditCategoryModalOpen = _useState8[0],
+    setIsEditCategoryModalOpen = _useState8[1];
+  var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
       filters: [{
         field: 'categoryType',
         operator: 'is',
@@ -270,22 +275,22 @@ var Interface = function Interface(props) {
         value: 'enabled'
       }]
     }),
-    _useState8 = _slicedToArray(_useState7, 2),
-    view = _useState8[0],
-    setView = _useState8[1];
-  var _useState9 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState10 = _slicedToArray(_useState9, 2),
-    categoriesDisplay = _useState10[0],
-    setCategoriesDisplay = _useState10[1];
-  var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+    view = _useState10[0],
+    setView = _useState10[1];
+  var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState12 = _slicedToArray(_useState11, 2),
+    categoriesDisplay = _useState12[0],
+    setCategoriesDisplay = _useState12[1];
+  var _useState13 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
       isVisible: false,
       message: '',
       title: '',
       type: ''
     }),
-    _useState12 = _slicedToArray(_useState11, 2),
-    snackbar = _useState12[0],
-    setSnackbar = _useState12[1];
+    _useState14 = _slicedToArray(_useState13, 2),
+    snackbar = _useState14[0],
+    setSnackbar = _useState14[1];
 
   /**
    * Get the default values for the form.
@@ -449,6 +454,66 @@ var Interface = function Interface(props) {
       keepErrors: false
     }
   });
+  var actions = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
+    return [{
+      id: 'delete-category',
+      getLabel: function getLabel(items) {
+        // Local categories only.
+        items = items.filter(function (item) {
+          return !item.registered;
+        });
+        return (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.sprintf)(/* translators: %d: number of categories */
+        (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__._n)('Delete %d Category', 'Delete %d Categories', items.length, 'pattern-wrangler'), items.length);
+      },
+      icon: 'trash',
+      callback: function callback(items) {
+        setIsDeleteCategoryModalOpen({
+          isOpen: true,
+          items: items
+        });
+      },
+      isEligible: function isEligible(category) {
+        return !category.registered;
+      },
+      isDestructive: true
+    }, {
+      id: 'enable-categories',
+      getLabel: function getLabel(items) {
+        // Registered categories only.
+        items = items.filter(function (item) {
+          return item.registered && !item.enabled;
+        });
+        return (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.sprintf)(/* translators: %d: number of categories */
+        (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__._n)('Enable %d Category', 'Enable %d Categories', items.length, 'pattern-wrangler'), items.length);
+      },
+      icon: 'visibility',
+      callback: function callback(items) {
+        // todo - launch modal.
+      },
+      isEligible: function isEligible(item) {
+        return item.registered && !item.enabled;
+      },
+      isDestructive: false
+    }, {
+      id: 'disable-categories',
+      getLabel: function getLabel(items) {
+        // Registered categories only.
+        items = items.filter(function (item) {
+          return item.registered && item.enabled;
+        });
+        return (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.sprintf)(/* translators: %d: number of categories */
+        (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__._n)('Disable %d Category', 'Disable %d Categories', items.length, 'pattern-wrangler'), items.length);
+      },
+      icon: 'controls-pause',
+      callback: function callback(items) {
+        // todo - launch modal.
+      },
+      isEligible: function isEligible(item) {
+        return item.registered && item.enabled;
+      },
+      isDestructive: true
+    }];
+  }, []);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     onChangeView(view);
   }, [categories]);
@@ -462,6 +527,12 @@ var Interface = function Interface(props) {
             isOpen: true,
             items: categoriesToDelete
           });
+        },
+        onEditCategory: function onEditCategory(categoryToEdit) {
+          setIsEditCategoryModalOpen({
+            isOpen: true,
+            category: categoryToEdit
+          });
         }
       });
     });
@@ -470,7 +541,8 @@ var Interface = function Interface(props) {
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       className: "dlx-patterns-view-button-actions-wrapper dlx-bulk-action-toolbar-top"
     }, /*#__PURE__*/React.createElement(_CategoryBulkActions__WEBPACK_IMPORTED_MODULE_16__["default"], {
-      categories: categoriesDisplay
+      categories: categoriesDisplay,
+      actions: actions
     })));
   };
   return /*#__PURE__*/React.createElement("div", {
@@ -681,6 +753,23 @@ var Interface = function Interface(props) {
         type: 'success'
       });
     }
+  }), isEditCategoryModalOpen.isOpen && /*#__PURE__*/React.createElement(_CategoryCreateModal__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    isOpen: isEditCategoryModalOpen.isOpen,
+    onRequestClose: function onRequestClose() {
+      return setIsEditCategoryModalOpen(false);
+    },
+    termId: isEditCategoryModalOpen.termId,
+    isEditMode: true,
+    onEdit: function onEdit(editResponse) {
+      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).updateCategory(editResponse.category);
+      setIsEditCategoryModalOpen(false);
+      setSnackbar({
+        isVisible: true,
+        message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Category edited successfully.', 'pattern-wrangler'),
+        title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Category Edited', 'pattern-wrangler'),
+        type: 'success'
+      });
+    }
   })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CategoriesListView);
@@ -710,7 +799,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var CategoryBulkActions = function CategoryBulkActions(props) {
-  var categories = props.categories;
+  var categories = props.categories,
+    actions = props.actions;
   var _useFormContext = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_3__.useFormContext)(),
     getValues = _useFormContext.getValues,
     setValue = _useFormContext.setValue,
@@ -721,6 +811,34 @@ var CategoryBulkActions = function CategoryBulkActions(props) {
   var categoriesSelectedCount = categories.filter(function (category) {
     return getValues("categoriesSelected[".concat(category.slug, "]"));
   }).length;
+
+  // Get the categories that are selected.
+  var selectedCategories = categories.filter(function (category) {
+    return getValues("categoriesSelected[".concat(category.slug, "]"));
+  });
+  var getActionButtons = function getActionButtons() {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "dlx-patterns-view-category-bulk-actions__action-buttons"
+    }, actions.map(function (action) {
+      // If even one category is eligible for the action, show the button. We'll need to loop through the categories and check if any are eligible.
+      var isEligible = selectedCategories.some(function (category) {
+        return action.isEligible(category);
+      });
+      if (!isEligible) {
+        return null;
+      }
+      return /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+        key: action.id,
+        action: action,
+        icon: action.icon,
+        label: action.getLabel(selectedCategories),
+        isDestructive: action.isDestructive,
+        onClick: function onClick() {
+          return action.callback(selectedCategories);
+        }
+      });
+    })));
+  };
   return /*#__PURE__*/React.createElement("div", {
     className: classnames__WEBPACK_IMPORTED_MODULE_2___default()('dlx-patterns-view-category-bulk-actions dataviews-bulk-actions-footer__container', {
       'is-selected': getValues('bulkActionSelected')
@@ -738,12 +856,12 @@ var CategoryBulkActions = function CategoryBulkActions(props) {
           });
           field.onChange(boolValue);
         },
-        label: /* translators: %d: number of categories selected */
-        (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.sprintf)((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__._n)('%d Category', '%d Categories', categoriesSelectedCount > 0 ? categoriesSelectedCount : categories.length, 'pattern-wrangler'), categoriesSelectedCount > 0 ? categoriesSelectedCount : categories.length),
+        label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.sprintf)(/* translators: %d: number of categories selected */
+        (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__._n)('%d Category', '%d Categories', categoriesSelectedCount > 0 ? categoriesSelectedCount : categories.length, 'pattern-wrangler'), categoriesSelectedCount > 0 ? categoriesSelectedCount : categories.length),
         indeterminate: categoriesSelectedCount > 0 && categoriesSelectedCount < categories.length
       }));
     }
-  }));
+  }), categoriesSelectedCount > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, getActionButtons()));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CategoryBulkActions);
 
@@ -841,7 +959,10 @@ var CategoryCard = function CategoryCard(props) {
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Disable Category', 'pattern-wrangler')), category.enabled && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "secondary",
       icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_7__["default"], null),
-      className: "dlx-patterns-view-category-card__action-button"
+      className: "dlx-patterns-view-category-card__action-button",
+      onClick: function onClick() {
+        props.onEditCategory(category);
+      }
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Edit', 'pattern-wrangler')), !category.enabled && category.mappedTo && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "tertiary",
       className: "dlx-patterns-view-category-card__action-button",
@@ -1045,9 +1166,15 @@ var CategoryCreateModal = function CategoryCreateModal(props) {
     }
     return buttonText;
   };
+  var getModalTitle = function getModalTitle() {
+    if (isEditMode) {
+      return (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Edit Category', 'pattern-wrangler');
+    }
+    return (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Add Category', 'pattern-wrangler');
+  };
   var hasErrors = Object.values(errors).length > 0;
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Modal, {
-    title: props.title || (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Add Category', 'pattern-wrangler'),
+    title: getModalTitle(),
     onRequestClose: props.onRequestClose,
     focusOnMount: "firstContentElement"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
@@ -1195,7 +1322,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
  * @return {Object} The rendered component.
  */
 var CategoryDeleteModal = function CategoryDeleteModal(props) {
-  console.log(props);
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState2 = _slicedToArray(_useState, 2),
     isSaving = _useState2[0],
@@ -1299,7 +1425,7 @@ var CategoryDeleteModal = function CategoryDeleteModal(props) {
     className: "dlx-pw-modal-admin-row"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
     className: "description"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Are you sure you want to delete this category? This action cannot be undone.', 'pattern-wrangler'))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+  }, props.items.length > 1 ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Are you sure you want to delete these categories? This action cannot be undone.', 'pattern-wrangler') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Are you sure you want to delete this category? This action cannot be undone.', 'pattern-wrangler'))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "dlx-pw-modal-admin-row"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.CheckboxControl, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Do not show this confirmation again.', 'pattern-wrangler'),
@@ -1649,10 +1775,15 @@ var categoriesStore = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createRedu
           categories: sortedCategories
         });
       case 'UPDATE_CATEGORY':
+        var currentUpdatedCategories = _objectSpread({}, state.categories);
+        currentUpdatedCategories[action.category.slug] = action.category;
+
+        // Sort by label.
+        var sortedUpdatedCategories = Object.values(currentUpdatedCategories).sort(function (a, b) {
+          return a.label.localeCompare(b.label);
+        });
         return _objectSpread(_objectSpread({}, state), {}, {
-          categories: state.categories.map(function (category) {
-            return category.id === action.category.id ? action.category : category;
-          })
+          categories: sortedUpdatedCategories
         });
       default:
         return state;

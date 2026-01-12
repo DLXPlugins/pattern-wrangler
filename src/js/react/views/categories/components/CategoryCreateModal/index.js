@@ -82,12 +82,19 @@ const CategoryCreateModal = ( props ) => {
 		return buttonText;
 	};
 
+	const getModalTitle = () => {
+		if ( isEditMode ) {
+			return __( 'Edit Category', 'pattern-wrangler' );
+		}
+		return __( 'Add Category', 'pattern-wrangler' );
+	};
+
 	const hasErrors = Object.values( errors ).length > 0;
 
 	return (
 		<>
 			<Modal
-				title={ props.title || __( 'Add Category', 'pattern-wrangler' ) }
+				title={ getModalTitle() }
 				onRequestClose={ props.onRequestClose }
 				focusOnMount="firstContentElement"
 			>

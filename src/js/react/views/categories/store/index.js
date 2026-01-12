@@ -107,9 +107,14 @@ const categoriesStore = createReduxStore( 'dlxplugins/pattern-wrangler/categorie
 					categories: sortedCategories,
 				};
 			case 'UPDATE_CATEGORY':
+				const currentUpdatedCategories = { ...state.categories };
+				currentUpdatedCategories[ action.category.slug ] = action.category;
+
+				// Sort by label.
+				const sortedUpdatedCategories = Object.values( currentUpdatedCategories ).sort( ( a, b ) => a.label.localeCompare( b.label ) );
 				return {
 					...state,
-					categories: state.categories.map( ( category ) => category.id === action.category.id ? action.category : category ),
+					categories: sortedUpdatedCategories,
 				};
 			default:
 				return state;

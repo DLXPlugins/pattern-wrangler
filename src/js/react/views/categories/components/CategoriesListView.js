@@ -11,7 +11,7 @@ import { downloadBlob } from '@wordpress/blob';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import { escapeAttribute } from '@wordpress/escape-html';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
-import { __, _n } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import {
 	Button,
 	__experimentalToggleGroupControl as ToggleGroupControl,
@@ -20,6 +20,7 @@ import {
 } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { DataViews } from '@wordpress/dataviews';
+import { Eye } from 'lucide-react';
 import {
 	addQueryArgs,
 	getQueryArgs,
@@ -98,13 +99,20 @@ const Interface = ( props ) => {
 		};
 	} );
 
-	const [ isAddNewCategoryModalOpen, setIsAddNewCategoryModalOpen ] = useState( false );
-	const [ isDeleteCategoryModalOpen, setIsDeleteCategoryModalOpen ] = useState( false );
+	const [ isAddNewCategoryModalOpen, setIsAddNewCategoryModalOpen ] =
+		useState( false );
+	const [ isDeleteCategoryModalOpen, setIsDeleteCategoryModalOpen ] =
+		useState( false );
+	const [ isEditCategoryModalOpen, setIsEditCategoryModalOpen ] = useState( false );
 
 	const [ view, setView ] = useState( {
 		filters: [
 			{ field: 'categoryType', operator: 'is', value: 'both' },
-			{ field: 'categoryLocalRegisteredStatus', operator: 'is', value: 'enabled' },
+			{
+				field: 'categoryLocalRegisteredStatus',
+				operator: 'is',
+				value: 'enabled',
+			},
 		],
 	} );
 	const [ categoriesDisplay, setCategoriesDisplay ] = useState( [] );
@@ -164,14 +172,18 @@ const Interface = ( props ) => {
 						if ( filter.value ) {
 							switch ( filter.value ) {
 								case 'enabled':
-									categoriesCopy = Object.values( categoriesCopy ).filter( ( category ) => {
-										return category.enabled;
-									} );
+									categoriesCopy = Object.values( categoriesCopy ).filter(
+										( category ) => {
+											return category.enabled;
+										}
+									);
 									break;
 								case 'disabled':
-									categoriesCopy = Object.values( categoriesCopy ).filter( ( category ) => {
-										return ! category.enabled;
-									} );
+									categoriesCopy = Object.values( categoriesCopy ).filter(
+										( category ) => {
+											return ! category.enabled;
+										}
+									);
 									break;
 								case 'both':
 									break;
@@ -182,14 +194,18 @@ const Interface = ( props ) => {
 						if ( filter.value ) {
 							switch ( filter.value ) {
 								case 'enabled':
-									categoriesCopy = Object.values( categoriesCopy ).filter( ( category ) => {
-										return category.enabled;
-									} );
+									categoriesCopy = Object.values( categoriesCopy ).filter(
+										( category ) => {
+											return category.enabled;
+										}
+									);
 									break;
 								case 'disabled':
-									categoriesCopy = Object.values( categoriesCopy ).filter( ( category ) => {
-										return ! category.enabled;
-									} );
+									categoriesCopy = Object.values( categoriesCopy ).filter(
+										( category ) => {
+											return ! category.enabled;
+										}
+									);
 									break;
 								case 'both':
 									break;
@@ -231,13 +247,15 @@ const Interface = ( props ) => {
 		);
 
 		if ( categoryRegisteredStatusFilter ) {
-			changeQueryArgs.categoryRegisteredStatus = categoryRegisteredStatusFilter.value;
+			changeQueryArgs.categoryRegisteredStatus =
+				categoryRegisteredStatusFilter.value;
 		}
 		if ( categoryLocalStatusFilter ) {
 			changeQueryArgs.categoryLocalStatus = categoryLocalStatusFilter.value;
 		}
 		if ( categoryLocalRegisteredStatusFilter ) {
-			changeQueryArgs.categoryLocalRegisteredStatus = categoryLocalRegisteredStatusFilter.value;
+			changeQueryArgs.categoryLocalRegisteredStatus =
+				categoryLocalRegisteredStatusFilter.value;
 		}
 
 		// Update URL without page reload using addQueryArgs.
@@ -251,7 +269,11 @@ const Interface = ( props ) => {
 			newView.filters = [
 				...newView.filters,
 				{ field: 'categoryType', operator: 'is', value: 'all' },
-				{ field: 'categoryLocalRegisteredStatus', operator: 'is', value: 'enabled' },
+				{
+					field: 'categoryLocalRegisteredStatus',
+					operator: 'is',
+					value: 'enabled',
+				},
 			];
 		}
 
@@ -277,6 +299,89 @@ const Interface = ( props ) => {
 		},
 	} );
 
+	const actions = useMemo( () => {
+		return [
+			{
+				id: 'delete-category',
+				getLabel: ( items ) => {
+					// Local categories only.
+					items = items.filter( ( item ) => ! item.registered );
+					return sprintf(
+						/* translators: %d: number of categories */
+						_n(
+							'Delete %d Category',
+							'Delete %d Categories',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'trash',
+				callback: ( items ) => {
+					setIsDeleteCategoryModalOpen( {
+						isOpen: true,
+						items,
+					} );
+				},
+				isEligible: ( category ) => {
+					return ! category.registered;
+				},
+				isDestructive: true,
+			},
+			{
+				id: 'enable-categories',
+				getLabel: ( items ) => {
+					// Registered categories only.
+					items = items.filter( ( item ) => item.registered && ! item.enabled );
+					return sprintf(
+						/* translators: %d: number of categories */
+						_n(
+							'Enable %d Category',
+							'Enable %d Categories',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'visibility',
+				callback: ( items ) => {
+					// todo - launch modal.
+				},
+				isEligible: ( item ) => {
+					return item.registered && ! item.enabled;
+				},
+				isDestructive: false,
+			},
+			{
+				id: 'disable-categories',
+				getLabel: ( items ) => {
+					// Registered categories only.
+					items = items.filter( ( item ) => item.registered && item.enabled );
+					return sprintf(
+						/* translators: %d: number of categories */
+						_n(
+							'Disable %d Category',
+							'Disable %d Categories',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'controls-pause',
+				callback: ( items ) => {
+					// todo - launch modal.
+				},
+				isEligible: ( item ) => {
+					return item.registered && item.enabled;
+				},
+				isDestructive: true,
+			},
+		];
+	}, [] );
+
 	useEffect( () => {
 		onChangeView( view );
 	}, [ categories ] );
@@ -293,6 +398,12 @@ const Interface = ( props ) => {
 							items: categoriesToDelete,
 						} );
 					} }
+					onEditCategory={ ( categoryToEdit ) => {
+						setIsEditCategoryModalOpen( {
+							isOpen: true,
+							category: categoryToEdit,
+						} );
+					} }
 				/>
 			);
 		} );
@@ -302,7 +413,10 @@ const Interface = ( props ) => {
 		return (
 			<>
 				<div className="dlx-patterns-view-button-actions-wrapper dlx-bulk-action-toolbar-top">
-					<CategoryBulkActions categories={ categoriesDisplay } />
+					<CategoryBulkActions
+						categories={ categoriesDisplay }
+						actions={ actions }
+					/>
 				</div>
 			</>
 		);
@@ -344,33 +458,54 @@ const Interface = ( props ) => {
 									const myNewView = { ...view };
 									// Merge with existing filters, replacing patternType if it exists
 									const existingFilters =
-											myNewView.filters?.filter(
-												( filter ) => filter.field !== 'categoryType'
-											) || [];
+										myNewView.filters?.filter(
+											( filter ) => filter.field !== 'categoryType'
+										) || [];
 									myNewView.filters = [
 										...existingFilters,
 										{ field: 'categoryType', operator: 'is', value },
 									];
 									// Remove categoryRegisteredStatus and categoryLocalRegisteredStatus from the filters.
-									myNewView.filters = myNewView.filters?.filter(
-										( filter ) => filter.field !== 'categoryRegisteredStatus' && filter.field !== 'categoryLocalRegisteredStatus'
-									) || [];
+									myNewView.filters =
+										myNewView.filters?.filter(
+											( filter ) =>
+												filter.field !== 'categoryRegisteredStatus' &&
+												filter.field !== 'categoryLocalRegisteredStatus'
+										) || [];
 
 									let categoryUrl = window.location.href;
 									switch ( value ) {
 										case 'both':
-											categoryUrl = removeQueryArgs( categoryUrl, 'categoryRegisteredStatus' );
-											categoryUrl = removeQueryArgs( categoryUrl, 'categoryLocalRegisteredStatus' );
+											categoryUrl = removeQueryArgs(
+												categoryUrl,
+												'categoryRegisteredStatus'
+											);
+											categoryUrl = removeQueryArgs(
+												categoryUrl,
+												'categoryLocalRegisteredStatus'
+											);
 											window.history.pushState( {}, '', categoryUrl );
 											break;
 										case 'local':
-											categoryUrl = removeQueryArgs( categoryUrl, 'categoryRegisteredStatus' );
-											categoryUrl = removeQueryArgs( categoryUrl, 'categoryLocalRegisteredStatus' );
+											categoryUrl = removeQueryArgs(
+												categoryUrl,
+												'categoryRegisteredStatus'
+											);
+											categoryUrl = removeQueryArgs(
+												categoryUrl,
+												'categoryLocalRegisteredStatus'
+											);
 											window.history.pushState( {}, '', categoryUrl );
 											break;
 										case 'registered':
-											categoryUrl = removeQueryArgs( categoryUrl, 'categoryRegisteredStatus' );
-											categoryUrl = removeQueryArgs( categoryUrl, 'categoryLocalRegisteredStatus' );
+											categoryUrl = removeQueryArgs(
+												categoryUrl,
+												'categoryRegisteredStatus'
+											);
+											categoryUrl = removeQueryArgs(
+												categoryUrl,
+												'categoryLocalRegisteredStatus'
+											);
 											window.history.pushState( {}, '', categoryUrl );
 											break;
 										default:
@@ -411,22 +546,26 @@ const Interface = ( props ) => {
 									?.value === 'registered' && (
 									<>
 										<ToggleGroupControl
-											label={ __( 'Category Registered Status', 'pattern-wrangler' ) }
+											label={ __(
+												'Category Registered Status',
+												'pattern-wrangler'
+											) }
 											isAdaptiveWidth={ true }
 											hideLabelFromVision={ true }
 											value={
 												view?.filters?.find(
-													( filter ) => filter.field === 'categoryRegisteredStatus'
+													( filter ) =>
+														filter.field === 'categoryRegisteredStatus'
 												)?.value || 'both'
 											}
 											onChange={ ( value ) => {
 												const myNewView = { ...view };
 												// Merge with existing filters, replacing patternStatus if it exists
 												const existingFilters =
-														myNewView.filters?.filter(
-															( filter ) =>
-																filter.field !== 'categoryRegisteredStatus'
-														) || [];
+													myNewView.filters?.filter(
+														( filter ) =>
+															filter.field !== 'categoryRegisteredStatus'
+													) || [];
 												myNewView.filters = [
 													...existingFilters,
 													{
@@ -482,17 +621,18 @@ const Interface = ( props ) => {
 											hideLabelFromVision={ true }
 											value={
 												view?.filters?.find(
-													( filter ) => filter.field === 'categoryLocalRegisteredStatus'
+													( filter ) =>
+														filter.field === 'categoryLocalRegisteredStatus'
 												)?.value || 'enabled'
 											}
 											onChange={ ( value ) => {
 												const myNewView = { ...view };
 												// Merge with existing filters, replacing patternStatus if it exists
 												const existingFilters =
-														myNewView.filters?.filter(
-															( filter ) =>
-																filter.field !== 'categoryLocalRegisteredStatus'
-														) || [];
+													myNewView.filters?.filter(
+														( filter ) =>
+															filter.field !== 'categoryLocalRegisteredStatus'
+													) || [];
 												myNewView.filters = [
 													...existingFilters,
 													{
@@ -568,7 +708,10 @@ const Interface = ( props ) => {
 							setIsAddNewCategoryModalOpen( false );
 							setSnackbar( {
 								isVisible: true,
-								message: __( 'Category created successfully.', 'pattern-wrangler' ),
+								message: __(
+									'Category created successfully.',
+									'pattern-wrangler'
+								),
 								title: __( 'Category Created', 'pattern-wrangler' ),
 								type: 'success',
 							} );
@@ -581,12 +724,38 @@ const Interface = ( props ) => {
 						onRequestClose={ () => setIsDeleteCategoryModalOpen( false ) }
 						items={ isDeleteCategoryModalOpen.items }
 						onDelete={ () => {
-							dispatch( categoriesStore ).deleteCategories( isDeleteCategoryModalOpen.items );
+							dispatch( categoriesStore ).deleteCategories(
+								isDeleteCategoryModalOpen.items
+							);
 
 							setSnackbar( {
 								isVisible: true,
-								message: __( 'Categories deleted successfully.', 'pattern-wrangler' ),
+								message: __(
+									'Categories deleted successfully.',
+									'pattern-wrangler'
+								),
 								title: __( 'Categories Deleted', 'pattern-wrangler' ),
+								type: 'success',
+							} );
+						} }
+					/>
+				) }
+				{ isEditCategoryModalOpen.isOpen && (
+					<CategoryCreateModal
+						isOpen={ isEditCategoryModalOpen.isOpen }
+						onRequestClose={ () => setIsEditCategoryModalOpen( false ) }
+						termId={ isEditCategoryModalOpen.termId }
+						isEditMode={ true }
+						onEdit={ ( editResponse ) => {
+							dispatch( categoriesStore ).updateCategory( editResponse.category );
+							setIsEditCategoryModalOpen( false );
+							setSnackbar( {
+								isVisible: true,
+								message: __(
+									'Category edited successfully.',
+									'pattern-wrangler'
+								),
+								title: __( 'Category Edited', 'pattern-wrangler' ),
 								type: 'success',
 							} );
 						} }

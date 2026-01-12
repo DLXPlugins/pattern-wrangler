@@ -87,6 +87,9 @@ const CategoryCard = ( props ) => {
 							variant="secondary"
 							icon={ <Edit /> }
 							className="dlx-patterns-view-category-card__action-button"
+							onClick={ () => {
+								props.onEditCategory( category );
+							} }
 						>
 							{ __( 'Edit', 'pattern-wrangler' ) }
 						</Button>

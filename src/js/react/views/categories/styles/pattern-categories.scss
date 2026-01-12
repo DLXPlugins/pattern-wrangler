@@ -400,8 +400,12 @@ svg.lucide {
 }
 
 .dlx-bulk-action-toolbar-top .dataviews-bulk-actions-footer__container {
+	display: flex;
 	padding: 24px 0;
 	justify-content: flex-start;
+	align-items: center;
+	gap: 12px;
+	min-height: 48px;
 }
 .dlx-bulk-action-toolbar-top .components-checkbox-control__label {
 	color: #1e1e1e;
