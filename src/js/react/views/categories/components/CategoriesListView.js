@@ -33,6 +33,7 @@ import Snackbar from './Snackbar';
 import categoriesStore from '../store';
 import CategoryCard from './CategoryCard';
 import CategoryCreateModal from './CategoryCreateModal';
+import CategoryDeleteModal from './CategoryDeleteModal';
 import CategoryBulkActions from './CategoryBulkActions';
 
 const CategoriesListView = ( props ) => {
@@ -98,6 +99,7 @@ const Interface = ( props ) => {
 	} );
 
 	const [ isAddNewCategoryModalOpen, setIsAddNewCategoryModalOpen ] = useState( false );
+	const [ isDeleteCategoryModalOpen, setIsDeleteCategoryModalOpen ] = useState( false );
 
 	const [ view, setView ] = useState( {
 		filters: [
@@ -282,7 +284,16 @@ const Interface = ( props ) => {
 	const CategoryList = useMemo( () => {
 		return categoriesDisplay.map( ( category ) => {
 			return (
-				<CategoryCard key={ category.slug } category={ category } />
+				<CategoryCard
+					key={ category.slug }
+					category={ category }
+					onDeleteCategory={ ( categoriesToDelete ) => {
+						setIsDeleteCategoryModalOpen( {
+							isOpen: true,
+							items: categoriesToDelete,
+						} );
+					} }
+				/>
 			);
 		} );
 	}, [ categoriesDisplay, categories ] );
@@ -559,6 +570,23 @@ const Interface = ( props ) => {
 								isVisible: true,
 								message: __( 'Category created successfully.', 'pattern-wrangler' ),
 								title: __( 'Category Created', 'pattern-wrangler' ),
+								type: 'success',
+							} );
+						} }
+					/>
+				) }
+				{ isDeleteCategoryModalOpen.isOpen && (
+					<CategoryDeleteModal
+						isOpen={ isDeleteCategoryModalOpen.isOpen }
+						onRequestClose={ () => setIsDeleteCategoryModalOpen( false ) }
+						items={ isDeleteCategoryModalOpen.items }
+						onDelete={ () => {
+							dispatch( categoriesStore ).deleteCategories( isDeleteCategoryModalOpen.items );
+
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Categories deleted successfully.', 'pattern-wrangler' ),
+								title: __( 'Categories Deleted', 'pattern-wrangler' ),
 								type: 'success',
 							} );
 						} }
