@@ -74,7 +74,7 @@ const CategoryCard = ( props ) => {
 							icon={ <Ban /> }
 							className="dlx-patterns-view-category-card__action-button invisible-until-hover"
 							onClick={ () => {
-								props.onDisableCategory( [ category ] );
+								props.onPauseCategory( [ category ] );
 							} }
 						>
 							{ __( 'Disable Category', 'pattern-wrangler' ) }

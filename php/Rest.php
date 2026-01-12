@@ -157,10 +157,10 @@ class Rest {
 		 */
 		register_rest_route(
 			'dlxplugins/pattern-wrangler/v1',
-			'/categories/pause',
+			'/categories/disable',
 			array(
 				'methods'             => 'POST',
-				'callback'            => array( $this, 'rest_pause_category' ),
+				'callback'            => array( $this, 'rest_disable_category' ),
 				'permission_callback' => function () {
 					return current_user_can( 'edit_others_posts' );
 				},
@@ -329,6 +329,82 @@ class Rest {
 				'success'        => true,
 				'categories'     => $categories['all'],
 				'termIdsDeleted' => $term_ids_deleted,
+			)
+		);
+	}
+
+	/**
+	 * Disable a registered category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_disable_category( $request ) {
+
+		$items           = $request->get_param( 'items' );
+		$mapping_enabled = filter_var( $request->get_param( 'mappingEnabled' ), FILTER_VALIDATE_BOOLEAN );
+		$mapped_to       = absint( $request->get_param( 'mappedTo' ) );
+
+		$options           = Options::get_options();
+		$option_categories = $options['categories'] ?? array();
+		$categories        = $this->get_all_categories();
+
+		$registered_categories_disabled = array();
+		foreach ( $items as $item ) {
+			$category_slug = sanitize_text_field( $item['slug'] );
+			$nonce         = sanitize_text_field( $item['nonce'] );
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . $category_slug ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for category ' . $category_slug ) );
+			}
+
+			if ( ! current_user_can( 'edit_others_posts' ) ) {
+				return rest_ensure_response( array( 'error' => 'User does not have permission to disable category ' . $category_slug ) );
+			}
+			$mapped_to_slug = false;
+			if ( $mapping_enabled ) {
+				$mapped_to_term = get_term( $mapped_to, 'wp_pattern_category' );
+				if ( ! $mapped_to_term ) {
+					return rest_ensure_response( array( 'error' => 'Mapped to term not found ' . $mapped_to ) );
+				}
+				$mapped_to_slug = sanitize_title( $mapped_to_term->slug );
+			}
+
+			// Find the category in the categories array.
+			$registered_category = $categories['registered'][ $category_slug ] ?? null;
+			if ( ! $registered_category ) {
+				continue;
+			}
+
+			// Failsafe.
+			$category = $option_categories[ $category_slug ] ?? null;
+			if ( ! $category ) {
+				$category = array(
+					'slug'        => $category_slug,
+					'label'       => $registered_category['label'],
+					'customLabel' => $registered_category['customLabel'] ?? $registered_category['label'],
+					'enabled'     => false,
+					'count'       => $registered_category['count'],
+					'mappedTo'    => $mapped_to_slug,
+				);
+			} else {
+				$category['enabled']  = false;
+				$category['mappedTo'] = $mapped_to_slug;
+			}
+
+			$option_categories[ $category_slug ] = $category;
+		}
+
+		$options['categories'] = Functions::sanitize_array_recursive( $option_categories );
+		Options::update_options( $options );
+
+		// Forcefully retrieve new categories.
+		$categories = $this->get_all_categories();
+		return rest_ensure_response(
+			array(
+				'success'    => true,
+				'categories' => $categories['all'],
 			)
 		);
 	}

@@ -3,13 +3,15 @@ import React, { useState, useEffect } from 'react';
 import {
 	Modal,
 	Button,
-	CheckboxControl,
+	ToggleControl,
+	SelectControl,
 } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { AlertTriangle } from 'lucide-react';
-
+import store from '../../store/index';
+import { useSelect } from '@wordpress/data';
 import { __, _n } from '@wordpress/i18n';
-import { useForm, useWatch, useFormState } from 'react-hook-form';
+import { useForm, useWatch, useFormState, Controller } from 'react-hook-form';
 
 // Local imports.
 import Notice from '../../../../components/Notice';
@@ -32,17 +34,17 @@ import Notice from '../../../../components/Notice';
  * @param {Function} props.onEdit              The function to call when the pattern is edited.
  * @return {Object} The rendered component.
  */
-const PatternPauseModal = ( props ) => {
+const CategoryPauseModal = ( props ) => {
+	console.log( props );
 	const [ isSaving, setIsSaving ] = useState( false );
-	const [ doNotShowAgain, setDoNotShowAgain ] = useState( props.doNotShowAgain || false );
 	const {
 		control,
 		handleSubmit,
 	} = useForm( {
 		defaultValues: {
 			items: props.items || [],
-			patternNonce: props.patternNonce || '',
-			forceDelete: false,
+			mappingEnabled: props.mappingEnabled || false,
+			mappedTo: props.mappedTo || 'none',
 		},
 	} );
 	const formValues = useWatch( { control } );
@@ -50,38 +52,49 @@ const PatternPauseModal = ( props ) => {
 		control,
 	} );
 
+	const localCategories = useSelect( ( select ) => {
+		const allCategories = select( store ).getCategories();
+		return Object.values( allCategories ).filter( ( category ) => ! category.registered );
+	} );
+
+	const getLocalCategoryOptions = () => {
+		const localCategoryOptions = [];
+		localCategoryOptions.push( {
+			label: __( 'Select a category', 'pattern-wrangler' ),
+			value: 'none',
+		} );
+		localCategories.forEach( ( category ) => {
+			localCategoryOptions.push( {
+				label: category.label,
+				value: category.id,
+			} );
+		} );
+		return localCategoryOptions;
+	};
+
 	const onSubmit = async( formData ) => {
 		setIsSaving( true );
 
-		const itemIdsAndNonces = formData.items.map( ( item ) => {
+		const itemSlugsAndNonces = formData.items.map( ( item ) => {
 			return {
-				id: item.id,
+				slug: item.slug,
 				nonce: item.editNonce,
 			};
 		} );
-		const path = '/dlxplugins/pattern-wrangler/v1/patterns/pause/';
+		const path = '/dlxplugins/pattern-wrangler/v1/categories/disable/';
 
 		const response = await apiFetch( {
 			path,
 			method: 'POST',
 			data: {
-				items: itemIdsAndNonces,
-				doNotShowAgain,
+				items: itemSlugsAndNonces,
+				mappingEnabled: formData.mappingEnabled,
+				mappedTo: formData.mappedTo,
 			},
 		} );
-		props.onPause( response, itemIdsAndNonces, doNotShowAgain );
+		props.onPauseCategory( response, itemSlugsAndNonces );
 		setIsSaving( false );
 	};
-
-	useEffect( () => {
-		if ( props.doNotShowAgain ) {
-			onSubmit( formValues );
-		}
-	}, [] );
-
-	if ( props.doNotShowAgain ) {
-		return null;
-	}
 
 	/**
 	 * Get the button text.
@@ -89,9 +102,9 @@ const PatternPauseModal = ( props ) => {
 	 * @return {string} The button text.
 	 */
 	const getButtonText = () => {
-		let buttonText = _n( 'Disable Pattern', 'Disable Patterns', props.items.length, 'pattern-wrangler' );
+		let buttonText = _n( 'Disable Category', 'Disable Categories', props.items.length, 'pattern-wrangler' );
 		if ( isSaving ) {
-			buttonText = _n( 'Disabling Pattern…', 'Disabling Patterns…', props.items.length, 'pattern-wrangler' );
+			buttonText = _n( 'Disabling Category…', 'Disabling Categories…', props.items.length, 'pattern-wrangler' );
 		}
 		return buttonText;
 	};
@@ -103,9 +116,9 @@ const PatternPauseModal = ( props ) => {
 	 */
 	const getModalTitle = () => {
 		if ( props.items.length === 1 ) {
-			return __( 'Disable Pattern', 'pattern-wrangler' );
+			return __( 'Disable Category', 'pattern-wrangler' );
 		}
-		return _n( 'Disable Pattern', 'Disable Patterns', props.items.length, 'pattern-wrangler' );
+		return _n( 'Disable Category', 'Disable Categories', props.items.length, 'pattern-wrangler' );
 	};
 
 	return (
@@ -119,19 +132,48 @@ const PatternPauseModal = ( props ) => {
 					<form onSubmit={ handleSubmit( onSubmit )}>
 						<div className="dlx-pw-modal-admin-row">
 							<p>
-								{ __( 'Are you sure you want to disable this pattern? You can always re-enable it later.', 'pattern-wrangler' ) }
+								{ __( 'Are you sure you want to disable this category? You can always re-enable it later.', 'pattern-wrangler' ) }
 							</p>
 						</div>
 						<div className="dlx-pw-modal-admin-row">
-							<CheckboxControl
-								label={ __( 'Do not show this confirmation again.', 'pattern-wrangler' ) }
-								checked={ doNotShowAgain }
-								onChange={ ( value ) => setDoNotShowAgain( value ) }
-								disabled={ isSaving }
+							<Controller
+								control={ control }
+								name="mappingEnabled"
+								render={ ( { field } ) => (
+									<>
+										<ToggleControl
+											label={ _n( 'Map this disabled category', 'Map these disabled categories', props.items.length, 'pattern-wrangler' ) }
+											checked={ field.value }
+											onChange={ ( value ) => field.onChange( value ) }
+											disabled={ isSaving }
+											help={ __( 'This is useful if you have a similar local category to move registered patterns to.', 'pattern-wrangler' ) }
+										/>
+									</>
+								) }
 							/>
 						</div>
+						{
+							formValues.mappingEnabled && (
+								<>
+									<div className="dlx-pw-modal-admin-row">
+										<Controller
+											control={ control }
+											name="mappedTo"
+											render={ ( { field } ) => (
+												<SelectControl
+													label={ __( 'Map to Local Category', 'pattern-wrangler' ) }
+													value={ field.value }
+													onChange={ ( value ) => field.onChange( value ) }
+													options={ getLocalCategoryOptions() }
+												/>
+											) }
+										/>
+									</div>
+								</>
+							)
+						}
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
-							<Button variant="primary" type="submit" disabled={ isSaving }>
+							<Button variant="primary" isDestructive={ true } type="submit" disabled={ isSaving }>
 								{ getButtonText() }
 							</Button>
 							<Button
@@ -142,14 +184,14 @@ const PatternPauseModal = ( props ) => {
 								{ __( 'Cancel', 'pattern-wrangler' ) }
 							</Button>
 						</div>
-						{ errors?.patternTitle && (
+						{ errors?.mappedTo && (
 							<Notice
 								className="dlx-pw-admin-notice"
 								status="error"
 								inline={ true }
 								icon={ () => <AlertTriangle /> }
 							>
-								{ errors.patternTitle.message }
+								{ errors?.mappedTo?.message }
 							</Notice>
 						) }
 					</form>
@@ -159,4 +201,4 @@ const PatternPauseModal = ( props ) => {
 	);
 };
 
-export default PatternPauseModal;
+export default CategoryPauseModal;

@@ -37,6 +37,7 @@ import CategoryCreateModal from './CategoryCreateModal';
 import CategoryDeleteModal from './CategoryDeleteModal';
 import RegisteredCategoryEditModal from './RegisteredCategoryEditModal';
 import CategoryBulkActions from './CategoryBulkActions';
+import CategoryPauseModal from './CategoryPauseModal';
 
 const CategoriesListView = ( props ) => {
 	const { categories, loading, error } = useSelect( ( newSelect ) => {
@@ -105,6 +106,7 @@ const Interface = ( props ) => {
 		useState( false );
 	const [ isEditCategoryModalOpen, setIsEditCategoryModalOpen ] = useState( false );
 	const [ isEditRegisteredCategoryModalOpen, setIsEditRegisteredCategoryModalOpen ] = useState( false );
+	const [ isPauseCategoryModalOpen, setIsPauseCategoryModalOpen ] = useState( false );
 
 	const [ view, setView ] = useState( {
 		filters: [
@@ -376,7 +378,10 @@ const Interface = ( props ) => {
 				},
 				icon: 'controls-pause',
 				callback: ( items ) => {
-					// todo - launch modal.
+					setIsPauseCategoryModalOpen( {
+						isOpen: true,
+						items,
+					} );
 				},
 				isEligible: ( item ) => {
 					return item.registered && item.enabled;
@@ -494,6 +499,12 @@ const Interface = ( props ) => {
 						setIsEditRegisteredCategoryModalOpen( {
 							isOpen: true,
 							category: categoryToEdit,
+						} );
+					} }
+					onPauseCategory={ ( categoriesToPause ) => {
+						setIsPauseCategoryModalOpen( {
+							isOpen: true,
+							items: categoriesToPause,
 						} );
 					} }
 				/>
@@ -865,6 +876,40 @@ const Interface = ( props ) => {
 								isVisible: true,
 								message: __( 'Category edited successfully.', 'pattern-wrangler' ),
 								title: __( 'Category Edited', 'pattern-wrangler' ),
+								type: 'success',
+							} );
+						} }
+					/>
+				) }
+				{ isPauseCategoryModalOpen.isOpen && (
+					<CategoryPauseModal
+						isOpen={ isPauseCategoryModalOpen.isOpen }
+						onRequestClose={ () => setIsPauseCategoryModalOpen( false ) }
+						items={ isPauseCategoryModalOpen.items }
+						onPauseCategory={ ( categoriesResponse, itemSlugsAndNonces ) => {
+							setIsPauseCategoryModalOpen( false );
+							dispatch( categoriesStore ).setCategories( categoriesResponse.categories );
+							setSnackbar( {
+								isVisible: true,
+								message: sprintf(
+									/* translators: %d: number of categories */
+									_n(
+										'%d category disabled successfully.',
+										'%d Categories disabled successfully.',
+										itemSlugsAndNonces.length,
+										'pattern-wrangler'
+									),
+									itemSlugsAndNonces.length
+								),
+								title: sprintf(
+									/* translators: %d: number of categories */
+									_n(
+										'%d Category Disabled',
+										'%d Categories Disabled',
+										itemSlugsAndNonces.length, 'pattern-wrangler'
+									),
+									itemSlugsAndNonces.length
+								),
 								type: 'success',
 							} );
 						} }
