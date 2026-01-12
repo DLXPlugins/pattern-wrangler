@@ -261,6 +261,9 @@ const Interface = ( props ) => {
 			categories: select( patternsStore ).getCategories(),
 		};
 	} );
+	const nonEmptyCategories = useMemo( () => {
+		return Object.values( categories ).filter( ( category ) => category.count > 0 );
+	}, [ categories ] );
 
 	const { assets } = useSelect( () => {
 		return {
@@ -625,7 +628,7 @@ const Interface = ( props ) => {
 				filterBy: {
 					operators: [ 'isAny', 'isNone' ],
 				},
-				elements: Object.values( categories ).map( ( category ) => {
+				elements: Object.values( nonEmptyCategories ).map( ( category ) => {
 					return {
 						label: category.customLabel || category.label || category.name,
 						value: category.slug,

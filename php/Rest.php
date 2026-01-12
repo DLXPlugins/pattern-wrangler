@@ -693,10 +693,6 @@ class Rest {
 		// Get local categories into shape. Terms are objects.
 		$local_categories_arr = array();
 		foreach ( $local_categories as $local_category ) {
-			// Skip disabled or empty categories.
-			if ( 0 === absint( $local_category->count ) ) {
-				continue;
-			}
 			// Decode HTML entities to prevent double encoding in React.
 			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
 			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(

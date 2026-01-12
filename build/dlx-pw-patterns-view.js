@@ -9047,6 +9047,11 @@ var Interface = function Interface(props) {
       };
     }),
     categories = _useSelect3.categories;
+  var nonEmptyCategories = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
+    return Object.values(categories).filter(function (category) {
+      return category.count > 0;
+    });
+  }, [categories]);
   var _useSelect4 = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.useSelect)(function () {
       return {
         assets: (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.select)(_store__WEBPACK_IMPORTED_MODULE_18__["default"]).getAssets()
@@ -9344,7 +9349,7 @@ var Interface = function Interface(props) {
       filterBy: {
         operators: ['isAny', 'isNone']
       },
-      elements: Object.values(categories).map(function (category) {
+      elements: Object.values(nonEmptyCategories).map(function (category) {
         return {
           label: category.customLabel || category.label || category.name,
           value: category.slug
