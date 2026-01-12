@@ -7,11 +7,11 @@ const CategoryBulkActions = ( props ) => {
 	const { getValues, setValue, control } = useFormContext();
 	const formValues = useWatch( { control } );
 
-	const categoriesSelectedCount = Object.values( getValues( 'categoriesSelected' ) ).filter( ( value ) => value ).length;
+	const categoriesSelectedCount = categories.filter( ( category ) => getValues( `categoriesSelected[${ category.slug }]` ) ).length;
 
 	return (
 		<div
-			className={ classnames( 'dlx-patterns-view-category-bulk-actions', {
+			className={ classnames( 'dlx-patterns-view-category-bulk-actions dataviews-bulk-actions-footer__container', {
 				'is-selected': getValues( 'bulkActionSelected' ),
 			} ) }
 		>

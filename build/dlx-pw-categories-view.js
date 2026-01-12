@@ -456,7 +456,7 @@ var Interface = function Interface(props) {
   }, [categoriesDisplay, categories]);
   var getBulkActions = function getBulkActions() {
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "dlx-patterns-view-button-actions-wrapper"
+      className: "dlx-patterns-view-button-actions-wrapper dlx-bulk-action-toolbar-top"
     }, /*#__PURE__*/React.createElement(_CategoryBulkActions__WEBPACK_IMPORTED_MODULE_15__["default"], {
       categories: categoriesDisplay
     })));
@@ -490,7 +490,7 @@ var Interface = function Interface(props) {
       return filter.field === 'categoryType';
     })) === null || _view$filters === void 0 ? void 0 : _view$filters.value) || 'both',
     onChange: function onChange(value) {
-      var _myNewView$filters;
+      var _myNewView$filters, _myNewView$filters2;
       var myNewView = _objectSpread({}, view);
       // Merge with existing filters, replacing patternType if it exists
       var existingFilters = ((_myNewView$filters = myNewView.filters) === null || _myNewView$filters === void 0 ? void 0 : _myNewView$filters.filter(function (filter) {
@@ -501,10 +501,13 @@ var Interface = function Interface(props) {
         operator: 'is',
         value: value
       }]);
-      onChangeView(myNewView);
+      // Remove categoryRegisteredStatus and categoryLocalRegisteredStatus from the filters.
+      myNewView.filters = ((_myNewView$filters2 = myNewView.filters) === null || _myNewView$filters2 === void 0 ? void 0 : _myNewView$filters2.filter(function (filter) {
+        return filter.field !== 'categoryRegisteredStatus' && filter.field !== 'categoryLocalRegisteredStatus';
+      })) || [];
       var categoryUrl = window.location.href;
       switch (value) {
-        case 'all':
+        case 'both':
           categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus');
           categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryLocalRegisteredStatus');
           window.history.pushState({}, '', categoryUrl);
@@ -522,6 +525,7 @@ var Interface = function Interface(props) {
         default:
           break;
       }
+      onChangeView(myNewView);
     }
   }, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.__experimentalToggleGroupControlOption, {
     value: "local",
@@ -550,10 +554,10 @@ var Interface = function Interface(props) {
       return filter.field === 'categoryRegisteredStatus';
     })) === null || _view$filters3 === void 0 ? void 0 : _view$filters3.value) || 'both',
     onChange: function onChange(value) {
-      var _myNewView$filters2;
+      var _myNewView$filters3;
       var myNewView = _objectSpread({}, view);
       // Merge with existing filters, replacing patternStatus if it exists
-      var existingFilters = ((_myNewView$filters2 = myNewView.filters) === null || _myNewView$filters2 === void 0 ? void 0 : _myNewView$filters2.filter(function (filter) {
+      var existingFilters = ((_myNewView$filters3 = myNewView.filters) === null || _myNewView$filters3 === void 0 ? void 0 : _myNewView$filters3.filter(function (filter) {
         return filter.field !== 'categoryRegisteredStatus';
       })) || [];
       myNewView.filters = [].concat(_toConsumableArray(existingFilters), [{
@@ -592,10 +596,10 @@ var Interface = function Interface(props) {
       return filter.field === 'categoryLocalRegisteredStatus';
     })) === null || _view$filters5 === void 0 ? void 0 : _view$filters5.value) || 'enabled',
     onChange: function onChange(value) {
-      var _myNewView$filters3;
+      var _myNewView$filters4;
       var myNewView = _objectSpread({}, view);
       // Merge with existing filters, replacing patternStatus if it exists
-      var existingFilters = ((_myNewView$filters3 = myNewView.filters) === null || _myNewView$filters3 === void 0 ? void 0 : _myNewView$filters3.filter(function (filter) {
+      var existingFilters = ((_myNewView$filters4 = myNewView.filters) === null || _myNewView$filters4 === void 0 ? void 0 : _myNewView$filters4.filter(function (filter) {
         return filter.field !== 'categoryLocalRegisteredStatus';
       })) || [];
       myNewView.filters = [].concat(_toConsumableArray(existingFilters), [{
@@ -687,11 +691,11 @@ var CategoryBulkActions = function CategoryBulkActions(props) {
   var formValues = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_3__.useWatch)({
     control: control
   });
-  var categoriesSelectedCount = Object.values(getValues('categoriesSelected')).filter(function (value) {
-    return value;
+  var categoriesSelectedCount = categories.filter(function (category) {
+    return getValues("categoriesSelected[".concat(category.slug, "]"));
   }).length;
   return /*#__PURE__*/React.createElement("div", {
-    className: classnames__WEBPACK_IMPORTED_MODULE_2___default()('dlx-patterns-view-category-bulk-actions', {
+    className: classnames__WEBPACK_IMPORTED_MODULE_2___default()('dlx-patterns-view-category-bulk-actions dataviews-bulk-actions-footer__container', {
       'is-selected': getValues('bulkActionSelected')
     })
   }, /*#__PURE__*/React.createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_3__.Controller, {

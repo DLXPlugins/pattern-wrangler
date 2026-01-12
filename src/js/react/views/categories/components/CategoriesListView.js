@@ -290,7 +290,7 @@ const Interface = ( props ) => {
 	const getBulkActions = () => {
 		return (
 			<>
-				<div className="dlx-patterns-view-button-actions-wrapper">
+				<div className="dlx-patterns-view-button-actions-wrapper dlx-bulk-action-toolbar-top">
 					<CategoryBulkActions categories={ categoriesDisplay } />
 				</div>
 			</>
@@ -340,11 +340,14 @@ const Interface = ( props ) => {
 										...existingFilters,
 										{ field: 'categoryType', operator: 'is', value },
 									];
-									onChangeView( myNewView );
+									// Remove categoryRegisteredStatus and categoryLocalRegisteredStatus from the filters.
+									myNewView.filters = myNewView.filters?.filter(
+										( filter ) => filter.field !== 'categoryRegisteredStatus' && filter.field !== 'categoryLocalRegisteredStatus'
+									) || [];
 
 									let categoryUrl = window.location.href;
 									switch ( value ) {
-										case 'all':
+										case 'both':
 											categoryUrl = removeQueryArgs( categoryUrl, 'categoryRegisteredStatus' );
 											categoryUrl = removeQueryArgs( categoryUrl, 'categoryLocalRegisteredStatus' );
 											window.history.pushState( {}, '', categoryUrl );
@@ -362,6 +365,8 @@ const Interface = ( props ) => {
 										default:
 											break;
 									}
+
+									onChangeView( myNewView );
 								} }
 							>
 								<ToggleGroupControlOption
