@@ -270,11 +270,15 @@ var Interface = function Interface(props) {
       filters: [{
         field: 'categoryType',
         operator: 'is',
-        value: 'both'
+        value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryType') || 'both'
+      }, {
+        field: 'categoryRegisteredStatus',
+        operator: 'is',
+        value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryRegisteredStatus') || 'both'
       }, {
         field: 'categoryLocalRegisteredStatus',
         operator: 'is',
-        value: 'enabled'
+        value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryLocalRegisteredStatus') || 'enabled'
       }]
     }),
     _useState10 = _slicedToArray(_useState9, 2),

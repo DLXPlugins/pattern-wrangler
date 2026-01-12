@@ -24,6 +24,7 @@ import { Eye } from 'lucide-react';
 import {
 	addQueryArgs,
 	getQueryArgs,
+	getQueryArg,
 	removeQueryArgs,
 	cleanForSlug,
 } from '@wordpress/url';
@@ -108,11 +109,12 @@ const Interface = ( props ) => {
 
 	const [ view, setView ] = useState( {
 		filters: [
-			{ field: 'categoryType', operator: 'is', value: 'both' },
+			{ field: 'categoryType', operator: 'is', value: getQueryArg( window.location.href, 'categoryType' ) || 'both' },
+			{ field: 'categoryRegisteredStatus', operator: 'is', value: getQueryArg( window.location.href, 'categoryRegisteredStatus' ) || 'both' },
 			{
 				field: 'categoryLocalRegisteredStatus',
 				operator: 'is',
-				value: 'enabled',
+				value: getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) || 'enabled',
 			},
 		],
 	} );
