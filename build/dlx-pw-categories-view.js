@@ -272,21 +272,7 @@ var Interface = function Interface(props) {
     _useState10 = _slicedToArray(_useState9, 2),
     isPauseCategoryModalOpen = _useState10[0],
     setIsPauseCategoryModalOpen = _useState10[1];
-  var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
-      filters: [{
-        field: 'categoryType',
-        operator: 'is',
-        value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryType') || 'both'
-      }, {
-        field: 'categoryRegisteredStatus',
-        operator: 'is',
-        value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryRegisteredStatus') || 'both'
-      }, {
-        field: 'categoryLocalRegisteredStatus',
-        operator: 'is',
-        value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryLocalRegisteredStatus') || (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryRegisteredStatus') || 'enabled'
-      }]
-    }),
+  var _useState11 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState12 = _slicedToArray(_useState11, 2),
     view = _useState12[0],
     setView = _useState12[1];
@@ -538,7 +524,52 @@ var Interface = function Interface(props) {
     }];
   }, []);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    onChangeView(view);
+    if (null === view) {
+      var filters = [];
+      if ((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryType')) {
+        filters.push({
+          field: 'categoryType',
+          operator: 'is',
+          value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryType')
+        });
+      } else {
+        filters.push({
+          field: 'categoryType',
+          operator: 'is',
+          value: 'both'
+        });
+      }
+      if ((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryRegisteredStatus')) {
+        filters.push({
+          field: 'categoryRegisteredStatus',
+          operator: 'is',
+          value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryRegisteredStatus')
+        });
+      }
+      if ((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryLocalRegisteredStatus')) {
+        filters.push({
+          field: 'categoryLocalRegisteredStatus',
+          operator: 'is',
+          value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryLocalRegisteredStatus')
+        });
+      } else if (!(0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryLocalRegisteredStatus') && !(0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryType')) {
+        filters.push({
+          field: 'categoryLocalRegisteredStatus',
+          operator: 'is',
+          value: 'enabled'
+        });
+      }
+      setView({
+        filters: filters
+      });
+      if (filters.length > 0) {
+        onChangeView({
+          filters: filters
+        }); // called once view is not null.
+      }
+      return;
+    }
+    onChangeView(view); // called once view is not null.
   }, [categories]);
 
   // Listen for transitionend events when categories are being deleted.
@@ -681,23 +712,20 @@ var Interface = function Interface(props) {
       }]);
       // Remove categoryRegisteredStatus and categoryLocalRegisteredStatus from the filters.
       myNewView.filters = ((_myNewView$filters2 = myNewView.filters) === null || _myNewView$filters2 === void 0 ? void 0 : _myNewView$filters2.filter(function (filter) {
-        return filter.field !== 'categoryRegisteredStatus' && filter.field !== 'categoryLocalRegisteredStatus';
+        return filter.field !== 'categoryRegisteredStatus';
       })) || [];
       var categoryUrl = window.location.href;
       switch (value) {
         case 'both':
           categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus');
-          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryLocalRegisteredStatus');
           window.history.pushState({}, '', categoryUrl);
           break;
         case 'local':
-          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus');
-          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryLocalRegisteredStatus');
+          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus', 'categoryLocalRegisteredStatus');
           window.history.pushState({}, '', categoryUrl);
           break;
         case 'registered':
-          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus');
-          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryLocalRegisteredStatus');
+          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(window.location.href, 'categoryLocalRegisteredStatus');
           window.history.pushState({}, '', categoryUrl);
           break;
         default:

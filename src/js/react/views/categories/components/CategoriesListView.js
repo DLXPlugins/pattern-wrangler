@@ -108,17 +108,7 @@ const Interface = ( props ) => {
 	const [ isEditRegisteredCategoryModalOpen, setIsEditRegisteredCategoryModalOpen ] = useState( false );
 	const [ isPauseCategoryModalOpen, setIsPauseCategoryModalOpen ] = useState( false );
 
-	const [ view, setView ] = useState( {
-		filters: [
-			{ field: 'categoryType', operator: 'is', value: getQueryArg( window.location.href, 'categoryType' ) || 'both' },
-			{ field: 'categoryRegisteredStatus', operator: 'is', value: getQueryArg( window.location.href, 'categoryRegisteredStatus' ) || 'both' },
-			{
-				field: 'categoryLocalRegisteredStatus',
-				operator: 'is',
-				value: getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) || ( getQueryArg( window.location.href, 'categoryRegisteredStatus' ) || 'enabled' ),
-			},
-		],
-	} );
+	const [ view, setView ] = useState( null );
 	const [ categoriesDisplay, setCategoriesDisplay ] = useState( [] );
 	const [ deletedCategoryIds, setDeletedCategoryIds ] = useState( new Set() );
 	const [ pendingDeleteResponse, setPendingDeleteResponse ] = useState( null );
@@ -392,7 +382,30 @@ const Interface = ( props ) => {
 	}, [] );
 
 	useEffect( () => {
-		onChangeView( view );
+		if ( null === view ) {
+			const filters = [];
+			if ( getQueryArg( window.location.href, 'categoryType' ) ) {
+				filters.push( { field: 'categoryType', operator: 'is', value: getQueryArg( window.location.href, 'categoryType' ) } );
+			} else {
+				filters.push( { field: 'categoryType', operator: 'is', value: 'both' } );
+			}
+			if ( getQueryArg( window.location.href, 'categoryRegisteredStatus' ) ) {
+				filters.push( { field: 'categoryRegisteredStatus', operator: 'is', value: getQueryArg( window.location.href, 'categoryRegisteredStatus' ) } );
+			}
+			if ( getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) ) {
+				filters.push( { field: 'categoryLocalRegisteredStatus', operator: 'is', value: getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) } );
+			} else if ( ! getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) && ! getQueryArg( window.location.href, 'categoryType' ) ) {
+				filters.push( { field: 'categoryLocalRegisteredStatus', operator: 'is', value: 'enabled' } );
+			}
+			setView( {
+				filters,
+			} );
+			if ( filters.length > 0 ) {
+				onChangeView( { filters } ); // called once view is not null.
+			}
+			return;
+		}
+		onChangeView( view ); // called once view is not null.
 	}, [ categories ] );
 
 	// Listen for transitionend events when categories are being deleted.
@@ -572,8 +585,7 @@ const Interface = ( props ) => {
 									myNewView.filters =
 										myNewView.filters?.filter(
 											( filter ) =>
-												filter.field !== 'categoryRegisteredStatus' &&
-												filter.field !== 'categoryLocalRegisteredStatus'
+												filter.field !== 'categoryRegisteredStatus'
 										) || [];
 
 									let categoryUrl = window.location.href;
@@ -581,32 +593,22 @@ const Interface = ( props ) => {
 										case 'both':
 											categoryUrl = removeQueryArgs(
 												categoryUrl,
-												'categoryRegisteredStatus'
-											);
-											categoryUrl = removeQueryArgs(
-												categoryUrl,
-												'categoryLocalRegisteredStatus'
+												'categoryRegisteredStatus',
+
 											);
 											window.history.pushState( {}, '', categoryUrl );
 											break;
 										case 'local':
 											categoryUrl = removeQueryArgs(
 												categoryUrl,
-												'categoryRegisteredStatus'
-											);
-											categoryUrl = removeQueryArgs(
-												categoryUrl,
+												'categoryRegisteredStatus',
 												'categoryLocalRegisteredStatus'
 											);
 											window.history.pushState( {}, '', categoryUrl );
 											break;
 										case 'registered':
 											categoryUrl = removeQueryArgs(
-												categoryUrl,
-												'categoryRegisteredStatus'
-											);
-											categoryUrl = removeQueryArgs(
-												categoryUrl,
+												window.location.href,
 												'categoryLocalRegisteredStatus'
 											);
 											window.history.pushState( {}, '', categoryUrl );
