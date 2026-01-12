@@ -138,6 +138,21 @@ class Rest {
 		);
 
 		/**
+		 * For deleting a pattern category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/delete',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_delete_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
 		 * For pausing/disabling a registeredpattern category.
 		 */
 		register_rest_route(
@@ -269,6 +284,53 @@ class Rest {
 		}
 
 		return rest_ensure_response( array( 'success' => true ) );
+	}
+
+	/**
+	 * Delete a category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_delete_category( $request ) {
+
+		$items             = $request->get_param( 'items' );
+		$do_not_show_again = filter_var( $request->get_param( 'doNotShowAgain' ), FILTER_VALIDATE_BOOLEAN );
+
+		$term_ids_deleted = array();
+		foreach ( $items as $item ) {
+			$category_id = absint( $item['id'] );
+			$nonce       = sanitize_text_field( $item['nonce'] );
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . $category_id ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for category ' . $category_id ) );
+			}
+
+			if ( ! current_user_can( 'delete_term', $category_id ) ) {
+				return rest_ensure_response( array( 'error' => 'User does not have permission to delete category ' . $category_id ) );
+			}
+
+			// Delete the category.
+			wp_delete_term( $category_id, 'wp_pattern_category' );
+			$term_ids_deleted[] = $category_id;
+		}
+
+		if ( $do_not_show_again ) {
+			if ( current_user_can( 'publish_posts' ) ) {
+				update_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true );
+			}
+		}
+
+		// Get fresh categories.
+		$categories = $this->get_all_categories();
+		return rest_ensure_response(
+			array(
+				'success'        => true,
+				'categories'     => $categories['all'],
+				'termIdsDeleted' => $term_ids_deleted,
+			)
+		);
 	}
 
 	/**
@@ -963,15 +1025,9 @@ class Rest {
 	/**
 	 * Get all categories.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return array The categories.
 	 */
-	public function rest_get_all_categories() {
-		// Check nonce and permissions.
-		$nonce = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ) );
-		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-get-categories' ) || ! current_user_can( 'edit_others_posts' ) ) {
-			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to view categories.' ) );
-		}
-
+	private function get_all_categories() {
 		// Check transient first.
 		$all_categories = get_transient( 'dlx_all_categories_cache' );
 		if ( false !== $all_categories && false ) {
@@ -1042,11 +1098,32 @@ class Rest {
 
 		set_transient( 'dlx_all_categories_cache', $all_categories, HOUR_IN_SECONDS );
 
+		return array(
+			'all'        => $all_categories,
+			'registered' => $registered_categories,
+			'local'      => $local_categories,
+		);
+	}
+
+	/**
+	 * Get all categories.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_get_all_categories() {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-get-categories' ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to view categories.' ) );
+		}
+
+		$categories = $this->get_all_categories();
+
 		return rest_ensure_response(
 			array(
-				'categories'           => $all_categories,
-				'registeredCategories' => $registered_categories,
-				'localCategories'      => $local_categories,
+				'categories'           => $categories['all'],
+				'registeredCategories' => $categories['registered'],
+				'localCategories'      => $categories['local'],
 			)
 		);
 	}

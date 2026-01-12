@@ -159,6 +159,7 @@ const CategoryCard = ( props ) => {
 					'is-enabled': category.enabled,
 					'is-disabled': ! category.enabled,
 					'is-selected': getValues( `categoriesSelected[${ category.slug }]` ) || false,
+					'is-deleted': category.deleted,
 				} )
 			}
 		>

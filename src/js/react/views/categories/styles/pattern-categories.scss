@@ -381,6 +381,12 @@ svg.lucide {
 	&:focus-within .invisible-until-hover {
 		opacity: 1;
 	}
+
+	&.is-deleted {
+		opacity: 0;
+		transition: opacity 0.4s ease-in-out;
+		pointer-events: none;
+	}
 }
 .dlx-pw-modal-admin-row {
 	.is-required label {

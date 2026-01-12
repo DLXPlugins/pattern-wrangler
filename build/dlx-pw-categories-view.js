@@ -278,7 +278,7 @@ var Interface = function Interface(props) {
       }, {
         field: 'categoryLocalRegisteredStatus',
         operator: 'is',
-        value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryLocalRegisteredStatus') || 'enabled'
+        value: (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryLocalRegisteredStatus') || (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArg)(window.location.href, 'categoryRegisteredStatus') || 'enabled'
       }]
     }),
     _useState10 = _slicedToArray(_useState9, 2),
@@ -288,15 +288,23 @@ var Interface = function Interface(props) {
     _useState12 = _slicedToArray(_useState11, 2),
     categoriesDisplay = _useState12[0],
     setCategoriesDisplay = _useState12[1];
-  var _useState13 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState13 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(new Set()),
+    _useState14 = _slicedToArray(_useState13, 2),
+    deletedCategoryIds = _useState14[0],
+    setDeletedCategoryIds = _useState14[1];
+  var _useState15 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState16 = _slicedToArray(_useState15, 2),
+    pendingDeleteResponse = _useState16[0],
+    setPendingDeleteResponse = _useState16[1];
+  var _useState17 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
       isVisible: false,
       message: '',
       title: '',
       type: ''
     }),
-    _useState14 = _slicedToArray(_useState13, 2),
-    snackbar = _useState14[0],
-    setSnackbar = _useState14[1];
+    _useState18 = _slicedToArray(_useState17, 2),
+    snackbar = _useState18[0],
+    setSnackbar = _useState18[1];
 
   /**
    * Get the default values for the form.
@@ -523,11 +531,70 @@ var Interface = function Interface(props) {
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     onChangeView(view);
   }, [categories]);
+
+  // Listen for transitionend events when categories are being deleted.
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (deletedCategoryIds.size === 0 || !pendingDeleteResponse) {
+      return;
+    }
+
+    // Wait for next frame to ensure DOM has updated with is-deleted class.
+    requestAnimationFrame(function () {
+      // Find all category cards with is-deleted class.
+      var deletedCards = document.querySelectorAll('.dlx-patterns-view-category-card.is-deleted');
+      setIsDeleteCategoryModalOpen(false);
+      if (deletedCards.length === 0) {
+        // do nothing.
+        return;
+      }
+      var completedAnimations = 0;
+      var totalAnimations = deletedCards.length;
+      var _handleTransitionEnd = function handleTransitionEnd(event) {
+        // Only handle opacity transitions.
+        if (event.propertyName !== 'opacity') {
+          return;
+        }
+        completedAnimations++;
+        event.target.removeEventListener('transitionend', _handleTransitionEnd);
+
+        // When all animations complete, update the store.
+        if (completedAnimations === totalAnimations) {
+          (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).setCategories(pendingDeleteResponse.categories);
+          setDeletedCategoryIds(new Set());
+          setPendingDeleteResponse(null);
+          setSnackbar({
+            isVisible: true,
+            message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.sprintf)(/* translators: %d: number of categories */
+            (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__._n)('%d category deleted successfully.', '%d Categories deleted successfully.', pendingDeleteResponse.termIdsDeleted.length, 'pattern-wrangler'), pendingDeleteResponse.termIdsDeleted.length),
+            title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.sprintf)(/* translators: %d: number of categories */
+            (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__._n)('%d Category Deleted', '%d Categories Deleted', pendingDeleteResponse.termIdsDeleted.length, 'pattern-wrangler'), pendingDeleteResponse.termIdsDeleted.length),
+            type: 'success'
+          });
+        }
+      };
+
+      // Attach listeners to each deleted card.
+      deletedCards.forEach(function (card) {
+        card.addEventListener('transitionend', _handleTransitionEnd);
+      });
+
+      // Cleanup function to remove listeners if component unmounts.
+      return function () {
+        deletedCards.forEach(function (card) {
+          card.removeEventListener('transitionend', _handleTransitionEnd);
+        });
+      };
+    });
+  }, [deletedCategoryIds, pendingDeleteResponse]);
   var CategoryList = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return categoriesDisplay.map(function (category) {
+      // Mark category as deleted if its ID is in the deleted set.
+      var categoryWithDeleted = _objectSpread(_objectSpread({}, category), {}, {
+        deleted: deletedCategoryIds.has(category.id) || category.deleted
+      });
       return /*#__PURE__*/React.createElement(_CategoryCard__WEBPACK_IMPORTED_MODULE_13__["default"], {
         key: category.slug,
-        category: category,
+        category: categoryWithDeleted,
         onDeleteCategory: function onDeleteCategory(categoriesToDelete) {
           setIsDeleteCategoryModalOpen({
             isOpen: true,
@@ -548,7 +615,7 @@ var Interface = function Interface(props) {
         }
       });
     });
-  }, [categoriesDisplay, categories]);
+  }, [categoriesDisplay, categories, deletedCategoryIds]);
   var getBulkActions = function getBulkActions() {
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       className: "dlx-patterns-view-button-actions-wrapper dlx-bulk-action-toolbar-top"
@@ -756,14 +823,17 @@ var Interface = function Interface(props) {
       return setIsDeleteCategoryModalOpen(false);
     },
     items: isDeleteCategoryModalOpen.items,
-    onDelete: function onDelete() {
-      (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).deleteCategories(isDeleteCategoryModalOpen.items);
-      setSnackbar({
-        isVisible: true,
-        message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Categories deleted successfully.', 'pattern-wrangler'),
-        title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Categories Deleted', 'pattern-wrangler'),
-        type: 'success'
-      });
+    onDelete: function onDelete(categoriesResponse, itemIdsAndNonces) {
+      // Get IDs of categories being deleted.
+      var deletedIds = new Set(itemIdsAndNonces.map(function (item) {
+        return item.id;
+      }));
+
+      // Store the response to use after animation completes.
+      setPendingDeleteResponse(categoriesResponse);
+
+      // Mark categories as deleted to trigger fade out animation.
+      setDeletedCategoryIds(deletedIds);
     }
   }), isEditCategoryModalOpen.isOpen && /*#__PURE__*/React.createElement(_CategoryCreateModal__WEBPACK_IMPORTED_MODULE_14__["default"], {
     isOpen: isEditCategoryModalOpen.isOpen,
@@ -1028,7 +1098,8 @@ var CategoryCard = function CategoryCard(props) {
       'is-local': !category.registered,
       'is-enabled': category.enabled,
       'is-disabled': !category.enabled,
-      'is-selected': getValues("categoriesSelected[".concat(category.slug, "]")) || false
+      'is-selected': getValues("categoriesSelected[".concat(category.slug, "]")) || false,
+      'is-deleted': category.deleted
     })
   }, /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-category-card__checkbox"

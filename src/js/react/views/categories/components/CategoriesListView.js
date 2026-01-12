@@ -3,7 +3,6 @@ import {
 	useState,
 	useMemo,
 	useEffect,
-	useRef,
 	Suspense,
 } from '@wordpress/element';
 import { useResizeObserver } from '@wordpress/compose';
@@ -114,11 +113,13 @@ const Interface = ( props ) => {
 			{
 				field: 'categoryLocalRegisteredStatus',
 				operator: 'is',
-				value: getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) || 'enabled',
+				value: getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) || ( getQueryArg( window.location.href, 'categoryRegisteredStatus' ) || 'enabled' ),
 			},
 		],
 	} );
 	const [ categoriesDisplay, setCategoriesDisplay ] = useState( [] );
+	const [ deletedCategoryIds, setDeletedCategoryIds ] = useState( new Set() );
+	const [ pendingDeleteResponse, setPendingDeleteResponse ] = useState( null );
 
 	const [ snackbar, setSnackbar ] = useState( {
 		isVisible: false,
@@ -389,12 +390,94 @@ const Interface = ( props ) => {
 		onChangeView( view );
 	}, [ categories ] );
 
+	// Listen for transitionend events when categories are being deleted.
+	useEffect( () => {
+		if ( deletedCategoryIds.size === 0 || ! pendingDeleteResponse ) {
+			return;
+		}
+
+		// Wait for next frame to ensure DOM has updated with is-deleted class.
+		requestAnimationFrame( () => {
+			// Find all category cards with is-deleted class.
+			const deletedCards = document.querySelectorAll(
+				'.dlx-patterns-view-category-card.is-deleted'
+			);
+
+			setIsDeleteCategoryModalOpen( false );
+
+			if ( deletedCards.length === 0 ) {
+				// do nothing.
+				return;
+			}
+
+			let completedAnimations = 0;
+			const totalAnimations = deletedCards.length;
+
+			const handleTransitionEnd = ( event ) => {
+				// Only handle opacity transitions.
+				if ( event.propertyName !== 'opacity' ) {
+					return;
+				}
+
+				completedAnimations++;
+				event.target.removeEventListener( 'transitionend', handleTransitionEnd );
+
+				// When all animations complete, update the store.
+				if ( completedAnimations === totalAnimations ) {
+					dispatch( categoriesStore ).setCategories( pendingDeleteResponse.categories );
+					setDeletedCategoryIds( new Set() );
+					setPendingDeleteResponse( null );
+					setSnackbar( {
+						isVisible: true,
+						message: sprintf(
+							/* translators: %d: number of categories */
+							_n(
+								'%d category deleted successfully.',
+								'%d Categories deleted successfully.',
+								pendingDeleteResponse.termIdsDeleted.length,
+								'pattern-wrangler'
+							),
+							pendingDeleteResponse.termIdsDeleted.length
+						),
+						title: sprintf(
+							/* translators: %d: number of categories */
+							_n(
+								'%d Category Deleted',
+								'%d Categories Deleted',
+								pendingDeleteResponse.termIdsDeleted.length, 'pattern-wrangler'
+							),
+							pendingDeleteResponse.termIdsDeleted.length
+						),
+						type: 'success',
+					} );
+				}
+			};
+
+			// Attach listeners to each deleted card.
+			deletedCards.forEach( ( card ) => {
+				card.addEventListener( 'transitionend', handleTransitionEnd );
+			} );
+
+			// Cleanup function to remove listeners if component unmounts.
+			return () => {
+				deletedCards.forEach( ( card ) => {
+					card.removeEventListener( 'transitionend', handleTransitionEnd );
+				} );
+			};
+		} );
+	}, [ deletedCategoryIds, pendingDeleteResponse ] );
+
 	const CategoryList = useMemo( () => {
 		return categoriesDisplay.map( ( category ) => {
+			// Mark category as deleted if its ID is in the deleted set.
+			const categoryWithDeleted = {
+				...category,
+				deleted: deletedCategoryIds.has( category.id ) || category.deleted,
+			};
 			return (
 				<CategoryCard
 					key={ category.slug }
-					category={ category }
+					category={ categoryWithDeleted }
 					onDeleteCategory={ ( categoriesToDelete ) => {
 						setIsDeleteCategoryModalOpen( {
 							isOpen: true,
@@ -416,7 +499,7 @@ const Interface = ( props ) => {
 				/>
 			);
 		} );
-	}, [ categoriesDisplay, categories ] );
+	}, [ categoriesDisplay, categories, deletedCategoryIds ] );
 
 	const getBulkActions = () => {
 		return (
@@ -732,20 +815,15 @@ const Interface = ( props ) => {
 						isOpen={ isDeleteCategoryModalOpen.isOpen }
 						onRequestClose={ () => setIsDeleteCategoryModalOpen( false ) }
 						items={ isDeleteCategoryModalOpen.items }
-						onDelete={ () => {
-							dispatch( categoriesStore ).deleteCategories(
-								isDeleteCategoryModalOpen.items
-							);
+						onDelete={ ( categoriesResponse, itemIdsAndNonces ) => {
+							// Get IDs of categories being deleted.
+							const deletedIds = new Set( itemIdsAndNonces.map( ( item ) => item.id ) );
 
-							setSnackbar( {
-								isVisible: true,
-								message: __(
-									'Categories deleted successfully.',
-									'pattern-wrangler'
-								),
-								title: __( 'Categories Deleted', 'pattern-wrangler' ),
-								type: 'success',
-							} );
+							// Store the response to use after animation completes.
+							setPendingDeleteResponse( categoriesResponse );
+
+							// Mark categories as deleted to trigger fade out animation.
+							setDeletedCategoryIds( deletedIds );
 						} }
 					/>
 				) }
