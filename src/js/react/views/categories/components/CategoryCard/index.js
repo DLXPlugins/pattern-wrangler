@@ -142,6 +142,9 @@ const CategoryCard = ( props ) => {
 							className="dlx-patterns-view-category-card__action-button"
 							label={ __( 'Re-Enable Category', 'pattern-wrangler' ) }
 							showTooltip={ true }
+							onClick={ () => {
+								props.onEnableCategory( [ category ] );
+							} }
 						>
 							{ __( 'Re-Enable', 'pattern-wrangler' ) }
 						</Button>

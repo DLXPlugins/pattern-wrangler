@@ -3,7 +3,6 @@ import {
 	useState,
 	useMemo,
 	useEffect,
-	Suspense,
 } from '@wordpress/element';
 import { useResizeObserver } from '@wordpress/compose';
 import { downloadBlob } from '@wordpress/blob';
@@ -132,6 +131,64 @@ const Interface = ( props ) => {
 		};
 	};
 
+	const enableCategories = async( categoriesToEnable ) => {
+		const path = '/dlxplugins/pattern-wrangler/v1/categories/enable/';
+		setSnackbar( {
+			isVisible: true,
+			message: sprintf(
+				/* translators: %d: number of categories */
+				_n(
+					'Enabling %d category…',
+					'Enabling %d categories…',
+					categoriesToEnable.length,
+					'pattern-wrangler'
+				),
+				categoriesToEnable.length
+			),
+			title: sprintf(
+				/* translators: %d: number of categories */
+				_n(
+					'Enabling %d Category',
+					'Enabling %d Categories',
+					categoriesToEnable.length, 'pattern-wrangler'
+				),
+				categoriesToEnable.length
+			),
+			type: 'loading',
+		} );
+		const response = await apiFetch( {
+			path,
+			method: 'POST',
+			data: {
+				items: categoriesToEnable,
+			},
+		} );
+		// todo error handling.
+		dispatch( categoriesStore ).setCategories( response.categories );
+		setSnackbar( {
+			isVisible: true,
+			message: sprintf(
+				/* translators: %d: number of categories */
+				_n(
+					'%d category enabled successfully.',
+					'%d Categories enabled successfully.',
+					categoriesToEnable.length,
+					'pattern-wrangler'
+				),
+				categoriesToEnable.length
+			),
+			title: sprintf(
+				/* translators: %d: number of categories */
+				_n(
+					'%d Category Enabled',
+					'%d Categories Enabled',
+					categoriesToEnable.length, 'pattern-wrangler'
+				),
+				categoriesToEnable.length
+			),
+			type: 'success',
+		} );
+	};
 	/**
 	 * Retrieve a list of modified patterns based on query vars and the current view.
 	 *
@@ -361,8 +418,8 @@ const Interface = ( props ) => {
 					);
 				},
 				icon: 'visibility',
-				callback: ( items ) => {
-					// todo - launch modal.
+				callback: async ( items ) => {
+					enableCategories( items );
 				},
 				isEligible: ( item ) => {
 					return item.registered && ! item.enabled;
@@ -538,6 +595,9 @@ const Interface = ( props ) => {
 							isOpen: true,
 							items: categoriesToPause,
 						} );
+					} }
+					onEnableCategory={ ( categoriesToEnable ) => {
+						enableCategories( categoriesToEnable );
 					} }
 				/>
 			);
@@ -811,6 +871,7 @@ const Interface = ( props ) => {
 						type={ snackbar.type }
 						onClose={ () => {
 							setSnackbar( {
+								...snackbar,
 								isVisible: false,
 							} );
 						} }

@@ -35,7 +35,6 @@ import Notice from '../../../../components/Notice';
  * @return {Object} The rendered component.
  */
 const CategoryPauseModal = ( props ) => {
-	console.log( props );
 	const [ isSaving, setIsSaving ] = useState( false );
 	const {
 		control,

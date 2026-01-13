@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Snackbar as WPSnackBar, Modal, Button } from '@wordpress/components';
 import classnames from 'classnames';
@@ -26,16 +26,18 @@ import Notice from '../../../../components/Notice';
 const Snackbar = ( props ) => {
 	const { loadingMessage } = props;
 
-	const snackbarDefaults = {
-		type: props.type,
-		message: props.message,
-		title: props.title,
-		isDismissable: false,
-		isPersistent: false,
-		isSuccess: false,
-		loadingMessage,
-		politeness: 'polite' /* can also be assertive */,
-	};
+	const snackbarDefaults = useMemo( () => {
+		return {
+			type: props.type,
+			message: props.message,
+			title: props.title,
+			isDismissable: false,
+			isPersistent: false,
+			isSuccess: false,
+			loadingMessage,
+			politeness: 'polite' /* can also be assertive */,
+		};
+	}, [ props ] );
 
 	const [ notificationOptions, setNotificationOptions ] =
 		useState( snackbarDefaults );
@@ -49,6 +51,10 @@ const Snackbar = ( props ) => {
 			}, 5000 );
 		}
 	}, [ props.isVisible ] );
+
+	useEffect( () => {
+		setNotificationOptions( snackbarDefaults );
+	}, [ props ] );
 
 	/**
 	 * Gets the icon for the notification.
