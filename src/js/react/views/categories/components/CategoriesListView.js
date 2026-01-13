@@ -221,7 +221,7 @@ const Interface = ( props ) => {
 	 */
 	const onChangeView = ( newView ) => {
 		// Create query args object with view state.
-		const changeQueryArgs = getQueryArgs( window.location.href );
+		const changeQueryArgs = {};
 
 		// Get the category type from filters.
 		const categoryTypeFilter = newView.filters?.find(
@@ -242,20 +242,39 @@ const Interface = ( props ) => {
 			( filter ) => filter.field === 'categoryLocalRegisteredStatus'
 		);
 
-		if ( categoryRegisteredStatusFilter ) {
+		if ( categoryRegisteredStatusFilter && 'registered' === changeQueryArgs.categoryType ) {
 			changeQueryArgs.categoryRegisteredStatus =
 				categoryRegisteredStatusFilter.value;
 		}
-		if ( categoryLocalStatusFilter ) {
+		if ( 'registered' === changeQueryArgs.categoryType && ! categoryRegisteredStatusFilter ) {
+			changeQueryArgs.categoryRegisteredStatus = 'enabled';
+		}
+		if ( categoryLocalStatusFilter && 'local' === changeQueryArgs.categoryType ) {
 			changeQueryArgs.categoryLocalStatus = categoryLocalStatusFilter.value;
 		}
-		if ( categoryLocalRegisteredStatusFilter ) {
+		if ( categoryLocalRegisteredStatusFilter && 'both' === changeQueryArgs.categoryType ) {
 			changeQueryArgs.categoryLocalRegisteredStatus =
 				categoryLocalRegisteredStatusFilter.value;
 		}
+		if ( 'both' === changeQueryArgs.categoryType && ! categoryLocalRegisteredStatusFilter ) {
+			changeQueryArgs.categoryLocalRegisteredStatus = 'enabled';
+		}
+
+		// Clear query args that are not in the new view.
+		const clearQueryArgs = getQueryArgs( window.location.href );
+
+		// Unset the `page` key if set.
+		if ( clearQueryArgs.page ) {
+			delete clearQueryArgs.page;
+		}
+
+		let cleanUrl = window.location.href;
+		Object.keys( clearQueryArgs ).forEach( ( key ) => {
+			cleanUrl = removeQueryArgs( cleanUrl, key );
+		} );
 
 		// Update URL without page reload using addQueryArgs.
-		let newUrl = addQueryArgs( window.location.pathname, changeQueryArgs );
+		let newUrl = addQueryArgs( cleanUrl, changeQueryArgs );
 		if ( getQueryArgs( window.location.href ).search && ! newView.search ) {
 			newUrl = removeQueryArgs( newUrl, 'search' );
 		}
@@ -273,7 +292,7 @@ const Interface = ( props ) => {
 			];
 		}
 
-		setCategoriesDisplay( getCategoriesForDisplay( newView ) );
+		setCategoriesDisplay( getCategoriesForDisplay( { ...newView, ...changeQueryArgs } ) );
 
 		window.history.pushState( {}, '', newUrl );
 
@@ -581,42 +600,36 @@ const Interface = ( props ) => {
 										...existingFilters,
 										{ field: 'categoryType', operator: 'is', value },
 									];
-									// Remove categoryRegisteredStatus and categoryLocalRegisteredStatus from the filters.
-									myNewView.filters =
-										myNewView.filters?.filter(
-											( filter ) =>
-												filter.field !== 'categoryRegisteredStatus'
-										) || [];
 
-									let categoryUrl = window.location.href;
 									switch ( value ) {
 										case 'both':
-											categoryUrl = removeQueryArgs(
-												categoryUrl,
-												'categoryRegisteredStatus',
-
-											);
-											window.history.pushState( {}, '', categoryUrl );
+											myNewView.filters =
+											myNewView.filters?.filter(
+												( filter ) =>
+													filter.field !== 'categoryRegisteredStatus'
+											) || [];
+											myNewView.filters.push( { field: 'categoryLocalRegisteredStatus', operator: 'is', value: 'enabled' } );
 											break;
 										case 'local':
-											categoryUrl = removeQueryArgs(
-												categoryUrl,
-												'categoryRegisteredStatus',
-												'categoryLocalRegisteredStatus'
-											);
-											window.history.pushState( {}, '', categoryUrl );
+											myNewView.filters =
+											myNewView.filters?.filter(
+												( filter ) =>
+													filter.field !== 'categoryRegisteredStatus' &&
+													filter.field !== 'categoryLocalRegisteredStatus'
+											) || [];
 											break;
 										case 'registered':
-											categoryUrl = removeQueryArgs(
-												window.location.href,
-												'categoryLocalRegisteredStatus'
-											);
-											window.history.pushState( {}, '', categoryUrl );
+											myNewView.filters =
+											myNewView.filters?.filter(
+												( filter ) => {
+													return filter.field !== 'categoryLocalRegisteredStatus' && filter.field !== 'categoryRegisteredStatus';
+												}
+											) || [];
+											myNewView.filters.push( { field: 'categoryRegisteredStatus', operator: 'is', value: 'enabled' } );
 											break;
 										default:
 											break;
 									}
-
 									onChangeView( myNewView );
 								} }
 							>
@@ -661,7 +674,7 @@ const Interface = ( props ) => {
 												view?.filters?.find(
 													( filter ) =>
 														filter.field === 'categoryRegisteredStatus'
-												)?.value || 'both'
+												)?.value || 'enabled'
 											}
 											onChange={ ( value ) => {
 												const myNewView = { ...view };

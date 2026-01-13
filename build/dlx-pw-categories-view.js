@@ -392,7 +392,7 @@ var Interface = function Interface(props) {
   var onChangeView = function onChangeView(newView) {
     var _newView$filters, _newView$filters2, _newView$filters3, _newView$filters4, _newView$filters5;
     // Create query args object with view state.
-    var changeQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href);
+    var changeQueryArgs = {};
 
     // Get the category type from filters.
     var categoryTypeFilter = (_newView$filters = newView.filters) === null || _newView$filters === void 0 ? void 0 : _newView$filters.find(function (filter) {
@@ -412,18 +412,36 @@ var Interface = function Interface(props) {
     var categoryLocalRegisteredStatusFilter = (_newView$filters4 = newView.filters) === null || _newView$filters4 === void 0 ? void 0 : _newView$filters4.find(function (filter) {
       return filter.field === 'categoryLocalRegisteredStatus';
     });
-    if (categoryRegisteredStatusFilter) {
+    if (categoryRegisteredStatusFilter && 'registered' === changeQueryArgs.categoryType) {
       changeQueryArgs.categoryRegisteredStatus = categoryRegisteredStatusFilter.value;
     }
-    if (categoryLocalStatusFilter) {
+    if ('registered' === changeQueryArgs.categoryType && !categoryRegisteredStatusFilter) {
+      changeQueryArgs.categoryRegisteredStatus = 'enabled';
+    }
+    if (categoryLocalStatusFilter && 'local' === changeQueryArgs.categoryType) {
       changeQueryArgs.categoryLocalStatus = categoryLocalStatusFilter.value;
     }
-    if (categoryLocalRegisteredStatusFilter) {
+    if (categoryLocalRegisteredStatusFilter && 'both' === changeQueryArgs.categoryType) {
       changeQueryArgs.categoryLocalRegisteredStatus = categoryLocalRegisteredStatusFilter.value;
     }
+    if ('both' === changeQueryArgs.categoryType && !categoryLocalRegisteredStatusFilter) {
+      changeQueryArgs.categoryLocalRegisteredStatus = 'enabled';
+    }
+
+    // Clear query args that are not in the new view.
+    var clearQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href);
+
+    // Unset the `page` key if set.
+    if (clearQueryArgs.page) {
+      delete clearQueryArgs.page;
+    }
+    var cleanUrl = window.location.href;
+    Object.keys(clearQueryArgs).forEach(function (key) {
+      cleanUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(cleanUrl, key);
+    });
 
     // Update URL without page reload using addQueryArgs.
-    var newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.addQueryArgs)(window.location.pathname, changeQueryArgs);
+    var newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.addQueryArgs)(cleanUrl, changeQueryArgs);
     if ((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href).search && !newView.search) {
       newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(newUrl, 'search');
     }
@@ -440,7 +458,7 @@ var Interface = function Interface(props) {
         value: 'enabled'
       }]);
     }
-    setCategoriesDisplay(getCategoriesForDisplay(newView));
+    setCategoriesDisplay(getCategoriesForDisplay(_objectSpread(_objectSpread({}, newView), changeQueryArgs)));
     window.history.pushState({}, '', newUrl);
     setView(_objectSpread(_objectSpread({}, newView), changeQueryArgs));
   };
@@ -699,7 +717,7 @@ var Interface = function Interface(props) {
       return filter.field === 'categoryType';
     })) === null || _view$filters === void 0 ? void 0 : _view$filters.value) || 'both',
     onChange: function onChange(value) {
-      var _myNewView$filters, _myNewView$filters2;
+      var _myNewView$filters, _myNewView$filters2, _myNewView$filters3, _myNewView$filters4;
       var myNewView = _objectSpread({}, view);
       // Merge with existing filters, replacing patternType if it exists
       var existingFilters = ((_myNewView$filters = myNewView.filters) === null || _myNewView$filters === void 0 ? void 0 : _myNewView$filters.filter(function (filter) {
@@ -710,23 +728,31 @@ var Interface = function Interface(props) {
         operator: 'is',
         value: value
       }]);
-      // Remove categoryRegisteredStatus and categoryLocalRegisteredStatus from the filters.
-      myNewView.filters = ((_myNewView$filters2 = myNewView.filters) === null || _myNewView$filters2 === void 0 ? void 0 : _myNewView$filters2.filter(function (filter) {
-        return filter.field !== 'categoryRegisteredStatus';
-      })) || [];
-      var categoryUrl = window.location.href;
       switch (value) {
         case 'both':
-          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus');
-          window.history.pushState({}, '', categoryUrl);
+          myNewView.filters = ((_myNewView$filters2 = myNewView.filters) === null || _myNewView$filters2 === void 0 ? void 0 : _myNewView$filters2.filter(function (filter) {
+            return filter.field !== 'categoryRegisteredStatus';
+          })) || [];
+          myNewView.filters.push({
+            field: 'categoryLocalRegisteredStatus',
+            operator: 'is',
+            value: 'enabled'
+          });
           break;
         case 'local':
-          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(categoryUrl, 'categoryRegisteredStatus', 'categoryLocalRegisteredStatus');
-          window.history.pushState({}, '', categoryUrl);
+          myNewView.filters = ((_myNewView$filters3 = myNewView.filters) === null || _myNewView$filters3 === void 0 ? void 0 : _myNewView$filters3.filter(function (filter) {
+            return filter.field !== 'categoryRegisteredStatus' && filter.field !== 'categoryLocalRegisteredStatus';
+          })) || [];
           break;
         case 'registered':
-          categoryUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(window.location.href, 'categoryLocalRegisteredStatus');
-          window.history.pushState({}, '', categoryUrl);
+          myNewView.filters = ((_myNewView$filters4 = myNewView.filters) === null || _myNewView$filters4 === void 0 ? void 0 : _myNewView$filters4.filter(function (filter) {
+            return filter.field !== 'categoryLocalRegisteredStatus' && filter.field !== 'categoryRegisteredStatus';
+          })) || [];
+          myNewView.filters.push({
+            field: 'categoryRegisteredStatus',
+            operator: 'is',
+            value: 'enabled'
+          });
           break;
         default:
           break;
@@ -758,12 +784,12 @@ var Interface = function Interface(props) {
     hideLabelFromVision: true,
     value: (view === null || view === void 0 || (_view$filters3 = view.filters) === null || _view$filters3 === void 0 || (_view$filters3 = _view$filters3.find(function (filter) {
       return filter.field === 'categoryRegisteredStatus';
-    })) === null || _view$filters3 === void 0 ? void 0 : _view$filters3.value) || 'both',
+    })) === null || _view$filters3 === void 0 ? void 0 : _view$filters3.value) || 'enabled',
     onChange: function onChange(value) {
-      var _myNewView$filters3;
+      var _myNewView$filters5;
       var myNewView = _objectSpread({}, view);
       // Merge with existing filters, replacing patternStatus if it exists
-      var existingFilters = ((_myNewView$filters3 = myNewView.filters) === null || _myNewView$filters3 === void 0 ? void 0 : _myNewView$filters3.filter(function (filter) {
+      var existingFilters = ((_myNewView$filters5 = myNewView.filters) === null || _myNewView$filters5 === void 0 ? void 0 : _myNewView$filters5.filter(function (filter) {
         return filter.field !== 'categoryRegisteredStatus';
       })) || [];
       myNewView.filters = [].concat(_toConsumableArray(existingFilters), [{
@@ -802,10 +828,10 @@ var Interface = function Interface(props) {
       return filter.field === 'categoryLocalRegisteredStatus';
     })) === null || _view$filters5 === void 0 ? void 0 : _view$filters5.value) || 'enabled',
     onChange: function onChange(value) {
-      var _myNewView$filters4;
+      var _myNewView$filters6;
       var myNewView = _objectSpread({}, view);
       // Merge with existing filters, replacing patternStatus if it exists
-      var existingFilters = ((_myNewView$filters4 = myNewView.filters) === null || _myNewView$filters4 === void 0 ? void 0 : _myNewView$filters4.filter(function (filter) {
+      var existingFilters = ((_myNewView$filters6 = myNewView.filters) === null || _myNewView$filters6 === void 0 ? void 0 : _myNewView$filters6.filter(function (filter) {
         return filter.field !== 'categoryLocalRegisteredStatus';
       })) || [];
       myNewView.filters = [].concat(_toConsumableArray(existingFilters), [{
