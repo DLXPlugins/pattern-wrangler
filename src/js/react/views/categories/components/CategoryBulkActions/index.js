@@ -41,6 +41,19 @@ const CategoryBulkActions = ( props ) => {
 							);
 						} )
 					}
+					{
+						categoriesSelectedCount > 0 && (
+							<Button
+								variant="tertiary"
+								icon="no-alt"
+								label={ __( 'Cancel', 'pattern-wrangler' ) }
+								onClick={ () => {
+									setValue( 'categoriesSelected', {} );
+									setValue( 'bulkActionSelected', false );
+								} }
+							/>
+						)
+					}
 				</div>
 			</>
 		);

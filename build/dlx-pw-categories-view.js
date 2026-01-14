@@ -1115,6 +1115,14 @@ var CategoryBulkActions = function CategoryBulkActions(props) {
           return action.callback(selectedCategories);
         }
       });
+    }), categoriesSelectedCount > 0 && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+      variant: "tertiary",
+      icon: "no-alt",
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Cancel', 'pattern-wrangler'),
+      onClick: function onClick() {
+        setValue('categoriesSelected', {});
+        setValue('bulkActionSelected', false);
+      }
     })));
   };
   return /*#__PURE__*/React.createElement("div", {
