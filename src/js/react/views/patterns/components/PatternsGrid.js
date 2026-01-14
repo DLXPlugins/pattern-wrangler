@@ -366,11 +366,6 @@ const Interface = ( props ) => {
 						getQueryArgs( window.location.href )?.patternLocalRegisteredStatus ||
 						'enabled',
 				},
-				{
-					field: 'categories',
-					value: decodeURIComponent( getQueryArgs( window.location.href )?.categories || '' ).split( ',' ),
-					operator: 'isAny',
-				},
 			],
 		};
 	};
@@ -456,7 +451,19 @@ const Interface = ( props ) => {
 		);
 	};
 
-	const [ view, setView ] = useState( getDefaultView() );
+	const [ view, setView ] = useState( () => {
+		const defaultView = getDefaultView();
+		const queryCategories = decodeURIComponent( getQueryArgs( window.location.href )?.categories || '' );
+		if ( queryCategories ) {
+			defaultView.filters.push( {
+				field: 'categories',
+				value: queryCategories.split( ',' ),
+				operator: 'isAny',
+			} );
+		}
+
+		return defaultView;
+	} );
 
 	const fields = useMemo(
 		() => [
@@ -1540,6 +1547,14 @@ const Interface = ( props ) => {
 					value: 'enabled',
 				},
 			];
+			// Unset categories query arg.
+			changeQueryArgs.categories = '';
+			newUrl = removeQueryArgs( newUrl, 'categories' );
+		}
+		// If newView doesn't include categories, unset the categories query arg.
+		if ( ! newView.filters?.find( ( filter ) => filter.field === 'categories' ) ) {
+			changeQueryArgs.categories = '';
+			newUrl = removeQueryArgs( newUrl, 'categories' );
 		}
 
 		setPatternsDisplay( getPatternsForDisplay( newView ) );

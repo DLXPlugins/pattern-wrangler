@@ -9135,7 +9135,7 @@ var Interface = function Interface(props) {
    * @return {Object} The default view.
    */
   var getDefaultView = function getDefaultView() {
-    var _getQueryArgs, _getQueryArgs2, _getQueryArgs3, _getQueryArgs4, _getQueryArgs5, _getQueryArgs6, _getQueryArgs7;
+    var _getQueryArgs, _getQueryArgs2, _getQueryArgs3, _getQueryArgs4, _getQueryArgs5, _getQueryArgs6;
     return {
       type: 'grid',
       previewSize: 'large',
@@ -9170,10 +9170,6 @@ var Interface = function Interface(props) {
       }, {
         field: 'patternLocalRegisteredStatus',
         value: ((_getQueryArgs6 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs6 === void 0 ? void 0 : _getQueryArgs6.patternLocalRegisteredStatus) || 'enabled'
-      }, {
-        field: 'categories',
-        value: decodeURIComponent(((_getQueryArgs7 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs7 === void 0 ? void 0 : _getQueryArgs7.categories) || '').split(','),
-        operator: 'isAny'
       }]
     };
   };
@@ -9231,7 +9227,19 @@ var Interface = function Interface(props) {
       }
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Export Pattern', 'pattern-wrangler')))));
   };
-  var _useState39 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(getDefaultView()),
+  var _useState39 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(function () {
+      var _getQueryArgs7;
+      var defaultView = getDefaultView();
+      var queryCategories = decodeURIComponent(((_getQueryArgs7 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs7 === void 0 ? void 0 : _getQueryArgs7.categories) || '');
+      if (queryCategories) {
+        defaultView.filters.push({
+          field: 'categories',
+          value: queryCategories.split(','),
+          operator: 'isAny'
+        });
+      }
+      return defaultView;
+    }),
     _useState40 = _slicedToArray(_useState39, 2),
     view = _useState40[0],
     setView = _useState40[1];
@@ -10109,7 +10117,7 @@ var Interface = function Interface(props) {
    * @param {Object} newView The new view object.
    */
   var onChangeView = function onChangeView(newView) {
-    var _newView$filters, _newView$sort5, _newView$filters2, _newView$filters3, _newView$filters4, _newView$filters5, _newView$filters6, _newView$filters7;
+    var _newView$filters, _newView$sort5, _newView$filters2, _newView$filters3, _newView$filters4, _newView$filters5, _newView$filters6, _newView$filters7, _newView$filters8;
     // Create query args object with view state.
     var changeQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href);
     changeQueryArgs.paged = newView.page || 1;
@@ -10192,6 +10200,16 @@ var Interface = function Interface(props) {
         operator: 'is',
         value: 'enabled'
       }]);
+      // Unset categories query arg.
+      changeQueryArgs.categories = '';
+      newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(newUrl, 'categories');
+    }
+    // If newView doesn't include categories, unset the categories query arg.
+    if (!((_newView$filters8 = newView.filters) !== null && _newView$filters8 !== void 0 && _newView$filters8.find(function (filter) {
+      return filter.field === 'categories';
+    }))) {
+      changeQueryArgs.categories = '';
+      newUrl = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.removeQueryArgs)(newUrl, 'categories');
     }
     setPatternsDisplay(getPatternsForDisplay(newView));
     window.history.pushState({}, '', newUrl);
