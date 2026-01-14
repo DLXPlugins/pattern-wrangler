@@ -165,6 +165,8 @@ const Interface = ( props ) => {
 		} );
 		// todo error handling.
 		dispatch( categoriesStore ).setCategories( response.categories );
+		setValue( 'categoriesSelected', [] );
+		setValue( 'bulkActionSelected', false );
 		setSnackbar( {
 			isVisible: true,
 			message: sprintf(
@@ -371,6 +373,8 @@ const Interface = ( props ) => {
 		},
 	} );
 
+	const { setValue } = methods;
+
 	const actions = useMemo( () => {
 		return [
 			{
@@ -418,8 +422,9 @@ const Interface = ( props ) => {
 					);
 				},
 				icon: 'visibility',
-				callback: async ( items ) => {
+				callback: async( items ) => {
 					enableCategories( items );
+					setValue( 'categoriesSelected', [] );
 				},
 				isEligible: ( item ) => {
 					return item.registered && ! item.enabled;
@@ -911,6 +916,9 @@ const Interface = ( props ) => {
 
 							// Mark categories as deleted to trigger fade out animation.
 							setDeletedCategoryIds( deletedIds );
+
+							// Unselect all.
+							setValue( 'categoriesSelected', [] );
 						} }
 					/>
 				) }
@@ -965,6 +973,10 @@ const Interface = ( props ) => {
 						onPauseCategory={ ( categoriesResponse, itemSlugsAndNonces ) => {
 							setIsPauseCategoryModalOpen( false );
 							dispatch( categoriesStore ).setCategories( categoriesResponse.categories );
+
+							// Unselect all.
+							setValue( 'categoriesSelected', [] );
+							setValue( 'bulkActionSelected', false );
 							setSnackbar( {
 								isVisible: true,
 								message: sprintf(

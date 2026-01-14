@@ -105,7 +105,7 @@ const CategoryCard = ( props ) => {
 								props.onEditRegisteredCategory( category );
 							} }
 						>
-							{ __( 'Edit', 'pattern-wrangler' ) }
+							{ __( 'Quick Edit', 'pattern-wrangler' ) }
 						</Button>
 					)
 				}
@@ -188,7 +188,18 @@ const CategoryCard = ( props ) => {
 			</div>
 			<div className="dlx-patterns-view-category-card__content">
 				<div className="dlx-patterns-view-category-card__label">
-					<a href={ `${ dlxEnhancedCategoriesView.getSiteBaseUrl }admin.php?page=pattern-wrangler-view&patternStatus=both&patternLocalRegisteredStatus=both&categories=${ category.slug }` } >{ category.customLabel || category.label }</a>
+					{
+						( ! category.enabled || category.count === 0 ) && (
+							<span className="dlx-patterns-view-category-card__label-text">
+								{ category.customLabel || category.label }
+							</span>
+						)
+					}
+					{
+						( category.enabled && category.count > 0 ) && (
+							<a href={ `${ dlxEnhancedCategoriesView.getSiteBaseUrl }admin.php?page=pattern-wrangler-view&patternStatus=both&patternLocalRegisteredStatus=both&categories=${ category.slug }` } >{ category.customLabel || category.label }</a>
+						)
+					}
 				</div>
 				<div className="dlx-patterns-view-category-card__slug">
 					{ category.slug }

@@ -339,6 +339,8 @@ var Interface = function Interface(props) {
             response = _context.sent;
             // todo error handling.
             (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).setCategories(response.categories);
+            setValue('categoriesSelected', []);
+            setValue('bulkActionSelected', false);
             setSnackbar({
               isVisible: true,
               message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.sprintf)(/* translators: %d: number of categories */
@@ -347,7 +349,7 @@ var Interface = function Interface(props) {
               (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__._n)('%d Category Enabled', '%d Categories Enabled', categoriesToEnable.length, 'pattern-wrangler'), categoriesToEnable.length),
               type: 'success'
             });
-          case 7:
+          case 9:
           case "end":
             return _context.stop();
         }
@@ -525,6 +527,7 @@ var Interface = function Interface(props) {
       keepErrors: false
     }
   });
+  var setValue = methods.setValue;
   var actions = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return [{
       id: 'delete-category',
@@ -564,7 +567,8 @@ var Interface = function Interface(props) {
             while (1) switch (_context2.prev = _context2.next) {
               case 0:
                 enableCategories(items);
-              case 1:
+                setValue('categoriesSelected', []);
+              case 2:
               case "end":
                 return _context2.stop();
             }
@@ -967,6 +971,9 @@ var Interface = function Interface(props) {
 
       // Mark categories as deleted to trigger fade out animation.
       setDeletedCategoryIds(deletedIds);
+
+      // Unselect all.
+      setValue('categoriesSelected', []);
     }
   }), isEditCategoryModalOpen.isOpen && /*#__PURE__*/React.createElement(_CategoryCreateModal__WEBPACK_IMPORTED_MODULE_14__["default"], {
     isOpen: isEditCategoryModalOpen.isOpen,
@@ -1015,6 +1022,10 @@ var Interface = function Interface(props) {
     onPauseCategory: function onPauseCategory(categoriesResponse, itemSlugsAndNonces) {
       setIsPauseCategoryModalOpen(false);
       (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.dispatch)(_store__WEBPACK_IMPORTED_MODULE_12__["default"]).setCategories(categoriesResponse.categories);
+
+      // Unselect all.
+      setValue('categoriesSelected', []);
+      setValue('bulkActionSelected', false);
       setSnackbar({
         isVisible: true,
         message: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.sprintf)(/* translators: %d: number of categories */
@@ -1224,7 +1235,7 @@ var CategoryCard = function CategoryCard(props) {
       onClick: function onClick() {
         props.onEditRegisteredCategory(category);
       }
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Edit', 'pattern-wrangler')), !category.enabled && category.mappedTo && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Quick Edit', 'pattern-wrangler')), !category.enabled && category.mappedTo && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "tertiary",
       className: "dlx-patterns-view-category-card__action-button",
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Manage how this registered category maps to local categories', 'pattern-wrangler'),
@@ -1277,7 +1288,9 @@ var CategoryCard = function CategoryCard(props) {
     className: "dlx-patterns-view-category-card__content"
   }, /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-category-card__label"
-  }, /*#__PURE__*/React.createElement("a", {
+  }, (!category.enabled || category.count === 0) && /*#__PURE__*/React.createElement("span", {
+    className: "dlx-patterns-view-category-card__label-text"
+  }, category.customLabel || category.label), category.enabled && category.count > 0 && /*#__PURE__*/React.createElement("a", {
     href: "".concat(dlxEnhancedCategoriesView.getSiteBaseUrl, "admin.php?page=pattern-wrangler-view&patternStatus=both&patternLocalRegisteredStatus=both&categories=").concat(category.slug)
   }, category.customLabel || category.label)), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-category-card__slug"
