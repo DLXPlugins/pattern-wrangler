@@ -395,6 +395,8 @@ const Interface = ( props ) => {
 				},
 				icon: 'trash',
 				callback: ( items ) => {
+					// Only get local categories.
+					items = items.filter( ( item ) => ! item.registered );
 					setIsDeleteCategoryModalOpen( {
 						isOpen: true,
 						items,
@@ -423,6 +425,8 @@ const Interface = ( props ) => {
 				},
 				icon: 'visibility',
 				callback: async( items ) => {
+					// Registered categories only.
+					items = items.filter( ( item ) => item.registered && ! item.enabled );
 					enableCategories( items );
 					setValue( 'categoriesSelected', [] );
 				},
@@ -449,6 +453,8 @@ const Interface = ( props ) => {
 				},
 				icon: 'controls-pause',
 				callback: ( items ) => {
+					// Registered categories only.
+					items = items.filter( ( item ) => item.registered && item.enabled );
 					setIsPauseCategoryModalOpen( {
 						isOpen: true,
 						items,
@@ -919,6 +925,7 @@ const Interface = ( props ) => {
 
 							// Unselect all.
 							setValue( 'categoriesSelected', [] );
+							setValue( 'bulkActionSelected', false );
 						} }
 					/>
 				) }

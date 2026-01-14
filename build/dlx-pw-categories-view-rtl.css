@@ -3654,6 +3654,21 @@ svg.lucide line {
   line-height: 1;
   white-space: nowrap;
 }
+.dlx-patterns-view-category-card__mapped-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #333333;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  white-space: nowrap;
+}
 .dlx-patterns-view-category-card__enabled-status-icon {
   width: 12px;
   height: 12px;

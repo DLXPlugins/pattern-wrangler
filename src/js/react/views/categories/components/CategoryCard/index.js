@@ -1,5 +1,5 @@
 import { __, _n } from '@wordpress/i18n';
-import { AlertCircle, ArrowRight, Edit, Eye, Trash2, Ban } from 'lucide-react';
+import { AlertCircle, ArrowRight, Edit, Eye, Trash2, Ban, Tag } from 'lucide-react';
 import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import { Button, CheckboxControl } from '@wordpress/components';
 import classnames from 'classnames';
@@ -7,6 +7,7 @@ const CategoryCard = ( props ) => {
 	const { category } = props;
 	const { control, getValues } = useFormContext();
 	const formValues = useWatch( { control } ); // needed for re-rendering when the form values change.
+
 	/**
 	 * Get the category type.
 	 *
@@ -43,7 +44,24 @@ const CategoryCard = ( props ) => {
 					<AlertCircle className="dlx-patterns-view-category-card__enabled-status-icon" />
 					{ __( 'Disabled', 'pattern-wrangler' ) }
 				</div>
-			)
+			);
+		}
+		return null;
+	};
+
+	/**
+	 * Get the category enabled status.
+	 *
+	 * @return {string} The category enabled status.
+	 */
+	const getCategoryMappedStatus = () => {
+		if ( ! category.enabled && category.mappedTo ) {
+			return (
+				<div className="dlx-patterns-view-category-card__mapped-status">
+					<Tag className="dlx-patterns-view-category-card__enabled-status-icon" />
+					{ __( 'Mapped', 'pattern-wrangler' ) }
+				</div>
+			);
 		}
 		return null;
 	};
@@ -116,6 +134,7 @@ const CategoryCard = ( props ) => {
 							className="dlx-patterns-view-category-card__action-button"
 							label={ __( 'Manage how this registered category maps to local categories', 'pattern-wrangler' ) }
 							showTooltip={ true }
+							icon={ <Tag /> }
 						>
 							{ __( 'Edit Mapping', 'pattern-wrangler' ) }
 						</Button>
@@ -125,10 +144,10 @@ const CategoryCard = ( props ) => {
 					( ! category.enabled && ! category.mappedTo ) && (
 						<Button
 							variant="tertiary"
-							icon={ <ArrowRight /> }
 							className="dlx-patterns-view-category-card__action-button"
-							label={ __( 'Map to Category', 'pattern-wrangler' ) }
+							label={ __( 'Map this disabled category to a local category', 'pattern-wrangler' ) }
 							showTooltip={ true }
+							icon={ <Tag /> }
 						>
 							{ __( 'Map', 'pattern-wrangler' ) }
 						</Button>
@@ -171,17 +190,20 @@ const CategoryCard = ( props ) => {
 					key={ category.slug }
 					control={ control }
 					name={ `categoriesSelected[${ category.slug }]` }
-					render={ ( { field } ) => (
-						<CheckboxControl
-							checked={ field.value || false }
-							onChange={ field.onChange }
-							aria-label={ __( 'Select category', 'pattern-wrangler' ) + ' ' + category.label }
-						/>
-					) }
+					render={ ( { field } ) => {
+						return (
+							<CheckboxControl
+								checked={ getValues( `categoriesSelected[${ category.slug }]` ) || false }
+								onChange={ field.onChange }
+								aria-label={ __( 'Select category', 'pattern-wrangler' ) + ' ' + category.label }
+							/>
+						);
+					} }
 				/>
 			</div>
 			<div className="dlx-patterns-view-category-card__header">
 				{ getCategoryEnabledStatus() }
+				{ getCategoryMappedStatus() }
 				<div className="dlx-patterns-view-category-card__type">
 					{ getCategoryType() }
 				</div>

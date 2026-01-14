@@ -541,6 +541,10 @@ var Interface = function Interface(props) {
       },
       icon: 'trash',
       callback: function callback(items) {
+        // Only get local categories.
+        items = items.filter(function (item) {
+          return !item.registered;
+        });
         setIsDeleteCategoryModalOpen({
           isOpen: true,
           items: items
@@ -566,9 +570,13 @@ var Interface = function Interface(props) {
           return _regeneratorRuntime().wrap(function _callee2$(_context2) {
             while (1) switch (_context2.prev = _context2.next) {
               case 0:
+                // Registered categories only.
+                items = items.filter(function (item) {
+                  return item.registered && !item.enabled;
+                });
                 enableCategories(items);
                 setValue('categoriesSelected', []);
-              case 2:
+              case 3:
               case "end":
                 return _context2.stop();
             }
@@ -595,6 +603,10 @@ var Interface = function Interface(props) {
       },
       icon: 'controls-pause',
       callback: function callback(items) {
+        // Registered categories only.
+        items = items.filter(function (item) {
+          return item.registered && item.enabled;
+        });
         setIsPauseCategoryModalOpen({
           isOpen: true,
           items: items
@@ -974,6 +986,7 @@ var Interface = function Interface(props) {
 
       // Unselect all.
       setValue('categoriesSelected', []);
+      setValue('bulkActionSelected', false);
     }
   }), isEditCategoryModalOpen.isOpen && /*#__PURE__*/React.createElement(_CategoryCreateModal__WEBPACK_IMPORTED_MODULE_14__["default"], {
     isOpen: isEditCategoryModalOpen.isOpen,
@@ -1146,10 +1159,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/circle-alert.js");
-/* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/trash-2.js");
-/* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/ban.js");
-/* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/square-pen.js");
-/* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/arrow-right.js");
+/* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/tag.js");
+/* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/trash-2.js");
+/* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/ban.js");
+/* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/square-pen.js");
 /* harmony import */ var lucide_react__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! lucide-react */ "./node_modules/lucide-react/dist/esm/icons/eye.js");
 /* harmony import */ var react_hook_form__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-hook-form */ "./node_modules/react-hook-form/dist/index.esm.mjs");
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
@@ -1169,6 +1182,7 @@ var CategoryCard = function CategoryCard(props) {
   var formValues = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_3__.useWatch)({
     control: control
   }); // needed for re-rendering when the form values change.
+
   /**
    * Get the category type.
    *
@@ -1202,13 +1216,29 @@ var CategoryCard = function CategoryCard(props) {
     }
     return null;
   };
+
+  /**
+   * Get the category enabled status.
+   *
+   * @return {string} The category enabled status.
+   */
+  var getCategoryMappedStatus = function getCategoryMappedStatus() {
+    if (!category.enabled && category.mappedTo) {
+      return /*#__PURE__*/React.createElement("div", {
+        className: "dlx-patterns-view-category-card__mapped-status"
+      }, /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        className: "dlx-patterns-view-category-card__enabled-status-icon"
+      }), (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Mapped', 'pattern-wrangler'));
+    }
+    return null;
+  };
   var getCategoryActions = function getCategoryActions() {
     return /*#__PURE__*/React.createElement("div", {
       className: "dlx-patterns-view-category-card__actions"
     }, !category.registered && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "tertiary",
       isDestructive: true,
-      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_5__["default"], null),
+      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_6__["default"], null),
       className: "dlx-patterns-view-category-card__action-button invisible-until-hover",
       onClick: function onClick() {
         props.onDeleteCategory([category]);
@@ -1216,21 +1246,21 @@ var CategoryCard = function CategoryCard(props) {
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Delete Category', 'pattern-wrangler')), category.registered && category.enabled && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "tertiary",
       isDestructive: true,
-      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_6__["default"], null),
+      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_7__["default"], null),
       className: "dlx-patterns-view-category-card__action-button invisible-until-hover",
       onClick: function onClick() {
         props.onPauseCategory([category]);
       }
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Disable Category', 'pattern-wrangler')), category.enabled && !category.registered && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "secondary",
-      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_7__["default"], null),
+      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_8__["default"], null),
       className: "dlx-patterns-view-category-card__action-button",
       onClick: function onClick() {
         props.onEditCategory(category);
       }
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Edit', 'pattern-wrangler')), category.enabled && category.registered && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "secondary",
-      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_7__["default"], null),
+      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_8__["default"], null),
       className: "dlx-patterns-view-category-card__action-button",
       onClick: function onClick() {
         props.onEditRegisteredCategory(category);
@@ -1239,13 +1269,14 @@ var CategoryCard = function CategoryCard(props) {
       variant: "tertiary",
       className: "dlx-patterns-view-category-card__action-button",
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Manage how this registered category maps to local categories', 'pattern-wrangler'),
-      showTooltip: true
+      showTooltip: true,
+      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_5__["default"], null)
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Edit Mapping', 'pattern-wrangler')), !category.enabled && !category.mappedTo && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "tertiary",
-      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_8__["default"], null),
       className: "dlx-patterns-view-category-card__action-button",
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Map to Category', 'pattern-wrangler'),
-      showTooltip: true
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Map this disabled category to a local category', 'pattern-wrangler'),
+      showTooltip: true,
+      icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_5__["default"], null)
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Map', 'pattern-wrangler')), !category.enabled && category.registered && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "secondary",
       icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_9__["default"], null),
@@ -1275,14 +1306,14 @@ var CategoryCard = function CategoryCard(props) {
     render: function render(_ref) {
       var field = _ref.field;
       return /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.CheckboxControl, {
-        checked: field.value || false,
+        checked: getValues("categoriesSelected[".concat(category.slug, "]")) || false,
         onChange: field.onChange,
         "aria-label": (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Select category', 'pattern-wrangler') + ' ' + category.label
       });
     }
   })), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-category-card__header"
-  }, getCategoryEnabledStatus(), /*#__PURE__*/React.createElement("div", {
+  }, getCategoryEnabledStatus(), getCategoryMappedStatus(), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-category-card__type"
   }, getCategoryType())), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-category-card__content"
@@ -2748,38 +2779,6 @@ var defaultAttributes = {
 
 /***/ }),
 
-/***/ "./node_modules/lucide-react/dist/esm/icons/arrow-right.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/lucide-react/dist/esm/icons/arrow-right.js ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ ArrowRight)
-/* harmony export */ });
-/* harmony import */ var _createLucideIcon_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../createLucideIcon.js */ "./node_modules/lucide-react/dist/esm/createLucideIcon.js");
-/**
- * @license lucide-react v0.468.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-
-
-
-const ArrowRight = (0,_createLucideIcon_js__WEBPACK_IMPORTED_MODULE_0__["default"])("ArrowRight", [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
-]);
-
-
-//# sourceMappingURL=arrow-right.js.map
-
-
-/***/ }),
-
 /***/ "./node_modules/lucide-react/dist/esm/icons/ban.js":
 /*!*********************************************************!*\
   !*** ./node_modules/lucide-react/dist/esm/icons/ban.js ***!
@@ -2980,6 +2979,44 @@ const SquarePen = (0,_createLucideIcon_js__WEBPACK_IMPORTED_MODULE_0__["default"
 
 
 //# sourceMappingURL=square-pen.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/lucide-react/dist/esm/icons/tag.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/lucide-react/dist/esm/icons/tag.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Tag)
+/* harmony export */ });
+/* harmony import */ var _createLucideIcon_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../createLucideIcon.js */ "./node_modules/lucide-react/dist/esm/createLucideIcon.js");
+/**
+ * @license lucide-react v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
+
+const Tag = (0,_createLucideIcon_js__WEBPACK_IMPORTED_MODULE_0__["default"])("Tag", [
+  [
+    "path",
+    {
+      d: "M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z",
+      key: "vktsd0"
+    }
+  ],
+  ["circle", { cx: "7.5", cy: "7.5", r: ".5", fill: "currentColor", key: "kqv944" }]
+]);
+
+
+//# sourceMappingURL=tag.js.map
 
 
 /***/ }),
