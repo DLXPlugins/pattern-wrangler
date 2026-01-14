@@ -9135,7 +9135,7 @@ var Interface = function Interface(props) {
    * @return {Object} The default view.
    */
   var getDefaultView = function getDefaultView() {
-    var _getQueryArgs, _getQueryArgs2, _getQueryArgs3, _getQueryArgs4, _getQueryArgs5, _getQueryArgs6;
+    var _getQueryArgs, _getQueryArgs2, _getQueryArgs3, _getQueryArgs4, _getQueryArgs5, _getQueryArgs6, _getQueryArgs7;
     return {
       type: 'grid',
       previewSize: 'large',
@@ -9170,6 +9170,10 @@ var Interface = function Interface(props) {
       }, {
         field: 'patternLocalRegisteredStatus',
         value: ((_getQueryArgs6 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs6 === void 0 ? void 0 : _getQueryArgs6.patternLocalRegisteredStatus) || 'enabled'
+      }, {
+        field: 'categories',
+        value: decodeURIComponent(((_getQueryArgs7 = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href)) === null || _getQueryArgs7 === void 0 ? void 0 : _getQueryArgs7.categories) || '').split(','),
+        operator: 'isAny'
       }]
     };
   };
@@ -10105,7 +10109,7 @@ var Interface = function Interface(props) {
    * @param {Object} newView The new view object.
    */
   var onChangeView = function onChangeView(newView) {
-    var _newView$sort5, _newView$filters, _newView$filters2, _newView$filters3, _newView$filters4, _newView$filters5, _newView$filters6;
+    var _newView$filters, _newView$sort5, _newView$filters2, _newView$filters3, _newView$filters4, _newView$filters5, _newView$filters6, _newView$filters7;
     // Create query args object with view state.
     var changeQueryArgs = (0,_wordpress_url__WEBPACK_IMPORTED_MODULE_9__.getQueryArgs)(window.location.href);
     changeQueryArgs.paged = newView.page || 1;
@@ -10118,6 +10122,19 @@ var Interface = function Interface(props) {
       changeQueryArgs.search = '';
     }
 
+    // Add categories filter parameters if they exist.
+    var categoriesFilter = (_newView$filters = newView.filters) === null || _newView$filters === void 0 ? void 0 : _newView$filters.find(function (filter) {
+      return filter.field === 'categories';
+    });
+    if (categoriesFilter) {
+      var categoryValues = categoriesFilter.value || [];
+
+      // Set query var to category values encoded for URL.
+      if (categoryValues.length > 0) {
+        changeQueryArgs.categories = encodeURIComponent(categoryValues.join(','));
+      }
+    }
+
     // Add sort parameters if they exist.
     if ((_newView$sort5 = newView.sort) !== null && _newView$sort5 !== void 0 && _newView$sort5.field) {
       changeQueryArgs.orderby = newView.sort.field;
@@ -10125,10 +10142,10 @@ var Interface = function Interface(props) {
     }
 
     // Get pattern type and status from filters.
-    var patternTypeFilter = (_newView$filters = newView.filters) === null || _newView$filters === void 0 ? void 0 : _newView$filters.find(function (filter) {
+    var patternTypeFilter = (_newView$filters2 = newView.filters) === null || _newView$filters2 === void 0 ? void 0 : _newView$filters2.find(function (filter) {
       return filter.field === 'patternType';
     });
-    var patternStatusFilter = (_newView$filters2 = newView.filters) === null || _newView$filters2 === void 0 ? void 0 : _newView$filters2.find(function (filter) {
+    var patternStatusFilter = (_newView$filters3 = newView.filters) === null || _newView$filters3 === void 0 ? void 0 : _newView$filters3.find(function (filter) {
       return filter.field === 'patternStatus';
     });
     if (patternTypeFilter) {
@@ -10139,13 +10156,13 @@ var Interface = function Interface(props) {
     }
 
     // Get registered/local pattern disabled/enabled status from filters.
-    var patternRegisteredStatusFilter = (_newView$filters3 = newView.filters) === null || _newView$filters3 === void 0 ? void 0 : _newView$filters3.find(function (filter) {
+    var patternRegisteredStatusFilter = (_newView$filters4 = newView.filters) === null || _newView$filters4 === void 0 ? void 0 : _newView$filters4.find(function (filter) {
       return filter.field === 'patternRegisteredStatus';
     });
-    var patternLocalStatusFilter = (_newView$filters4 = newView.filters) === null || _newView$filters4 === void 0 ? void 0 : _newView$filters4.find(function (filter) {
+    var patternLocalStatusFilter = (_newView$filters5 = newView.filters) === null || _newView$filters5 === void 0 ? void 0 : _newView$filters5.find(function (filter) {
       return filter.field === 'patternLocalStatus';
     });
-    var patternLocalRegisteredStatusFilter = (_newView$filters5 = newView.filters) === null || _newView$filters5 === void 0 ? void 0 : _newView$filters5.find(function (filter) {
+    var patternLocalRegisteredStatusFilter = (_newView$filters6 = newView.filters) === null || _newView$filters6 === void 0 ? void 0 : _newView$filters6.find(function (filter) {
       return filter.field === 'patternLocalRegisteredStatus';
     });
     if (patternRegisteredStatusFilter && !patternLocalRegisteredStatusFilter) {
@@ -10165,7 +10182,7 @@ var Interface = function Interface(props) {
     }
 
     // If no filters are set, add a patternType and patternLocalRegisteredStatus filters with value 'all' and 'enabled' respectively.
-    if (((_newView$filters6 = newView.filters) === null || _newView$filters6 === void 0 ? void 0 : _newView$filters6.length) === 0) {
+    if (((_newView$filters7 = newView.filters) === null || _newView$filters7 === void 0 ? void 0 : _newView$filters7.length) === 0) {
       newView.filters = [].concat(_toConsumableArray(newView.filters), [{
         field: 'patternType',
         operator: 'is',
@@ -10624,7 +10641,7 @@ var Interface = function Interface(props) {
     className: "dlx-patterns-view-pagination-wrapper"
   }, /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-pagination-item dlx-patterns-view-pagination-item-total-items"
-  }, /*#__PURE__*/React.createElement("span", null, totalItems, " ", (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__._n)('Item', 'Items', totalItems, 'pattern-wrangler'))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", null, totalItems, ' ', (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__._n)('Item', 'Items', totalItems, 'pattern-wrangler'))), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-pagination-item"
   }, /*#__PURE__*/React.createElement(_wordpress_dataviews__WEBPACK_IMPORTED_MODULE_21__["default"].Pagination, null)))), snackbar.isVisible && /*#__PURE__*/React.createElement(_Snackbar__WEBPACK_IMPORTED_MODULE_11__["default"], {
     isVisible: snackbar.isVisible,

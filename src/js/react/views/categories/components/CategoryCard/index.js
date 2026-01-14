@@ -188,7 +188,7 @@ const CategoryCard = ( props ) => {
 			</div>
 			<div className="dlx-patterns-view-category-card__content">
 				<div className="dlx-patterns-view-category-card__label">
-					{ category.customLabel || category.label }
+					<a href={ `${ dlxEnhancedCategoriesView.getSiteBaseUrl }admin.php?page=pattern-wrangler-view&patternStatus=both&patternLocalRegisteredStatus=both&categories=${ category.slug }` } >{ category.customLabel || category.label }</a>
 				</div>
 				<div className="dlx-patterns-view-category-card__slug">
 					{ category.slug }

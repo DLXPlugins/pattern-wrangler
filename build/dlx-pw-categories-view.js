@@ -1277,7 +1277,9 @@ var CategoryCard = function CategoryCard(props) {
     className: "dlx-patterns-view-category-card__content"
   }, /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-category-card__label"
-  }, category.customLabel || category.label), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("a", {
+    href: "".concat(dlxEnhancedCategoriesView.getSiteBaseUrl, "admin.php?page=pattern-wrangler-view&patternStatus=both&patternLocalRegisteredStatus=both&categories=").concat(category.slug)
+  }, category.customLabel || category.label)), /*#__PURE__*/React.createElement("div", {
     className: "dlx-patterns-view-category-card__slug"
   }, category.slug)), getCategoryActions());
 };
