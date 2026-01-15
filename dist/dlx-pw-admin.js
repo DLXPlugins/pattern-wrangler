@@ -722,166 +722,13 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
-var usePatternCategories = function usePatternCategories(props) {
-  var getValues = props.getValues;
-  var getEnabledCategories = function getEnabledCategories() {
-    var categories = getValues('categories');
-    if (!categories) {
-      return null;
-    }
-    return Object.values(categories).filter(function (category) {
-      return category.enabled;
-    });
-  };
-  return {
-    enabledCategories: getEnabledCategories()
-  };
-};
-var Category = function Category(props) {
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
-    _useState2 = _slicedToArray(_useState, 2),
-    showLabelPopover = _useState2[0],
-    setShowLabelPopover = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
-    _useState4 = _slicedToArray(_useState3, 2),
-    labelEditButton = _useState4[0],
-    setLabelEditButton = _useState4[1];
-  var category = props.category,
-    control = props.control,
-    getValues = props.getValues,
-    setValue = props.setValue,
-    taxCategories = props.taxCategories;
-  var _usePatternCategories = usePatternCategories({
-      getValues: getValues
-    }),
-    enabledCategories = _usePatternCategories.enabledCategories;
-  var getCategories = function getCategories() {
-    var localCategories = taxCategories.map(function (cat) {
-      return {
-        label: cat.name + ' (' + cat.slug + ')',
-        value: cat.slug
-      };
-    });
-    localCategories.push({
-      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('None', 'pattern-wrangler'),
-      value: 'none'
-    });
-    return localCategories;
-  };
-
-  /**
-   * Make sure mapped to category is valid, especially if a mapped category is disabled.
-   */
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (category.mappedTo && !getCategories().find(function (cat) {
-      return cat.value === category.mappedTo;
-    })) {
-      setValue("categories.".concat(category.slug, ".mappedTo"), 'none');
-    }
-  }, [enabledCategories]);
-
-  /**
-   * Get the label to display.
-   *
-   * @return {string} The label to display.
-   */
-  var getLabel = function getLabel() {
-    if (category.customLabel && category.customLabel.length > 0) {
-      return category.customLabel;
-    }
-    return category.label;
-  };
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, showLabelPopover && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Popover, {
-    placement: "right-start",
-    onClose: function onClose() {
-      return setShowLabelPopover(false);
-    },
-    anchor: labelEditButton,
-    noArrow: false,
-    offset: 10
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-category-popover"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
-    name: "categories.".concat(category.slug, ".customLabel"),
-    control: control,
-    render: function render(_ref) {
-      var _ref$field = _ref.field,
-        _onChange = _ref$field.onChange,
-        value = _ref$field.value;
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
-        label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Category Label', 'pattern-wrangler'),
-        value: value,
-        onChange: function onChange(newValue) {
-          _onChange(newValue);
-        }
-      });
-    }
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-category-row"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-category-row__toggle"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
-    name: "categories.".concat(category.slug, ".enabled"),
-    control: control,
-    render: function render(_ref2) {
-      var _ref2$field = _ref2.field,
-        _onChange2 = _ref2$field.onChange,
-        value = _ref2$field.value;
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
-        "aria-label": category.label,
-        checked: value,
-        onChange: function onChange(boolValue) {
-          // If disabled and mapped slug to uncategorized.
-          if (!boolValue && !category.mappedTo) {
-            setValue("categories.".concat(category.slug, ".mappedTo"), 'none');
-          }
-          _onChange2(boolValue);
-        }
-      });
-    }
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-category-row__label"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-category-row__label-text"
-  }, getLabel(), ' ', /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-    variant: "link",
-    className: "dlx-category-row__label-link",
-    ref: setLabelEditButton,
-    onClick: function onClick() {
-      return setShowLabelPopover(true);
-    }
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Edit', 'pattern-wrangler'))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-category-row__slug"
-  }, category.slug), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-category-row__count"
-  }, category.count, ' ', (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__._n)('Pattern', 'Patterns', category.count, 'pattern-wrangler')), !category.enabled && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-category-row__map"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
-    name: "categories.".concat(category.slug, ".mappedTo"),
-    control: control,
-    render: function render(_ref3) {
-      var _ref3$field = _ref3.field,
-        _onChange3 = _ref3$field.onChange,
-        value = _ref3$field.value;
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
-        label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Map to Category', 'pattern-wrangler'),
-        value: value,
-        onChange: function onChange(newValue) {
-          _onChange3(newValue);
-        },
-        options: getCategories()
-      });
-    }
-  })))));
-};
 var Main = function Main(props) {
-  var _data$registered;
   var data = dlxPatternWranglerAdmin.options;
   var networkOptions = dlxPatternWranglerAdmin.networkOptions;
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(dlxPatternWranglerAdmin.canShowRatingsNag),
-    _useState6 = _slicedToArray(_useState5, 2),
-    showRatingsNag = _useState6[0],
-    setShowRatingsNag = _useState6[1];
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(dlxPatternWranglerAdmin.canShowRatingsNag),
+    _useState2 = _slicedToArray(_useState, 2),
+    showRatingsNag = _useState2[0],
+    setShowRatingsNag = _useState2[1];
   var _useForm = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_6__.useForm)({
       defaultValues: {
         hideAllPatterns: data.hideAllPatterns,
@@ -900,7 +747,6 @@ var Main = function Main(props) {
         hidePluginPatterns: data.hidePluginPatterns,
         enableEnhancedView: data.enableEnhancedView,
         showMenusUI: data.showMenusUI,
-        categories: (_data$registered = data.registered) !== null && _data$registered !== void 0 ? _data$registered : [],
         makePatternsExportable: data.makePatternsExportable,
         saveNonce: dlxPatternWranglerAdmin.saveNonce,
         resetNonce: dlxPatternWranglerAdmin.resetNonce
@@ -922,28 +768,12 @@ var Main = function Main(props) {
     errors = _useFormState.errors,
     isDirty = _useFormState.isDirty,
     dirtyFields = _useFormState.dirtyFields;
-  var getCategories = function getCategories() {
-    var categories = getValues('categories');
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
-      className: "dlx-category-list"
-    }, Object.values(categories).map(function (category) {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
-        key: category.slug
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(Category, {
-        category: category,
-        control: control,
-        getValues: getValues,
-        setValue: setValue,
-        taxCategories: data.categories
-      }));
-    }));
-  };
 
   /**
    * Dismiss the ratings nag.
    */
   var dismissRatingsNag = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+    var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
@@ -957,7 +787,7 @@ var Main = function Main(props) {
       }, _callee);
     }));
     return function dismissRatingsNag() {
-      return _ref4.apply(this, arguments);
+      return _ref.apply(this, arguments);
     };
   }();
 
@@ -1004,16 +834,16 @@ var Main = function Main(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
       name: "hideCorePatterns",
       control: control,
-      render: function render(_ref5) {
-        var _ref5$field = _ref5.field,
-          _onChange4 = _ref5$field.onChange,
-          value = _ref5$field.value;
+      render: function render(_ref2) {
+        var _ref2$field = _ref2.field,
+          _onChange = _ref2$field.onChange,
+          value = _ref2$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Hide Core Patterns', 'pattern-wrangler'),
           checked: corePatternData.localHidden,
           disabled: !corePatternData.networkHidden,
           onChange: function onChange(boolValue) {
-            _onChange4(boolValue);
+            _onChange(boolValue);
           },
           help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Remove all core patterns from the pattern selector by disabling core patterns.', 'pattern-wrangler')
         });
@@ -1055,16 +885,16 @@ var Main = function Main(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
       name: "hideRemotePatterns",
       control: control,
-      render: function render(_ref6) {
-        var _ref6$field = _ref6.field,
-          _onChange5 = _ref6$field.onChange,
-          value = _ref6$field.value;
+      render: function render(_ref3) {
+        var _ref3$field = _ref3.field,
+          _onChange2 = _ref3$field.onChange,
+          value = _ref3$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Hide Remote Patterns', 'pattern-wrangler'),
           checked: remotePatternData.localHidden,
           disabled: !remotePatternData.networkHidden,
           onChange: function onChange(boolValue) {
-            _onChange5(boolValue);
+            _onChange2(boolValue);
           }
         });
       }
@@ -1105,17 +935,17 @@ var Main = function Main(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
       name: "hideCoreUnsyncedPatterns",
       control: control,
-      render: function render(_ref7) {
-        var _ref7$field = _ref7.field,
-          _onChange6 = _ref7$field.onChange,
-          value = _ref7$field.value;
+      render: function render(_ref4) {
+        var _ref4$field = _ref4.field,
+          _onChange3 = _ref4$field.onChange,
+          value = _ref4$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Hide Unsynced Patterns', 'pattern-wrangler'),
           checked: unsyncedPatternData.localHidden,
           disabled: !unsyncedPatternData.networkHidden,
           help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Prevent any unsynced patterns from displaying in the patterns selector. This is useful if you only want to show synced patterns.', 'pattern-wrangler'),
           onChange: function onChange(boolValue) {
-            _onChange6(boolValue);
+            _onChange3(boolValue);
           }
         });
       }
@@ -1156,17 +986,17 @@ var Main = function Main(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
       name: "hideCoreSyncedPatterns",
       control: control,
-      render: function render(_ref8) {
-        var _ref8$field = _ref8.field,
-          _onChange7 = _ref8$field.onChange,
-          value = _ref8$field.value;
+      render: function render(_ref5) {
+        var _ref5$field = _ref5.field,
+          _onChange4 = _ref5$field.onChange,
+          value = _ref5$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Hide Synced Patterns', 'pattern-wrangler'),
           checked: syncedPatternData.localHidden,
           disabled: !syncedPatternData.networkHidden,
           help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Prevent any synced patterns from displaying in the patterns selector. This is useful if you only want to show unsynced patterns.', 'pattern-wrangler'),
           onChange: function onChange(boolValue) {
-            _onChange7(boolValue);
+            _onChange4(boolValue);
           }
         });
       }
@@ -1208,17 +1038,17 @@ var Main = function Main(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
       name: "makePatternsExportable",
       control: control,
-      render: function render(_ref9) {
-        var _ref9$field = _ref9.field,
-          _onChange8 = _ref9$field.onChange,
-          value = _ref9$field.value;
+      render: function render(_ref6) {
+        var _ref6$field = _ref6.field,
+          _onChange5 = _ref6$field.onChange,
+          value = _ref6$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Allow Patterns to be exportable via the WordPress Exporter', 'pattern-wrangler'),
           checked: patternsExporterData.canExport,
           disabled: !patternsExporterData.networkCanExport,
           help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enables or disables the default WordPress export feature for content and patterns.', 'pattern-wrangler'),
           onChange: function onChange(boolValue) {
-            _onChange8(boolValue);
+            _onChange5(boolValue);
           }
         });
       }
@@ -1260,17 +1090,17 @@ var Main = function Main(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
       name: "disablePatternImporterBlock",
       control: control,
-      render: function render(_ref10) {
-        var _ref10$field = _ref10.field,
-          _onChange9 = _ref10$field.onChange,
-          value = _ref10$field.value;
+      render: function render(_ref7) {
+        var _ref7$field = _ref7.field,
+          _onChange6 = _ref7$field.onChange,
+          value = _ref7$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Allow Patterns to be imported via the Patterns Importer Block', 'pattern-wrangler'),
           checked: false === patternsBlockData.canUseBlock ? false : value,
           disabled: !patternsBlockData.networkCanUseBlock,
           help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Disable the patterns importer block, which helps load in remote images.', 'pattern-wrangler'),
           onChange: function onChange(boolValue) {
-            _onChange9(boolValue);
+            _onChange6(boolValue);
           }
         });
       }
@@ -1306,16 +1136,16 @@ var Main = function Main(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
       name: "hideThemePatterns",
       control: control,
-      render: function render(_ref11) {
-        var _ref11$field = _ref11.field,
-          _onChange10 = _ref11$field.onChange,
-          value = _ref11$field.value;
+      render: function render(_ref8) {
+        var _ref8$field = _ref8.field,
+          _onChange7 = _ref8$field.onChange,
+          value = _ref8$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Hide Theme Patterns', 'pattern-wrangler'),
           checked: value || 'default' === value,
           disabled: !themePatternData.networkCanShow,
           onChange: function onChange(boolValue) {
-            _onChange10(boolValue);
+            _onChange7(boolValue);
           },
           help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Prevent patterns registered by the active theme from displaying in the patterns list.', 'pattern-wrangler')
         });
@@ -1349,16 +1179,16 @@ var Main = function Main(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
       name: "hidePluginPatterns",
       control: control,
-      render: function render(_ref12) {
-        var _ref12$field = _ref12.field,
-          _onChange11 = _ref12$field.onChange,
-          value = _ref12$field.value;
+      render: function render(_ref9) {
+        var _ref9$field = _ref9.field,
+          _onChange8 = _ref9$field.onChange,
+          value = _ref9$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Hide Plugin Patterns', 'pattern-wrangler'),
           checked: value || 'default' === 'value',
           disabled: !pluginPatternData.networkCanShow,
           onChange: function onChange(boolValue) {
-            _onChange11(boolValue);
+            _onChange8(boolValue);
           },
           help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Prevent patterns registered by active plugins from displaying in the patterns list.', 'pattern-wrangler')
         });
@@ -1402,17 +1232,17 @@ var Main = function Main(props) {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
       name: "hideAllPatterns",
       control: control,
-      render: function render(_ref13) {
-        var _ref13$field = _ref13.field,
-          _onChange12 = _ref13$field.onChange,
-          value = _ref13$field.value;
+      render: function render(_ref10) {
+        var _ref10$field = _ref10.field,
+          _onChange9 = _ref10$field.onChange,
+          value = _ref10$field.value;
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
           label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Hide All Patterns', 'pattern-wrangler'),
           checked: hideAllPatternsData.allPatternsDisabled,
           disabled: hideAllPatternsData.networkAllPatternsDisabled,
           help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Disable all patterns and the pattern selector.', 'pattern-wrangler'),
           onChange: function onChange(boolValue) {
-            _onChange12(boolValue);
+            _onChange9(boolValue);
           }
         });
       }
@@ -1430,7 +1260,7 @@ var Main = function Main(props) {
     className: "dlx-pw-content-heading-text"
   }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Settings for Pattern Wrangler', 'pattern-wrangler'))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
     className: "description"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Configure which patterns are displayed and adjust settings and categories.', 'pattern-wrangler')), showRatingsNag && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_Notice__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Configure which patterns are displayed and adjust settings.', 'pattern-wrangler')), showRatingsNag && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_Notice__WEBPACK_IMPORTED_MODULE_3__["default"], {
     className: "dlx-pw-admin-notice",
     status: "rating",
     icon: function icon() {
@@ -1479,15 +1309,15 @@ var Main = function Main(props) {
   }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enhanced View', 'pattern-wrangler')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("td", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
     name: "enableEnhancedView",
     control: control,
-    render: function render(_ref14) {
-      var _ref14$field = _ref14.field,
-        _onChange13 = _ref14$field.onChange,
-        value = _ref14$field.value;
+    render: function render(_ref11) {
+      var _ref11$field = _ref11.field,
+        _onChange10 = _ref11$field.onChange,
+        value = _ref11$field.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enable Enhanced Patterns View', 'pattern-wrangler'),
         checked: value,
         onChange: function onChange(boolValue) {
-          _onChange13(boolValue);
+          _onChange10(boolValue);
         },
         help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This will enable the enhanced patterns view when viewing all patterns rather than showing a classic interface.', 'pattern-wrangler')
       });
@@ -1499,15 +1329,15 @@ var Main = function Main(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
     name: "hidePatternsMenu",
     control: control,
-    render: function render(_ref15) {
-      var _ref15$field = _ref15.field,
-        _onChange14 = _ref15$field.onChange,
-        value = _ref15$field.value;
+    render: function render(_ref12) {
+      var _ref12$field = _ref12.field,
+        _onChange11 = _ref12$field.onChange,
+        value = _ref12$field.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Hide Pattern Wrangler Menu Item', 'pattern-wrangler'),
         checked: value,
         onChange: function onChange(boolValue) {
-          _onChange14(boolValue);
+          _onChange11(boolValue);
         },
         help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This will disable the top-level menu and move the Patterns menu under Appearance.', 'pattern-wrangler')
       });
@@ -1517,15 +1347,15 @@ var Main = function Main(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
     name: "hideUncategorizedPatterns",
     control: control,
-    render: function render(_ref16) {
-      var _ref16$field = _ref16.field,
-        _onChange15 = _ref16$field.onChange,
-        value = _ref16$field.value;
+    render: function render(_ref13) {
+      var _ref13$field = _ref13.field,
+        _onChange12 = _ref13$field.onChange,
+        value = _ref13$field.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Hide Uncategorized Patterns', 'pattern-wrangler'),
         checked: value,
         onChange: function onChange(boolValue) {
-          _onChange15(boolValue);
+          _onChange12(boolValue);
         },
         help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Prevent any patterns not in any registered categories from displaying.', 'pattern-wrangler')
       });
@@ -1537,16 +1367,16 @@ var Main = function Main(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
     name: "showCustomizerUI",
     control: control,
-    render: function render(_ref17) {
-      var _ref17$field = _ref17.field,
-        _onChange16 = _ref17$field.onChange,
-        value = _ref17$field.value;
+    render: function render(_ref14) {
+      var _ref14$field = _ref14.field,
+        _onChange13 = _ref14$field.onChange,
+        value = _ref14$field.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Show Customizer UI', 'pattern-wrangler'),
         isAdaptiveWidth: true,
         value: value,
         onChange: function onChange(newValue) {
-          _onChange16(newValue);
+          _onChange13(newValue);
         }
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalToggleGroupControlOption, {
         value: "hide",
@@ -1570,15 +1400,15 @@ var Main = function Main(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
     name: "loadCustomizerCSSBlockEditor",
     control: control,
-    render: function render(_ref18) {
-      var _ref18$field = _ref18.field,
-        _onChange17 = _ref18$field.onChange,
-        value = _ref18$field.value;
+    render: function render(_ref15) {
+      var _ref15$field = _ref15.field,
+        _onChange14 = _ref15$field.onChange,
+        value = _ref15$field.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Load Customizer CSS in the Block Editor', 'pattern-wrangler'),
         checked: value,
         onChange: function onChange(boolValue) {
-          _onChange17(boolValue);
+          _onChange14(boolValue);
         },
         help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This will load any CSS in the customizer in the block editor as well.', 'pattern-wrangler')
       });
@@ -1588,15 +1418,15 @@ var Main = function Main(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
     name: "loadCustomizerCSSFrontend",
     control: control,
-    render: function render(_ref19) {
-      var _ref19$field = _ref19.field,
-        _onChange18 = _ref19$field.onChange,
-        value = _ref19$field.value;
+    render: function render(_ref16) {
+      var _ref16$field = _ref16.field,
+        _onChange15 = _ref16$field.onChange,
+        value = _ref16$field.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Load Customizer CSS on the Frontend', 'pattern-wrangler'),
         checked: value,
         onChange: function onChange(boolValue) {
-          _onChange18(boolValue);
+          _onChange15(boolValue);
         },
         help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('By default, WordPress loads customizer CSS on the frontend. Disable this option to prevent any customizer CSS from loading.', 'pattern-wrangler')
       });
@@ -1608,15 +1438,15 @@ var Main = function Main(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
     name: "showMenusUI",
     control: control,
-    render: function render(_ref20) {
-      var _ref20$field = _ref20.field,
-        _onChange19 = _ref20$field.onChange,
-        value = _ref20$field.value;
+    render: function render(_ref17) {
+      var _ref17$field = _ref17.field,
+        _onChange16 = _ref17$field.onChange,
+        value = _ref17$field.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Force Show Menus UI', 'pattern-wrangler'),
         checked: value,
         onChange: function onChange(boolValue) {
-          _onChange19(boolValue);
+          _onChange16(boolValue);
         },
         help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This will show the menus UI in the Appearance settings menu if enabled. Disabilng this will not hide the menu item.', 'pattern-wrangler')
       });
@@ -1626,31 +1456,20 @@ var Main = function Main(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_6__.Controller, {
     name: "allowFrontendPatternPreview",
     control: control,
-    render: function render(_ref21) {
-      var _ref21$field = _ref21.field,
-        _onChange20 = _ref21$field.onChange,
-        value = _ref21$field.value;
+    render: function render(_ref18) {
+      var _ref18$field = _ref18.field,
+        _onChange17 = _ref18$field.onChange,
+        value = _ref18$field.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Enable a Pattern Preview on the Frontend', 'pattern-wrangler'),
         checked: value,
         onChange: function onChange(boolValue) {
-          _onChange20(boolValue);
+          _onChange17(boolValue);
         },
         help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This will enable previews in the patterns post type so you can preview a pattern as if it were on a page.', 'pattern-wrangler')
       });
     }
-  })), getShowPatternsExporterToggleControl())), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("tr", {
-    className: "dlx-table-row-categories"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("th", {
-    scope: "row"
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Pattern Categories', 'pattern-wrangler')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("td", null, Object.values(getValues('categories')).length === 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-admin__row dlx-admin__row-full-width"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('No categories have been registered via core, themes or plugins.', 'pattern-wrangler'))), Object.values(getValues('categories')).length > 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "dlx-admin__row dlx-admin__row-full-width"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.PanelBody, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Pattern Categories', 'pattern-wrangler'),
-    initialOpen: false
-  }, getCategories())))))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SaveResetButtons__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  })), getShowPatternsExporterToggleControl())))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SaveResetButtons__WEBPACK_IMPORTED_MODULE_4__["default"], {
     formValues: formValues,
     setError: setError,
     reset: reset,
