@@ -37,6 +37,7 @@ import CategoryDeleteModal from './CategoryDeleteModal';
 import RegisteredCategoryEditModal from './RegisteredCategoryEditModal';
 import CategoryBulkActions from './CategoryBulkActions';
 import CategoryPauseModal from './CategoryPauseModal';
+import CategoryMapModal from './CategoryMapModal';
 
 const CategoriesListView = ( props ) => {
 	const { categories, loading, error } = useSelect( ( newSelect ) => {
@@ -106,7 +107,7 @@ const Interface = ( props ) => {
 	const [ isEditCategoryModalOpen, setIsEditCategoryModalOpen ] = useState( false );
 	const [ isEditRegisteredCategoryModalOpen, setIsEditRegisteredCategoryModalOpen ] = useState( false );
 	const [ isPauseCategoryModalOpen, setIsPauseCategoryModalOpen ] = useState( false );
-
+	const [ isMapCategoryModalOpen, setIsMapCategoryModalOpen ] = useState( false );
 	const [ view, setView ] = useState( null );
 	const [ categoriesDisplay, setCategoriesDisplay ] = useState( [] );
 	const [ deletedCategoryIds, setDeletedCategoryIds ] = useState( new Set() );
@@ -610,6 +611,12 @@ const Interface = ( props ) => {
 					onEnableCategory={ ( categoriesToEnable ) => {
 						enableCategories( categoriesToEnable );
 					} }
+					onEditMapping={ ( categoriesToEditMapping ) => {
+						setIsMapCategoryModalOpen( {
+							isOpen: true,
+							items: categoriesToEditMapping,
+						} );
+					} }
 				/>
 			);
 		} );
@@ -1007,6 +1014,45 @@ const Interface = ( props ) => {
 								),
 								type: 'success',
 							} );
+						} }
+					/>
+				) }
+				{ isMapCategoryModalOpen.isOpen && (
+					<CategoryMapModal
+						isOpen={ isMapCategoryModalOpen.isOpen }
+						onRequestClose={ () => setIsMapCategoryModalOpen( false ) }
+						items={ isMapCategoryModalOpen.items }
+						onMapCategory={ ( categoriesResponse, itemSlugsAndNonces ) => {
+							setIsMapCategoryModalOpen( false );
+							dispatch( categoriesStore ).setCategories( categoriesResponse.categories );
+
+							setSnackbar( {
+								isVisible: true,
+								message: sprintf(
+									/* translators: %d: number of categories */
+									_n(
+										'%d category mapped successfully.',
+										'%d Categories mapped successfully.',
+										itemSlugsAndNonces.length,
+										'pattern-wrangler'
+									),
+									itemSlugsAndNonces.length
+								),
+								title: sprintf(
+									/* translators: %d: number of categories */
+									_n(
+										'%d Category Mapped',
+										'%d Categories Mapped',
+										itemSlugsAndNonces.length, 'pattern-wrangler'
+									),
+									itemSlugsAndNonces.length
+								),
+								type: 'success',
+							} );
+
+							// Unselect all.
+							setValue( 'categoriesSelected', [] );
+							setValue( 'bulkActionSelected', false );
 						} }
 					/>
 				) }

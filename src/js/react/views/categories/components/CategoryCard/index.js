@@ -135,6 +135,9 @@ const CategoryCard = ( props ) => {
 							label={ __( 'Manage how this registered category maps to local categories', 'pattern-wrangler' ) }
 							showTooltip={ true }
 							icon={ <Tag /> }
+							onClick={ () => {
+								props.onEditMapping( [ category ] );
+							} }
 						>
 							{ __( 'Edit Mapping', 'pattern-wrangler' ) }
 						</Button>
@@ -148,6 +151,9 @@ const CategoryCard = ( props ) => {
 							label={ __( 'Map this disabled category to a local category', 'pattern-wrangler' ) }
 							showTooltip={ true }
 							icon={ <Tag /> }
+							onClick={ () => {
+								props.onEditMapping( [ category ] );
+							} }
 						>
 							{ __( 'Map', 'pattern-wrangler' ) }
 						</Button>
