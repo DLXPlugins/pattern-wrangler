@@ -81,7 +81,9 @@ const CategoryMapModal = ( props ) => {
 			mappedTo = sortedCommonMappedTo[ 0 ] || 'none';
 
 			// Get the mappedTo category ID.
-			const mappedToCategoryId = localCategories.find( ( category ) => category.slug === mappedTo )?.id;
+			const mappedToCategoryId = localCategories.find(
+				( category ) => category.slug === mappedTo
+			)?.id;
 			if ( mappedToCategoryId ) {
 				mappedTo = mappedToCategoryId;
 			} else {
@@ -91,7 +93,7 @@ const CategoryMapModal = ( props ) => {
 		return mappedTo;
 	}, [] );
 
-	const { control, handleSubmit } = useForm( {
+	const { control, handleSubmit, getValues } = useForm( {
 		defaultValues: {
 			items: props.items || [],
 			mappingEnabled: true,
@@ -186,31 +188,33 @@ const CategoryMapModal = ( props ) => {
 								) }
 							</p>
 						</div>
-						<div className="dlx-pw-modal-admin-row">
-							<Controller
-								control={ control }
-								name="mappingEnabled"
-								render={ ( { field } ) => (
-									<>
-										<ToggleControl
-											label={ _n(
-												'Map this disabled category to a local category.',
-												'Map these disabled categories to a local category.',
-												props.items.length,
-												'pattern-wrangler'
-											) }
-											checked={ field.value }
-											onChange={ ( value ) => field.onChange( value ) }
-											disabled={ isSaving }
-											help={ __(
-												'This is useful if you have a similar local category to move registered patterns categories to.',
-												'pattern-wrangler'
-											) }
-										/>
-									</>
-								) }
-							/>
-						</div>
+						{ 'none' !== commonMappedToValue && (
+							<div className="dlx-pw-modal-admin-row">
+								<Controller
+									control={ control }
+									name="mappingEnabled"
+									render={ ( { field } ) => (
+										<>
+											<ToggleControl
+												label={ _n(
+													'Map this disabled category to a local category.',
+													'Map these disabled categories to a local category.',
+													props.items.length,
+													'pattern-wrangler'
+												) }
+												checked={ field.value }
+												onChange={ ( value ) => field.onChange( value ) }
+												disabled={ isSaving }
+												help={ __(
+													'This is useful if you have a similar local category to move registered patterns categories to.',
+													'pattern-wrangler'
+												) }
+											/>
+										</>
+									) }
+								/>
+							</div>
+						) }
 						{ formValues.mappingEnabled && (
 							<>
 								<div className="dlx-pw-modal-admin-row">
@@ -220,7 +224,10 @@ const CategoryMapModal = ( props ) => {
 										render={ ( { field } ) => {
 											return (
 												<SelectControl
-													label={ __( 'Map to Local Category', 'pattern-wrangler' ) }
+													label={ __(
+														'Map to Local Category',
+														'pattern-wrangler'
+													) }
 													value={ field.value }
 													onChange={ ( value ) => field.onChange( value ) }
 													options={ getLocalCategoryOptions() }
@@ -234,9 +241,13 @@ const CategoryMapModal = ( props ) => {
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
 							<Button
 								variant="primary"
-								isDestructive={ true }
+								isDestructive={ false }
 								type="submit"
-								disabled={ isSaving }
+								disabled={
+									isSaving ||
+									( getValues( 'mappedTo' ) === 'none' &&
+										getValues( 'mappingEnabled' ) )
+								}
 							>
 								{ getButtonText() }
 							</Button>

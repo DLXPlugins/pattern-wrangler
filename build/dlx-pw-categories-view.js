@@ -622,6 +622,31 @@ var Interface = function Interface(props) {
         return item.registered && item.enabled;
       },
       isDestructive: true
+    }, {
+      id: 'map-categories',
+      getLabel: function getLabel(items) {
+        // Registered categories only.
+        items = items.filter(function (item) {
+          return item.registered && !item.enabled;
+        });
+        return (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.sprintf)(/* translators: %d: number of categories */
+        (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__._n)('Map %d Category', 'Map %d Categories', items.length, 'pattern-wrangler'), items.length);
+      },
+      icon: 'tag',
+      callback: function callback(items) {
+        // Registered categories only.
+        items = items.filter(function (item) {
+          return item.registered && !item.enabled;
+        });
+        setIsMapCategoryModalOpen({
+          isOpen: true,
+          items: items
+        });
+      },
+      isEligible: function isEligible(item) {
+        return item.registered && !item.enabled;
+      },
+      isDestructive: false
     }];
   }, []);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
@@ -1961,7 +1986,8 @@ var CategoryMapModal = function CategoryMapModal(props) {
       }
     }),
     control = _useForm.control,
-    handleSubmit = _useForm.handleSubmit;
+    handleSubmit = _useForm.handleSubmit,
+    getValues = _useForm.getValues;
   var formValues = (0,react_hook_form__WEBPACK_IMPORTED_MODULE_7__.useWatch)({
     control: control
   });
@@ -2042,7 +2068,7 @@ var CategoryMapModal = function CategoryMapModal(props) {
     onSubmit: handleSubmit(onSubmit)
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "dlx-pw-modal-admin-row"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__._n)('Choose a local category to map this disabled category to.', 'Choose a local category to map these disabled categories to.', props.items.length, 'pattern-wrangler'))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_5__._n)('Choose a local category to map this disabled category to.', 'Choose a local category to map these disabled categories to.', props.items.length, 'pattern-wrangler'))), 'none' !== commonMappedToValue && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "dlx-pw-modal-admin-row"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_hook_form__WEBPACK_IMPORTED_MODULE_7__.Controller, {
     control: control,
@@ -2079,9 +2105,9 @@ var CategoryMapModal = function CategoryMapModal(props) {
     className: "dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
     variant: "primary",
-    isDestructive: true,
+    isDestructive: false,
     type: "submit",
-    disabled: isSaving
+    disabled: isSaving || getValues('mappedTo') === 'none' && getValues('mappingEnabled')
   }, getButtonText()), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
     variant: "secondary",
     onClick: props.onRequestClose,

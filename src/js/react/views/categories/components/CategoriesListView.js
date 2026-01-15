@@ -466,6 +466,36 @@ const Interface = ( props ) => {
 				},
 				isDestructive: true,
 			},
+			{
+				id: 'map-categories',
+				getLabel: ( items ) => {
+					// Registered categories only.
+					items = items.filter( ( item ) => item.registered && ! item.enabled );
+					return sprintf(
+						/* translators: %d: number of categories */
+						_n(
+							'Map %d Category',
+							'Map %d Categories',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'tag',
+				callback: ( items ) => {
+					// Registered categories only.
+					items = items.filter( ( item ) => item.registered && ! item.enabled );
+					setIsMapCategoryModalOpen( {
+						isOpen: true,
+						items,
+					} );
+				},
+				isEligible: ( item ) => {
+					return item.registered && ! item.enabled;
+				},
+				isDestructive: false,
+			},
 		];
 	}, [] );
 
