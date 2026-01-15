@@ -109,7 +109,7 @@ const CategoryCard = ( props ) => {
 								props.onEditCategory( category );
 							} }
 						>
-							{ __( 'Edit', 'pattern-wrangler' ) }
+							{ __( 'Quick Edit', 'pattern-wrangler' ) }
 						</Button>
 					)
 				}
@@ -164,7 +164,7 @@ const CategoryCard = ( props ) => {
 						<Button
 							variant="secondary"
 							icon={ <Eye /> }
-							className="dlx-patterns-view-category-card__action-button"
+							className="dlx-patterns-view-category-card__action-button action-button-green"
 							label={ __( 'Re-Enable Category', 'pattern-wrangler' ) }
 							showTooltip={ true }
 							onClick={ () => {

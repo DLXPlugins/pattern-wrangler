@@ -1300,7 +1300,7 @@ var CategoryCard = function CategoryCard(props) {
       onClick: function onClick() {
         props.onEditCategory(category);
       }
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Edit', 'pattern-wrangler')), category.enabled && category.registered && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Quick Edit', 'pattern-wrangler')), category.enabled && category.registered && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "secondary",
       icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_8__["default"], null),
       className: "dlx-patterns-view-category-card__action-button",
@@ -1328,7 +1328,7 @@ var CategoryCard = function CategoryCard(props) {
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Map', 'pattern-wrangler')), !category.enabled && category.registered && /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
       variant: "secondary",
       icon: /*#__PURE__*/React.createElement(lucide_react__WEBPACK_IMPORTED_MODULE_9__["default"], null),
-      className: "dlx-patterns-view-category-card__action-button",
+      className: "dlx-patterns-view-category-card__action-button action-button-green",
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Re-Enable Category', 'pattern-wrangler'),
       showTooltip: true,
       onClick: function onClick() {

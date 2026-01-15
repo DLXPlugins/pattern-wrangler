@@ -402,6 +402,24 @@ svg.lucide {
 		transition: opacity 0.4s ease-in-out;
 		pointer-events: none;
 	}
+
+	&__action-button {
+		&.action-button-green.components-button {
+			color: #14720D;
+			border-color: #14720D;
+			outline-color: #14720D;
+			box-shadow: 0 0 0 1px #14720D;
+
+			&.is-pressed,
+			&:focus,
+			&:hover {
+				color: #14720D;
+				border-color: #11620b;
+				outline-color: #11620b;
+				box-shadow: 0 0 0 1px #11620b;
+			}
+		}
+	}
 }
 .dlx-pw-modal-admin-row {
 	.is-required label {

@@ -3756,6 +3756,18 @@ svg.lucide line {
   transition: opacity 0.4s ease-in-out;
   pointer-events: none;
 }
+.dlx-patterns-view-category-card__action-button.action-button-green.components-button {
+  color: #14720D;
+  border-color: #14720D;
+  outline-color: #14720D;
+  box-shadow: 0 0 0 1px #14720D;
+}
+.dlx-patterns-view-category-card__action-button.action-button-green.components-button.is-pressed, .dlx-patterns-view-category-card__action-button.action-button-green.components-button:focus, .dlx-patterns-view-category-card__action-button.action-button-green.components-button:hover {
+  color: #14720D;
+  border-color: #11620b;
+  outline-color: #11620b;
+  box-shadow: 0 0 0 1px #11620b;
+}
 .dlx-pw-modal-admin-row .is-required label {
   position: relative;
 }
