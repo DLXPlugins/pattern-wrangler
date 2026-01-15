@@ -454,6 +454,7 @@ const Interface = ( props ) => {
 	const [ view, setView ] = useState( () => {
 		const defaultView = getDefaultView();
 		const queryCategories = decodeURIComponent( getQueryArgs( window.location.href )?.categories || '' );
+
 		if ( queryCategories ) {
 			defaultView.filters.push( {
 				field: 'categories',
@@ -640,12 +641,12 @@ const Interface = ( props ) => {
 				filterBy: {
 					operators: [ 'isAny', 'isNone' ],
 				},
-				elements: Object.values( nonEmptyCategories ).map( ( category ) => {
+				elements: nonEmptyCategories.length > 0 ? Object.values( nonEmptyCategories ).map( ( category ) => {
 					return {
 						label: category.customLabel || category.label || category.name,
 						value: category.slug,
 					};
-				} ),
+				} ) : null,
 			},
 			{
 				id: 'assets',
@@ -659,14 +660,14 @@ const Interface = ( props ) => {
 				filterBy: {
 					operators: [ 'is' ],
 				},
-				elements: Object.values( select( patternsStore ).getAssets() || [] ).map(
+				elements: select( patternsStore ).getAssets() && select( patternsStore ).getAssets().length > 0 ? Object.values( select( patternsStore ).getAssets() || [] ).map(
 					( asset ) => {
 						return {
 							label: asset.label,
 							value: asset.slug,
 						};
 					}
-				),
+				) : null,
 			},
 			{
 				elements: [

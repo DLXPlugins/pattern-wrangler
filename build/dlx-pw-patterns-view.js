@@ -9361,12 +9361,12 @@ var Interface = function Interface(props) {
       filterBy: {
         operators: ['isAny', 'isNone']
       },
-      elements: Object.values(nonEmptyCategories).map(function (category) {
+      elements: nonEmptyCategories.length > 0 ? Object.values(nonEmptyCategories).map(function (category) {
         return {
           label: category.customLabel || category.label || category.name,
           value: category.slug
         };
-      })
+      }) : null
     }, {
       id: 'assets',
       label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('Filter Patterns by Source', 'pattern-wrangler'),
@@ -9380,12 +9380,12 @@ var Interface = function Interface(props) {
       filterBy: {
         operators: ['is']
       },
-      elements: Object.values((0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.select)(_store__WEBPACK_IMPORTED_MODULE_18__["default"]).getAssets() || []).map(function (asset) {
+      elements: (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.select)(_store__WEBPACK_IMPORTED_MODULE_18__["default"]).getAssets() && (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.select)(_store__WEBPACK_IMPORTED_MODULE_18__["default"]).getAssets().length > 0 ? Object.values((0,_wordpress_data__WEBPACK_IMPORTED_MODULE_10__.select)(_store__WEBPACK_IMPORTED_MODULE_18__["default"]).getAssets() || []).map(function (asset) {
         return {
           label: asset.label,
           value: asset.slug
         };
-      })
+      }) : null
     }, {
       elements: [{
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_6__.__)('All Patterns', 'pattern-wrangler'),
