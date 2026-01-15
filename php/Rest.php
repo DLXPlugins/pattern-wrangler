@@ -1057,16 +1057,24 @@ class Rest {
 		$post_args      = Patterns::get_instance()->modify_blocks_rest_query( $post_args, null );
 		$local_patterns = get_posts( $post_args );
 
-		// Get registered and local categories.
-		$categories = Functions::get_pattern_categories( true );
+		// Get registered and local categories pre filters.
+		$categories = Functions::get_pattern_categories( false );
 
 		// Merge the registered and local categories.
 		$registered_categories = $categories['registered'];
 		$local_categories      = $categories['categories'];
 
+		$mapped_to = array();
 		// Get registered categories into shape. Registerd are label arrays.
 		$registered_categories_arr = array();
 		foreach ( $registered_categories as $registered_category ) {
+			// Get Mapped To Count.
+			if ( $registered_category['mappedTo'] && isset( $registered_category['count'] ) ) {
+				if ( ! isset( $mapped_to[ $registered_category['mappedTo'] ] ) ) {
+					$mapped_to[ $registered_category['mappedTo'] ] = 0;
+				}
+				$mapped_to[ $registered_category['mappedTo'] ] += $registered_category['count'];
+			}
 			// Skip disabled or empty categories.
 			if ( ! (bool) $registered_category['enabled'] || 0 === $registered_category['count'] ) {
 				continue;
@@ -1089,6 +1097,9 @@ class Rest {
 		// Get local categories into shape. Terms are objects.
 		$local_categories_arr = array();
 		foreach ( $local_categories as $local_category ) {
+			if ( isset( $mapped_to[ $local_category->slug ] ) ) {
+				$local_category->count += $mapped_to[ $local_category->slug ];
+			}
 			// Decode HTML entities to prevent double encoding in React.
 			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
 			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
@@ -1288,13 +1299,15 @@ class Rest {
 		$registered_categories = \WP_Block_Pattern_Categories_Registry::get_instance()->get_all_registered();
 
 		// Get registered and local categories.
-		$categories = Functions::get_pattern_categories( false );
+		$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+		$categories          = Functions::get_pattern_categories( false );
 
 		// Merge the registered and local categories.
 		$registered_categories = $categories['registered'];
 		$local_categories      = $categories['categories'];
 
 		// Get registered categories into shape. Registerd are label arrays.
+		$patterns_mapped_to        = array();
 		$registered_categories_arr = array();
 		foreach ( $registered_categories as $registered_category ) {
 			// Decode HTML entities to prevent double encoding in React.
@@ -1311,11 +1324,31 @@ class Rest {
 				'id'          => 0,
 				'editNonce'   => wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $registered_category['slug'] ),
 			);
+			if ( $registered_category['mappedTo'] && isset( $registered_category['count'] ) ) {
+				if ( ! isset( $patterns_mapped_to[ $registered_category['mappedTo'] ] ) ) {
+					$patterns_mapped_to[ $registered_category['mappedTo'] ] = array();
+				}
+				foreach ( $registered_patterns as $pattern ) {
+					$pattern_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
+					if ( in_array( $registered_category['slug'], $pattern_categories, true ) || in_array( $registered_category['mappedTo'], $pattern_categories, true ) ) {
+						$patterns_mapped_to[ $registered_category['mappedTo'] ][] = $pattern;
+					}
+				}
+			}
+		}
+
+		// Make sure array and each key is unique.
+		$patterns_mapped_to = array_unique( $patterns_mapped_to, SORT_REGULAR );
+		foreach ( $patterns_mapped_to as $key => $value ) {
+			$patterns_mapped_to[ $key ] = array_unique( $value, SORT_REGULAR );
 		}
 
 		// Get local categories into shape. Terms are objects.
 		$local_categories_arr = array();
 		foreach ( $local_categories as $local_category ) {
+			if ( isset( $patterns_mapped_to[ $local_category->slug ] ) ) {
+				$local_category->count += count( $patterns_mapped_to[ $local_category->slug ] );
+			}
 			// Decode HTML entities to prevent double encoding in React.
 			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
 			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
