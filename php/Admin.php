@@ -433,15 +433,28 @@ class Admin {
 			add_action( 'admin_print_scripts-' . $enhanced_patterns_hook, array( $this, 'enqueue_admin_scripts_patterns' ) );
 		}
 
-		add_submenu_page(
-			$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
-			__( 'Categories', 'pattern-wrangler' ),
-			__( 'Categories', 'pattern-wrangler' ),
-			'edit_others_posts',
-			'edit-tags.php?taxonomy=wp_pattern_category&post_type=wp_block',
-			'',
-			5
-		);
+		if ( ! $enable_enhanced_view ) {
+			add_submenu_page(
+				$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
+				__( 'Categories', 'pattern-wrangler' ),
+				__( 'Categories', 'pattern-wrangler' ),
+				'edit_others_posts',
+				'edit-tags.php?taxonomy=wp_pattern_category&post_type=wp_block',
+				'',
+				5
+			);
+		} else {
+			$enhanced_categories_hook = add_submenu_page(
+				$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
+				__( 'Categories', 'pattern-wrangler' ),
+				__( 'Categories', 'pattern-wrangler' ),
+				'edit_others_posts',
+				'pattern-wrangler-categories-view',
+				array( $this, 'enhanced_categories_view' ),
+				5
+			);
+			add_action( 'admin_print_scripts-' . $enhanced_categories_hook, array( $this, 'enqueue_admin_scripts_categories' ) );
+		}
 
 		$hook = add_submenu_page(
 			$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
@@ -590,6 +603,55 @@ class Admin {
 	}
 
 	/**
+	 * Enqueue scripts for the enhanced categories view.
+	 */
+	public function enqueue_admin_scripts_categories() {
+		// Retrieve local options.
+		$options              = Options::get_options();
+		$enable_enhanced_view = (bool) $options['enableEnhancedView'] ?? false;
+
+		if ( $enable_enhanced_view ) {
+			// Enqueue main scripts.
+			$deps = require_once Functions::get_plugin_dir( 'build/dlx-pw-categories-view.asset.php' );
+			wp_enqueue_script(
+				'dlx-pw-categories-view',
+				Functions::get_plugin_url( 'build/dlx-pw-categories-view.js' ),
+				$deps['dependencies'],
+				$deps['version'],
+				true
+			);
+
+			wp_localize_script(
+				'dlx-pw-categories-view',
+				'dlxEnhancedCategoriesView',
+				array(
+					'getNonce'                => wp_create_nonce( 'dlx-pw-categories-view-get-categories' ),
+					'restNonce'               => wp_create_nonce( 'wp_rest' ),
+					'createNonce'             => wp_create_nonce( 'dlx-pw-categories-view-create-category' ),
+					'ajaxurl'                 => admin_url( 'admin-ajax.php' ),
+					'options'                 => $options,
+					'networkOptions'          => Options::get_network_options(),
+					'isMultisite'             => is_multisite(),
+					'networkAdminSettingsUrl' => Functions::get_network_settings_url(),
+					'isUserNetworkAdmin'      => current_user_can( 'manage_network' ),
+					'getSiteBaseUrl'          => esc_url( admin_url() ),
+					'doNotShowAgain'          => get_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true ) ?? false,
+				)
+			);
+			\wp_set_script_translations( 'dlx-pw-categories-view', 'pattern-wrangler' );
+
+			// Enqueue admin styles.
+			wp_enqueue_style(
+				'dlx-pw-categories-view-css',
+				Functions::get_plugin_url( 'build/dlx-pw-categories-view.css' ),
+				array(),
+				$deps['version'],
+				'all'
+			);
+		}
+	}
+
+	/**
 	 * Render the admin page.
 	 */
 	public function admin_page() {
@@ -648,6 +710,15 @@ class Admin {
 	public function enhanced_patterns_view() {
 		?>
 		<div id="dlx-pattern-wrangler-view"></div>
+		<?php
+	}
+
+	/**
+	 * Render the enhanced categories view page.
+	 */
+	public function enhanced_categories_view() {
+		?>
+		<div id="dlx-pattern-wrangler-categories-view"></div>
 		<?php
 	}
 }

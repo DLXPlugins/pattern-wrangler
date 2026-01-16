@@ -60,6 +60,24 @@ class Rest {
 		);
 
 		/**
+		 * For retrieving site pattern categories for a site.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/all',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'rest_get_all_categories' ),
+					'permission_callback' => function () {
+						return current_user_can( 'edit_others_posts' );
+					},
+
+				),
+			)
+		);
+
+		/**
 		 * For creating a pattern.
 		 */
 		register_rest_route(
@@ -70,6 +88,111 @@ class Rest {
 				'callback'            => array( $this, 'rest_create_pattern' ),
 				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For updating a pattern category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/update',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_update_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For creating a pattern category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/create',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_create_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For pausing/disabling a registeredpattern category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/edit-registered',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_edit_registered_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For deleting a pattern category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/delete',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_delete_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For pausing/disabling a registeredpattern category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/disable',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_disable_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For re-enabling a registered pattern category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/enable',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_enable_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
+		 * For mapping disabled registered pattern categories to a local category.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/categories/map',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_map_category' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
 				},
 			)
 		);
@@ -191,6 +314,269 @@ class Rest {
 		}
 
 		return rest_ensure_response( array( 'success' => true ) );
+	}
+
+	/**
+	 * Delete a category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_delete_category( $request ) {
+
+		$items             = $request->get_param( 'items' );
+		$do_not_show_again = filter_var( $request->get_param( 'doNotShowAgain' ), FILTER_VALIDATE_BOOLEAN );
+
+		$term_ids_deleted = array();
+		foreach ( $items as $item ) {
+			$category_id = absint( $item['id'] );
+			$nonce       = sanitize_text_field( $item['nonce'] );
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . $category_id ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for category ' . $category_id ) );
+			}
+
+			if ( ! current_user_can( 'delete_term', $category_id ) ) {
+				return rest_ensure_response( array( 'error' => 'User does not have permission to delete category ' . $category_id ) );
+			}
+
+			// Delete the category.
+			wp_delete_term( $category_id, 'wp_pattern_category' );
+			$term_ids_deleted[] = $category_id;
+		}
+
+		if ( $do_not_show_again ) {
+			if ( current_user_can( 'publish_posts' ) ) {
+				update_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true );
+			}
+		}
+
+		// Get fresh categories.
+		$categories = $this->get_all_categories();
+		return rest_ensure_response(
+			array(
+				'success'        => true,
+				'categories'     => $categories['all'],
+				'termIdsDeleted' => $term_ids_deleted,
+			)
+		);
+	}
+
+	/**
+	 * Disable a registered category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_disable_category( $request ) {
+
+		$items           = $request->get_param( 'items' );
+		$mapping_enabled = filter_var( $request->get_param( 'mappingEnabled' ), FILTER_VALIDATE_BOOLEAN );
+		$mapped_to       = absint( $request->get_param( 'mappedTo' ) );
+
+		$options           = Options::get_options();
+		$option_categories = $options['categories'] ?? array();
+		$categories        = $this->get_all_categories();
+
+		$registered_categories_disabled = array();
+		foreach ( $items as $item ) {
+			$category_slug = sanitize_text_field( $item['slug'] );
+			$nonce         = sanitize_text_field( $item['nonce'] );
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . $category_slug ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for category ' . $category_slug ) );
+			}
+
+			if ( ! current_user_can( 'edit_others_posts' ) ) {
+				return rest_ensure_response( array( 'error' => 'User does not have permission to disable category ' . $category_slug ) );
+			}
+			$mapped_to_slug = false;
+			if ( $mapping_enabled ) {
+				$mapped_to_term = get_term( $mapped_to, 'wp_pattern_category' );
+				if ( ! $mapped_to_term ) {
+					return rest_ensure_response( array( 'error' => 'Mapped to term not found ' . $mapped_to ) );
+				}
+				$mapped_to_slug = sanitize_title( $mapped_to_term->slug );
+			}
+
+			// Find the category in the categories array.
+			$registered_category = $categories['registered'][ $category_slug ] ?? null;
+			if ( ! $registered_category ) {
+				continue;
+			}
+
+			// Failsafe.
+			$category = $option_categories[ $category_slug ] ?? null;
+			if ( ! $category ) {
+				$category = array(
+					'slug'        => $category_slug,
+					'label'       => $registered_category['label'],
+					'customLabel' => $registered_category['customLabel'] ?? $registered_category['label'],
+					'enabled'     => false,
+					'count'       => $registered_category['count'],
+					'mappedTo'    => $mapped_to_slug,
+				);
+			} else {
+				$category['enabled']  = false;
+				$category['mappedTo'] = $mapped_to_slug;
+			}
+
+			$option_categories[ $category_slug ] = $category;
+		}
+
+		$options['categories'] = Functions::sanitize_array_recursive( $option_categories );
+		Options::update_options( $options );
+
+		// Forcefully retrieve new categories.
+		$categories = $this->get_all_categories();
+		return rest_ensure_response(
+			array(
+				'success'    => true,
+				'categories' => $categories['all'],
+			)
+		);
+	}
+
+	/**
+	 * Re-enable a registered category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_enable_category( $request ) {
+
+		$items = $request->get_param( 'items' );
+
+		$options           = Options::get_options();
+		$option_categories = $options['categories'] ?? array();
+		$categories        = $this->get_all_categories();
+
+		foreach ( $items as $item ) {
+			$category_slug = sanitize_text_field( $item['slug'] );
+			$nonce         = sanitize_text_field( $item['editNonce'] );
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . $category_slug ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for category ' . $category_slug ) );
+			}
+
+			if ( ! current_user_can( 'edit_others_posts' ) ) {
+				return rest_ensure_response( array( 'error' => 'User does not have permission to disable category ' . $category_slug ) );
+			}
+
+			// Find the category in the categories array.
+			$registered_category = $categories['registered'][ $category_slug ] ?? null;
+			if ( ! $registered_category ) {
+				continue;
+			}
+
+			// Failsafe.
+			$category = $option_categories[ $category_slug ] ?? null;
+			if ( ! $category ) {
+				$category = array(
+					'slug'        => $category_slug,
+					'label'       => $registered_category['label'],
+					'customLabel' => $registered_category['customLabel'] ?? $registered_category['label'],
+					'enabled'     => true,
+					'count'       => $registered_category['count'],
+					'mappedTo'    => false,
+				);
+			} else {
+				$category['enabled']  = true;
+				$category['mappedTo'] = false;
+			}
+
+			$option_categories[ $category_slug ] = $category;
+		}
+
+		$options['categories'] = Functions::sanitize_array_recursive( $option_categories );
+		Options::update_options( $options );
+
+		// Forcefully retrieve new categories.
+		$categories = $this->get_all_categories();
+		return rest_ensure_response(
+			array(
+				'success'    => true,
+				'categories' => $categories['all'],
+			)
+		);
+	}
+
+	/**
+	 * Re-enable a registered category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_map_category( $request ) {
+
+		$items           = $request->get_param( 'items' );
+		$mapping_enabled = filter_var( $request->get_param( 'mappingEnabled' ), FILTER_VALIDATE_BOOLEAN );
+		$mapped_to       = absint( $request->get_param( 'mappedTo' ) );
+
+		$options           = Options::get_options();
+		$option_categories = $options['categories'] ?? array();
+		$categories        = $this->get_all_categories();
+
+		foreach ( $items as $item ) {
+			$category_slug = sanitize_text_field( $item['slug'] );
+			$nonce         = sanitize_text_field( $item['nonce'] );
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . $category_slug ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for category ' . $category_slug ) );
+			}
+
+			if ( ! current_user_can( 'edit_others_posts' ) ) {
+				return rest_ensure_response( array( 'error' => 'User does not have permission to disable category ' . $category_slug ) );
+			}
+			$mapped_to_slug = false;
+			if ( $mapping_enabled ) {
+				$mapped_to_term = get_term( $mapped_to, 'wp_pattern_category' );
+				if ( ! $mapped_to_term ) {
+					return rest_ensure_response( array( 'error' => 'Mapped to term not found ' . $mapped_to ) );
+				}
+				$mapped_to_slug = sanitize_title( $mapped_to_term->slug );
+			}
+
+			// Find the category in the categories array.
+			$registered_category = $categories['registered'][ $category_slug ] ?? null;
+			if ( ! $registered_category ) {
+				continue;
+			}
+
+			// Failsafe.
+			$category = $option_categories[ $category_slug ] ?? null;
+			if ( ! $category ) {
+				$category = array(
+					'slug'        => $category_slug,
+					'label'       => $registered_category['label'],
+					'customLabel' => $registered_category['customLabel'] ?? $registered_category['label'],
+					'enabled'     => false,
+					'count'       => $registered_category['count'],
+					'mappedTo'    => $mapping_enabled ? $mapped_to_slug : false,
+				);
+			} else {
+				$category['enabled']  = false;
+				$category['mappedTo'] = $mapping_enabled ? $mapped_to_slug : false;
+			}
+
+			$option_categories[ $category_slug ] = $category;
+		}
+
+		$options['categories'] = Functions::sanitize_array_recursive( $option_categories );
+		Options::update_options( $options );
+
+		// Forcefully retrieve new categories.
+		$categories = $this->get_all_categories();
+		return rest_ensure_response(
+			array(
+				'success'    => true,
+				'categories' => $categories['all'],
+			)
+		);
 	}
 
 	/**
@@ -452,6 +838,185 @@ class Rest {
 	}
 
 	/**
+	 * Create a category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_create_category( $request ) {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-create-category' ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
+		}
+
+		$term_title = sanitize_text_field( wp_strip_all_tags( $request->get_param( 'termTitle' ) ) );
+		$term_slug  = sanitize_title( $request->get_param( 'termSlug' ) );
+
+		// See if the term already exists.
+		$maybe_term = get_term_by( 'slug', $term_slug, 'wp_pattern_category' );
+		if ( $maybe_term ) {
+			return rest_ensure_response( array( 'error' => 'Category already exists.' ) );
+		}
+
+		// Create the category.
+		$maybe_term = wp_insert_term( $term_title, 'wp_pattern_category', array( 'slug' => $term_slug ) );
+
+		if ( is_wp_error( $maybe_term ) ) {
+			return rest_ensure_response( array( 'error' => 'Failed to create category.' ) );
+		}
+		$term_id = $maybe_term['term_id'];
+
+		$term = get_term_by( 'id', $term_id, 'wp_pattern_category' );
+		if ( ! $term ) {
+			return rest_ensure_response( array( 'error' => 'Failed to create and retrieve category.' ) );
+		}
+
+		$category = array(
+			'label'       => wp_specialchars_decode( $term->name, ENT_QUOTES ),
+			'customLabel' => wp_specialchars_decode( $term->name, ENT_QUOTES ),
+			'slug'        => sanitize_title( $term->slug ),
+			'enabled'     => true,
+			'count'       => 0,
+			'mappedTo'    => false,
+			'registered'  => false,
+			'id'          => absint( $term_id ),
+			'editNonce'   => wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $term_id ),
+		);
+
+		// Return the category ID.
+		return rest_ensure_response(
+			array(
+				'termId'   => $term_id,
+				'category' => $category,
+			)
+		);
+	}
+
+	/**
+	 * Edit a registered category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_edit_registered_category( $request ) {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( $request->get_param( 'termNonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . sanitize_text_field( $request->get_param( 'termSlug' ) ) ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
+		}
+
+		$term_title = sanitize_text_field( wp_strip_all_tags( $request->get_param( 'termTitle' ) ) );
+		$term_slug  = sanitize_text_field( $request->get_param( 'termSlug' ) );
+
+		// Get registered categories.
+		$categories            = Functions::get_pattern_categories( false );
+		$registered_categories = $categories['registered'];
+
+		$registered_category = array_filter(
+			$registered_categories,
+			function ( $category ) use ( $term_slug ) {
+				return $category['slug'] === $term_slug;
+			}
+		);
+		if ( empty( $registered_category ) ) {
+			return rest_ensure_response( array( 'error' => 'Category not found.' ) );
+		}
+		$registered_category   = current( $registered_category );
+		$category              = array(
+			'label'       => sanitize_text_field( $registered_category['label'] ),
+			'customLabel' => sanitize_text_field( $term_title ),
+			'slug'        => sanitize_text_field( $registered_category['slug'] ),
+			'enabled'     => $registered_category['enabled'],
+			'count'       => $registered_category['count'],
+			'mappedTo'    => $registered_category['mappedTo'],
+		);
+		$category              = Functions::sanitize_array_recursive( $category );
+		$options               = Options::get_options();
+		$options['categories'] = $options['categories'] ?? array();
+		$options['categories'][ sanitize_text_field( $registered_category['slug'] ) ] = $category;
+
+		Options::update_options( $options );
+
+		// Add extra options to the category.
+		$category['editNonce']  = wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $term_slug );
+		$category['registered'] = true;
+
+		// Return the category ID.
+		return rest_ensure_response(
+			array(
+				'category' => $category,
+			)
+		);
+	}
+
+	/**
+	 * Update a category.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_update_category( $request ) {
+		// Check nonce and permissions.
+		$nonce   = sanitize_text_field( $request->get_param( 'termNonce' ) );
+		$term_id = absint( $request->get_param( 'termId' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-edit-category-' . $request->get_param( 'termId' ) ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
+		}
+
+		$term_title = sanitize_text_field( wp_strip_all_tags( $request->get_param( 'termTitle' ) ) );
+		$term_slug  = sanitize_title( $request->get_param( 'termSlug' ) );
+
+		// See if the term already exists.
+		$maybe_term = get_term_by( 'id', $term_id, 'wp_pattern_category' );
+		if ( ! $maybe_term ) {
+			return rest_ensure_response( array( 'error' => 'Category not found.' ) );
+		}
+
+		// Update the category.
+		$maybe_term = wp_update_term(
+			$term_id,
+			'wp_pattern_category',
+			array(
+				'name' => $term_title,
+				'slug' => $term_slug,
+			)
+		);
+
+		if ( is_wp_error( $maybe_term ) ) {
+			return rest_ensure_response( array( 'error' => 'Failed to update category. It may already exist.' ) );
+		}
+
+		$term = get_term_by( 'id', $term_id, 'wp_pattern_category' );
+		if ( ! $term ) {
+			return rest_ensure_response( array( 'error' => 'Failed to update and retrieve category.' ) );
+		}
+
+		$category = array(
+			'label'       => wp_specialchars_decode( $term->name, ENT_QUOTES ),
+			'customLabel' => wp_specialchars_decode( $term->name, ENT_QUOTES ),
+			'slug'        => sanitize_title( $term->slug ),
+			'enabled'     => true,
+			'count'       => absint( $term->count ),
+			'mappedTo'    => false,
+			'registered'  => false,
+			'id'          => absint( $term_id ),
+			'editNonce'   => wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $term_id ),
+		);
+
+		// Return the category ID.
+		return rest_ensure_response(
+			array(
+				'termId'   => $term_id,
+				'category' => $category,
+			)
+		);
+	}
+
+	/**
 	 * Get all patterns with previews.
 	 */
 	public function rest_get_all_patterns() {
@@ -492,16 +1057,24 @@ class Rest {
 		$post_args      = Patterns::get_instance()->modify_blocks_rest_query( $post_args, null );
 		$local_patterns = get_posts( $post_args );
 
-		// Get registered and local categories.
-		$categories = Functions::get_pattern_categories( true );
+		// Get registered and local categories pre filters.
+		$categories = Functions::get_pattern_categories( false );
 
 		// Merge the registered and local categories.
 		$registered_categories = $categories['registered'];
 		$local_categories      = $categories['categories'];
 
+		$mapped_to = array();
 		// Get registered categories into shape. Registerd are label arrays.
 		$registered_categories_arr = array();
 		foreach ( $registered_categories as $registered_category ) {
+			// Get Mapped To Count.
+			if ( $registered_category['mappedTo'] && isset( $registered_category['count'] ) ) {
+				if ( ! isset( $mapped_to[ $registered_category['mappedTo'] ] ) ) {
+					$mapped_to[ $registered_category['mappedTo'] ] = 0;
+				}
+				$mapped_to[ $registered_category['mappedTo'] ] += $registered_category['count'];
+			}
 			// Skip disabled or empty categories.
 			if ( ! (bool) $registered_category['enabled'] || 0 === $registered_category['count'] ) {
 				continue;
@@ -524,9 +1097,8 @@ class Rest {
 		// Get local categories into shape. Terms are objects.
 		$local_categories_arr = array();
 		foreach ( $local_categories as $local_category ) {
-			// Skip disabled or empty categories.
-			if ( 0 === absint( $local_category->count ) ) {
-				continue;
+			if ( isset( $mapped_to[ $local_category->slug ] ) ) {
+				$local_category->count += $mapped_to[ $local_category->slug ];
 			}
 			// Decode HTML entities to prevent double encoding in React.
 			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
@@ -703,6 +1275,134 @@ class Rest {
 				'patterns'   => $patterns,
 				'categories' => $all_categories,
 				'assets'     => $assets,
+			)
+		);
+	}
+
+	/**
+	 * Get all categories.
+	 *
+	 * @return array The categories.
+	 */
+	private function get_all_categories() {
+		// Check transient first.
+		$all_categories = get_transient( 'dlx_all_categories_cache' );
+		if ( false !== $all_categories && false ) {
+			return rest_ensure_response(
+				array(
+					'categories' => $all_categories,
+				)
+			);
+		}
+
+		// Get registered categories.
+		$registered_categories = \WP_Block_Pattern_Categories_Registry::get_instance()->get_all_registered();
+
+		// Get registered and local categories.
+		$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+		$categories          = Functions::get_pattern_categories( false );
+
+		// Merge the registered and local categories.
+		$registered_categories = $categories['registered'];
+		$local_categories      = $categories['categories'];
+
+		// Get registered categories into shape. Registerd are label arrays.
+		$patterns_mapped_to        = array();
+		$registered_categories_arr = array();
+		foreach ( $registered_categories as $registered_category ) {
+			// Decode HTML entities to prevent double encoding in React.
+			$category_label        = wp_specialchars_decode( $registered_category['label'], ENT_QUOTES );
+			$category_custom_label = isset( $registered_category['customLabel'] ) ? wp_specialchars_decode( $registered_category['customLabel'], ENT_QUOTES ) : $category_label;
+			$registered_categories_arr[ sanitize_title( 'registered-' . $registered_category['slug'] ) ] = array(
+				'label'       => $category_label,
+				'customLabel' => $category_custom_label,
+				'slug'        => $registered_category['slug'],
+				'enabled'     => $registered_category['enabled'] ?? true,
+				'count'       => isset( $registered_category['count'] ) ? $registered_category['count'] : 0,
+				'mappedTo'    => $registered_category['mappedTo'] ?? false,
+				'registered'  => true,
+				'id'          => 0,
+				'editNonce'   => wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $registered_category['slug'] ),
+			);
+			if ( $registered_category['mappedTo'] && isset( $registered_category['count'] ) ) {
+				if ( ! isset( $patterns_mapped_to[ $registered_category['mappedTo'] ] ) ) {
+					$patterns_mapped_to[ $registered_category['mappedTo'] ] = array();
+				}
+				foreach ( $registered_patterns as $pattern ) {
+					$pattern_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
+					if ( in_array( $registered_category['slug'], $pattern_categories, true ) || in_array( $registered_category['mappedTo'], $pattern_categories, true ) ) {
+						$patterns_mapped_to[ $registered_category['mappedTo'] ][] = $pattern;
+					}
+				}
+			}
+		}
+
+		// Make sure array and each key is unique.
+		$patterns_mapped_to = array_unique( $patterns_mapped_to, SORT_REGULAR );
+		foreach ( $patterns_mapped_to as $key => $value ) {
+			$patterns_mapped_to[ $key ] = array_unique( $value, SORT_REGULAR );
+		}
+
+		// Get local categories into shape. Terms are objects.
+		$local_categories_arr = array();
+		foreach ( $local_categories as $local_category ) {
+			if ( isset( $patterns_mapped_to[ $local_category->slug ] ) ) {
+				$local_category->count += count( $patterns_mapped_to[ $local_category->slug ] );
+			}
+			// Decode HTML entities to prevent double encoding in React.
+			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
+			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
+				'label'       => $category_name,
+				'customLabel' => $category_name,
+				'slug'        => $local_category->slug,
+				'enabled'     => true,
+				'count'       => $local_category->count,
+				'mappedTo'    => false,
+				'registered'  => false,
+				'id'          => $local_category->term_id,
+				'editNonce'   => wp_create_nonce( 'dlx-pw-categories-view-edit-category-' . $local_category->term_id ),
+			);
+		}
+
+		// Merge the registered and local categories.
+		$all_categories = array_merge( $registered_categories_arr, $local_categories_arr ); // We don't care about duplicates here.
+
+		// Sort by label.
+		uasort(
+			$all_categories,
+			function ( $a, $b ) {
+				return strcasecmp( $a['label'], $b['label'] );
+			}
+		);
+
+		set_transient( 'dlx_all_categories_cache', $all_categories, HOUR_IN_SECONDS );
+
+		return array(
+			'all'        => $all_categories,
+			'registered' => $registered_categories,
+			'local'      => $local_categories,
+		);
+	}
+
+	/**
+	 * Get all categories.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_get_all_categories() {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-get-categories' ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to view categories.' ) );
+		}
+
+		$categories = $this->get_all_categories();
+
+		return rest_ensure_response(
+			array(
+				'categories'           => $categories['all'],
+				'registeredCategories' => $categories['registered'],
+				'localCategories'      => $categories['local'],
 			)
 		);
 	}

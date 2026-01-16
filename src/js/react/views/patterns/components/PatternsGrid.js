@@ -261,6 +261,9 @@ const Interface = ( props ) => {
 			categories: select( patternsStore ).getCategories(),
 		};
 	} );
+	const nonEmptyCategories = useMemo( () => {
+		return Object.values( categories ).filter( ( category ) => category.count > 0 );
+	}, [ categories ] );
 
 	const { assets } = useSelect( () => {
 		return {
@@ -448,7 +451,20 @@ const Interface = ( props ) => {
 		);
 	};
 
-	const [ view, setView ] = useState( getDefaultView() );
+	const [ view, setView ] = useState( () => {
+		const defaultView = getDefaultView();
+		const queryCategories = decodeURIComponent( getQueryArgs( window.location.href )?.categories || '' );
+
+		if ( queryCategories ) {
+			defaultView.filters.push( {
+				field: 'categories',
+				value: queryCategories.split( ',' ),
+				operator: 'isAny',
+			} );
+		}
+
+		return defaultView;
+	} );
 
 	const fields = useMemo(
 		() => [
@@ -625,12 +641,12 @@ const Interface = ( props ) => {
 				filterBy: {
 					operators: [ 'isAny', 'isNone' ],
 				},
-				elements: Object.values( categories ).map( ( category ) => {
+				elements: nonEmptyCategories.length > 0 ? Object.values( nonEmptyCategories ).map( ( category ) => {
 					return {
 						label: category.customLabel || category.label || category.name,
 						value: category.slug,
 					};
-				} ),
+				} ) : null,
 			},
 			{
 				id: 'assets',
@@ -644,12 +660,14 @@ const Interface = ( props ) => {
 				filterBy: {
 					operators: [ 'is' ],
 				},
-				elements: Object.values( select( patternsStore ).getAssets() || [] ).map( ( asset ) => {
-					return {
-						label: asset.label,
-						value: asset.slug,
-					};
-				} ),
+				elements: select( patternsStore ).getAssets() && select( patternsStore ).getAssets().length > 0 ? Object.values( select( patternsStore ).getAssets() || [] ).map(
+					( asset ) => {
+						return {
+							label: asset.label,
+							value: asset.slug,
+						};
+					}
+				) : null,
 			},
 			{
 				elements: [
@@ -886,7 +904,7 @@ const Interface = ( props ) => {
 				id: 'copy',
 				label: __( 'Copy Pattern to Clipboard', 'pattern-wrangler' ),
 				icon: 'edit',
-				callback: async ( items ) => {
+				callback: async( items ) => {
 					const copyContent = items[ 0 ].content.trim();
 					let copied = false;
 					try {
@@ -1458,6 +1476,19 @@ const Interface = ( props ) => {
 			changeQueryArgs.search = '';
 		}
 
+		// Add categories filter parameters if they exist.
+		const categoriesFilter = newView.filters?.find(
+			( filter ) => filter.field === 'categories'
+		);
+		if ( categoriesFilter ) {
+			const categoryValues = categoriesFilter.value || [];
+
+			// Set query var to category values encoded for URL.
+			if ( categoryValues.length > 0 ) {
+				changeQueryArgs.categories = encodeURIComponent( categoryValues.join( ',' ) );
+			}
+		}
+
 		// Add sort parameters if they exist.
 		if ( newView.sort?.field ) {
 			changeQueryArgs.orderby = newView.sort.field;
@@ -1511,8 +1542,20 @@ const Interface = ( props ) => {
 			newView.filters = [
 				...newView.filters,
 				{ field: 'patternType', operator: 'is', value: 'all' },
-				{ field: 'patternLocalRegisteredStatus', operator: 'is', value: 'enabled' },
+				{
+					field: 'patternLocalRegisteredStatus',
+					operator: 'is',
+					value: 'enabled',
+				},
 			];
+			// Unset categories query arg.
+			changeQueryArgs.categories = '';
+			newUrl = removeQueryArgs( newUrl, 'categories' );
+		}
+		// If newView doesn't include categories, unset the categories query arg.
+		if ( ! newView.filters?.find( ( filter ) => filter.field === 'categories' ) ) {
+			changeQueryArgs.categories = '';
+			newUrl = removeQueryArgs( newUrl, 'categories' );
 		}
 
 		setPatternsDisplay( getPatternsForDisplay( newView ) );
@@ -1558,7 +1601,8 @@ const Interface = ( props ) => {
 				let maybeDuplicateLabel = '';
 				const categoryElements = Object.values( data.categories ).map(
 					( category ) => {
-						const categoryLabel = category.customLabel || category.label || category.name;
+						const categoryLabel =
+							category.customLabel || category.label || category.name;
 						let catLabel = categoryLabel;
 						if ( maybeDuplicateLabel === categoryLabel ) {
 							catLabel = `${ catLabel } (${ category.count + 1 })`;
@@ -1637,7 +1681,6 @@ const Interface = ( props ) => {
 	const hasPagination = useMemo( () => {
 		return getFilteredPatternsCount( view ) > view.perPage;
 	}, [ view ] );
-
 
 	if ( loading ) {
 		return <>Loading...</>;
@@ -1718,7 +1761,9 @@ const Interface = ( props ) => {
 					</div>
 					<div className="dlx-patterns-view-grid">
 						<div className="dlx-patterns-view-search-filters-wrapper">
-							<DataViews.Search label={ __( 'Search Patterns', 'pattern-wrangler' ) } />
+							<DataViews.Search
+								label={ __( 'Search Patterns', 'pattern-wrangler' ) }
+							/>
 							<DataViews.FiltersToggle />
 						</div>
 						<div className="dlx-patterns-view-button-actions-wrapper">
@@ -2003,8 +2048,8 @@ const Interface = ( props ) => {
 							}
 							{
 								// If patttern type is local, show synced|both|unsynced buttons.
-								( view?.filters?.find( ( filter ) => filter.field === 'patternType' )
-									?.value === 'all' ) && (
+								view?.filters?.find( ( filter ) => filter.field === 'patternType' )
+									?.value === 'all' && (
 									<>
 										<ToggleGroupControl
 											label={ __( 'Disabled Status', 'pattern-wrangler' ) }
@@ -2082,18 +2127,19 @@ const Interface = ( props ) => {
 					</div>
 					<DataViews.Layout />
 					<DataViews.BulkActionToolbar />
-					{
-						hasPagination && (
-							<div className="dlx-patterns-view-pagination-wrapper">
-								<div className="dlx-patterns-view-pagination-item dlx-patterns-view-pagination-item-total-items">
-									<span>{ totalItems } { _n( 'Item', 'Items', totalItems, 'pattern-wrangler' ) }</span>
-								</div>
-								<div className="dlx-patterns-view-pagination-item">
-									<DataViews.Pagination />
-								</div>
+					{ hasPagination && (
+						<div className="dlx-patterns-view-pagination-wrapper">
+							<div className="dlx-patterns-view-pagination-item dlx-patterns-view-pagination-item-total-items">
+								<span>
+									{ totalItems }{ ' ' }
+									{ _n( 'Item', 'Items', totalItems, 'pattern-wrangler' ) }
+								</span>
 							</div>
-						)
-					}
+							<div className="dlx-patterns-view-pagination-item">
+								<DataViews.Pagination />
+							</div>
+						</div>
+					) }
 				</DataViews>
 
 				{ snackbar.isVisible && (
