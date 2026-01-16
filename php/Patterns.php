@@ -164,7 +164,7 @@ class Patterns {
 		}
 
 		// Check if core patterns is disabled.
-		if ( Functions::is_core_patterns_enabled_for_site() ) {
+		if ( ! Functions::is_core_patterns_enabled_for_site() ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}

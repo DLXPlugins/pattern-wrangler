@@ -382,7 +382,7 @@ class Functions {
 		 *
 		 * @return bool true if hiding patterns, false if not.
 		 */
-		$hide_core_patterns = apply_filters( 'dlxpw_hide_core_patterns', $hide_core_patterns, $site_id, true );
+		$hide_core_patterns = apply_filters( 'dlxpw_hide_core_patterns', $hide_core_patterns, $site_id, $is_multisite );
 
 		// Return the value.
 		if ( $hide_core_patterns ) {
