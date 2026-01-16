@@ -1282,9 +1282,10 @@ class Rest {
 	/**
 	 * Get all categories.
 	 *
+	 * @param bool $after_filters Whether to get categories after filters.
 	 * @return array The categories.
 	 */
-	private function get_all_categories() {
+	private function get_all_categories( $after_filters = false ) {
 		// Check transient first.
 		$all_categories = get_transient( 'dlx_all_categories_cache' );
 		if ( false !== $all_categories && false ) {
@@ -1300,7 +1301,7 @@ class Rest {
 
 		// Get registered and local categories.
 		$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
-		$categories          = Functions::get_pattern_categories( false );
+		$categories          = Functions::get_pattern_categories( $after_filters );
 
 		// Merge the registered and local categories.
 		$registered_categories = $categories['registered'];
