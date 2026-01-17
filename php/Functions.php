@@ -206,18 +206,6 @@ class Functions {
 				return strcasecmp( $a['customLabel'], $b['customLabel'] );
 			}
 		);
-
-		// Loop through all patterns and increment a count for each category. Since core tax pattern categories have a count for core patterns.
-		foreach ( $pattern_registry as $pattern ) {
-			$pattern_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
-
-			foreach ( $pattern_categories as $category ) {
-				if ( isset( $all_categories[ $category ] ) ) {
-					++$all_categories[ $category ]['count'];
-				}
-			}
-		}
-
 		return array(
 			'registered' => $all_categories,
 			'categories' => $pattern_categories_taxonomy,
