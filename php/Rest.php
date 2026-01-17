@@ -258,6 +258,21 @@ class Rest {
 		);
 
 		/**
+		 * For assigning a category to a pattern.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/patterns/tag',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_tag_pattern' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
+			)
+		);
+
+		/**
 		 * For retrieving a pattern by ID. Useful when importing patterns via json.
 		 */
 		register_rest_route(
@@ -675,6 +690,84 @@ class Rest {
 		}
 
 		return rest_ensure_response( array( 'success' => true ) );
+	}
+
+	/**
+	 * Assign a category to a pattern.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_tag_pattern( $request ) {
+
+		$items              = $request->get_param( 'items' );
+		$pattern_categories = $request->get_param( 'patternCategories' );
+
+		// Set categories.
+		$terms_to_add = array();
+		foreach ( $pattern_categories as $category ) {
+			if ( is_numeric( $category['id'] ) && 0 !== $category['id'] ) {
+				$terms_to_add[] = absint( $category['id'] );
+			} else {
+				$terms_to_add[] = sanitize_text_field( $category['name'] );
+			}
+		}
+
+		$terms_affected = array();
+		$items_affected = array();
+		foreach ( $items as $item ) {
+			$pattern_id = $item['id'];
+			$nonce      = $item['nonce'];
+
+			if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-edit-pattern-' . $pattern_id ) ) {
+				return rest_ensure_response( array( 'error' => 'Invalid nonce for pattern ' . $pattern_id ) );
+			}
+
+			if ( is_numeric( $pattern_id ) && 0 !== $pattern_id ) {
+				if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
+					return rest_ensure_response( array( 'error' => 'User does not have permission to publish pattern ' . $pattern_id ) );
+				}
+
+				// Clear post terms.
+				wp_delete_object_term_relationships( $pattern_id, 'wp_pattern_category' );
+
+				$items_affected[] = array(
+					'patternId'    => $pattern_id,
+					'patternTitle' => sanitize_text_field( get_the_title( $pattern_id ) ),
+				);
+
+				// Add terms.
+				$terms_affected_ids = wp_set_post_terms( $pattern_id, $terms_to_add, 'wp_pattern_category' );
+
+				// Get terms from IDs.
+				foreach ( $terms_affected_ids as $term_id ) {
+					$category_term = get_term( $term_id, 'wp_pattern_category' );
+					if ( $category_term ) {
+						// Decode HTML entities to prevent double encoding in React.
+						$category_name = wp_specialchars_decode( $category_term->name, ENT_QUOTES );
+						$terms_affected[ sanitize_title( $category_term->slug ) ] = array(
+							'label'       => sanitize_text_field( $category_name ),
+							'customLabel' => sanitize_text_field( $category_name ),
+							'slug'        => sanitize_title( $category_term->slug ),
+							'enabled'     => true,
+							'count'       => absint( $category_term->count ),
+							'mappedTo'    => false,
+							'registered'  => false,
+							'id'          => absint( $category_term->term_id ),
+						);
+					}
+				}
+			}
+		}
+
+		// Return the new categories.
+		return rest_ensure_response(
+			array(
+				'newCategories' => $terms_affected,
+				'itemsAffected' => $items_affected,
+			)
+		);
 	}
 
 	/**

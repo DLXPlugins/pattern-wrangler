@@ -109,7 +109,7 @@ const CategoryCard = ( props ) => {
 								props.onEditCategory( category );
 							} }
 						>
-							{ __( 'Quick Edit', 'pattern-wrangler' ) }
+							{ __( 'Edit Category', 'pattern-wrangler' ) }
 						</Button>
 					)
 				}
@@ -123,7 +123,7 @@ const CategoryCard = ( props ) => {
 								props.onEditRegisteredCategory( category );
 							} }
 						>
-							{ __( 'Quick Edit', 'pattern-wrangler' ) }
+							{ __( 'Edit Label', 'pattern-wrangler' ) }
 						</Button>
 					)
 				}
