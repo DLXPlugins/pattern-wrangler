@@ -35,6 +35,7 @@ import PatternPublishModal from './PatternPublishModal';
 import PatternUnpauseModal from './PatternUnpauseModal';
 import PatternDeleteModal from './PatternDeleteModal';
 import PatternGetCodeModal from './PatternGetCodeModal';
+import PatternTagModal from './PatternTagModal';
 import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
 
@@ -289,6 +290,7 @@ const Interface = ( props ) => {
 	const [ isUnpauseModalOpen, setIsUnpauseModalOpen ] = useState( null );
 	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( null );
 	const [ isGetCodeModalOpen, setIsGetCodeModalOpen ] = useState( null );
+	const [ isTagPatternModalOpen, setIsTagPatternModalOpen ] = useState( null );
 	const exportPattern = ( item ) => {
 		const isLocal = item.isLocal;
 		const title = item.title;
@@ -453,7 +455,9 @@ const Interface = ( props ) => {
 
 	const [ view, setView ] = useState( () => {
 		const defaultView = getDefaultView();
-		const queryCategories = decodeURIComponent( getQueryArgs( window.location.href )?.categories || '' );
+		const queryCategories = decodeURIComponent(
+			getQueryArgs( window.location.href )?.categories || ''
+		);
 
 		if ( queryCategories ) {
 			defaultView.filters.push( {
@@ -641,12 +645,16 @@ const Interface = ( props ) => {
 				filterBy: {
 					operators: [ 'isAny', 'isNone' ],
 				},
-				elements: nonEmptyCategories.length > 0 ? Object.values( nonEmptyCategories ).map( ( category ) => {
-					return {
-						label: category.customLabel || category.label || category.name,
-						value: category.slug,
-					};
-				} ) : null,
+				elements:
+					nonEmptyCategories.length > 0
+						? Object.values( nonEmptyCategories ).map( ( category ) => {
+							return {
+								label:
+										category.customLabel || category.label || category.name,
+								value: category.slug,
+							};
+						  } )
+						: null,
 			},
 			{
 				id: 'assets',
@@ -660,14 +668,18 @@ const Interface = ( props ) => {
 				filterBy: {
 					operators: [ 'is' ],
 				},
-				elements: select( patternsStore ).getAssets() && select( patternsStore ).getAssets().length > 0 ? Object.values( select( patternsStore ).getAssets() || [] ).map(
-					( asset ) => {
-						return {
-							label: asset.label,
-							value: asset.slug,
-						};
-					}
-				) : null,
+				elements:
+					select( patternsStore ).getAssets() &&
+					select( patternsStore ).getAssets().length > 0
+						? Object.values( select( patternsStore ).getAssets() || [] ).map(
+							( asset ) => {
+								return {
+									label: asset.label,
+									value: asset.slug,
+								};
+							}
+						  )
+						: null,
 			},
 			{
 				elements: [
@@ -796,7 +808,7 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
 			},
 		],
-		[]
+		[ nonEmptyCategories ]
 	);
 
 	const actions = useMemo(
@@ -839,6 +851,21 @@ const Interface = ( props ) => {
 				},
 				isPrimary: false,
 				isDestructive: true,
+				supportsBulk: true,
+			},
+			{
+				id: 'tag-pattern',
+				label: __( 'Assign Pattern to Category', 'pattern-wrangler' ),
+				icon: 'tag',
+				isEligible: ( pattern ) => {
+					// Pattern must be local and enabled.
+					return pattern.isLocal && ! pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsTagPatternModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: false,
 				supportsBulk: true,
 			},
 			{
@@ -1485,7 +1512,9 @@ const Interface = ( props ) => {
 
 			// Set query var to category values encoded for URL.
 			if ( categoryValues.length > 0 ) {
-				changeQueryArgs.categories = encodeURIComponent( categoryValues.join( ',' ) );
+				changeQueryArgs.categories = encodeURIComponent(
+					categoryValues.join( ',' )
+				);
 			}
 		}
 
@@ -1583,6 +1612,70 @@ const Interface = ( props ) => {
 		} );
 	}, [ view ] );
 
+	const refreshCategories = ( updatedCategories ) => {
+		// Find the index of the pattern-categories field.
+		const fieldsIndex = fields.findIndex(
+			( field ) => field.id === 'categories'
+		);
+
+		// Check if the field exists before trying to modify it.
+		if ( fieldsIndex === -1 || updatedCategories.length === 0 ) {
+			return;
+		}
+		const originalLocalCategories = [];
+		let maybeDuplicateLabel = '';
+		const categoryElements = Object.values( updatedCategories ).map(
+			( category ) => {
+				const categoryLabel =
+					category.customLabel || category.label || category.name;
+				let catLabel = categoryLabel;
+				if ( maybeDuplicateLabel === categoryLabel ) {
+					catLabel = `${ catLabel } (${ category.count + 1 })`;
+				}
+				maybeDuplicateLabel = categoryLabel;
+				if ( ! category.registered ) {
+					originalLocalCategories.push( {
+						id: category.id,
+						label: categoryLabel,
+					} );
+				}
+				return {
+					label: catLabel,
+					value: category.slug,
+				};
+			}
+		);
+
+		// Create a new fields array instead of mutating the existing one.
+		let updatedFields = [ ...fields ];
+
+		// Update the categories field elements.
+		updatedFields[ fieldsIndex ] = {
+			...updatedFields[ fieldsIndex ],
+			elements: categoryElements,
+		};
+
+		// If categories are empty, remove the category filter.
+		if ( originalLocalCategories.length === 0 ) {
+			updatedFields = updatedFields.filter(
+				( field ) => field.id !== 'categories'
+			);
+		}
+
+		// If assets are empty, remove the assets filter.
+		if ( Object.values( data.assets || {} ).length === 0 ) {
+			updatedFields = updatedFields.filter( ( field ) => field.id !== 'assets' );
+		}
+
+		const newViewCopy = {
+			...view,
+			fields: updatedFields,
+		};
+		// Force view to re-render.
+		setLocalCategories( originalLocalCategories );
+		setView( newViewCopy );
+	};
+
 	useEffect( () => {
 		if ( data && data.hasOwnProperty( 'patterns' ) ) {
 			if ( data.categories ) {
@@ -1597,60 +1690,7 @@ const Interface = ( props ) => {
 					return;
 				}
 
-				const originalLocalCategories = [];
-				let maybeDuplicateLabel = '';
-				const categoryElements = Object.values( data.categories ).map(
-					( category ) => {
-						const categoryLabel =
-							category.customLabel || category.label || category.name;
-						let catLabel = categoryLabel;
-						if ( maybeDuplicateLabel === categoryLabel ) {
-							catLabel = `${ catLabel } (${ category.count + 1 })`;
-						}
-						maybeDuplicateLabel = categoryLabel;
-						if ( ! category.registered ) {
-							originalLocalCategories.push( {
-								id: category.id,
-								label: categoryLabel,
-							} );
-						}
-						return {
-							label: catLabel,
-							value: category.slug,
-						};
-					}
-				);
-
-				// Create a new fields array instead of mutating the existing one.
-				let updatedFields = [ ...fields ];
-
-				// Update the categories field elements.
-				updatedFields[ fieldsIndex ] = {
-					...updatedFields[ fieldsIndex ],
-					elements: categoryElements,
-				};
-
-				// If categories are empty, remove the category filter.
-				if ( originalLocalCategories.length === 0 ) {
-					updatedFields = updatedFields.filter(
-						( field ) => field.id !== 'categories'
-					);
-				}
-
-				// If assets are empty, remove the assets filter.
-				if ( Object.values( data.assets || {} ).length === 0 ) {
-					updatedFields = updatedFields.filter(
-						( field ) => field.id !== 'assets'
-					);
-				}
-
-				const newViewCopy = {
-					...view,
-					fields: updatedFields,
-				};
-				// Force view to re-render.
-				setLocalCategories( originalLocalCategories );
-				setView( newViewCopy );
+				refreshCategories( data.categories );
 
 				// Now filter the patterns.
 				if ( data.patterns ) {
@@ -2279,6 +2319,43 @@ const Interface = ( props ) => {
 					} }
 					doNotShowAgain={ doNotShowAgain }
 					onRequestClose={ () => setIsDeleteModalOpen( null ) }
+				/>
+			) }
+			{ isTagPatternModalOpen && (
+				<PatternTagModal
+					items={ isTagPatternModalOpen.items }
+					categories={ localCategories }
+					onTag={ (
+						tagResponse,
+						itemIdsAndNonces,
+						itemsAffected,
+						newCategories,
+						affectedSlugs
+					) => {
+						dispatch( patternsStore ).upsertCategory( newCategories );
+						itemsAffected.forEach( ( item ) => {
+							dispatch( patternsStore ).setPattern(
+								item.patternId,
+								item.patternTitle,
+								affectedSlugs,
+								affectedSlugs
+							);
+						} );
+						setIsTagPatternModalOpen( null );
+						setSnackbar( {
+							isVisible: true,
+							message: __(
+								'Categories assigned to patterns',
+								'pattern-wrangler'
+							),
+							title: __( 'Categories Assigned to Patterns', 'pattern-wrangler' ),
+							type: 'success',
+							onClose: () => {
+								setSnackbar( { isVisible: false } );
+							},
+						} );
+					} }
+					onRequestClose={ () => setIsTagPatternModalOpen( null ) }
 				/>
 			) }
 			{ isGetCodeModalOpen && (
