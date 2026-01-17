@@ -206,6 +206,7 @@ class Functions {
 				return strcasecmp( $a['customLabel'], $b['customLabel'] );
 			}
 		);
+
 		return array(
 			'registered' => $all_categories,
 			'categories' => $pattern_categories_taxonomy,
