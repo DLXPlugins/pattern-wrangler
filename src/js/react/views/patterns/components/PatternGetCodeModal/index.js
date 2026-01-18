@@ -208,7 +208,7 @@ const PatternGetCodeModal = ( props ) => {
 							<div className="dlx-pw-modal-admin-row">
 								<TextControl
 									label={ __(
-										'Synced Patterns Popup Trigger Code',
+										'Synced Pattern Popups Trigger Code',
 										'pattern-wrangler'
 									) }
 									value={ getPatternPopupTriggerCode() }
@@ -222,7 +222,7 @@ const PatternGetCodeModal = ( props ) => {
 								/>
 								<TextControl
 									label={ __(
-										'Synced Patterns Popup Trigger Anchor Code',
+										'Synced Pattern Popups Trigger Anchor Code',
 										'pattern-wrangler'
 									) }
 									value={ getPatternPopupTriggerAnchorCode() }
@@ -236,7 +236,7 @@ const PatternGetCodeModal = ( props ) => {
 								/>
 								<p className="description">
 									<a href={ `${ dlxEnhancedPatternsView.syncedPatternPopupsUrl }#how-to-use` } target="_blank" rel="noreferrer">
-										{ __( 'Synced Patterns Popup documentation', 'pattern-wrangler' ) }
+										{ __( 'Synced Pattern Popups documentation', 'pattern-wrangler' ) }
 									</a>
 								</p>
 							</div>

@@ -127,7 +127,7 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 * New feature: Categories View - A new dedicated Categories screen that unifies local and registered pattern categories in one place, making it easier to manage and organize your pattern categories.
 * New feature: Bulk category operations - You can now enable, disable, pause, and map multiple categories at once using bulk actions.
 * New feature: Category mapping - Map registered categories to local categories to prevent duplicates and better organize your pattern library.
-* New feature: Integration with <a href="https://wordpress.org/plugins/synced-pattern-popups/">Synced Patterns Popups plugin</a> for copying code snippets.
+* New feature: Integration with <a href="https://wordpress.org/plugins/synced-pattern-popups/">Synced Pattern Popups plugin</a> for copying code snippets.
 * Enhancement: Category cards now show pattern counts and mapped status at a glance.
 * Bug fix: Fixed issue where registered categories weren't showing due to slug mismatches.
 * Bug fix: Resolved duplicate category count display.
@@ -246,4 +246,4 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 == Upgrade Notice ==
 
 = 2.3.0 =
-Major update introducing a new Categories View that unifies local and registered pattern categories. This release also adds bulk category operations, category mapping capabilities, and integration with Synced Patterns Popups plugin. Includes several bug fixes for category display and management.
+Major update introducing a new Categories View that unifies local and registered pattern categories. This release also adds bulk category operations, category mapping capabilities, and integration with Synced Pattern Popups plugin. Includes several bug fixes for category display and management.
