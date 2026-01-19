@@ -11,7 +11,7 @@ import { downloadBlob } from '@wordpress/blob';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import { escapeAttribute } from '@wordpress/escape-html';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
-import { __, _n } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import {
 	Button,
 	__experimentalToggleGroupControl as ToggleGroupControl,
@@ -840,7 +840,12 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'delete',
-				label: __( 'Delete Pattern', 'pattern-wrangler' ),
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Delete %d Pattern', 'Delete %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
 				icon: 'trash',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and disabled.
@@ -855,7 +860,12 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'tag-pattern',
-				label: __( 'Assign Pattern to Category', 'pattern-wrangler' ),
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Assign Categories to %d Pattern', 'Assign Categories to %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
 				icon: 'tag',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and enabled.
@@ -870,7 +880,12 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'publish',
-				label: __( 'Publish Pattern', 'pattern-wrangler' ),
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Publish %d Pattern', 'Publish %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
 				icon: 'yes-alt',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and disabled.
@@ -885,7 +900,12 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'unpause',
-				label: __( 'Re-enable Pattern', 'pattern-wrangler' ),
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Re-enable %d Pattern', 'Re-enable %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
 				icon: 'controls-play',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and enabled.
@@ -915,7 +935,12 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'disable-preview',
-				label: __( 'Disable Pattern', 'pattern-wrangler' ),
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Disable %d Pattern', 'Disable %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
 				icon: 'controls-pause',
 				callback: ( items ) => {
 					setIsPauseModalOpen( { items } );
