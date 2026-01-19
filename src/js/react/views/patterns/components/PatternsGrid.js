@@ -1062,8 +1062,8 @@ const Interface = ( props ) => {
 								patternsCopy = patternsCopy.filter( ( pattern ) => {
 									const patternCategories = pattern.categorySlugs || [];
 									return patternCategories.some( ( category ) => {
-										const categoryToCheck =
-											category.name || cleanForSlug( category );
+										const tempSlug = category.name || category.label || category.toString() || '';
+										const categoryToCheck = cleanForSlug( tempSlug );
 										return cleanedFilterValues.includes( categoryToCheck );
 									} );
 								} );
@@ -1075,8 +1075,8 @@ const Interface = ( props ) => {
 									// Check if this pattern has any excluded categories
 									const hasExcludedCategory = patternCategories.some(
 										( category ) => {
-											const categoryToCheck =
-												category.name || cleanForSlug( category );
+											const tempSlug = category.name || category.label || category.toString() || '';
+											const categoryToCheck = cleanForSlug( tempSlug );
 											return cleanedFilterValues.includes( categoryToCheck );
 										}
 									);
@@ -1293,8 +1293,8 @@ const Interface = ( props ) => {
 								patternsCopy = patternsCopy.filter( ( pattern ) => {
 									const patternCategories = pattern.categorySlugs || [];
 									return patternCategories.some( ( category ) => {
-										const categoryToCheck =
-											category.name || cleanForSlug( category );
+										const tempSlug = category.name || category.label || category.toString() || '';
+										const categoryToCheck = cleanForSlug( tempSlug );
 										return cleanedFilterValues.includes( categoryToCheck );
 									} );
 								} );
@@ -1306,8 +1306,8 @@ const Interface = ( props ) => {
 									// Check if this pattern has any excluded categories
 									const hasExcludedCategory = patternCategories.some(
 										( category ) => {
-											const categoryToCheck =
-												category.name || cleanForSlug( category );
+											const tempSlug = category.name || category.label || category.toString() || '';
+											const categoryToCheck = cleanForSlug( tempSlug );
 											return cleanedFilterValues.includes( categoryToCheck );
 										}
 									);
