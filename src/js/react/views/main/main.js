@@ -438,6 +438,11 @@ const Main = ( props ) => {
 					'disablePatternImporterBlock'
 				);
 			}
+		} else {
+			patternsBlockData.canUseBlock = getValues(
+				'disablePatternImporterBlock'
+			);
+			patternsBlockData.networkCanUseBlock = true;
 		}
 		return (
 			<div className="dlx-admin__row">
