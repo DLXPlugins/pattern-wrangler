@@ -11,7 +11,7 @@ import { downloadBlob } from '@wordpress/blob';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import { escapeAttribute } from '@wordpress/escape-html';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
-import { __, _n } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import {
 	Button,
 	__experimentalToggleGroupControl as ToggleGroupControl,
@@ -35,6 +35,7 @@ import PatternPublishModal from './PatternPublishModal';
 import PatternUnpauseModal from './PatternUnpauseModal';
 import PatternDeleteModal from './PatternDeleteModal';
 import PatternGetCodeModal from './PatternGetCodeModal';
+import PatternTagModal from './PatternTagModal';
 import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
 
@@ -261,6 +262,9 @@ const Interface = ( props ) => {
 			categories: select( patternsStore ).getCategories(),
 		};
 	} );
+	const nonEmptyCategories = useMemo( () => {
+		return Object.values( categories ).filter( ( category ) => category.count > 0 );
+	}, [ categories ] );
 
 	const { assets } = useSelect( () => {
 		return {
@@ -286,6 +290,7 @@ const Interface = ( props ) => {
 	const [ isUnpauseModalOpen, setIsUnpauseModalOpen ] = useState( null );
 	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( null );
 	const [ isGetCodeModalOpen, setIsGetCodeModalOpen ] = useState( null );
+	const [ isTagPatternModalOpen, setIsTagPatternModalOpen ] = useState( null );
 	const exportPattern = ( item ) => {
 		const isLocal = item.isLocal;
 		const title = item.title;
@@ -448,7 +453,22 @@ const Interface = ( props ) => {
 		);
 	};
 
-	const [ view, setView ] = useState( getDefaultView() );
+	const [ view, setView ] = useState( () => {
+		const defaultView = getDefaultView();
+		const queryCategories = decodeURIComponent(
+			getQueryArgs( window.location.href )?.categories || ''
+		);
+
+		if ( queryCategories ) {
+			defaultView.filters.push( {
+				field: 'categories',
+				value: queryCategories.split( ',' ),
+				operator: 'isAny',
+			} );
+		}
+
+		return defaultView;
+	} );
 
 	const fields = useMemo(
 		() => [
@@ -625,12 +645,16 @@ const Interface = ( props ) => {
 				filterBy: {
 					operators: [ 'isAny', 'isNone' ],
 				},
-				elements: Object.values( categories ).map( ( category ) => {
-					return {
-						label: category.customLabel || category.label || category.name,
-						value: category.slug,
-					};
-				} ),
+				elements:
+					nonEmptyCategories.length > 0
+						? Object.values( nonEmptyCategories ).map( ( category ) => {
+							return {
+								label:
+										category.customLabel || category.label || category.name,
+								value: category.slug,
+							};
+						  } )
+						: null,
 			},
 			{
 				id: 'assets',
@@ -644,12 +668,18 @@ const Interface = ( props ) => {
 				filterBy: {
 					operators: [ 'is' ],
 				},
-				elements: Object.values( select( patternsStore ).getAssets() || [] ).map( ( asset ) => {
-					return {
-						label: asset.label,
-						value: asset.slug,
-					};
-				} ),
+				elements:
+					select( patternsStore ).getAssets() &&
+					select( patternsStore ).getAssets().length > 0
+						? Object.values( select( patternsStore ).getAssets() || [] ).map(
+							( asset ) => {
+								return {
+									label: asset.label,
+									value: asset.slug,
+								};
+							}
+						  )
+						: null,
 			},
 			{
 				elements: [
@@ -778,7 +808,7 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
 			},
 		],
-		[]
+		[ nonEmptyCategories ]
 	);
 
 	const actions = useMemo(
@@ -810,7 +840,12 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'delete',
-				label: __( 'Delete Pattern', 'pattern-wrangler' ),
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Delete %d Pattern', 'Delete %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
 				icon: 'trash',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and disabled.
@@ -824,8 +859,33 @@ const Interface = ( props ) => {
 				supportsBulk: true,
 			},
 			{
+				id: 'tag-pattern',
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Assign Categories to %d Pattern', 'Assign Categories to %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
+				icon: 'tag',
+				isEligible: ( pattern ) => {
+					// Pattern must be local and enabled.
+					return pattern.isLocal && ! pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsTagPatternModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: false,
+				supportsBulk: true,
+			},
+			{
 				id: 'publish',
-				label: __( 'Publish Pattern', 'pattern-wrangler' ),
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Publish %d Pattern', 'Publish %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
 				icon: 'yes-alt',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and disabled.
@@ -840,7 +900,12 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'unpause',
-				label: __( 'Re-enable Pattern', 'pattern-wrangler' ),
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Re-enable %d Pattern', 'Re-enable %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
 				icon: 'controls-play',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and enabled.
@@ -870,7 +935,12 @@ const Interface = ( props ) => {
 			},
 			{
 				id: 'disable-preview',
-				label: __( 'Disable Pattern', 'pattern-wrangler' ),
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n( 'Disable %d Pattern', 'Disable %d Patterns', items.length, 'pattern-wrangler' ),
+						items.length );
+				},
 				icon: 'controls-pause',
 				callback: ( items ) => {
 					setIsPauseModalOpen( { items } );
@@ -886,7 +956,7 @@ const Interface = ( props ) => {
 				id: 'copy',
 				label: __( 'Copy Pattern to Clipboard', 'pattern-wrangler' ),
 				icon: 'edit',
-				callback: async ( items ) => {
+				callback: async( items ) => {
 					const copyContent = items[ 0 ].content.trim();
 					let copied = false;
 					try {
@@ -1017,8 +1087,8 @@ const Interface = ( props ) => {
 								patternsCopy = patternsCopy.filter( ( pattern ) => {
 									const patternCategories = pattern.categorySlugs || [];
 									return patternCategories.some( ( category ) => {
-										const categoryToCheck =
-											category.name || cleanForSlug( category );
+										const tempSlug = category.name || category.label || category.toString() || '';
+										const categoryToCheck = cleanForSlug( tempSlug );
 										return cleanedFilterValues.includes( categoryToCheck );
 									} );
 								} );
@@ -1030,8 +1100,8 @@ const Interface = ( props ) => {
 									// Check if this pattern has any excluded categories
 									const hasExcludedCategory = patternCategories.some(
 										( category ) => {
-											const categoryToCheck =
-												category.name || cleanForSlug( category );
+											const tempSlug = category.name || category.label || category.toString() || '';
+											const categoryToCheck = cleanForSlug( tempSlug );
 											return cleanedFilterValues.includes( categoryToCheck );
 										}
 									);
@@ -1248,8 +1318,8 @@ const Interface = ( props ) => {
 								patternsCopy = patternsCopy.filter( ( pattern ) => {
 									const patternCategories = pattern.categorySlugs || [];
 									return patternCategories.some( ( category ) => {
-										const categoryToCheck =
-											category.name || cleanForSlug( category );
+										const tempSlug = category.name || category.label || category.toString() || '';
+										const categoryToCheck = cleanForSlug( tempSlug );
 										return cleanedFilterValues.includes( categoryToCheck );
 									} );
 								} );
@@ -1261,8 +1331,8 @@ const Interface = ( props ) => {
 									// Check if this pattern has any excluded categories
 									const hasExcludedCategory = patternCategories.some(
 										( category ) => {
-											const categoryToCheck =
-												category.name || cleanForSlug( category );
+											const tempSlug = category.name || category.label || category.toString() || '';
+											const categoryToCheck = cleanForSlug( tempSlug );
 											return cleanedFilterValues.includes( categoryToCheck );
 										}
 									);
@@ -1458,6 +1528,21 @@ const Interface = ( props ) => {
 			changeQueryArgs.search = '';
 		}
 
+		// Add categories filter parameters if they exist.
+		const categoriesFilter = newView.filters?.find(
+			( filter ) => filter.field === 'categories'
+		);
+		if ( categoriesFilter ) {
+			const categoryValues = categoriesFilter.value || [];
+
+			// Set query var to category values encoded for URL.
+			if ( categoryValues.length > 0 ) {
+				changeQueryArgs.categories = encodeURIComponent(
+					categoryValues.join( ',' )
+				);
+			}
+		}
+
 		// Add sort parameters if they exist.
 		if ( newView.sort?.field ) {
 			changeQueryArgs.orderby = newView.sort.field;
@@ -1511,8 +1596,20 @@ const Interface = ( props ) => {
 			newView.filters = [
 				...newView.filters,
 				{ field: 'patternType', operator: 'is', value: 'all' },
-				{ field: 'patternLocalRegisteredStatus', operator: 'is', value: 'enabled' },
+				{
+					field: 'patternLocalRegisteredStatus',
+					operator: 'is',
+					value: 'enabled',
+				},
 			];
+			// Unset categories query arg.
+			changeQueryArgs.categories = '';
+			newUrl = removeQueryArgs( newUrl, 'categories' );
+		}
+		// If newView doesn't include categories, unset the categories query arg.
+		if ( ! newView.filters?.find( ( filter ) => filter.field === 'categories' ) ) {
+			changeQueryArgs.categories = '';
+			newUrl = removeQueryArgs( newUrl, 'categories' );
 		}
 
 		setPatternsDisplay( getPatternsForDisplay( newView ) );
@@ -1540,6 +1637,70 @@ const Interface = ( props ) => {
 		} );
 	}, [ view ] );
 
+	const refreshCategories = ( updatedCategories ) => {
+		// Find the index of the pattern-categories field.
+		const fieldsIndex = fields.findIndex(
+			( field ) => field.id === 'categories'
+		);
+
+		// Check if the field exists before trying to modify it.
+		if ( fieldsIndex === -1 || updatedCategories.length === 0 ) {
+			return;
+		}
+		const originalLocalCategories = [];
+		let maybeDuplicateLabel = '';
+		const categoryElements = Object.values( updatedCategories ).map(
+			( category ) => {
+				const categoryLabel =
+					category.customLabel || category.label || category.name;
+				let catLabel = categoryLabel;
+				if ( maybeDuplicateLabel === categoryLabel ) {
+					catLabel = `${ catLabel } (${ category.count + 1 })`;
+				}
+				maybeDuplicateLabel = categoryLabel;
+				if ( ! category.registered ) {
+					originalLocalCategories.push( {
+						id: category.id,
+						label: categoryLabel,
+					} );
+				}
+				return {
+					label: catLabel,
+					value: category.slug,
+				};
+			}
+		);
+
+		// Create a new fields array instead of mutating the existing one.
+		let updatedFields = [ ...fields ];
+
+		// Update the categories field elements.
+		updatedFields[ fieldsIndex ] = {
+			...updatedFields[ fieldsIndex ],
+			elements: categoryElements,
+		};
+
+		// If categories are empty, remove the category filter.
+		if ( originalLocalCategories.length === 0 ) {
+			updatedFields = updatedFields.filter(
+				( field ) => field.id !== 'categories'
+			);
+		}
+
+		// If assets are empty, remove the assets filter.
+		if ( Object.values( data.assets || {} ).length === 0 ) {
+			updatedFields = updatedFields.filter( ( field ) => field.id !== 'assets' );
+		}
+
+		const newViewCopy = {
+			...view,
+			fields: updatedFields,
+		};
+		// Force view to re-render.
+		setLocalCategories( originalLocalCategories );
+		setView( newViewCopy );
+	};
+
 	useEffect( () => {
 		if ( data && data.hasOwnProperty( 'patterns' ) ) {
 			if ( data.categories ) {
@@ -1554,59 +1715,7 @@ const Interface = ( props ) => {
 					return;
 				}
 
-				const originalLocalCategories = [];
-				let maybeDuplicateLabel = '';
-				const categoryElements = Object.values( data.categories ).map(
-					( category ) => {
-						const categoryLabel = category.customLabel || category.label || category.name;
-						let catLabel = categoryLabel;
-						if ( maybeDuplicateLabel === categoryLabel ) {
-							catLabel = `${ catLabel } (${ category.count + 1 })`;
-						}
-						maybeDuplicateLabel = categoryLabel;
-						if ( ! category.registered ) {
-							originalLocalCategories.push( {
-								id: category.id,
-								label: categoryLabel,
-							} );
-						}
-						return {
-							label: catLabel,
-							value: category.slug,
-						};
-					}
-				);
-
-				// Create a new fields array instead of mutating the existing one.
-				let updatedFields = [ ...fields ];
-
-				// Update the categories field elements.
-				updatedFields[ fieldsIndex ] = {
-					...updatedFields[ fieldsIndex ],
-					elements: categoryElements,
-				};
-
-				// If categories are empty, remove the category filter.
-				if ( originalLocalCategories.length === 0 ) {
-					updatedFields = updatedFields.filter(
-						( field ) => field.id !== 'categories'
-					);
-				}
-
-				// If assets are empty, remove the assets filter.
-				if ( Object.values( data.assets || {} ).length === 0 ) {
-					updatedFields = updatedFields.filter(
-						( field ) => field.id !== 'assets'
-					);
-				}
-
-				const newViewCopy = {
-					...view,
-					fields: updatedFields,
-				};
-				// Force view to re-render.
-				setLocalCategories( originalLocalCategories );
-				setView( newViewCopy );
+				refreshCategories( data.categories );
 
 				// Now filter the patterns.
 				if ( data.patterns ) {
@@ -1637,7 +1746,6 @@ const Interface = ( props ) => {
 	const hasPagination = useMemo( () => {
 		return getFilteredPatternsCount( view ) > view.perPage;
 	}, [ view ] );
-
 
 	if ( loading ) {
 		return <>Loading...</>;
@@ -1718,7 +1826,9 @@ const Interface = ( props ) => {
 					</div>
 					<div className="dlx-patterns-view-grid">
 						<div className="dlx-patterns-view-search-filters-wrapper">
-							<DataViews.Search label={ __( 'Search Patterns', 'pattern-wrangler' ) } />
+							<DataViews.Search
+								label={ __( 'Search Patterns', 'pattern-wrangler' ) }
+							/>
 							<DataViews.FiltersToggle />
 						</div>
 						<div className="dlx-patterns-view-button-actions-wrapper">
@@ -2003,8 +2113,8 @@ const Interface = ( props ) => {
 							}
 							{
 								// If patttern type is local, show synced|both|unsynced buttons.
-								( view?.filters?.find( ( filter ) => filter.field === 'patternType' )
-									?.value === 'all' ) && (
+								view?.filters?.find( ( filter ) => filter.field === 'patternType' )
+									?.value === 'all' && (
 									<>
 										<ToggleGroupControl
 											label={ __( 'Disabled Status', 'pattern-wrangler' ) }
@@ -2082,18 +2192,19 @@ const Interface = ( props ) => {
 					</div>
 					<DataViews.Layout />
 					<DataViews.BulkActionToolbar />
-					{
-						hasPagination && (
-							<div className="dlx-patterns-view-pagination-wrapper">
-								<div className="dlx-patterns-view-pagination-item dlx-patterns-view-pagination-item-total-items">
-									<span>{ totalItems } { _n( 'Item', 'Items', totalItems, 'pattern-wrangler' ) }</span>
-								</div>
-								<div className="dlx-patterns-view-pagination-item">
-									<DataViews.Pagination />
-								</div>
+					{ hasPagination && (
+						<div className="dlx-patterns-view-pagination-wrapper">
+							<div className="dlx-patterns-view-pagination-item dlx-patterns-view-pagination-item-total-items">
+								<span>
+									{ totalItems }{ ' ' }
+									{ _n( 'Item', 'Items', totalItems, 'pattern-wrangler' ) }
+								</span>
 							</div>
-						)
-					}
+							<div className="dlx-patterns-view-pagination-item">
+								<DataViews.Pagination />
+							</div>
+						</div>
+					) }
 				</DataViews>
 
 				{ snackbar.isVisible && (
@@ -2233,6 +2344,43 @@ const Interface = ( props ) => {
 					} }
 					doNotShowAgain={ doNotShowAgain }
 					onRequestClose={ () => setIsDeleteModalOpen( null ) }
+				/>
+			) }
+			{ isTagPatternModalOpen && (
+				<PatternTagModal
+					items={ isTagPatternModalOpen.items }
+					categories={ localCategories }
+					onTag={ (
+						tagResponse,
+						itemIdsAndNonces,
+						itemsAffected,
+						newCategories,
+						affectedSlugs
+					) => {
+						dispatch( patternsStore ).upsertCategory( newCategories );
+						itemsAffected.forEach( ( item ) => {
+							dispatch( patternsStore ).setPattern(
+								item.patternId,
+								item.patternTitle,
+								affectedSlugs,
+								affectedSlugs
+							);
+						} );
+						setIsTagPatternModalOpen( null );
+						setSnackbar( {
+							isVisible: true,
+							message: __(
+								'Categories assigned to patterns',
+								'pattern-wrangler'
+							),
+							title: __( 'Categories Assigned to Patterns', 'pattern-wrangler' ),
+							type: 'success',
+							onClose: () => {
+								setSnackbar( { isVisible: false } );
+							},
+						} );
+					} }
+					onRequestClose={ () => setIsTagPatternModalOpen( null ) }
 				/>
 			) }
 			{ isGetCodeModalOpen && (

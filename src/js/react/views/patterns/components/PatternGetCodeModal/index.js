@@ -2,31 +2,25 @@
 import React, { useState, useEffect } from 'react';
 import { TextControl, Modal, Button } from '@wordpress/components';
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Pattern Create Modal.
  *
- * @param {Object}   props                     The props.
- * @param {string}   props.title               The title of the modal.
- * @param {string}   props.patternId           The id of the pattern.
- * @param {string}   props.patternNonce        The nonce of the pattern.
- * @param {string}   props.patternTitle        The title of the pattern.
- * @param {Array}    props.patternCategories   The categories of the pattern in label arrays.
- * @param {string}   props.patternSyncStatus   The sync status of the pattern.
- * @param {string}   props.patternCopyId       The id of the pattern to copy.
- * @param {Object}   props.categories          The categories of all the patterns..
- * @param {Function} props.onRequestClose      The function to call when the modal is closed.
- * @param {string}   props.syncedDefaultStatus The default sync status of the pattern. Values are 'synced' or 'unsynced'.
- * @param {boolean}  props.syncedDisabled      Whether the synced status is disabled.
- * @param {Function} props.onEdit              The function to call when the pattern is edited.
+ * @param {Object}   props                The props.
+ * @param {Object}   props.items          The items to get the code for. Should be an array of one item.
+ * @param {Function} props.onRequestClose The function to call when the modal is closed.
  * @return {Object} The rendered component.
  */
 const PatternGetCodeModal = ( props ) => {
+	const { item } = props;
+	const { id = 0, syncStatus = 'unsynced' } = item || {};
+
 	const [ isMultisite ] = useState( dlxEnhancedPatternsView.isMultisite );
 	const [ shortcodeInputRef, setShortcodeInputRef ] = useState( null );
 	const [ phpFunctionInputRef, setPhpFunctionInputRef ] = useState( null );
-
+	const [ popupTriggerInputRef, setPopupTriggerInputRef ] = useState( null );
+	const [ popupTriggerAnchorInputRef, setPopupTriggerAnchorInputRef ] = useState( null );
 	const addCopyClipboardButton = async( inputRef, text ) => {
 		const copyButton = document.createElement( 'button' );
 		copyButton.classList.add( 'dlx-pw-copy-shortcode' );
@@ -111,6 +105,32 @@ const PatternGetCodeModal = ( props ) => {
 	}, [ phpFunctionInputRef ] );
 
 	/**
+	 * Copy the popup trigger code to the clipboard when the popup trigger input is focused.
+	 *
+	 * @return {void}
+	 */
+	useEffect( () => {
+		if ( ! popupTriggerInputRef ) {
+			return;
+		}
+
+		addCopyClipboardButton( popupTriggerInputRef, getPatternPopupTriggerCode() );
+	}, [ popupTriggerInputRef ] );
+
+	/**
+	 * Copy the popup trigger anchor code to the clipboard when the popup trigger anchor input is focused.
+	 *
+	 * @return {void}
+	 */
+	useEffect( () => {
+		if ( ! popupTriggerAnchorInputRef ) {
+			return;
+		}
+
+		addCopyClipboardButton( popupTriggerAnchorInputRef, getPatternPopupTriggerAnchorCode() );
+	}, [ popupTriggerAnchorInputRef ] );
+
+	/**
 	 * Get the modal title.
 	 *
 	 * @return {string} The modal title.
@@ -129,6 +149,14 @@ const PatternGetCodeModal = ( props ) => {
 			return `[wp_block slug="${ props.item.slug }" site_id="${ props.item.siteId }"]`;
 		}
 		return `[wp_block slug="${ props.item.slug }"]`;
+	};
+
+	const getPatternPopupTriggerCode = () => {
+		return `spp-trigger-${ id }`;
+	};
+
+	const getPatternPopupTriggerAnchorCode = () => {
+		return `<a href="#spp-trigger-${ id }">Open the Popup</a>`;
 	};
 
 	/**
@@ -174,6 +202,46 @@ const PatternGetCodeModal = ( props ) => {
 							className="dlx-pw-modal-admin-row-input"
 						/>
 					</div>
+					{ dlxEnhancedPatternsView.syncedPatternPopupsActive &&
+						syncStatus === 'synced' && (
+						<>
+							<div className="dlx-pw-modal-admin-row">
+								<TextControl
+									label={ __(
+										'Synced Pattern Popups Trigger Code',
+										'pattern-wrangler'
+									) }
+									value={ getPatternPopupTriggerCode() }
+									disabled={ true }
+									ref={ setPopupTriggerInputRef }
+									className="dlx-pw-modal-admin-row-input"
+									help={ __(
+										'This is the code to trigger the Synced Pattern Popup on your site.',
+										'pattern-wrangler'
+									) }
+								/>
+								<TextControl
+									label={ __(
+										'Synced Pattern Popups Trigger Anchor Code',
+										'pattern-wrangler'
+									) }
+									value={ getPatternPopupTriggerAnchorCode() }
+									disabled={ true }
+									ref={ setPopupTriggerAnchorInputRef }
+									className="dlx-pw-modal-admin-row-input"
+									help={ __(
+										'This is the code to add to the anchor of the Synced Pattern Popup on your site.',
+										'pattern-wrangler'
+									) }
+								/>
+								<p className="description">
+									<a href={ `${ dlxEnhancedPatternsView.syncedPatternPopupsUrl }#how-to-use` } target="_blank" rel="noreferrer">
+										{ __( 'Synced Pattern Popups documentation', 'pattern-wrangler' ) }
+									</a>
+								</p>
+							</div>
+						</>
+					) }
 					<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
 						<Button variant="secondary" onClick={ props.onRequestClose }>
 							{ __( 'Cancel', 'pattern-wrangler' ) }

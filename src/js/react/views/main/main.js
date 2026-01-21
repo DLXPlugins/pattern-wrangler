@@ -20,154 +20,6 @@ import Notice from '../../components/Notice';
 import SaveResetButtons from '../../components/SaveResetButtons';
 import SendCommand from '../../utils/SendCommand';
 
-const usePatternCategories = ( props ) => {
-	const { getValues } = props;
-
-	const getEnabledCategories = () => {
-		const categories = getValues( 'categories' );
-		if ( ! categories ) {
-			return null;
-		}
-		return Object.values( categories ).filter( ( category ) => category.enabled );
-	};
-
-	return {
-		enabledCategories: getEnabledCategories(),
-	};
-};
-
-const Category = ( props ) => {
-	const [ showLabelPopover, setShowLabelPopover ] = useState( false );
-	const [ labelEditButton, setLabelEditButton ] = useState( false );
-	const { category, control, getValues, setValue, taxCategories } = props;
-	const { enabledCategories } = usePatternCategories( { getValues } );
-
-	const getCategories = () => {
-		const localCategories = taxCategories.map( ( cat ) => {
-			return {
-				label: cat.name + ' (' + cat.slug + ')',
-				value: cat.slug,
-			};
-		} );
-		localCategories.push( {
-			label: __( 'None', 'pattern-wrangler' ),
-			value: 'none',
-		} );
-		return localCategories;
-	};
-
-	/**
-	 * Make sure mapped to category is valid, especially if a mapped category is disabled.
-	 */
-	useEffect( () => {
-		if (
-			category.mappedTo &&
-			! getCategories().find( ( cat ) => cat.value === category.mappedTo )
-		) {
-			setValue( `categories.${ category.slug }.mappedTo`, 'none' );
-		}
-	}, [ enabledCategories ] );
-
-	/**
-	 * Get the label to display.
-	 *
-	 * @return {string} The label to display.
-	 */
-	const getLabel = () => {
-		if ( category.customLabel && category.customLabel.length > 0 ) {
-			return category.customLabel;
-		}
-		return category.label;
-	};
-
-	return (
-		<>
-			{ showLabelPopover && (
-				<Popover
-					placement="right-start"
-					onClose={ () => setShowLabelPopover( false ) }
-					anchor={ labelEditButton }
-					noArrow={ false }
-					offset={ 10 }
-				>
-					<div className="dlx-category-popover">
-						<Controller
-							name={ `categories.${ category.slug }.customLabel` }
-							control={ control }
-							render={ ( { field: { onChange, value } } ) => (
-								<TextControl
-									label={ __( 'Category Label', 'pattern-wrangler' ) }
-									value={ value }
-									onChange={ ( newValue ) => {
-										onChange( newValue );
-									} }
-								/>
-							) }
-						/>
-					</div>
-				</Popover>
-			) }
-			<div className="dlx-category-row">
-				<div className="dlx-category-row__toggle">
-					<Controller
-						name={ `categories.${ category.slug }.enabled` }
-						control={ control }
-						render={ ( { field: { onChange, value } } ) => (
-							<ToggleControl
-								aria-label={ category.label }
-								checked={ value }
-								onChange={ ( boolValue ) => {
-									// If disabled and mapped slug to uncategorized.
-									if ( ! boolValue && ! category.mappedTo ) {
-										setValue( `categories.${ category.slug }.mappedTo`, 'none' );
-									}
-									onChange( boolValue );
-								} }
-							/>
-						) }
-					/>
-				</div>
-				<div className="dlx-category-row__label">
-					<div className="dlx-category-row__label-text">
-						{ getLabel() }{ ' ' }
-						<Button
-							variant="link"
-							className="dlx-category-row__label-link"
-							ref={ setLabelEditButton }
-							onClick={ () => setShowLabelPopover( true ) }
-						>
-							{ __( 'Edit', 'pattern-wrangler' ) }
-						</Button>
-					</div>
-					<div className="dlx-category-row__slug">{ category.slug }</div>
-					<div className="dlx-category-row__count">
-						{ category.count }{ ' ' }
-						{ _n( 'Pattern', 'Patterns', category.count, 'pattern-wrangler' ) }
-					</div>
-					{ ! category.enabled && (
-						<div className="dlx-category-row__map">
-							<Controller
-								name={ `categories.${ category.slug }.mappedTo` }
-								control={ control }
-								render={ ( { field: { onChange, value } } ) => (
-									<SelectControl
-										label={ __( 'Map to Category', 'pattern-wrangler' ) }
-										value={ value }
-										onChange={ ( newValue ) => {
-											onChange( newValue );
-										} }
-										options={ getCategories() }
-									/>
-								) }
-							/>
-						</div>
-					) }
-				</div>
-			</div>
-		</>
-	);
-};
-
 const Main = ( props ) => {
 	const data = dlxPatternWranglerAdmin.options;
 	const networkOptions = dlxPatternWranglerAdmin.networkOptions;
@@ -200,7 +52,6 @@ const Main = ( props ) => {
 			hidePluginPatterns: data.hidePluginPatterns,
 			enableEnhancedView: data.enableEnhancedView,
 			showMenusUI: data.showMenusUI,
-			categories: data.registered ?? [],
 			makePatternsExportable: data.makePatternsExportable,
 			saveNonce: dlxPatternWranglerAdmin.saveNonce,
 			resetNonce: dlxPatternWranglerAdmin.resetNonce,
@@ -210,28 +61,6 @@ const Main = ( props ) => {
 	const { errors, isDirty, dirtyFields } = useFormState( {
 		control,
 	} );
-
-	const getCategories = () => {
-		const categories = getValues( 'categories' );
-
-		return (
-			<ul className="dlx-category-list">
-				{ Object.values( categories ).map( ( category ) => {
-					return (
-						<li key={ category.slug }>
-							<Category
-								category={ category }
-								control={ control }
-								getValues={ getValues }
-								setValue={ setValue }
-								taxCategories={ data.categories }
-							/>
-						</li>
-					);
-				} ) }
-			</ul>
-		);
-	};
 
 	/**
 	 * Dismiss the ratings nag.
@@ -609,6 +438,11 @@ const Main = ( props ) => {
 					'disablePatternImporterBlock'
 				);
 			}
+		} else {
+			patternsBlockData.canUseBlock = getValues(
+				'disablePatternImporterBlock'
+			);
+			patternsBlockData.networkCanUseBlock = true;
 		}
 		return (
 			<div className="dlx-admin__row">
@@ -837,7 +671,7 @@ const Main = ( props ) => {
 				</h1>
 				<p className="description">
 					{ __(
-						'Configure which patterns are displayed and adjust settings and categories.',
+						'Configure which patterns are displayed and adjust settings.',
 						'pattern-wrangler'
 					) }
 				</p>
@@ -1133,33 +967,6 @@ const Main = ( props ) => {
 										/>
 									</div>
 									{ getShowPatternsExporterToggleControl() }
-								</td>
-							</tr>
-							<tr className="dlx-table-row-categories">
-								<th scope="row">
-									{ __( 'Pattern Categories', 'pattern-wrangler' ) }
-								</th>
-								<td>
-									{ Object.values( getValues( 'categories' ) ).length === 0 && (
-										<div className="dlx-admin__row dlx-admin__row-full-width">
-											<p>
-												{ __(
-													'No categories have been registered via core, themes or plugins.',
-													'pattern-wrangler'
-												) }
-											</p>
-										</div>
-									) }
-									{ Object.values( getValues( 'categories' ) ).length > 0 && (
-										<div className="dlx-admin__row dlx-admin__row-full-width">
-											<PanelBody
-												title={ __( 'Pattern Categories', 'pattern-wrangler' ) }
-												initialOpen={ false }
-											>
-												{ getCategories() }
-											</PanelBody>
-										</div>
-									) }
 								</td>
 							</tr>
 						</tbody>

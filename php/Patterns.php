@@ -31,6 +31,13 @@ class Patterns {
 	private static $registered_categories_registry = null;
 
 	/**
+	 * Holds the registered patterns *before* filters. Can access after `init` action.
+	 *
+	 * @var WP_Block_Patterns_Registry $registered_patterns_registry
+	 */
+	private static $registered_patterns_registry = null;
+
+	/**
 	 * Return an instance of the class
 	 *
 	 * @return Patterns class instance.
@@ -77,6 +84,9 @@ class Patterns {
 
 		// Get registered categories *before* filters.
 		add_action( 'init', array( $this, 'get_registered_categories' ), 800 );
+
+		// Get registered patterns *before* filters.
+		add_action( 'init', array( $this, 'get_registered_patterns' ), 801 );
 
 		// Deregister all pattenrs if all patterns are disabled.
 		add_action( 'init', array( $this, 'maybe_deregister_all_patterns' ), 2000 );
@@ -154,7 +164,7 @@ class Patterns {
 		}
 
 		// Check if core patterns is disabled.
-		if ( Functions::is_core_patterns_enabled_for_site() ) {
+		if ( ! Functions::is_core_patterns_enabled_for_site() ) {
 			add_action( 'init', array( $this, 'remove_core_patterns' ), 9 );
 			remove_action( 'init', '_register_core_block_patterns_and_categories' );
 		}
@@ -175,6 +185,20 @@ class Patterns {
 			self::$registered_categories_registry = $pattern_categories;
 		}
 		return self::$registered_categories_registry;
+	}
+
+	/**
+	 * Get registered patterns.
+	 *
+	 * @return WP_Block_Patterns_Registry
+	 */
+	public function get_registered_patterns() {
+		if ( null === self::$registered_patterns_registry ) {
+			$patterns                           = \WP_Block_Patterns_Registry::get_instance();
+			$patterns                           = $patterns->get_all_registered();
+			self::$registered_patterns_registry = $patterns;
+		}
+		return self::$registered_patterns_registry;
 	}
 
 	/**

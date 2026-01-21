@@ -4,7 +4,7 @@ Tags: patterns, reusable blocks, block editor, shortcode, block management
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 2.2.2
+Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Manage your block patterns, registered patterns, and reusable blocks efficiently
 
 == Description ==
 
-Pattern Wrangler makes managing WordPress block patterns easy, and is designed for both hybrid classic/block themes, block themes, and is compatible with most page builders through its shortcode support. Pattern Wrangler allows you to curate the pattern experience for your clients, controlling down to the pattern what the client sees in the block editor.
+Pattern Wrangler makes managing WordPress block patterns easy, and is designed for both hybrid classic/block themes, block themes, and is compatible with most page builders through its shortcode support. Pattern Wrangler allows you to curate the pattern experience for your clients, controlling down to the pattern and category what the client sees in the block editor.
 
 https://www.youtube.com/watch?v=tFnnki9ZOLg
 
@@ -21,6 +21,7 @@ https://www.youtube.com/watch?v=tFnnki9ZOLg
 Here are the major features:
 
 * **New Patterns Screen** - A new Patterns screen now shows at a glance all of the patterns available for your site. You can sort through both local and registered patterns, and selectively disable or enable whatever patterns you'd like your client to see. A real-time preview is available by clicking on the pattern. 
+* **New Categories Screen** - Manage both registered and local categories in one intuitive interface. Bulk-disable categories, or map them to existing ones.
 * **Hide All Patterns** - Completely hide patterns from the block editor in one click. This also hides the Patterns menu item.
 * **Selective Hiding** - Hide core, remote, theme, or plugin patterns while keeping your custom patterns visible. You can also hide synced and unsynced patterns together or separately. If you need to hide WooCommerce patterns, you can do so by hiding all plugin patterns, or using the Patterns View to disable the patterns individually.
 * **Category Management** - Disable, map, and rename registered categories from themes and plugins for better organization. This will help you keep local and registered patterns organized together. For example, you'd like to create a "Call to Action" category for a local pattern, but a registered category already exists, do you have a duplicate in the patterns view. In this case, map the registered category to the local one and remove the duplicate.
@@ -40,6 +41,14 @@ Available features on the Patterns screen include:
 * Quickly edit local patterns.
 * Add new patterns or import patterns from JSON.
 
+Available features on the Categories screen include:
+
+* Sort between local and registered categories.
+* Disable and map registered categories to local ones.
+* Easily create new categories.
+* Delete local categories as needed.
+* Bulk options allow you to disable, and enable registered categories.
+
 > Pattern Wrangler integrates seamlessly with block-based and classic themes offering a hybrid setup with unmatched flexibility. <a href="https://app.instawp.io/launch?s=pattern-wrangler-20-demo&d=v2">Spin up your own demo</a> to see Pattern Wrangler in action.
 
 === Quick Links ===
@@ -58,7 +67,17 @@ This plugin has been tested almost exclusively with <a href="https://wordpress.o
 
 If you have any issues with the previews, please be patient in your support requests, and also specific as to which themes or plugins may be involved.
 
-❤️ Please help spread the word about this plugin through your kind review.
+=== Integrations ===
+
+This plugin integrates well with the following:
+
+* <a href="https://wordpress.org/plugins/synced-pattern-popups/">Synced Pattern Popups</a>: Synced Pattern Popups helps you create popups using the WordPress editor you already know, not yet another builder.
+
+If you have an idea for other integrations, please leave a support thread.
+
+=== Help This Plugin Grow ===
+
+❤️ Please help spread the word about this plugin through your kind review and by telling others about this plugin.
 
 == Installation ==
 
@@ -122,6 +141,19 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Changelog ==
 
+= 2.3.0 =
+* Released 2026-01-21
+* New feature: Categories View - A new dedicated Categories screen that unifies local and registered pattern categories in one place, making it easier to manage and organize your pattern categories.
+* New feature: Bulk category operations - You can now enable, disable, pause, and map multiple categories at once using bulk actions.
+* New feature: Category mapping - Map registered categories to local categories to prevent duplicates and better organize your pattern library.
+* New feature: Integration with <a href="https://wordpress.org/plugins/synced-pattern-popups/">Synced Pattern Popups plugin</a> for copying code snippets.
+* Enhancement: Category cards now show pattern counts and mapped status at a glance.
+* Bug fix: Fixed issue where registered categories weren't showing due to slug mismatches.
+* Bug fix: Resolved duplicate category count display.
+* Bug fix: Fixed core pattern hiding functionality in Functions.
+* Bug fix: Improved handling of categories with special characters in quick edit mode.
+* ❤️ Please help spread the word about this plugin through your kind review.
+
 = 2.2.2 =
 * Released 2026-01-10
 * Bug fix: Registered categories weren't displaying in the card view.
@@ -132,7 +164,6 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 * Released 2026-01-08
 * Bug fix: Local categories weren't displaying correctly when filtering.
 * Bug fix: Clicking reset when filtering now returns to the default view (Showing All, Enabled).
-* ❤️ Please help spread the word about this plugin through your kind review.
 
 = 2.2.0 =
 * Released 2026-01-03
@@ -233,5 +264,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.2.2 =
-Bug fixes for registered categories not showing in the card view. Empty categories were showing in filters. Quick edit was showing invalid characters for some categories, while not opening because of mismatched slugs.
+= 2.3.0 =
+Major update introducing a new Categories View that unifies local and registered pattern categories. This release also adds bulk category operations, category mapping capabilities, and integration with Synced Pattern Popups plugin. Includes several bug fixes for category display and management.

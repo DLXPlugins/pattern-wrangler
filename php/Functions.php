@@ -113,6 +113,12 @@ class Functions {
 				'count'      => true,
 			)
 		);
+
+		// Get lables into shape.
+		$categories_arr = array();
+		foreach ( $categories as &$category ) {
+			$category->name = html_entity_decode( $category->name, ENT_QUOTES );
+		}
 		return $categories;
 	}
 
@@ -129,15 +135,17 @@ class Functions {
 		$pattern_categories = Patterns::get_instance();
 		$pattern_categories = $pattern_categories->get_registered_categories();
 
+		// Get registered patterns.
+		$pattern_registry = Patterns::get_instance();
+		$pattern_registry = $pattern_registry->get_registered_patterns();
+
 		// If after filters, get registered categories *after* filters.
 		if ( $after_filters ) {
 			$pattern_categories = \WP_Block_Pattern_Categories_Registry::get_instance();
 			$pattern_categories = $pattern_categories->get_all_registered();
+			$pattern_registry   = \WP_Block_Patterns_Registry::get_instance();
+			$pattern_registry   = $pattern_registry->get_all_registered();
 		}
-
-		// Get all registered block patterns. We'll use this for a count.
-		$pattern_registry = \WP_Block_Patterns_Registry::get_instance();
-		$pattern_registry = $pattern_registry->get_all_registered();
 
 		// Get all pattern categories from the built-in WP taxonomy.
 		$pattern_categories_taxonomy = self::get_pattern_categories_from_taxonomy();
@@ -161,6 +169,15 @@ class Functions {
 				continue;
 			}
 
+			// Get category count from registered patterns.
+			$category_count = 0;
+			foreach ( $pattern_registry as $pattern ) {
+				$pattern_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
+				if ( in_array( $category['name'], $pattern_categories, true ) ) {
+					++$category_count;
+				}
+			}
+
 			// Loop through custom categories, and determine if a category is on or off.
 			$category_enabled = isset( $custom_pattern_categories[ $category['name'] ]['enabled'] ) ? (bool) $custom_pattern_categories[ $category['name'] ]['enabled'] : true;
 			// Decode HTML entities to prevent double encoding in React.
@@ -174,7 +191,7 @@ class Functions {
 				'customLabel' => $category_custom,
 				'enabled'     => $category_enabled,
 				'slug'        => $category['name'],
-				'count'       => $category['count'] ?? 0,
+				'count'       => $category_count,
 				'mappedTo'    => $category_mapped_to,
 			);
 		}
@@ -189,17 +206,6 @@ class Functions {
 				return strcasecmp( $a['customLabel'], $b['customLabel'] );
 			}
 		);
-
-		// Loop through all patterns and increment a count for each category. Since core tax pattern categories have a count for core patterns.
-		foreach ( $pattern_registry as $pattern ) {
-			$pattern_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
-
-			foreach ( $pattern_categories as $category ) {
-				if ( isset( $all_categories[ $category ] ) ) {
-					++$all_categories[ $category ]['count'];
-				}
-			}
-		}
 
 		return array(
 			'registered' => $all_categories,
@@ -365,7 +371,7 @@ class Functions {
 		 *
 		 * @return bool true if hiding patterns, false if not.
 		 */
-		$hide_core_patterns = apply_filters( 'dlxpw_hide_core_patterns', $hide_core_patterns, $site_id, true );
+		$hide_core_patterns = apply_filters( 'dlxpw_hide_core_patterns', $hide_core_patterns, $site_id, $is_multisite );
 
 		// Return the value.
 		if ( $hide_core_patterns ) {
@@ -595,8 +601,16 @@ class Functions {
 	public static function is_activated( $path, $type = 'plugin' ) {
 
 		// Gets all active plugins on the current site.
-		$active_plugins = self::is_multisite() ? get_site_option( 'active_sitewide_plugins' ) : get_option( 'active_plugins', array() );
-		if ( in_array( $path, $active_plugins, true ) ) {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once ABSPATH . '/wp-admin/includes/plugin.php';
+		}
+
+		if ( is_multisite() ) {
+			if ( is_plugin_active_for_network( $path ) ) {
+				return true;
+			}
+		}
+		if ( is_plugin_active( $path ) ) {
 			return true;
 		}
 		return false;
