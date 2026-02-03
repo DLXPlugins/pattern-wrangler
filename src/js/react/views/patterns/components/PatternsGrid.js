@@ -327,8 +327,8 @@ const Interface = ( props ) => {
 				totalPages: 0,
 			},
 			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
-			perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 12,
-			defaultPerPage: 12,
+			perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 20,
+			defaultPerPage: 20,
 			sort: {
 				field: escapeAttribute(
 					getQueryArgs( window.location.href ).orderby || 'title'
@@ -1767,7 +1767,6 @@ const Interface = ( props ) => {
 							getFilteredPatternsCount( view ) / view.perPage
 						),
 					} }
-					perPageSizes={ [ 12, 24, 48, 96 ] }
 					selection={ selectedItems }
 					onChangeSelection={ setSelectedItems }
 					defaultLayouts={ defaultLayouts }
