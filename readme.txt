@@ -1,6 +1,6 @@
 === Pattern Wrangler - Manage Block Patterns and Reusable Blocks ===
 Contributors: ronalfy
-Tags: patterns, reusable blocks, block editor, shortcode, block management
+Tags: patterns, block patterns, blocks, shortcode, synced patterns
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.2
