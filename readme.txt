@@ -1,14 +1,14 @@
-=== Pattern Wrangler - Manage Block Patterns and Reusable Blocks ===
+=== Pattern Wrangler - Manage Block Patterns and Pattern Categories ===
 Contributors: ronalfy
-Tags: patterns, reusable blocks, block editor, shortcode, block management
+Tags: patterns, block patterns, pattern, pattern builder, synced patterns
 Requires at least: 6.8
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.2
 Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Manage your block patterns, registered patterns, and reusable blocks efficiently with Pattern Wrangler.
+Curate and manage your block patterns, registered patterns, synced patterns, and pattern categories efficiently with Pattern Wrangler.
 
 == Description ==
 
