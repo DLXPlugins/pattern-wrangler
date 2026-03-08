@@ -4,7 +4,7 @@ Tags: patterns, block patterns, pattern, pattern builder, synced patterns
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -141,6 +141,12 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Changelog ==
 
+= 2.3.1 =
+* Released 2026-03-08
+* Fix: Registered patterns can now be exported/imported with the proper sync status (unsynced).
+* Fix: Synced patterns can now be imported without error and losing its sync status.
+* Fix: Synced patterns now show the proper synce status when exported.
+
 = 2.3.0 =
 * Released 2026-01-21
 * New feature: Categories View - A new dedicated Categories screen that unifies local and registered pattern categories in one place, making it easier to manage and organize your pattern categories.
@@ -264,5 +270,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.3.0 =
-Major update introducing a new Categories View that unifies local and registered pattern categories. This release also adds bulk category operations, category mapping capabilities, and integration with Synced Pattern Popups plugin. Includes several bug fixes for category display and management.
+= 2.3.1 =
+Several bug fixes to importing and exporting of individual patterns have been made.
