@@ -294,11 +294,11 @@ const Interface = ( props ) => {
 	const exportPattern = ( item ) => {
 		const isLocal = item.isLocal;
 		const title = item.title;
-		let syncStatus = '';
-		if ( isLocal ) {
+		let syncStatus = 'unsynced';
+		if ( ! isLocal ) {
 			syncStatus = 'unsynced';
 		} else if ( 'synced' === item.patternType ) {
-			syncStatus = 'synced';
+			syncStatus = ''; // blank means it is synced.
 		}
 		const fileContent = JSON.stringify(
 			{
@@ -1018,11 +1018,11 @@ const Interface = ( props ) => {
 				callback: ( items ) => {
 					const isLocal = items[ 0 ].isLocal;
 					const title = items[ 0 ].title;
-					let syncStatus = '';
-					if ( isLocal ) {
+					let syncStatus = 'unsynced';
+					if ( ! isLocal ) {
 						syncStatus = 'unsynced';
 					} else if ( 'synced' === items[ 0 ].patternType ) {
-						syncStatus = 'synced';
+						syncStatus = ''; // blank means it is synced.
 					}
 					const fileContent = JSON.stringify(
 						{
@@ -1791,12 +1791,22 @@ const Interface = ( props ) => {
 							variant="secondary"
 							className="dlx-patterns-view-quick-button"
 							onChange={ async( event ) => {
-								const file = event.target.files[ 0 ];
+								const file = event.target.files?.[ 0 ];
+								if ( ! file ) {
+									return;
+								}
 								try {
-									// Post the new pattern to the REST API
+									// Post the new pattern to the REST API.
 									const pattern = await createPatternFromFile( file );
 
-									// Now POST it to the REST API
+									// REST API only accepts wp_pattern_sync_status: "partial" or "unsynced".
+									// Omit for synced/blank so we don't send invalid enum values.
+									const meta =
+										pattern.syncStatus === 'unsynced' ||
+										pattern.syncStatus === 'partial'
+											? { wp_pattern_sync_status: pattern.syncStatus }
+											: {};
+
 									const response = await apiFetch( {
 										path: '/wp/v2/blocks',
 										method: 'POST',
@@ -1804,9 +1814,7 @@ const Interface = ( props ) => {
 											title: pattern.title,
 											content: pattern.content,
 											status: 'publish',
-											meta: {
-												wp_pattern_sync_status: pattern.syncStatus,
-											},
+											meta,
 										},
 									} );
 									if ( response?.id ) {
@@ -1819,6 +1827,8 @@ const Interface = ( props ) => {
 										}
 									}
 								} catch ( err ) {}
+								// Reset so selecting the same file again triggers onChange.
+								event.target.value = '';
 							} }
 						>
 							{ __( 'Import Pattern From JSON File', 'pattern-wrangler' ) }
