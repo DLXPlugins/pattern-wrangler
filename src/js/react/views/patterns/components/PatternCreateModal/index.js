@@ -203,7 +203,7 @@ const PatternCreateModal = ( props ) => {
 											value={ field.value }
 											onChange={ ( tokens ) => {
 												field.onChange( tokens );
-												setShowExpandedSuggestions( true );
+												setShowExpandedSuggestions( false );
 											} }
 											tokenizeOnBlur={ true }
 											tokenizeOnSpace={ false }

@@ -91,11 +91,25 @@ class Preview {
 			$deps['version'],
 			true
 		);
+		$post             = get_post();
+		$post_id          = $post ? absint( $post->ID ) : 0;
+		$sync_status_meta = $post_id ? get_post_meta( $post_id, 'wp_pattern_sync_status', true ) : '';
+		$sync_status      = ( 'unsynced' === $sync_status_meta ) ? 'unsynced' : 'synced';
+
 		wp_localize_script(
 			'dlx-pattern-wrangler-preview',
 			'dlxPatternWranglerPreview',
 			array(
-				'previewUrl' => Functions::get_pattern_preview_url( get_the_ID() ),
+				'previewUrl'                => Functions::get_pattern_preview_url( get_the_ID() ),
+				'pattern'                   => array(
+					'id'         => $post_id ? absint( $post_id ) : 0,
+					'slug'       => $post ? sanitize_title( $post->post_name ) : '',
+					'syncStatus' => sanitize_text_field( $sync_status ),
+					'siteId'     => absint( get_current_blog_id() ),
+				),
+				'isMultisite'               => is_multisite(),
+				'syncedPatternPopupsActive' => Functions::is_activated( 'synced-pattern-popups/sppopups.php' ),
+				'syncedPatternPopupsUrl'    => esc_url_raw( admin_url( 'themes.php?page=simplest-popup-patterns' ) ),
 			)
 		);
 	}

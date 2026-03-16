@@ -2,7 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { TextControl, Modal, Button } from '@wordpress/components';
 
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
+import {
+	getPatternShortcode,
+	getPatternPHPFunction,
+	getPatternPopupTriggerCode,
+	getPatternPopupTriggerAnchorCode,
+} from '../../../../../utils/pattern-code-helpers';
 
 /**
  * Pattern Create Modal.
@@ -21,6 +27,20 @@ const PatternGetCodeModal = ( props ) => {
 	const [ phpFunctionInputRef, setPhpFunctionInputRef ] = useState( null );
 	const [ popupTriggerInputRef, setPopupTriggerInputRef ] = useState( null );
 	const [ popupTriggerAnchorInputRef, setPopupTriggerAnchorInputRef ] = useState( null );
+
+	const shortcode = getPatternShortcode(
+		props.item?.slug ?? '',
+		props.item?.siteId ?? null,
+		isMultisite
+	);
+	const phpCode = getPatternPHPFunction(
+		props.item?.slug ?? '',
+		props.item?.siteId ?? null,
+		isMultisite
+	);
+	const popupTriggerCode = getPatternPopupTriggerCode( id );
+	const popupTriggerAnchorCode = getPatternPopupTriggerAnchorCode( id );
+
 	const addCopyClipboardButton = async( inputRef, text ) => {
 		const copyButton = document.createElement( 'button' );
 		copyButton.classList.add( 'dlx-pw-copy-shortcode' );
@@ -88,8 +108,8 @@ const PatternGetCodeModal = ( props ) => {
 			return;
 		}
 
-		addCopyClipboardButton( shortcodeInputRef, getPatternShortcode() );
-	}, [ shortcodeInputRef ] );
+		addCopyClipboardButton( shortcodeInputRef, shortcode );
+	}, [ shortcodeInputRef, shortcode ] );
 
 	/**
 	 * Copy the PHP function to the clipboard when the PHP function input is focused.
@@ -101,8 +121,8 @@ const PatternGetCodeModal = ( props ) => {
 			return;
 		}
 
-		addCopyClipboardButton( phpFunctionInputRef, getPatternPHPFunction() );
-	}, [ phpFunctionInputRef ] );
+		addCopyClipboardButton( phpFunctionInputRef, phpCode );
+	}, [ phpFunctionInputRef, phpCode ] );
 
 	/**
 	 * Copy the popup trigger code to the clipboard when the popup trigger input is focused.
@@ -114,8 +134,8 @@ const PatternGetCodeModal = ( props ) => {
 			return;
 		}
 
-		addCopyClipboardButton( popupTriggerInputRef, getPatternPopupTriggerCode() );
-	}, [ popupTriggerInputRef ] );
+		addCopyClipboardButton( popupTriggerInputRef, popupTriggerCode );
+	}, [ popupTriggerInputRef, popupTriggerCode ] );
 
 	/**
 	 * Copy the popup trigger anchor code to the clipboard when the popup trigger anchor input is focused.
@@ -127,8 +147,8 @@ const PatternGetCodeModal = ( props ) => {
 			return;
 		}
 
-		addCopyClipboardButton( popupTriggerAnchorInputRef, getPatternPopupTriggerAnchorCode() );
-	}, [ popupTriggerAnchorInputRef ] );
+		addCopyClipboardButton( popupTriggerAnchorInputRef, popupTriggerAnchorCode );
+	}, [ popupTriggerAnchorInputRef, popupTriggerAnchorCode ] );
 
 	/**
 	 * Get the modal title.
@@ -139,37 +159,6 @@ const PatternGetCodeModal = ( props ) => {
 		return __( 'Get Code', 'pattern-wrangler' );
 	};
 
-	/**
-	 * Get the pattern shortcode. Adds a site_id parameter if the site is multisite.
-	 *
-	 * @return {string} The pattern shortcode.
-	 */
-	const getPatternShortcode = () => {
-		if ( isMultisite && props.item.siteId ) {
-			return `[wp_block slug="${ props.item.slug }" site_id="${ props.item.siteId }"]`;
-		}
-		return `[wp_block slug="${ props.item.slug }"]`;
-	};
-
-	const getPatternPopupTriggerCode = () => {
-		return `spp-trigger-${ id }`;
-	};
-
-	const getPatternPopupTriggerAnchorCode = () => {
-		return `<a href="#spp-trigger-${ id }">Open the Popup</a>`;
-	};
-
-	/**
-	 * Get the pattern PHP function.
-	 *
-	 * @return {string} The pattern PHP function.
-	 */
-	const getPatternPHPFunction = () => {
-		if ( isMultisite && props.item.siteId ) {
-			return `<?php function_exists( 'pw_wp_block' ) ? pw_wp_block( '${ props.item.slug }', ${ props.item.siteId }, $echo = true ) : ''; ?>`;
-		}
-		return `<?php function_exists( 'pw_wp_block' ) ? pw_wp_block( '${ props.item.slug }', null, $echo = true ) : ''; ?>`;
-	};
 	return (
 		<>
 			<Modal
@@ -187,7 +176,7 @@ const PatternGetCodeModal = ( props ) => {
 					<div className="dlx-pw-modal-admin-row">
 						<TextControl
 							label={ __( 'Pattern Shortcode', 'pattern-wrangler' ) }
-							value={ getPatternShortcode() }
+							value={ shortcode }
 							disabled={ true }
 							ref={ setShortcodeInputRef }
 							className="dlx-pw-modal-admin-row-input"
@@ -196,7 +185,7 @@ const PatternGetCodeModal = ( props ) => {
 					<div className="dlx-pw-modal-admin-row">
 						<TextControl
 							label={ __( 'Pattern PHP Function', 'pattern-wrangler' ) }
-							value={ getPatternPHPFunction() }
+							value={ phpCode }
 							disabled={ true }
 							ref={ setPhpFunctionInputRef }
 							className="dlx-pw-modal-admin-row-input"
@@ -211,7 +200,7 @@ const PatternGetCodeModal = ( props ) => {
 										'Synced Pattern Popups Trigger Code',
 										'pattern-wrangler'
 									) }
-									value={ getPatternPopupTriggerCode() }
+									value={ popupTriggerCode }
 									disabled={ true }
 									ref={ setPopupTriggerInputRef }
 									className="dlx-pw-modal-admin-row-input"
@@ -225,7 +214,7 @@ const PatternGetCodeModal = ( props ) => {
 										'Synced Pattern Popups Trigger Anchor Code',
 										'pattern-wrangler'
 									) }
-									value={ getPatternPopupTriggerAnchorCode() }
+									value={ popupTriggerAnchorCode }
 									disabled={ true }
 									ref={ setPopupTriggerAnchorInputRef }
 									className="dlx-pw-modal-admin-row-input"

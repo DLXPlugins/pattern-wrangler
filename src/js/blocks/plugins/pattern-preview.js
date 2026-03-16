@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { Button, Tooltip } from '@wordpress/components';
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginPostStatusInfo } from '@wordpress/editor';
+import './pattern-code.js';
 
 /**
  * Render a Preview Button.
