@@ -4611,7 +4611,7 @@ svg.lucide line {
   justify-content: flex-start;
   font-size: 11px;
   width: unset;
-}.dataviews-title-field button.components-button.is-link {
+}.dataviews-title-field .pattern-title button.components-button.is-link {
   color: var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9));
 }/**
 Hide erronous display when hittnig the back button on a filter change.
