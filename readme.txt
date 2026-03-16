@@ -4,7 +4,7 @@ Tags: patterns, block patterns, pattern, pattern builder, synced patterns
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 2.3.1
+Stable tag: 2.3.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -141,6 +141,12 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Changelog ==
 
+= 2.3.5 =
+* Released 2026-03-16
+* Fix: Dropdown list for categories would not appear right away and it was confusing what categories were available.
+* Fix: Title of local patterns is now blue to indicate it can be clicked on.
+* New: Get the Pattern code from the pattern's sidebar in the block editor.
+
 = 2.3.1 =
 * Released 2026-03-08
 * Fix: Registered patterns can now be exported/imported with the proper sync status (unsynced).
@@ -270,5 +276,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.3.1 =
-Several bug fixes to importing and exporting of individual patterns have been made.
+= 2.3.5 =
+Fix for title clickability and now showing which categories are available in the modals. Added sidebar when editing a pattern that shows the code/embed options.
