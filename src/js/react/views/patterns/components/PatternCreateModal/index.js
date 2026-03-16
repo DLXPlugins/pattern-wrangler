@@ -55,6 +55,7 @@ const PatternCreateModal = ( props ) => {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ isEditMode, setIsEditMode ] = useState( props.isEditMode || false );
 	const [ disableRegisteredPattern, setDisableRegisteredPattern ] = useState( false );
+	const [ showExpandedSuggestions, setShowExpandedSuggestions ] = useState( true );
 
 	const {
 		control,
@@ -202,13 +203,24 @@ const PatternCreateModal = ( props ) => {
 											value={ field.value }
 											onChange={ ( tokens ) => {
 												field.onChange( tokens );
+												setShowExpandedSuggestions( true );
 											} }
+											tokenizeOnBlur={ true }
 											tokenizeOnSpace={ false }
 											allowMultiple={ true }
 											placeholder={ __( 'Add a category', 'pattern-wrangler' ) }
 											suggestions={ categories }
 											disabled={ isSaving }
 											__experimentalShowHowTo={ false }
+											maxSuggestions={ 20 }
+											onInputChange={ ( input ) => {
+												if ( input.length > 1 ) {
+													setShowExpandedSuggestions( false );
+												} else {
+													setShowExpandedSuggestions( true );
+												}
+											} }
+											__experimentalExpandOnFocus={ ( field.value.length === 0 && showExpandedSuggestions ) || showExpandedSuggestions }
 										/>
 										<p className="description">
 											{ __( 'Separate with commas or press the Enter key.', 'pattern-wrangler' ) }
