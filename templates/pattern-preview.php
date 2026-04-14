@@ -75,6 +75,11 @@ if ( is_numeric( $pattern_id ) ) {
 	die( 'Invalid pattern ID.' );
 }
 
+// Adding block visibility manually.
+if ( defined( 'BLOCK_VISIBILITY_ABSPATH' ) ) {
+	include_once BLOCK_VISIBILITY_ABSPATH . 'includes/frontend/render-block.php';
+}
+
 /**
  * Get first published post with featured image and set query to it. This is so blog posts and such can be displayed in the preview.
  */
