@@ -72,6 +72,9 @@ const ResponsiveIframe = ( {
 	};
 
 	useEffect( () => {
+		if ( hasSettledRef?.current ) { // This prevents the iframe from being reset if it is already loaded.
+			return;
+		}
 		hasSettledRef.current = false;
 		setIsLoaded( false );
 	}, [ src, batchGeneration ] );
