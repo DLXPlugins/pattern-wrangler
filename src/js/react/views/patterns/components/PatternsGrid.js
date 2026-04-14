@@ -35,6 +35,7 @@ import PatternPublishModal from './PatternPublishModal';
 import PatternUnpauseModal from './PatternUnpauseModal';
 import PatternDeleteModal from './PatternDeleteModal';
 import PatternGetCodeModal from './PatternGetCodeModal';
+import PatternDuplicateModal from './PatternDuplicateModal';
 import PatternTagModal from './PatternTagModal';
 import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
@@ -370,6 +371,8 @@ const Interface = ( props ) => {
 	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( null );
 	const [ isGetCodeModalOpen, setIsGetCodeModalOpen ] = useState( null );
 	const [ isTagPatternModalOpen, setIsTagPatternModalOpen ] = useState( null );
+	const [ isDuplicateModalOpen, setIsDuplicateModalOpen ] = useState( null );
+
 	const exportPattern = ( item ) => {
 		const isLocal = item.isLocal;
 		const title = item.title;
@@ -1014,6 +1017,21 @@ const Interface = ( props ) => {
 					return pattern.isLocal && ! pattern.isDisabled;
 				},
 				isPrimary: true,
+			},
+			{
+				id: 'duplicate',
+				label: __( 'Duplicate', 'pattern-wrangler' ),
+				icon: 'copy',
+				callback: ( items ) => {
+					const item = items[ 0 ];
+					setIsDuplicateModalOpen( item );
+				},
+				isEligible: ( item ) => {
+					return item.isLocal && ! item.isDisabled;
+				},
+				isPrimary: false,
+				isDestructive: false,
+				supportsBulk: true,
 			},
 			{
 				id: 'get-code',
@@ -2647,6 +2665,17 @@ const Interface = ( props ) => {
 					<PatternGetCodeModal
 						item={ isGetCodeModalOpen.item }
 						onRequestClose={ () => setIsGetCodeModalOpen( null ) }
+					/>
+				) }
+				{ isDuplicateModalOpen && (
+					<PatternDuplicateModal
+						item={ isDuplicateModalOpen }
+						onRequestClose={ () => setIsDuplicateModalOpen( null ) }
+						isOpen={ isDuplicateModalOpen }
+						categories={ localCategories }
+						title={ __( 'Duplicate Pattern', 'pattern-wrangler' ) }
+						syncedDefaultStatus={ 'synced' === isDuplicateModalOpen.patternType ? 'synced' : 'unsynced' }
+						copyPatternId={ isDuplicateModalOpen.id }
 					/>
 				) }
 			</DataViews>
