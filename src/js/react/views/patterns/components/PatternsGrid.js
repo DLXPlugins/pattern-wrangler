@@ -1007,72 +1007,6 @@ const Interface = ( props ) => {
 	const actions = useMemo(
 		() => [
 			{
-				id: 'quick-edit',
-				label: __( 'Quick Edit', 'pattern-wrangler' ),
-				icon: 'edit',
-				callback: ( items ) => {
-					setIsQuickEditModalOpen( { item: items[ 0 ] } );
-				},
-				isEligible: ( pattern ) => {
-					return pattern.isLocal && ! pattern.isDisabled;
-				},
-				isPrimary: true,
-			},
-			{
-				id: 'duplicate',
-				label: __( 'Duplicate', 'pattern-wrangler' ),
-				icon: 'copy',
-				callback: ( items ) => {
-					const item = items[ 0 ];
-					setIsDuplicateModalOpen( item );
-				},
-				isEligible: ( item ) => {
-					return item.isLocal && ! item.isDisabled;
-				},
-				isPrimary: false,
-				isDestructive: false,
-				supportsBulk: true,
-			},
-			{
-				id: 'get-code',
-				label: __( 'Get Code', 'pattern-wrangler' ),
-				icon: 'code',
-				callback: ( items ) => {
-					setIsGetCodeModalOpen( { item: items[ 0 ] } );
-				},
-				isEligible: ( item ) => {
-					return item.isLocal && ! item.isDisabled;
-				},
-				isPrimary: false,
-				supportsBulk: false,
-			},
-			{
-				id: 'delete',
-				label: ( items ) => {
-					return sprintf(
-						/* translators: %d: number of patterns */
-						_n(
-							'Delete %d Pattern',
-							'Delete %d Patterns',
-							items.length,
-							'pattern-wrangler'
-						),
-						items.length
-					);
-				},
-				icon: 'trash',
-				isEligible: ( pattern ) => {
-					// Pattern must be local and disabled.
-					return pattern.isLocal && pattern.isDisabled;
-				},
-				callback: ( items ) => {
-					setIsDeleteModalOpen( { items } );
-				},
-				isPrimary: false,
-				isDestructive: true,
-				supportsBulk: true,
-			},
-			{
 				id: 'tag-pattern',
 				label: ( items ) => {
 					return sprintf(
@@ -1099,58 +1033,6 @@ const Interface = ( props ) => {
 				supportsBulk: true,
 			},
 			{
-				id: 'publish',
-				label: ( items ) => {
-					return sprintf(
-						/* translators: %d: number of patterns */
-						_n(
-							'Publish %d Pattern',
-							'Publish %d Patterns',
-							items.length,
-							'pattern-wrangler'
-						),
-						items.length
-					);
-				},
-				icon: 'yes-alt',
-				isEligible: ( pattern ) => {
-					// Pattern must be local and disabled.
-					return pattern.isLocal && pattern.isDisabled;
-				},
-				callback: ( items ) => {
-					setIsPublishModalOpen( { items } );
-				},
-				isPrimary: false,
-				isDestructive: false,
-				supportsBulk: true,
-			},
-			{
-				id: 'unpause',
-				label: ( items ) => {
-					return sprintf(
-						/* translators: %d: number of patterns */
-						_n(
-							'Re-enable %d Pattern',
-							'Re-enable %d Patterns',
-							items.length,
-							'pattern-wrangler'
-						),
-						items.length
-					);
-				},
-				icon: 'controls-play',
-				isEligible: ( pattern ) => {
-					// Pattern must be local and enabled.
-					return ! pattern.isLocal && pattern.isDisabled;
-				},
-				callback: ( items ) => {
-					setIsUnpauseModalOpen( { items } );
-				},
-				isPrimary: false,
-				isDestructive: false,
-				supportsBulk: true,
-			},
-			{
 				id: 'copy-to-local',
 				label: __( 'Copy to New Pattern', 'pattern-wrangler' ),
 				icon: 'edit',
@@ -1164,31 +1046,6 @@ const Interface = ( props ) => {
 				},
 				isPrimary: false,
 				isDestructive: false,
-			},
-			{
-				id: 'disable-preview',
-				label: ( items ) => {
-					return sprintf(
-						/* translators: %d: number of patterns */
-						_n(
-							'Disable %d Pattern',
-							'Disable %d Patterns',
-							items.length,
-							'pattern-wrangler'
-						),
-						items.length
-					);
-				},
-				icon: 'controls-pause',
-				callback: ( items ) => {
-					setIsPauseModalOpen( { items } );
-				},
-				isEligible: ( item ) => {
-					return ! item.isDisabled;
-				},
-				isDestructive: true,
-				supportsBulk: true,
-				isPrimary: false,
 			},
 			{
 				id: 'copy',
@@ -1250,6 +1107,72 @@ const Interface = ( props ) => {
 				isDestructive: false,
 			},
 			{
+				id: 'delete',
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n(
+							'Delete %d Pattern',
+							'Delete %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'trash',
+				isEligible: ( pattern ) => {
+					// Pattern must be local and disabled.
+					return pattern.isLocal && pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsDeleteModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: true,
+				supportsBulk: true,
+			},
+			{
+				id: 'disable-preview',
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n(
+							'Disable %d Pattern',
+							'Disable %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'controls-pause',
+				callback: ( items ) => {
+					setIsPauseModalOpen( { items } );
+				},
+				isEligible: ( item ) => {
+					return ! item.isDisabled;
+				},
+				isDestructive: true,
+				supportsBulk: true,
+				isPrimary: false,
+			},
+			{
+				id: 'duplicate',
+				label: __( 'Duplicate Pattern', 'pattern-wrangler' ),
+				icon: 'copy',
+				callback: ( items ) => {
+					const item = items[ 0 ];
+					setIsDuplicateModalOpen( item );
+				},
+				isEligible: ( item ) => {
+					return item.isLocal && ! item.isDisabled;
+				},
+				isPrimary: false,
+				isDestructive: false,
+				supportsBulk: false,
+			},
+			{
 				id: 'export',
 				label: __( 'Export to JSON', 'pattern-wrangler' ),
 				icon: 'edit',
@@ -1279,6 +1202,83 @@ const Interface = ( props ) => {
 				},
 				isPrimary: false,
 				isDestructive: false,
+			},
+			{
+				id: 'get-code',
+				label: __( 'Get Code', 'pattern-wrangler' ),
+				icon: 'code',
+				callback: ( items ) => {
+					setIsGetCodeModalOpen( { item: items[ 0 ] } );
+				},
+				isEligible: ( item ) => {
+					return item.isLocal && ! item.isDisabled;
+				},
+				isPrimary: false,
+				supportsBulk: false,
+			},
+			{
+				id: 'publish',
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n(
+							'Publish %d Pattern',
+							'Publish %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'yes-alt',
+				isEligible: ( pattern ) => {
+					// Pattern must be local and disabled.
+					return pattern.isLocal && pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsPublishModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: false,
+				supportsBulk: true,
+			},
+			{
+				id: 'unpause',
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n(
+							'Re-enable %d Pattern',
+							'Re-enable %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'controls-play',
+				isEligible: ( pattern ) => {
+					// Pattern must be local and enabled.
+					return ! pattern.isLocal && pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsUnpauseModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: false,
+				supportsBulk: true,
+			},
+			{
+				id: 'quick-edit',
+				label: __( 'Quick Edit', 'pattern-wrangler' ),
+				icon: 'edit',
+				callback: ( items ) => {
+					setIsQuickEditModalOpen( { item: items[ 0 ] } );
+				},
+				isEligible: ( pattern ) => {
+					return pattern.isLocal && ! pattern.isDisabled;
+				},
+				isPrimary: false,
 			},
 		],
 		[ categories, patterns ]
