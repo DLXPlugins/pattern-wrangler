@@ -38,6 +38,7 @@ import PatternGetCodeModal from './PatternGetCodeModal';
 import PatternTagModal from './PatternTagModal';
 import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
+import ZoomIcon from './Icons/ZoomIcon';
 
 // Enhanced iframe component that works with the existing PHP scaling system.
 const ResponsiveIframe = ( {
@@ -152,6 +153,13 @@ const ResponsiveIframe = ( {
 			} }
 			aria-hidden="true"
 		>
+			{ isLoaded && (
+				<div
+					className="pattern-preview-zoom-icon"
+				>
+					<ZoomIcon />
+				</div>
+			) }
 			<div
 				className="pattern-preview-iframe-scale-container-wrapper"
 				ref={ containerRef }
@@ -181,13 +189,18 @@ const ResponsiveIframe = ( {
 										borderRadius: '4px',
 									} }
 								>
-									<ReactSpinner3 size={ 40 } speedMultiplier={ 1.1 } color="#9ca0a5" />
+									<ReactSpinner3
+										size={ 40 }
+										speedMultiplier={ 1.1 }
+										color="#9ca0a5"
+									/>
 								</div>
 							) }
 							<iframe
 								ref={ iframeRef }
 								key={ `preview-${ item.id }` }
 								src={ src }
+								tabIndex={ -1 }
 								title={ title }
 								sandbox="allow-same-origin allow-scripts allow-forms"
 								loading="lazy"
