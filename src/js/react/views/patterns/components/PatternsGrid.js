@@ -140,7 +140,7 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 								key={ `preview-${ item.id }` }
 								src={ src }
 								title={ title }
-								sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+								sandbox="allow-same-origin allow-scripts allow-forms"
 								loading="lazy"
 								style={ {
 									position: 'absolute',
