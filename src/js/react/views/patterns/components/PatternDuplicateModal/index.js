@@ -7,6 +7,7 @@ import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	FormTokenField,
+	ToggleControl,
 } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { AlertTriangle } from 'lucide-react';
@@ -73,6 +74,7 @@ const PatternDuplicateModal = ( props ) => {
 			patternCategories: props.item.categories || [],
 			patternSyncStatus: props.syncedDefaultStatus || syncedDefaultStatus,
 			patternCopyId: copyPatternId,
+			editPatternAfterDuplicating: props.editPatternAfterDuplicating || true,
 		},
 	} );
 	const formValues = useWatch( { control } );
@@ -252,6 +254,20 @@ const PatternDuplicateModal = ( props ) => {
 											/>
 										</ToggleGroupControl>
 									</>
+								) }
+							/>
+						</div>
+						<div className="dlx-pw-modal-admin-row">
+							<Controller
+								control={ control }
+								name="editPatternAfterDuplicating"
+								render={ ( { field } ) => (
+									<ToggleControl
+										label={ __( 'Edit Pattern After Duplicating', 'pattern-wrangler' ) }
+										checked={ field.value }
+										onChange={ ( value ) => field.onChange( value ) }
+										disabled={ isSaving }
+									/>
 								) }
 							/>
 						</div>
