@@ -327,10 +327,6 @@ class Admin {
 		}
 		$options = Options::get_options();
 
-		$categories            = Functions::get_pattern_categories( false );
-		$options['registered'] = $categories['registered'];
-		$options['categories'] = $categories['categories'];
-
 		wp_send_json_success( $options );
 	}
 
@@ -371,13 +367,27 @@ class Admin {
 	 * Add the admin menu.
 	 */
 	public function add_admin_menu() {
-		$options              = Options::get_options();
-		$hide_all_patterns    = (bool) $options['hideAllPatterns'] ?? false;
-		$hide_patterns_menu   = (bool) $options['hidePatternsMenu'] ?? false;
-		$enable_enhanced_view = (bool) $options['enableEnhancedView'] ?? false;
+		$options               = Options::get_options();
+		$hide_all_patterns     = (bool) $options['hideAllPatterns'] ?? false;
+		$hide_patterns_menu    = (bool) $options['hidePatternsMenu'] ?? false;
+		$enable_enhanced_view  = (bool) $options['enableEnhancedView'] ?? false;
+		$pattern_menu_location = $options['patternWranglerMenuLocation'] ?? 'above_media';
 
 		remove_submenu_page( 'themes.php', 'edit.php?post_type=wp_block' ); // Remove from Appearance in WP 6.5.
 		remove_submenu_page( 'generateblocks', 'edit.php?post_type=wp_block' ); // Remove from GenerateBlocks screen.
+
+		$pattern_menu_position = 6;
+		switch ( $pattern_menu_location ) {
+			case 'below_appearance':
+				$pattern_menu_position = 61;
+				break;
+			case 'below_settings':
+				$pattern_menu_position = 85;
+				break;
+			case 'in_appearance':
+				$pattern_menu_position = 20;
+				break;
+		}
 
 		if ( ! Functions::is_patterns_enabled_for_site() && ( $hide_patterns_menu || Functions::is_multisite() ) ) {
 			$hook = add_submenu_page(
@@ -393,78 +403,138 @@ class Admin {
 			return;
 		}
 		if ( ! $enable_enhanced_view ) {
-			add_menu_page(
-				__( 'Patterns', 'pattern-wrangler' ),
-				__( 'Patterns', 'pattern-wrangler' ),
-				'edit_posts',
-				'edit.php?post_type=wp_block',
-				'',
-				'dashicons-layout',
-				6
-			);
-			add_submenu_page(
-				'edit.php?post_type=wp_block',
-				__( 'All Patterns', 'pattern-wrangler' ),
-				__( 'All Patterns', 'pattern-wrangler' ),
-				'edit_posts',
-				'edit.php?post_type=wp_block',
-				'',
-				1
-			);
+			if ( 'in_appearance' === $pattern_menu_location ) {
+				add_submenu_page(
+					'themes.php',
+					__( 'Patterns', 'pattern-wrangler' ),
+					__( 'Patterns', 'pattern-wrangler' ),
+					'edit_posts',
+					'edit.php?post_type=wp_block',
+					'',
+					4
+				);
+			} else {
+				add_menu_page(
+					__( 'Patterns', 'pattern-wrangler' ),
+					__( 'Patterns', 'pattern-wrangler' ),
+					'edit_posts',
+					'edit.php?post_type=wp_block',
+					'',
+					'dashicons-layout',
+					$pattern_menu_position
+				);
+				add_submenu_page(
+					'edit.php?post_type=wp_block',
+					__( 'All Patterns', 'pattern-wrangler' ),
+					__( 'All Patterns', 'pattern-wrangler' ),
+					'edit_posts',
+					'edit.php?post_type=wp_block',
+					'',
+					1
+				);
+			}
 		} else {
-			$enhanced_patterns_hook = add_menu_page(
-				__( 'All Patterns', 'pattern-wrangler' ),
-				__( 'Patterns', 'pattern-wrangler' ),
-				'edit_posts',
-				'pattern-wrangler-view',
-				array( $this, 'enhanced_patterns_view' ),
-				'dashicons-layout',
-				6
-			);
-			add_submenu_page(
-				'pattern-wrangler-view',
-				__( 'All Patterns', 'pattern-wrangler' ),
-				__( 'All Patterns', 'pattern-wrangler' ),
-				'edit_posts',
-				'pattern-wrangler-view',
-				array( $this, 'enhanced_patterns_view' ),
-				1
-			);
+			if ( 'in_appearance' === $pattern_menu_location ) {
+				$enhanced_patterns_hook = add_submenu_page(
+					'themes.php',
+					__( 'Pattern Library', 'pattern-wrangler' ),
+					__( 'Pattern Library', 'pattern-wrangler' ),
+					'edit_posts',
+					'pattern-wrangler-view',
+					array( $this, 'enhanced_patterns_view' ),
+					4
+				);
+			} else {
+				$enhanced_patterns_hook = add_menu_page(
+					__( 'All Patterns', 'pattern-wrangler' ),
+					__( 'Patterns', 'pattern-wrangler' ),
+					'edit_posts',
+					'pattern-wrangler-view',
+					array( $this, 'enhanced_patterns_view' ),
+					'dashicons-layout',
+					$pattern_menu_position
+				);
+				add_submenu_page(
+					'pattern-wrangler-view',
+					__( 'All Patterns', 'pattern-wrangler' ),
+					__( 'All Patterns', 'pattern-wrangler' ),
+					'edit_posts',
+					'pattern-wrangler-view',
+					array( $this, 'enhanced_patterns_view' ),
+					1
+				);
+			}
 			add_action( 'admin_print_scripts-' . $enhanced_patterns_hook, array( $this, 'enqueue_admin_scripts_patterns' ) );
 		}
 
 		if ( ! $enable_enhanced_view ) {
-			add_submenu_page(
-				$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
-				__( 'Categories', 'pattern-wrangler' ),
-				__( 'Categories', 'pattern-wrangler' ),
-				'edit_others_posts',
-				'edit-tags.php?taxonomy=wp_pattern_category&post_type=wp_block',
-				'',
-				5
-			);
+			if ( 'in_appearance' === $pattern_menu_location ) {
+				add_submenu_page(
+					'themes.php',
+					__( 'Categories', 'pattern-wrangler' ),
+					__( 'Categories', 'pattern-wrangler' ),
+					'edit_others_posts',
+					'edit-tags.php?taxonomy=wp_pattern_category&post_type=wp_block',
+					'',
+					5
+				);
+			} else {
+				add_submenu_page(
+					$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
+					__( 'Categories', 'pattern-wrangler' ),
+					__( 'Categories', 'pattern-wrangler' ),
+					'edit_others_posts',
+					'edit-tags.php?taxonomy=wp_pattern_category&post_type=wp_block',
+					'',
+					5
+				);
+			}
 		} else {
-			$enhanced_categories_hook = add_submenu_page(
-				$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
-				__( 'Categories', 'pattern-wrangler' ),
-				__( 'Categories', 'pattern-wrangler' ),
-				'edit_others_posts',
-				'pattern-wrangler-categories-view',
-				array( $this, 'enhanced_categories_view' ),
-				5
-			);
+			if ( 'in_appearance' === $pattern_menu_location ) {
+				$enhanced_categories_hook = add_submenu_page(
+					'themes.php',
+					__( 'Categories', 'pattern-wrangler' ),
+					__( 'Pattern Categories', 'pattern-wrangler' ),
+					'edit_others_posts',
+					'pattern-wrangler-categories-view',
+					array( $this, 'enhanced_categories_view' ),
+					5
+				);
+			} else {
+				$enhanced_categories_hook = add_submenu_page(
+					$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
+					__( 'Categories', 'pattern-wrangler' ),
+					__( 'Categories', 'pattern-wrangler' ),
+					'edit_others_posts',
+					'pattern-wrangler-categories-view',
+					array( $this, 'enhanced_categories_view' ),
+					5
+				);
+			}
 			add_action( 'admin_print_scripts-' . $enhanced_categories_hook, array( $this, 'enqueue_admin_scripts_categories' ) );
 		}
 
-		$hook = add_submenu_page(
-			$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
-			__( 'Settings', 'pattern-wrangler' ),
-			__( 'Settings', 'pattern-wrangler' ),
-			'manage_options',
-			'pattern-wrangler',
-			array( $this, 'admin_page' ),
-			10
-		);
+		if ( 'in_appearance' === $pattern_menu_location ) {
+			$hook = add_submenu_page(
+				'themes.php',
+				__( 'Pattern Wrangler Settings', 'pattern-wrangler' ),
+				__( 'Pattern Settings', 'pattern-wrangler' ),
+				'manage_options',
+				'pattern-wrangler',
+				array( $this, 'admin_page' ),
+				6
+			);
+		} else {
+			$hook = add_submenu_page(
+				$enable_enhanced_view ? 'pattern-wrangler-view' : 'edit.php?post_type=wp_block',
+				__( 'Settings', 'pattern-wrangler' ),
+				__( 'Settings', 'pattern-wrangler' ),
+				'manage_options',
+				'pattern-wrangler',
+				array( $this, 'admin_page' ),
+				10
+			);
+		}
 		add_action( 'admin_print_scripts-' . $hook, array( $this, 'enqueue_admin_scripts' ) );
 	}
 

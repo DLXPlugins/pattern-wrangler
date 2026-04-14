@@ -2,17 +2,16 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import {
 	ToggleControl,
-	TextControl,
 	SelectControl,
-	PanelBody,
-	Popover,
 	Button,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControl as ToggleGroupControl,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { Info, Heart } from 'lucide-react';
 
-import { __, _n } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 
 // Local imports.
@@ -20,7 +19,7 @@ import Notice from '../../components/Notice';
 import SaveResetButtons from '../../components/SaveResetButtons';
 import SendCommand from '../../utils/SendCommand';
 
-const Main = ( props ) => {
+const Main = () => {
 	const data = dlxPatternWranglerAdmin.options;
 	const networkOptions = dlxPatternWranglerAdmin.networkOptions;
 
@@ -33,7 +32,6 @@ const Main = ( props ) => {
 		reset,
 		setError,
 		trigger,
-		setValue,
 	} = useForm( {
 		defaultValues: {
 			hideAllPatterns: data.hideAllPatterns,
@@ -53,6 +51,7 @@ const Main = ( props ) => {
 			enableEnhancedView: data.enableEnhancedView,
 			showMenusUI: data.showMenusUI,
 			makePatternsExportable: data.makePatternsExportable,
+			patternWranglerMenuLocation: data.patternWranglerMenuLocation,
 			saveNonce: dlxPatternWranglerAdmin.saveNonce,
 			resetNonce: dlxPatternWranglerAdmin.resetNonce,
 		},
@@ -118,7 +117,7 @@ const Main = ( props ) => {
 				<Controller
 					name="hideCorePatterns"
 					control={ control }
-					render={ ( { field: { onChange, value } } ) => (
+					render={ ( { field: { onChange } } ) => (
 						<ToggleControl
 							label={ __( 'Hide Core Patterns', 'pattern-wrangler' ) }
 							checked={ corePatternData.localHidden }
@@ -181,7 +180,7 @@ const Main = ( props ) => {
 				<Controller
 					name="hideRemotePatterns"
 					control={ control }
-					render={ ( { field: { onChange, value } } ) => (
+					render={ ( { field: { onChange } } ) => (
 						<ToggleControl
 							label={ __( 'Hide Remote Patterns', 'pattern-wrangler' ) }
 							checked={ remotePatternData.localHidden }
@@ -240,7 +239,7 @@ const Main = ( props ) => {
 				<Controller
 					name="hideCoreUnsyncedPatterns"
 					control={ control }
-					render={ ( { field: { onChange, value } } ) => (
+					render={ ( { field: { onChange } } ) => (
 						<ToggleControl
 							label={ __( 'Hide Unsynced Patterns', 'pattern-wrangler' ) }
 							checked={ unsyncedPatternData.localHidden }
@@ -303,7 +302,7 @@ const Main = ( props ) => {
 				<Controller
 					name="hideCoreSyncedPatterns"
 					control={ control }
-					render={ ( { field: { onChange, value } } ) => (
+					render={ ( { field: { onChange } } ) => (
 						<ToggleControl
 							label={ __( 'Hide Synced Patterns', 'pattern-wrangler' ) }
 							checked={ syncedPatternData.localHidden }
@@ -371,7 +370,7 @@ const Main = ( props ) => {
 				<Controller
 					name="makePatternsExportable"
 					control={ control }
-					render={ ( { field: { onChange, value } } ) => (
+					render={ ( { field: { onChange } } ) => (
 						<ToggleControl
 							label={ __(
 								'Allow Patterns to be exportable via the WordPress Exporter',
@@ -629,7 +628,7 @@ const Main = ( props ) => {
 				<Controller
 					name="hideAllPatterns"
 					control={ control }
-					render={ ( { field: { onChange, value } } ) => (
+					render={ ( { field: { onChange } } ) => (
 						<ToggleControl
 							label={ __( 'Hide All Patterns', 'pattern-wrangler' ) }
 							checked={ hideAllPatternsData.allPatternsDisabled }
@@ -967,6 +966,27 @@ const Main = ( props ) => {
 										/>
 									</div>
 									{ getShowPatternsExporterToggleControl() }
+									<div className="dlx-admin__row">
+										<Controller
+											name="patternWranglerMenuLocation"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<SelectControl
+													label={ __( 'Pattern Wrangler Menu Location', 'pattern-wrangler' ) }
+													value={ value }
+													onChange={ ( newValue ) => {
+														onChange( newValue );
+													} }
+													disabled={ getValues( 'hidePatternsMenu' ) && getValues( 'hideAllPatterns' ) }
+												>
+													<option value="above_media">{ __( 'Above Media', 'pattern-wrangler' ) }</option>
+													<option value="below_appearance">{ __( 'Below Appearance', 'pattern-wrangler' ) }</option>
+													<option value="below_settings">{ __( 'Below Settings', 'pattern-wrangler' ) }</option>
+													<option value="in_appearance">{ __( 'In Appearance', 'pattern-wrangler' ) }</option>
+												</SelectControl>
+											) }
+										/>
+									</div>
 								</td>
 							</tr>
 						</tbody>

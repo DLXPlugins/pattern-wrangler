@@ -218,6 +218,7 @@ class Options {
 			'loadCustomizerCSSFrontend'    => true,
 			'makePatternsExportable'       => false,
 			'enableEnhancedView'           => true,
+			'patternWranglerMenuLocation'  => 'above_media', /* Can be above_media, below_appearance, below_settings, in_appearance. */
 		);
 
 		/**
