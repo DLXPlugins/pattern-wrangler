@@ -40,14 +40,39 @@ import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
 
 // Enhanced iframe component that works with the existing PHP scaling system.
-const ResponsiveIframe = ( { src, title, item } ) => {
+const ResponsiveIframe = ( {
+	src,
+	title,
+	item,
+	onPreviewSettled = null,
+	batchGeneration = 0,
+} ) => {
 	const iframeRef = useRef( null );
 	const containerRef = useRef( null );
+	const hasSettledRef = useRef( false );
 	const [ isLoaded, setIsLoaded ] = useState( false );
 	const [ scale, setScale ] = useState( 1 );
 	const [ iframeWidth, setIframeWidth ] = useState( 0 );
 	const [ iframeMinHeight, setIframeMinHeight ] = useState( 0 );
 	const [ aspectRatio, setAspectRatio ] = useState( 1 );
+
+	/**
+	 * Mark preview as settled for sequential batch progression.
+	 */
+	const markPreviewSettled = () => {
+		if ( hasSettledRef.current ) {
+			return;
+		}
+
+		hasSettledRef.current = true;
+		if ( 'function' === typeof onPreviewSettled ) {
+			onPreviewSettled( item?.id, batchGeneration );
+		}
+	};
+
+	useEffect( () => {
+		hasSettledRef.current = false;
+	}, [ src, batchGeneration ] );
 
 	// Handle iframe load and setup communication with PHP scaling system.
 	useEffect( () => {
@@ -62,6 +87,7 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 
 			// The PHP template will handle scaling automatically.
 			// We just need to ensure the container is ready for the scaling calculations.
+			markPreviewSettled();
 		};
 
 		iframe.addEventListener( 'load', handleLoad );
@@ -69,7 +95,7 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 		return () => {
 			iframe.removeEventListener( 'load', handleLoad );
 		};
-	}, [ src ] );
+	}, [ src, batchGeneration ] );
 
 	// Use ResizeObserver to detect container size changes and trigger PHP scaling recalculation.
 	const [ resizeListener, { width: containerWidth, height: containerHeight } ] =
@@ -142,6 +168,9 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 								title={ title }
 								sandbox="allow-same-origin allow-scripts allow-forms"
 								loading="lazy"
+								onError={ () => {
+									markPreviewSettled();
+								} }
 								style={ {
 									position: 'absolute',
 									top: 0,
@@ -245,6 +274,7 @@ const PatternsGrid = ( props ) => {
 
 const Interface = ( props ) => {
 	const { data } = props;
+	const previewBatchSize = 10;
 
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const { patterns, doNotShowAgain } = useSelect( ( newSelect ) => {
@@ -255,6 +285,16 @@ const Interface = ( props ) => {
 	} );
 
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
+	const [ previewBatchState, setPreviewBatchState ] = useState( {
+		visibleCount: 0,
+		activeStart: 0,
+		activeSize: 0,
+		completedCount: 0,
+	} );
+	const batchControllerRef = useRef( {
+		generation: 0,
+		settledIds: new Set(),
+	} );
 
 	const { categories } = useSelect( () => {
 		return {
@@ -468,6 +508,89 @@ const Interface = ( props ) => {
 		return defaultView;
 	} );
 
+	/**
+	 * Return the initial batch state for the current page.
+	 *
+	 * @param {number} totalItems Number of items on the page.
+	 * @return {Object} The initial batch state.
+	 */
+	const getInitialPreviewBatchState = ( totalItems ) => {
+		const initialBatchSize = Math.min( previewBatchSize, Math.max( totalItems, 0 ) );
+		return {
+			visibleCount: initialBatchSize,
+			activeStart: 0,
+			activeSize: initialBatchSize,
+			completedCount: 0,
+		};
+	};
+
+	const resetPreviewBatchState = ( totalItems, invalidateGeneration = true ) => {
+		if ( invalidateGeneration ) {
+			batchControllerRef.current.generation++;
+		}
+		batchControllerRef.current.settledIds = new Set();
+		setPreviewBatchState( getInitialPreviewBatchState( totalItems ) );
+	};
+
+	const handlePreviewSettled = ( patternId, generation ) => {
+		if ( generation !== batchControllerRef.current.generation ) {
+			return;
+		}
+
+		if ( batchControllerRef.current.settledIds.has( patternId ) ) {
+			return;
+		}
+
+		const patternIndex = patternsDisplay.findIndex(
+			( pattern ) => pattern.id === patternId
+		);
+
+		setPreviewBatchState( ( currentBatchState ) => {
+			if ( currentBatchState.activeSize <= 0 ) {
+				return currentBatchState;
+			}
+
+			if (
+				patternIndex < currentBatchState.activeStart ||
+				patternIndex >=
+					currentBatchState.activeStart + currentBatchState.activeSize
+			) {
+				return currentBatchState;
+			}
+
+			batchControllerRef.current.settledIds.add( patternId );
+			const nextCompletedCount = currentBatchState.completedCount + 1;
+
+			// Wait for every iframe in the active batch before advancing.
+			if ( nextCompletedCount < currentBatchState.activeSize ) {
+				return {
+					...currentBatchState,
+					completedCount: nextCompletedCount,
+				};
+			}
+
+			const totalItems = patternsDisplay.length;
+			const nextVisibleCount = Math.min(
+				currentBatchState.visibleCount + previewBatchSize,
+				totalItems
+			);
+			const nextActiveStart = currentBatchState.visibleCount;
+			const nextActiveSize = Math.min(
+				previewBatchSize,
+				Math.max( totalItems - nextActiveStart, 0 )
+			);
+
+			batchControllerRef.current.settledIds = new Set();
+
+			return {
+				visibleCount: nextVisibleCount,
+				activeStart: nextActiveStart,
+				activeSize: nextActiveSize,
+				completedCount: 0,
+			};
+		} );
+	};
+
 	const fields = useMemo(
 		() => [
 			{
@@ -568,6 +691,13 @@ const Interface = ( props ) => {
 				id: 'pattern-view-json',
 				label: __( 'Preview', 'pattern-wrangler' ),
 				getValue: ( { item } ) => {
+					const previewIndex = patternsDisplay.findIndex(
+						( pattern ) => pattern.id === item.id
+					);
+					const shouldLoadPreview =
+						previewIndex > -1 && previewIndex < previewBatchState.visibleCount;
+					const isSequentialBatchLoading =
+						previewBatchState.visibleCount < patternsDisplay.length;
 					const viewportWidth = item.viewportWidth || 1200;
 
 					const previewUrl = item?.id
@@ -618,11 +748,25 @@ const Interface = ( props ) => {
 						<>
 							{ Badge }
 							<div className="pattern-preview-wrapper">
-								<ResponsiveIframe
-									src={ previewUrl }
-									title={ `Preview: ${ item.title }` }
-									item={ item }
-								/>
+								{ shouldLoadPreview && (
+									<ResponsiveIframe
+										src={ previewUrl }
+										title={ `Preview: ${ item.title }` }
+										item={ item }
+										batchGeneration={ batchControllerRef.current.generation }
+										onPreviewSettled={ handlePreviewSettled }
+									/>
+								) }
+								{ ! shouldLoadPreview && (
+									<div
+										className="pattern-preview-iframe-placeholder"
+										style={ { minHeight: '260px' } }
+									>
+										{ isSequentialBatchLoading
+											? __( 'Preview queued…', 'pattern-wrangler' )
+											: __( 'Preview pending…', 'pattern-wrangler' ) }
+									</div>
+								) }
 							</div>
 						</>
 					);
@@ -806,7 +950,12 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
 			},
 		],
-		[ nonEmptyCategories ]
+		[
+			handlePreviewSettled,
+			nonEmptyCategories,
+			patternsDisplay,
+			previewBatchState.visibleCount,
+		]
 	);
 
 	const actions = useMemo(
@@ -1560,6 +1709,12 @@ const Interface = ( props ) => {
 	 * @param {Object} newView The new view object.
 	 */
 	const onChangeView = ( newView ) => {
+		const currentPage = parseInt( view.page, 10 ) || 1;
+		const nextPage = parseInt( newView.page, 10 ) || 1;
+		if ( nextPage !== currentPage ) {
+			resetPreviewBatchState( 0 );
+		}
+
 		// Create query args object with view state.
 		const changeQueryArgs = getQueryArgs( window.location.href );
 		changeQueryArgs.paged = newView.page || 1;
@@ -1671,6 +1826,17 @@ const Interface = ( props ) => {
 		//setView( newView );
 	};
 
+	useEffect( () => {
+		resetPreviewBatchState( patternsDisplay.length );
+	}, [ patternsDisplay ] );
+
+	useEffect( () => {
+		return () => {
+			batchControllerRef.current.generation++;
+			batchControllerRef.current.settledIds = new Set();
+		};
+	}, [] );
+
 	/**
 	 * Listen for any history changes.
 	 */
@@ -1779,6 +1945,12 @@ const Interface = ( props ) => {
 	const totalItems = useMemo( () => {
 		return getFilteredPatternsCount( view );
 	}, [ view ] );
+
+	/**
+	 * Check if pagination is needed.
+	 *
+	 * @return {boolean} True if pagination is needed, false otherwise.
+	 */
 
 	/**
 	 * Check if pagination is needed.
