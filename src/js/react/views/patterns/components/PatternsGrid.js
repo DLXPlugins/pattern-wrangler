@@ -27,7 +27,7 @@ import {
 	cleanForSlug,
 } from '@wordpress/url';
 import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
-import BeatLoader from 'react-spinners/BeatLoader';
+import { ReactSpinner3, ReactSpinner5 } from '@mediaron/react-spinners';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
 import PatternPauseModal from './PatternPauseModal';
@@ -72,6 +72,7 @@ const ResponsiveIframe = ( {
 
 	useEffect( () => {
 		hasSettledRef.current = false;
+		setIsLoaded( false );
 	}, [ src, batchGeneration ] );
 
 	// Handle iframe load and setup communication with PHP scaling system.
@@ -161,6 +162,28 @@ const ResponsiveIframe = ( {
 						{ resizeListener }
 
 						<div className="pattern-preview-iframe-wrapper">
+							{ ! isLoaded && (
+								<div
+									className="pattern-preview-loading-label"
+									style={ {
+										position: 'absolute',
+										top: '50%',
+										left: '50%',
+										transform: 'translate(-50%, -50%)',
+										width: '100%',
+										height: '100%',
+										display: 'flex',
+										justifyContent: 'center',
+										alignItems: 'center',
+										zIndex: 2,
+										padding: '6px 10px',
+										background: 'rgba(255, 255, 255, 0.9)',
+										borderRadius: '4px',
+									} }
+								>
+									<ReactSpinner3 size={ 40 } speedMultiplier={ 1.1 } color="#9ca0a5" />
+								</div>
+							) }
 							<iframe
 								ref={ iframeRef }
 								key={ `preview-${ item.id }` }
@@ -169,6 +192,7 @@ const ResponsiveIframe = ( {
 								sandbox="allow-same-origin allow-scripts allow-forms"
 								loading="lazy"
 								onError={ () => {
+									setIsLoaded( true );
 									markPreviewSettled();
 								} }
 								style={ {
@@ -241,7 +265,7 @@ const PatternsGrid = ( props ) => {
 					<div className="dataviews-wrapper">
 						<div className="dlx-patterns-view-container-header">
 							<h1>{ __( 'Loading patterns…', 'pattern-wrangler' ) }</h1>
-							<BeatLoader size={ 30 } color="#3c434a" />
+							<ReactSpinner3 size={ 80 } speedMultiplier={ 1.4 } color="#2172EB" />
 						</div>
 					</div>
 				</div>
@@ -274,7 +298,7 @@ const PatternsGrid = ( props ) => {
 
 const Interface = ( props ) => {
 	const { data } = props;
-	const previewBatchSize = 10;
+	const previewBatchSize = 6;
 
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const { patterns, doNotShowAgain } = useSelect( ( newSelect ) => {
@@ -365,8 +389,8 @@ const Interface = ( props ) => {
 				totalPages: 0,
 			},
 			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
-			perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 20,
-			defaultPerPage: 20,
+			perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 10,
+			defaultPerPage: 10,
 			sort: {
 				field: escapeAttribute(
 					getQueryArgs( window.location.href ).orderby || 'title'
@@ -515,7 +539,10 @@ const Interface = ( props ) => {
 	 * @return {Object} The initial batch state.
 	 */
 	const getInitialPreviewBatchState = ( totalItems ) => {
-		const initialBatchSize = Math.min( previewBatchSize, Math.max( totalItems, 0 ) );
+		const initialBatchSize = Math.min(
+			previewBatchSize,
+			Math.max( totalItems, 0 )
+		);
 		return {
 			visibleCount: initialBatchSize,
 			activeStart: 0,
