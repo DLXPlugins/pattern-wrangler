@@ -183,11 +183,10 @@ const defaultLayouts = {
 		layout: {
 			titleField: 'title',
 			mediaField: 'pattern-view-json',
-			columns: 2,
-			columnGap: '24px',
-			rowGap: '24px',
+			density: 'comfortable',
+			previewSize: 300,
 			showMedia: true,
-			viewConfigOptions: {},
+			badgeFields: [ 'categories' ],
 		},
 	},
 };
@@ -321,14 +320,13 @@ const Interface = ( props ) => {
 	const getDefaultView = () => {
 		return {
 			type: 'grid',
-			previewSize: 'large',
 			paginationInfo: {
 				totalItems: patterns.length,
 				totalPages: 0,
 			},
 			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
-			perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 12,
-			defaultPerPage: 12,
+			perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 20,
+			defaultPerPage: 20,
 			sort: {
 				field: escapeAttribute(
 					getQueryArgs( window.location.href ).orderby || 'title'
@@ -843,8 +841,14 @@ const Interface = ( props ) => {
 				label: ( items ) => {
 					return sprintf(
 						/* translators: %d: number of patterns */
-						_n( 'Delete %d Pattern', 'Delete %d Patterns', items.length, 'pattern-wrangler' ),
-						items.length );
+						_n(
+							'Delete %d Pattern',
+							'Delete %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
 				},
 				icon: 'trash',
 				isEligible: ( pattern ) => {
@@ -863,8 +867,14 @@ const Interface = ( props ) => {
 				label: ( items ) => {
 					return sprintf(
 						/* translators: %d: number of patterns */
-						_n( 'Assign Categories to %d Pattern', 'Assign Categories to %d Patterns', items.length, 'pattern-wrangler' ),
-						items.length );
+						_n(
+							'Assign Categories to %d Pattern',
+							'Assign Categories to %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
 				},
 				icon: 'tag',
 				isEligible: ( pattern ) => {
@@ -883,8 +893,14 @@ const Interface = ( props ) => {
 				label: ( items ) => {
 					return sprintf(
 						/* translators: %d: number of patterns */
-						_n( 'Publish %d Pattern', 'Publish %d Patterns', items.length, 'pattern-wrangler' ),
-						items.length );
+						_n(
+							'Publish %d Pattern',
+							'Publish %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
 				},
 				icon: 'yes-alt',
 				isEligible: ( pattern ) => {
@@ -903,8 +919,14 @@ const Interface = ( props ) => {
 				label: ( items ) => {
 					return sprintf(
 						/* translators: %d: number of patterns */
-						_n( 'Re-enable %d Pattern', 'Re-enable %d Patterns', items.length, 'pattern-wrangler' ),
-						items.length );
+						_n(
+							'Re-enable %d Pattern',
+							'Re-enable %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
 				},
 				icon: 'controls-play',
 				isEligible: ( pattern ) => {
@@ -938,8 +960,14 @@ const Interface = ( props ) => {
 				label: ( items ) => {
 					return sprintf(
 						/* translators: %d: number of patterns */
-						_n( 'Disable %d Pattern', 'Disable %d Patterns', items.length, 'pattern-wrangler' ),
-						items.length );
+						_n(
+							'Disable %d Pattern',
+							'Disable %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
 				},
 				icon: 'controls-pause',
 				callback: ( items ) => {
@@ -1087,7 +1115,11 @@ const Interface = ( props ) => {
 								patternsCopy = patternsCopy.filter( ( pattern ) => {
 									const patternCategories = pattern.categorySlugs || [];
 									return patternCategories.some( ( category ) => {
-										const tempSlug = category.name || category.label || category.toString() || '';
+										const tempSlug =
+											category.name ||
+											category.label ||
+											category.toString() ||
+											'';
 										const categoryToCheck = cleanForSlug( tempSlug );
 										return cleanedFilterValues.includes( categoryToCheck );
 									} );
@@ -1100,7 +1132,11 @@ const Interface = ( props ) => {
 									// Check if this pattern has any excluded categories
 									const hasExcludedCategory = patternCategories.some(
 										( category ) => {
-											const tempSlug = category.name || category.label || category.toString() || '';
+											const tempSlug =
+												category.name ||
+												category.label ||
+												category.toString() ||
+												'';
 											const categoryToCheck = cleanForSlug( tempSlug );
 											return cleanedFilterValues.includes( categoryToCheck );
 										}
@@ -1318,7 +1354,11 @@ const Interface = ( props ) => {
 								patternsCopy = patternsCopy.filter( ( pattern ) => {
 									const patternCategories = pattern.categorySlugs || [];
 									return patternCategories.some( ( category ) => {
-										const tempSlug = category.name || category.label || category.toString() || '';
+										const tempSlug =
+											category.name ||
+											category.label ||
+											category.toString() ||
+											'';
 										const categoryToCheck = cleanForSlug( tempSlug );
 										return cleanedFilterValues.includes( categoryToCheck );
 									} );
@@ -1331,7 +1371,11 @@ const Interface = ( props ) => {
 									// Check if this pattern has any excluded categories
 									const hasExcludedCategory = patternCategories.some(
 										( category ) => {
-											const tempSlug = category.name || category.label || category.toString() || '';
+											const tempSlug =
+												category.name ||
+												category.label ||
+												category.toString() ||
+												'';
 											const categoryToCheck = cleanForSlug( tempSlug );
 											return cleanedFilterValues.includes( categoryToCheck );
 										}
@@ -1639,9 +1683,7 @@ const Interface = ( props ) => {
 
 	const refreshCategories = ( updatedCategories ) => {
 		// Find the index of the pattern-categories field.
-		const fieldsIndex = fields.findIndex(
-			( field ) => field.id === 'categories'
-		);
+		const fieldsIndex = fields.findIndex( ( field ) => field.id === 'categories' );
 
 		// Check if the field exists before trying to modify it.
 		if ( fieldsIndex === -1 || updatedCategories.length === 0 ) {
@@ -1753,26 +1795,24 @@ const Interface = ( props ) => {
 
 	return (
 		<div className="dlx-patterns-view-container-wrapper">
-			<div className="dlx-patterns-view-container">
-				<DataViews
-					data={ patternsDisplay }
-					fields={ fields }
-					actions={ actions }
-					label={ __( 'Patterns', 'pattern-wrangler' ) }
-					view={ view }
-					onChangeView={ onChangeView }
-					paginationInfo={ {
-						totalItems: getFilteredPatternsCount( view ),
-						totalPages: Math.ceil(
-							getFilteredPatternsCount( view ) / view.perPage
-						),
-					} }
-					perPageSizes={ [ 12, 24, 48, 96 ] }
-					selection={ selectedItems }
-					onChangeSelection={ setSelectedItems }
-					defaultLayouts={ defaultLayouts }
-					searchLabel={ __( 'Search Patterns', 'pattern-wrangler' ) }
-				>
+			<DataViews
+				data={ patternsDisplay }
+				fields={ fields }
+				actions={ actions }
+				label={ __( 'Patterns', 'pattern-wrangler' ) }
+				view={ view }
+				onChangeView={ onChangeView }
+				paginationInfo={ {
+					totalItems: getFilteredPatternsCount( view ),
+					totalPages: Math.ceil( getFilteredPatternsCount( view ) / view.perPage ),
+				} }
+				perPage={ view.perPage }
+				selection={ selectedItems }
+				onChangeSelection={ setSelectedItems }
+				defaultLayouts={ defaultLayouts }
+				searchLabel={ __( 'Search Patterns', 'pattern-wrangler' ) }
+			>
+				<div className="dlx-patterns-view-container">
 					<div className="dlx-patterns-view-container-header">
 						<h1>{ __( 'Pattern Library', 'pattern-wrangler' ) }</h1>
 					</div>
@@ -2197,208 +2237,204 @@ const Interface = ( props ) => {
 					<div className="dlx-patterns-view-filters-wrapper">
 						<DataViews.Filters />
 					</div>
-					<div className="dlx-bulk-action-toolbar-top">
+					<DataViews.Layout />
+
+					{ snackbar.isVisible && (
+						<Snackbar
+							isVisible={ snackbar.isVisible }
+							message={ snackbar.message }
+							title={ snackbar.title }
+							type={ snackbar.type }
+							onClose={ () => {
+								setSnackbar( {
+									isVisible: false,
+								} );
+							} }
+						/>
+					) }
+				</div>
+				<div className="dlx-patterns-view-pagination-container">
+					<div className="dlx-patterns-view-pagination-item">
 						<DataViews.BulkActionToolbar />
 					</div>
-					<DataViews.Layout />
-					<DataViews.BulkActionToolbar />
 					{ hasPagination && (
-						<div className="dlx-patterns-view-pagination-wrapper">
-							<div className="dlx-patterns-view-pagination-item dlx-patterns-view-pagination-item-total-items">
-								<span>
-									{ totalItems }{ ' ' }
-									{ _n( 'Item', 'Items', totalItems, 'pattern-wrangler' ) }
-								</span>
-							</div>
-							<div className="dlx-patterns-view-pagination-item">
-								<DataViews.Pagination />
-							</div>
+						<div className="dlx-patterns-view-pagination-item">
+							<DataViews.Pagination />
 						</div>
 					) }
-				</DataViews>
-
-				{ snackbar.isVisible && (
-					<Snackbar
-						isVisible={ snackbar.isVisible }
-						message={ snackbar.message }
-						title={ snackbar.title }
-						type={ snackbar.type }
-						onClose={ () => {
-							setSnackbar( {
-								isVisible: false,
-							} );
+				</div>
+				{ isAddNewPatternModalOpen && (
+					<PatternCreateModal
+						isOpen={ isAddNewPatternModalOpen }
+						onRequestClose={ () => setIsAddNewPatternModalOpen( false ) }
+						categories={ localCategories }
+						title={ __( 'Create New Pattern', 'pattern-wrangler' ) }
+					/>
+				) }
+				{ isCopyToLocalModalOpen && (
+					<PatternCreateModal
+						isOpen={ isCopyToLocalModalOpen }
+						onRequestClose={ () => setIsCopyToLocalModalOpen( false ) }
+						categories={ localCategories }
+						title={ __( 'Copy Pattern to Local', 'pattern-wrangler' ) }
+						syncedDefaultStatus={ 'unsynced' }
+						copyPatternId={ isCopyToLocalModalOpen.item.id }
+					/>
+				) }
+				{ isQuickEditModalOpen && (
+					<PatternCreateModal
+						isOpen={ isQuickEditModalOpen }
+						onRequestClose={ () => setIsQuickEditModalOpen( null ) }
+						pattern={ isQuickEditModalOpen.item }
+						patternTitle={ isQuickEditModalOpen.item.title }
+						categories={ localCategories }
+						patternCategories={ isQuickEditModalOpen.item.categories }
+						title={ __( 'Quick Edit Pattern', 'pattern-wrangler' ) }
+						syncedDisabled={ true }
+						patternId={ isQuickEditModalOpen.item.id }
+						patternNonce={ isQuickEditModalOpen.item.editNonce }
+						isEditMode={ true }
+						onEdit={ ( editResponse ) => {
+							dispatch( patternsStore ).upsertCategory( editResponse.categories );
+							dispatch( patternsStore ).setPattern(
+								editResponse.patternId,
+								editResponse.patternTitle,
+								editResponse.categorySlugs,
+								editResponse.categorySlugs
+							);
+							setIsQuickEditModalOpen( null );
 						} }
 					/>
 				) }
-			</div>
-			{ isAddNewPatternModalOpen && (
-				<PatternCreateModal
-					isOpen={ isAddNewPatternModalOpen }
-					onRequestClose={ () => setIsAddNewPatternModalOpen( false ) }
-					categories={ localCategories }
-					title={ __( 'Create New Pattern', 'pattern-wrangler' ) }
-				/>
-			) }
-			{ isCopyToLocalModalOpen && (
-				<PatternCreateModal
-					isOpen={ isCopyToLocalModalOpen }
-					onRequestClose={ () => setIsCopyToLocalModalOpen( false ) }
-					categories={ localCategories }
-					title={ __( 'Copy Pattern to Local', 'pattern-wrangler' ) }
-					syncedDefaultStatus={ 'unsynced' }
-					copyPatternId={ isCopyToLocalModalOpen.item.id }
-				/>
-			) }
-			{ isQuickEditModalOpen && (
-				<PatternCreateModal
-					isOpen={ isQuickEditModalOpen }
-					onRequestClose={ () => setIsQuickEditModalOpen( null ) }
-					pattern={ isQuickEditModalOpen.item }
-					patternTitle={ isQuickEditModalOpen.item.title }
-					categories={ localCategories }
-					patternCategories={ isQuickEditModalOpen.item.categories }
-					title={ __( 'Quick Edit Pattern', 'pattern-wrangler' ) }
-					syncedDisabled={ true }
-					patternId={ isQuickEditModalOpen.item.id }
-					patternNonce={ isQuickEditModalOpen.item.editNonce }
-					isEditMode={ true }
-					onEdit={ ( editResponse ) => {
-						dispatch( patternsStore ).upsertCategory( editResponse.categories );
-						dispatch( patternsStore ).setPattern(
-							editResponse.patternId,
-							editResponse.patternTitle,
-							editResponse.categorySlugs,
-							editResponse.categorySlugs
-						);
-						setIsQuickEditModalOpen( null );
-					} }
-				/>
-			) }
-			{ isPauseModalOpen && (
-				<PatternPauseModal
-					items={ isPauseModalOpen.items }
-					onPause={ ( pauseResponse, itemIdsAndNonces, showAgain ) => {
-						dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
-						dispatch( patternsStore ).setDoNotShowAgain( showAgain );
-						setIsPauseModalOpen( null );
-						setSnackbar( {
-							isVisible: true,
-							message: __( 'Patterns disabled', 'pattern-wrangler' ),
-							title: __( 'Patterns Disabled', 'pattern-wrangler' ),
-							type: 'success',
-							onClose: () => {
-								setSnackbar( { isVisible: false } );
-							},
-						} );
-					} }
-					doNotShowAgain={ doNotShowAgain }
-					onRequestClose={ () => setIsPauseModalOpen( null ) }
-				/>
-			) }
-			{ isPublishModalOpen && (
-				<PatternPublishModal
-					items={ isPublishModalOpen.items }
-					onPublish={ ( publishResponse, itemIdsAndNonces ) => {
-						dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
-						setIsPublishModalOpen( null );
-						setSnackbar( {
-							isVisible: true,
-							message: __( 'Patterns published', 'pattern-wrangler' ),
-							title: __( 'Patterns Published', 'pattern-wrangler' ),
-							type: 'success',
-							onClose: () => {
-								setSnackbar( { isVisible: false } );
-							},
-						} );
-					} }
-					onRequestClose={ () => setIsPublishModalOpen( null ) }
-				/>
-			) }
-			{ isUnpauseModalOpen && (
-				<PatternUnpauseModal
-					items={ isUnpauseModalOpen.items }
-					onReenable={ ( reenableResponse, itemIdsAndNonces, showAgain ) => {
-						dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
-						dispatch( patternsStore ).setDoNotShowAgain( showAgain );
-						setIsUnpauseModalOpen( null );
-						setSnackbar( {
-							isVisible: true,
-							message: __( 'Patterns re-enabled', 'pattern-wrangler' ),
-							title: __( 'Patterns Re-enabled', 'pattern-wrangler' ),
-							type: 'success',
-							onClose: () => {
-								setSnackbar( { isVisible: false } );
-							},
-						} );
-					} }
-					doNotShowAgain={ doNotShowAgain }
-					onRequestClose={ () => setIsUnpauseModalOpen( null ) }
-				/>
-			) }
-			{ isDeleteModalOpen && (
-				<PatternDeleteModal
-					items={ isDeleteModalOpen.items }
-					onDelete={ ( deleteResponse, itemIdsAndNonces, showAgain ) => {
-						dispatch( patternsStore ).setDoNotShowAgain( showAgain );
-						dispatch( patternsStore ).deletePatterns( itemIdsAndNonces );
-						setIsDeleteModalOpen( null );
-						setSnackbar( {
-							isVisible: true,
-							message: __( 'Patterns deleted', 'pattern-wrangler' ),
-							title: __( 'Patterns Deleted', 'pattern-wrangler' ),
-							type: 'success',
-							onClose: () => {
-								setSnackbar( { isVisible: false } );
-							},
-						} );
-					} }
-					doNotShowAgain={ doNotShowAgain }
-					onRequestClose={ () => setIsDeleteModalOpen( null ) }
-				/>
-			) }
-			{ isTagPatternModalOpen && (
-				<PatternTagModal
-					items={ isTagPatternModalOpen.items }
-					categories={ localCategories }
-					onTag={ (
-						tagResponse,
-						itemIdsAndNonces,
-						itemsAffected,
-						newCategories,
-						affectedSlugs
-					) => {
-						dispatch( patternsStore ).upsertCategory( newCategories );
-						itemsAffected.forEach( ( item ) => {
-							dispatch( patternsStore ).setPattern(
-								item.patternId,
-								item.patternTitle,
-								affectedSlugs,
-								affectedSlugs
-							);
-						} );
-						setIsTagPatternModalOpen( null );
-						setSnackbar( {
-							isVisible: true,
-							message: __(
-								'Categories assigned to patterns',
-								'pattern-wrangler'
-							),
-							title: __( 'Categories Assigned to Patterns', 'pattern-wrangler' ),
-							type: 'success',
-							onClose: () => {
-								setSnackbar( { isVisible: false } );
-							},
-						} );
-					} }
-					onRequestClose={ () => setIsTagPatternModalOpen( null ) }
-				/>
-			) }
-			{ isGetCodeModalOpen && (
-				<PatternGetCodeModal
-					item={ isGetCodeModalOpen.item }
-					onRequestClose={ () => setIsGetCodeModalOpen( null ) }
-				/>
-			) }
+				{ isPauseModalOpen && (
+					<PatternPauseModal
+						items={ isPauseModalOpen.items }
+						onPause={ ( pauseResponse, itemIdsAndNonces, showAgain ) => {
+							dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
+							dispatch( patternsStore ).setDoNotShowAgain( showAgain );
+							setIsPauseModalOpen( null );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Patterns disabled', 'pattern-wrangler' ),
+								title: __( 'Patterns Disabled', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
+						} }
+						doNotShowAgain={ doNotShowAgain }
+						onRequestClose={ () => setIsPauseModalOpen( null ) }
+					/>
+				) }
+				{ isPublishModalOpen && (
+					<PatternPublishModal
+						items={ isPublishModalOpen.items }
+						onPublish={ ( publishResponse, itemIdsAndNonces ) => {
+							dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
+							setIsPublishModalOpen( null );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Patterns published', 'pattern-wrangler' ),
+								title: __( 'Patterns Published', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
+						} }
+						onRequestClose={ () => setIsPublishModalOpen( null ) }
+					/>
+				) }
+				{ isUnpauseModalOpen && (
+					<PatternUnpauseModal
+						items={ isUnpauseModalOpen.items }
+						onReenable={ ( reenableResponse, itemIdsAndNonces, showAgain ) => {
+							dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
+							dispatch( patternsStore ).setDoNotShowAgain( showAgain );
+							setIsUnpauseModalOpen( null );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Patterns re-enabled', 'pattern-wrangler' ),
+								title: __( 'Patterns Re-enabled', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
+						} }
+						doNotShowAgain={ doNotShowAgain }
+						onRequestClose={ () => setIsUnpauseModalOpen( null ) }
+					/>
+				) }
+				{ isDeleteModalOpen && (
+					<PatternDeleteModal
+						items={ isDeleteModalOpen.items }
+						onDelete={ ( deleteResponse, itemIdsAndNonces, showAgain ) => {
+							dispatch( patternsStore ).setDoNotShowAgain( showAgain );
+							dispatch( patternsStore ).deletePatterns( itemIdsAndNonces );
+							setIsDeleteModalOpen( null );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Patterns deleted', 'pattern-wrangler' ),
+								title: __( 'Patterns Deleted', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
+						} }
+						doNotShowAgain={ doNotShowAgain }
+						onRequestClose={ () => setIsDeleteModalOpen( null ) }
+					/>
+				) }
+				{ isTagPatternModalOpen && (
+					<PatternTagModal
+						items={ isTagPatternModalOpen.items }
+						categories={ localCategories }
+						onTag={ (
+							tagResponse,
+							itemIdsAndNonces,
+							itemsAffected,
+							newCategories,
+							affectedSlugs
+						) => {
+							dispatch( patternsStore ).upsertCategory( newCategories );
+							itemsAffected.forEach( ( item ) => {
+								dispatch( patternsStore ).setPattern(
+									item.patternId,
+									item.patternTitle,
+									affectedSlugs,
+									affectedSlugs
+								);
+							} );
+							setIsTagPatternModalOpen( null );
+							setSnackbar( {
+								isVisible: true,
+								message: __(
+									'Categories assigned to patterns',
+									'pattern-wrangler'
+								),
+								title: __(
+									'Categories Assigned to Patterns',
+									'pattern-wrangler'
+								),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
+						} }
+						onRequestClose={ () => setIsTagPatternModalOpen( null ) }
+					/>
+				) }
+				{ isGetCodeModalOpen && (
+					<PatternGetCodeModal
+						item={ isGetCodeModalOpen.item }
+						onRequestClose={ () => setIsGetCodeModalOpen( null ) }
+					/>
+				) }
+			</DataViews>
 		</div>
 	);
 };
