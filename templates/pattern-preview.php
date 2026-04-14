@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Preview a block pattern on the frontend.
  *
