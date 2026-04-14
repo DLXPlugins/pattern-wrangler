@@ -264,6 +264,9 @@ dlx-patterns-view-filters-wrapper {
 		}
 	}
 }
+.dlx-patterns-view-container .dataviews-view-grid__title ~ * {
+	display: none !important;
+}
 
 .dlx-patterns-view-container .dataviews-view-grid__card {
 	display: grid;
