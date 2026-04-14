@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Preview a block pattern on the frontend.
  *
@@ -183,12 +184,15 @@ add_action(
 				'retrieveNonce' => 'dlx-pattern-wrangler-get-all-patterns',
 			)
 		);
+		wp_deregister_script_module(
+			'@wordpress/interactivity'
+		);
 	}
 );
 
 add_action(
 	'wp_head',
-	function () {
+	function (): void {
 		// Add CORS headers for font loading.
 		header( 'Access-Control-Allow-Origin: *' );
 		header( 'Access-Control-Allow-Methods: GET, OPTIONS' );
@@ -246,26 +250,26 @@ if ( ! wp_is_block_theme() ) {
 	</head>
 
 	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; display: relative; box-sizing: border-box; width: 100%; padding: 24px;">
-	<?php wp_body_open(); ?>
-	<div class="wp-site-blocks">
-		<header class="wp-block-template-part site-header">
-			<?php block_header_area(); ?>
-		</header>
-		<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto; aspect-ratio: 1/1;">
-			<?php
-			if ( wp_is_block_theme() ) {
-				echo apply_filters( 'the_content', $blocks );
-			} else {
-				echo apply_filters( 'the_content', $pattern_content );
-			}
-			?>
-		</div>
-	<?php
+		<?php wp_body_open(); ?>
+		<div class="wp-site-blocks">
+			<header class="wp-block-template-part site-header">
+				<?php block_header_area(); ?>
+			</header>
+			<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto; aspect-ratio: 1/1;">
+				<?php
+				if ( wp_is_block_theme() ) {
+					echo apply_filters( 'the_content', $blocks );
+				} else {
+					echo apply_filters( 'the_content', $pattern_content );
+				}
+				?>
+			</div>
+		<?php
 }
 
-		// Render block pattern here.
+	// Render block pattern here.
 
-		// Get footer if theme is not FSE theme.
+	// Get footer if theme is not FSE theme.
 if ( ! wp_is_block_theme() ) {
 	/**
 	 * Filter to use default footer or not.
@@ -284,15 +288,15 @@ if ( ! wp_is_block_theme() ) {
 	}
 } else {
 	?>
-				<footer class="wp-block-template-part site-footer">
+			<footer class="wp-block-template-part site-footer">
 			<?php block_footer_area(); ?>
-				</footer>
+			</footer>
 		<?php wp_footer(); ?>
-			</div>
-		</body>
+		</div>
+	</body>
 
 	</html>
 	<?php
 }
-$wp_query = $temp;
-wp_reset_postdata();
+	$wp_query = $temp;
+	wp_reset_postdata();
