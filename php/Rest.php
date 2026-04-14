@@ -1250,7 +1250,7 @@ class Rest {
 		// Process registered patterns. Skip if user isn't editor or above.
 		if ( current_user_can( 'edit_others_posts' ) ) {
 			foreach ( $registered_patterns as $pattern ) {
-				// If pattern is remote, ignore it.
+				// If pattern is remote, or doesn't have an inserter, ignore it.
 				if ( isset( $pattern['inserter'] ) && false === $pattern['inserter'] ) {
 					continue;
 				}

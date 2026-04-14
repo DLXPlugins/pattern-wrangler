@@ -39790,8 +39790,8 @@ var Interface = function Interface(props) {
         totalPages: 0
       },
       page: parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href).paged) || 1,
-      perPage: parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href).perPage) || 10,
-      defaultPerPage: 10,
+      perPage: parseInt((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href).perPage) || 20,
+      defaultPerPage: 20,
       sort: {
         field: (0,_wordpress_escape_html__WEBPACK_IMPORTED_MODULE_4__.escapeAttribute)((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href).orderby || 'title'),
         direction: (0,_wordpress_escape_html__WEBPACK_IMPORTED_MODULE_4__.escapeAttribute)((0,_wordpress_url__WEBPACK_IMPORTED_MODULE_10__.getQueryArgs)(window.location.href).order || 'asc')
@@ -41030,7 +41030,7 @@ var Interface = function Interface(props) {
       totalItems: getFilteredPatternsCount(view),
       totalPages: Math.ceil(getFilteredPatternsCount(view) / view.perPage)
     },
-    perPageSizes: [10, 20, 40, 80],
+    perPage: view.perPage,
     selection: selectedItems,
     onChangeSelection: setSelectedItems,
     defaultLayouts: defaultLayouts,

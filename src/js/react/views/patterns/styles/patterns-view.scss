@@ -108,6 +108,10 @@ body div.updated.warning {
 	flex-direction: row;
 	gap: calc(12px);
 	justify-content: start;
+
+	.components-base-control__field {
+		margin-bottom: 0;
+	}
 }
 .dlx-patterns-view-grid {
 	display: grid;
@@ -115,7 +119,7 @@ body div.updated.warning {
 	gap: 12px;
 	align-items: center;
 
-	padding-bottom: 16px;
+	padding-bottom: 24px;
 
 	@include respond-to('medium') {
 		grid-template-columns: auto 1fr auto;
@@ -274,6 +278,7 @@ dlx-patterns-view-filters-wrapper {
 	justify-content: flex-end;
 	padding: 0 0 12px 0;
 	gap: 8px;
+	margin-right: 28px;
 }
 
 .pattern-badge-local {
@@ -503,4 +508,11 @@ Hide erronous display when hittnig the back button on a filter change.
 	.components-base-control__field {
 		margin-bottom: 0 !important;
 	}
+}
+
+.dataviews-view-grid__card .dataviews-view-grid__media-actions {
+	opacity: 1;
+}
+.dataviews-view-grid .dataviews-view-grid__row {
+	padding-right: 5px;
 }
