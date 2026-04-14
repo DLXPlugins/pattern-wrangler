@@ -27,6 +27,9 @@ module.exports = ( env ) => {
 				'dlx-pw-categories-view': [
 					'./src/js/react/views/categories/index.js',
 				],
+				'dlx-pw-hide-ui': [
+					'./src/js/helpers/hide-ui.js',
+				],
 			},
 			resolve: {
 				alias: {

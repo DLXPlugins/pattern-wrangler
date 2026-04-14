@@ -32,7 +32,8 @@ class Preview {
 		add_filter( 'query_vars', array( $this, 'add_preview_query_var' ) );
 
 		// Override the template for the wp_block post type.
-		add_filter( 'template_include', array( $this, 'maybe_override_template' ) );
+		add_filter( 'template_include', array( $this, 'maybe_override_preview_template' ) );
+		add_filter( 'template_include', array( $this, 'maybe_override_ajax_preview_template' ) );
 
 		// Add a preview button to the top toolbar section.
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_preview_toolbar_scripts' ) );
@@ -121,12 +122,45 @@ class Preview {
 	 *
 	 * @return string Updated path.
 	 */
-	public function maybe_override_template( $template ) {
+	public function maybe_override_preview_template( $template ) {
 		$preview = get_query_var( 'dlxpw_preview' );
 		if ( ! $preview ) {
 			return $template;
 		}
 		$template = Functions::get_plugin_dir( 'templates/pattern.php' );
+		return $template;
+	}
+
+	/**
+	 * Override the template for the wp_block post type.
+	 *
+	 * @param string $template Template path.
+	 *
+	 * @return string Updated path.
+	 */
+	public function maybe_override_ajax_preview_template( $template ) {
+		$preview = get_query_var( 'dlxpw_ajax_preview' );
+		if ( ! $preview ) {
+			return $template;
+		}
+		$pattern_id = Functions::get_sanitized_pattern_id( filter_input( INPUT_GET, 'pattern_id', FILTER_UNSAFE_RAW ) );
+		if ( 0 === $pattern_id ) {
+			die( 'Invalid pattern ID.' );
+		}
+		add_filter(
+			'dlxpw_pattern_preview_id',
+			function () use ( $pattern_id ) {
+				return urlencode( $pattern_id );
+			}
+		);
+
+		add_filter(
+			'dlxpw_pattern_preview_nonce',
+			function () use ( $pattern_id ) {
+				return wp_create_nonce( 'preview-pattern_' . $pattern_id );
+			}
+		);
+		$template = Functions::get_plugin_dir( 'templates/pattern-preview.php' );
 		return $template;
 	}
 
@@ -139,6 +173,7 @@ class Preview {
 	 */
 	public function add_preview_query_var( $query_vars ) {
 		$query_vars[] = 'dlxpw_preview';
+		$query_vars[] = 'dlxpw_ajax_preview';
 		return $query_vars;
 	}
 

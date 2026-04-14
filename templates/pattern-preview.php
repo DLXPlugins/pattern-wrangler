@@ -131,6 +131,15 @@ add_action(
 		wp_enqueue_style( 'wp-block-library' ); // needed for preview.
 		wp_enqueue_style( 'wp-block-library-theme' ); // needed for preview.
 
+		// Enqueue hide UI script.
+		wp_enqueue_script(
+			'dlx-pw-hide-ui',
+			Functions::get_plugin_url( 'build/dlx-pw-hide-ui.js' ),
+			array(),
+			Functions::get_plugin_version(),
+			false
+		);
+
 		// Get block styles.
 		if ( function_exists( 'wp_get_global_stylesheet' ) ) { // needed for preview.
 
@@ -154,7 +163,7 @@ add_action(
 		);
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
-			'body { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; } .pattern-preview-wrapper > *:first-child:not(.wp-block-group,.alignwide,.alignfull,section,main) { padding-top: 0 !important; } .pattern-preview-wrapper > *:first-child { margin-top: 0 !important; } .pattern-preview-wrapper { margin-top: 0 !important; padding-top: 0 !important; } .wp-site-blocks { margin-top: 0 !important; padding-top: 0 !important; }'
+			'body { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; }'
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
 
@@ -218,11 +227,7 @@ if ( ! wp_is_block_theme() ) {
 	?>
 	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1600px; margin: 0 auto;">
 		<?php
-		if ( wp_is_block_theme() ) {
-			echo wp_kses( $pattern_content, Functions::get_kses_allowed_html( true ) );
-		} else {
-			echo wp_kses( do_blocks( $pattern_content ), Functions::get_kses_allowed_html( true ) );
-		}
+		echo apply_filters( 'the_content', $pattern_content );
 		?>
 	</div>
 	<?php
@@ -249,9 +254,9 @@ if ( ! wp_is_block_theme() ) {
 		<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto; aspect-ratio: 1/1;">
 			<?php
 			if ( wp_is_block_theme() ) {
-				echo wp_kses( $blocks, Functions::get_kses_allowed_html( true ) );
+				echo apply_filters( 'the_content', $blocks );
 			} else {
-				echo wp_kses( do_blocks( $pattern_content ), Functions::get_kses_allowed_html( true ) );
+				echo apply_filters( 'the_content', $pattern_content );
 			}
 			?>
 		</div>
@@ -289,4 +294,5 @@ if ( ! wp_is_block_theme() ) {
 	</html>
 	<?php
 }
-		wp_reset_postdata();
+$wp_query = $temp;
+wp_reset_postdata();

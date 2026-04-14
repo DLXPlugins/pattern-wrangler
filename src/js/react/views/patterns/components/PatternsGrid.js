@@ -85,7 +85,7 @@ const ResponsiveIframe = ( { src, title, item } ) => {
 		}
 
 		const newScale = containerWidth / ( iframeWidth || 800 );
-		const newAspectRatio = containerWidth / containerHeight;
+		const newAspectRatio = containerWidth / ( containerHeight || 1 );
 		const newIframeMinHeight = Math.max( iframeWidth * newAspectRatio, 100 );
 		setIframeMinHeight( newIframeMinHeight );
 		setScale( newScale );
@@ -165,7 +165,7 @@ const popPatternPreview = ( item ) => {
 	const viewportWidth = item.viewportWidth || 1200;
 
 	const previewUrl = item?.id
-		? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+		? `${ dlxEnhancedPatternsView.homeUrl }?dlxpw_ajax_preview=1&action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
 		: '';
 
 	Fancybox.show( [
@@ -569,9 +569,8 @@ const Interface = ( props ) => {
 				label: __( 'Preview', 'pattern-wrangler' ),
 				getValue: ( { item } ) => {
 					const viewportWidth = item.viewportWidth || 1200;
-
 					const previewUrl = item?.id
-						? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+						? `${ dlxEnhancedPatternsView.homeUrl }?dlxpw_ajax_preview=1&action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
 						: '';
 
 					// Determine badge type based on pattern properties.
