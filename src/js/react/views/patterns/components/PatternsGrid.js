@@ -1,20 +1,13 @@
 /* eslint-disable react/no-unknown-property */
-import {
-	useState,
-	useMemo,
-	useEffect,
-	useRef,
-	Suspense,
-} from '@wordpress/element';
-import { useResizeObserver } from '@wordpress/compose';
+import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
 import { downloadBlob } from '@wordpress/blob';
-import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
 import { escapeAttribute } from '@wordpress/escape-html';
-import '@fancyapps/ui/dist/fancybox/fancybox.css';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
 	Button,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControl as ToggleGroupControl,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	FormFileUpload,
 } from '@wordpress/components';
@@ -27,7 +20,7 @@ import {
 	cleanForSlug,
 } from '@wordpress/url';
 import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
-import { ReactSpinner3, ReactSpinner5 } from '@mediaron/react-spinners';
+import { ReactSpinner3 } from '@mediaron/react-spinners';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
 import PatternPauseModal from './PatternPauseModal';
@@ -35,217 +28,11 @@ import PatternPublishModal from './PatternPublishModal';
 import PatternUnpauseModal from './PatternUnpauseModal';
 import PatternDeleteModal from './PatternDeleteModal';
 import PatternGetCodeModal from './PatternGetCodeModal';
+import PatternDuplicateModal from './PatternDuplicateModal';
 import PatternTagModal from './PatternTagModal';
 import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
-import ZoomIcon from './Icons/ZoomIcon';
-
-// Enhanced iframe component that works with the existing PHP scaling system.
-const ResponsiveIframe = ( {
-	src,
-	title,
-	item,
-	onPreviewSettled = null,
-	batchGeneration = 0,
-} ) => {
-	const iframeRef = useRef( null );
-	const containerRef = useRef( null );
-	const hasSettledRef = useRef( false );
-	const [ isLoaded, setIsLoaded ] = useState( false );
-	const [ scale, setScale ] = useState( 1 );
-	const [ iframeWidth, setIframeWidth ] = useState( 0 );
-	const [ iframeMinHeight, setIframeMinHeight ] = useState( 0 );
-	const [ aspectRatio, setAspectRatio ] = useState( 1 );
-
-	/**
-	 * Mark preview as settled for sequential batch progression.
-	 */
-	const markPreviewSettled = () => {
-		if ( hasSettledRef.current ) {
-			return;
-		}
-
-		hasSettledRef.current = true;
-		if ( 'function' === typeof onPreviewSettled ) {
-			onPreviewSettled( item?.id, batchGeneration );
-		}
-	};
-
-	useEffect( () => {
-		if ( hasSettledRef?.current ) { // This prevents the iframe from being reset if it is already loaded.
-			return;
-		}
-		hasSettledRef.current = false;
-		setIsLoaded( false );
-	}, [ src, batchGeneration ] );
-
-	// Handle iframe load and setup communication with PHP scaling system.
-	useEffect( () => {
-		const iframe = iframeRef.current;
-		if ( ! iframe ) {
-			return;
-		}
-
-		const handleLoad = () => {
-			setIsLoaded( true );
-			setIframeWidth( item.viewportWidth || iframe.offsetWidth );
-
-			// The PHP template will handle scaling automatically.
-			// We just need to ensure the container is ready for the scaling calculations.
-			markPreviewSettled();
-		};
-
-		iframe.addEventListener( 'load', handleLoad );
-
-		return () => {
-			iframe.removeEventListener( 'load', handleLoad );
-		};
-	}, [ src, batchGeneration ] );
-
-	// Use ResizeObserver to detect container size changes and trigger PHP scaling recalculation.
-	const [ resizeListener, { width: containerWidth, height: containerHeight } ] =
-		useResizeObserver();
-
-	useEffect( () => {
-		if (
-			typeof containerWidth === 'undefined' ||
-			! isLoaded ||
-			iframeWidth === 0
-		) {
-			return;
-		}
-
-		const newScale = containerWidth / ( iframeWidth || 800 );
-		const newAspectRatio = containerWidth / containerHeight;
-		const newIframeMinHeight = Math.max( iframeWidth * newAspectRatio, 100 );
-		setIframeMinHeight( newIframeMinHeight );
-		setScale( newScale );
-		setAspectRatio( newAspectRatio );
-
-		// Trigger the PHP scaling system to recalculate when container size changes.
-		// Dispatch the event on the current window since React and iframe are in the same context.
-		const event = new CustomEvent( 'dlxPatternPreviewResize', {
-			detail: { width: containerWidth },
-		} );
-
-		window.dispatchEvent( event );
-
-		// Also try dispatching on parent window as fallback
-		try {
-			window.parent.dispatchEvent( event );
-		} catch ( e ) {
-			// Could not dispatch on parent window.
-		}
-	}, [ containerWidth, isLoaded ] );
-
-	useEffect( () => {
-		if ( iframeRef.current ) {
-			setIframeWidth( iframeRef.current.offsetWidth );
-		}
-	}, [ iframeRef, iframeMinHeight ] );
-
-	return (
-		<a
-			href={ src }
-			className="pattern-preview-iframe-link"
-			target="_blank"
-			rel="noopener noreferrer"
-			onClick={ ( e ) => {
-				e.preventDefault();
-				popPatternPreview( item );
-			} }
-			aria-hidden="true"
-		>
-			{ isLoaded && (
-				<div
-					className="pattern-preview-zoom-icon"
-				>
-					<ZoomIcon />
-				</div>
-			) }
-			<div
-				className="pattern-preview-iframe-scale-container-wrapper"
-				ref={ containerRef }
-				style={ { transform: `scale(${ scale })` } }
-			>
-				<div className="pattern-preview-iframe-scale-wrapper">
-					<div className="pattern-preview-iframe-scale-container">
-						{ resizeListener }
-
-						<div className="pattern-preview-iframe-wrapper">
-							{ ! isLoaded && (
-								<div
-									className="pattern-preview-loading-label"
-									style={ {
-										position: 'absolute',
-										top: '50%',
-										left: '50%',
-										transform: 'translate(-50%, -50%)',
-										width: '100%',
-										height: '100%',
-										display: 'flex',
-										justifyContent: 'center',
-										alignItems: 'center',
-										zIndex: 2,
-										padding: '6px 10px',
-										background: 'rgba(255, 255, 255, 0.9)',
-										borderRadius: '4px',
-									} }
-								>
-									<ReactSpinner3
-										size={ 40 }
-										speedMultiplier={ 1.1 }
-										color="#9ca0a5"
-									/>
-								</div>
-							) }
-							<iframe
-								ref={ iframeRef }
-								key={ `preview-${ item.id }` }
-								src={ src }
-								tabIndex={ -1 }
-								title={ title }
-								sandbox="allow-same-origin allow-scripts allow-forms"
-								loading="lazy"
-								onError={ () => {
-									setIsLoaded( true );
-									markPreviewSettled();
-								} }
-								style={ {
-									position: 'absolute',
-									top: 0,
-									left: 0,
-									width: item.viewportWidth || 800,
-									aspectRatio,
-									height: iframeMinHeight + 'px',
-									maxHeight: '1200px',
-									overflow: 'visible',
-								} }
-							></iframe>
-						</div>
-					</div>
-				</div>
-			</div>
-		</a>
-	);
-};
-
-const popPatternPreview = ( item ) => {
-	const viewportWidth = item.viewportWidth || 1200;
-
-	const previewUrl = item?.id
-		? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
-		: '';
-
-	Fancybox.show( [
-		{
-			src: previewUrl,
-			caption: item.title,
-			type: 'iframe',
-			closeButton: true,
-		},
-	] );
-};
+import ResponsiveIframe from './ResponsiveIframe';
 
 const defaultLayouts = {
 	grid: {
@@ -281,7 +68,7 @@ const PatternsGrid = ( props ) => {
 					<div className="dataviews-wrapper">
 						<div className="dlx-patterns-view-container-header">
 							<h1>{ __( 'Loading patterns…', 'pattern-wrangler' ) }</h1>
-							<ReactSpinner3 size={ 80 } speedMultiplier={ 1.4 } color="#2172EB" />
+							<ReactSpinner3 size={ 94 } speedMultiplier={ 1.8 } color="#9ca0a5" />
 						</div>
 					</div>
 				</div>
@@ -314,7 +101,6 @@ const PatternsGrid = ( props ) => {
 
 const Interface = ( props ) => {
 	const { data } = props;
-	const previewBatchSize = 6;
 
 	const [ selectedItems, setSelectedItems ] = useState( [] );
 	const { patterns, doNotShowAgain } = useSelect( ( newSelect ) => {
@@ -325,16 +111,27 @@ const Interface = ( props ) => {
 	} );
 
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
-	const [ previewBatchState, setPreviewBatchState ] = useState( {
-		visibleCount: 0,
-		activeStart: 0,
-		activeSize: 0,
-		completedCount: 0,
-	} );
-	const batchControllerRef = useRef( {
+
+	// Begin queue.
+	const previewConcurrency = 6;
+
+	const [ previewQueueState, setPreviewQueueState ] = useState( {
 		generation: 0,
-		settledIds: new Set(),
+		statusById: {},
 	} );
+
+	const previewQueueRef = useRef( {
+		generation: 0,
+		orderedIds: [],
+		statusById: {},
+	} );
+
+	const loadedPreviewSignaturesRef = useRef( new Set() );
+
+	const getPreviewSignature = ( item ) => {
+		const viewportWidth = item.viewportWidth || 1200;
+		return `${ item.id }::${ viewportWidth }`;
+	};
 
 	const { categories } = useSelect( () => {
 		return {
@@ -370,6 +167,114 @@ const Interface = ( props ) => {
 	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( null );
 	const [ isGetCodeModalOpen, setIsGetCodeModalOpen ] = useState( null );
 	const [ isTagPatternModalOpen, setIsTagPatternModalOpen ] = useState( null );
+	const [ isDuplicateModalOpen, setIsDuplicateModalOpen ] = useState( null );
+
+	const buildPreviewQueueState = ( items, generation ) => {
+		const statusById = {};
+		let activeCount = 0;
+
+		items.forEach( ( item ) => {
+			const previewSignature = getPreviewSignature( item );
+			const isAlreadyLoaded =
+				loadedPreviewSignaturesRef.current.has( previewSignature );
+
+			if ( isAlreadyLoaded ) {
+				statusById[ item.id ] = 'settled';
+				return;
+			}
+
+			if ( activeCount < previewConcurrency ) {
+				statusById[ item.id ] = 'loading';
+				activeCount++;
+				return;
+			}
+
+			statusById[ item.id ] = 'queued';
+		} );
+
+		return {
+			generation,
+			statusById,
+		};
+	};
+
+	const resetPreviewQueue = ( items ) => {
+		const nextGeneration = previewQueueRef.current.generation + 1;
+		const orderedIds = items.map( ( item ) => item.id );
+		const nextState = buildPreviewQueueState( items, nextGeneration );
+
+		previewQueueRef.current = {
+			generation: nextGeneration,
+			orderedIds,
+			statusById: nextState.statusById,
+		};
+
+		setPreviewQueueState( nextState );
+	};
+
+	const promoteQueuedPreviews = ( currentStatusById ) => {
+		const nextStatusById = { ...currentStatusById };
+
+		const activeCount = Object.values( nextStatusById ).filter(
+			( status ) => status === 'loading'
+		).length;
+
+		const availableSlots = Math.max( 0, previewConcurrency - activeCount );
+
+		if ( availableSlots === 0 ) {
+			return nextStatusById;
+		}
+
+		let promoted = 0;
+
+		for ( const id of previewQueueRef.current.orderedIds ) {
+			if ( promoted >= availableSlots ) {
+				break;
+			}
+
+			if ( nextStatusById[ id ] === 'queued' ) {
+				nextStatusById[ id ] = 'loading';
+				promoted++;
+			}
+		}
+
+		return nextStatusById;
+	};
+
+	const handlePreviewSettled = ( patternId, generation, status = 'settled' ) => {
+		if ( generation !== previewQueueRef.current.generation ) {
+			return;
+		}
+
+		const pattern = patternsDisplay.find( ( item ) => item.id === patternId );
+
+		if ( pattern && status === 'settled' ) {
+			loadedPreviewSignaturesRef.current.add( getPreviewSignature( pattern ) );
+		}
+
+		setPreviewQueueState( ( current ) => {
+			const currentStatus = current.statusById[ patternId ];
+
+			if ( currentStatus === 'settled' || currentStatus === 'error' ) {
+				return current;
+			}
+
+			const nextStatusById = {
+				...current.statusById,
+				[ patternId ]: status,
+			};
+
+			const promotedStatusById = promoteQueuedPreviews( nextStatusById );
+
+			previewQueueRef.current.statusById = promotedStatusById;
+
+			return {
+				generation: current.generation,
+				statusById: promotedStatusById,
+			};
+		} );
+	};
+
 	const exportPattern = ( item ) => {
 		const isLocal = item.isLocal;
 		const title = item.title;
@@ -567,73 +472,6 @@ const Interface = ( props ) => {
 		};
 	};
 
-	const resetPreviewBatchState = ( totalItems, invalidateGeneration = true ) => {
-		if ( invalidateGeneration ) {
-			batchControllerRef.current.generation++;
-		}
-		batchControllerRef.current.settledIds = new Set();
-		setPreviewBatchState( getInitialPreviewBatchState( totalItems ) );
-	};
-
-	const handlePreviewSettled = ( patternId, generation ) => {
-		if ( generation !== batchControllerRef.current.generation ) {
-			return;
-		}
-
-		if ( batchControllerRef.current.settledIds.has( patternId ) ) {
-			return;
-		}
-
-		const patternIndex = patternsDisplay.findIndex(
-			( pattern ) => pattern.id === patternId
-		);
-
-		setPreviewBatchState( ( currentBatchState ) => {
-			if ( currentBatchState.activeSize <= 0 ) {
-				return currentBatchState;
-			}
-
-			if (
-				patternIndex < currentBatchState.activeStart ||
-				patternIndex >=
-					currentBatchState.activeStart + currentBatchState.activeSize
-			) {
-				return currentBatchState;
-			}
-
-			batchControllerRef.current.settledIds.add( patternId );
-			const nextCompletedCount = currentBatchState.completedCount + 1;
-
-			// Wait for every iframe in the active batch before advancing.
-			if ( nextCompletedCount < currentBatchState.activeSize ) {
-				return {
-					...currentBatchState,
-					completedCount: nextCompletedCount,
-				};
-			}
-
-			const totalItems = patternsDisplay.length;
-			const nextVisibleCount = Math.min(
-				currentBatchState.visibleCount + previewBatchSize,
-				totalItems
-			);
-			const nextActiveStart = currentBatchState.visibleCount;
-			const nextActiveSize = Math.min(
-				previewBatchSize,
-				Math.max( totalItems - nextActiveStart, 0 )
-			);
-
-			batchControllerRef.current.settledIds = new Set();
-
-			return {
-				visibleCount: nextVisibleCount,
-				activeStart: nextActiveStart,
-				activeSize: nextActiveSize,
-				completedCount: 0,
-			};
-		} );
-	};
-
 	const fields = useMemo(
 		() => [
 			{
@@ -734,13 +572,10 @@ const Interface = ( props ) => {
 				id: 'pattern-view-json',
 				label: __( 'Preview', 'pattern-wrangler' ),
 				getValue: ( { item } ) => {
-					const previewIndex = patternsDisplay.findIndex(
-						( pattern ) => pattern.id === item.id
-					);
+					const previewStatus =
+						previewQueueState.statusById[ item.id ] || 'queued';
 					const shouldLoadPreview =
-						previewIndex > -1 && previewIndex < previewBatchState.visibleCount;
-					const isSequentialBatchLoading =
-						previewBatchState.visibleCount < patternsDisplay.length;
+						previewStatus === 'loading' || previewStatus === 'settled';
 					const viewportWidth = item.viewportWidth || 1200;
 
 					const previewUrl = item?.id
@@ -796,16 +631,23 @@ const Interface = ( props ) => {
 										src={ previewUrl }
 										title={ `Preview: ${ item.title }` }
 										item={ item }
-										batchGeneration={ batchControllerRef.current.generation }
-										onPreviewSettled={ handlePreviewSettled }
+										queueGeneration={ previewQueueState.generation }
+										queueStatus={ previewStatus }
+										onPreviewSettled={ ( patternId, generation ) => {
+											handlePreviewSettled( patternId, generation, 'settled' );
+										} }
+										onPreviewError={ ( patternId, generation ) => {
+											handlePreviewSettled( patternId, generation, 'error' );
+										} }
 									/>
 								) }
+
 								{ ! shouldLoadPreview && (
 									<div
 										className="pattern-preview-iframe-placeholder"
 										style={ { minHeight: '260px' } }
 									>
-										{ isSequentialBatchLoading
+										{ previewStatus === 'queued'
 											? __( 'Preview queued…', 'pattern-wrangler' )
 											: __( 'Preview pending…', 'pattern-wrangler' ) }
 									</div>
@@ -993,67 +835,11 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
 			},
 		],
-		[
-			handlePreviewSettled,
-			nonEmptyCategories,
-			patternsDisplay,
-			previewBatchState.visibleCount,
-		]
+		[ nonEmptyCategories, patternsDisplay, previewQueueState ]
 	);
 
 	const actions = useMemo(
 		() => [
-			{
-				id: 'quick-edit',
-				label: __( 'Quick Edit', 'pattern-wrangler' ),
-				icon: 'edit',
-				callback: ( items ) => {
-					setIsQuickEditModalOpen( { item: items[ 0 ] } );
-				},
-				isEligible: ( pattern ) => {
-					return pattern.isLocal && ! pattern.isDisabled;
-				},
-				isPrimary: true,
-			},
-			{
-				id: 'get-code',
-				label: __( 'Get Code', 'pattern-wrangler' ),
-				icon: 'code',
-				callback: ( items ) => {
-					setIsGetCodeModalOpen( { item: items[ 0 ] } );
-				},
-				isEligible: ( item ) => {
-					return item.isLocal && ! item.isDisabled;
-				},
-				isPrimary: false,
-				supportsBulk: false,
-			},
-			{
-				id: 'delete',
-				label: ( items ) => {
-					return sprintf(
-						/* translators: %d: number of patterns */
-						_n(
-							'Delete %d Pattern',
-							'Delete %d Patterns',
-							items.length,
-							'pattern-wrangler'
-						),
-						items.length
-					);
-				},
-				icon: 'trash',
-				isEligible: ( pattern ) => {
-					// Pattern must be local and disabled.
-					return pattern.isLocal && pattern.isDisabled;
-				},
-				callback: ( items ) => {
-					setIsDeleteModalOpen( { items } );
-				},
-				isPrimary: false,
-				isDestructive: true,
-				supportsBulk: true,
-			},
 			{
 				id: 'tag-pattern',
 				label: ( items ) => {
@@ -1081,58 +867,6 @@ const Interface = ( props ) => {
 				supportsBulk: true,
 			},
 			{
-				id: 'publish',
-				label: ( items ) => {
-					return sprintf(
-						/* translators: %d: number of patterns */
-						_n(
-							'Publish %d Pattern',
-							'Publish %d Patterns',
-							items.length,
-							'pattern-wrangler'
-						),
-						items.length
-					);
-				},
-				icon: 'yes-alt',
-				isEligible: ( pattern ) => {
-					// Pattern must be local and disabled.
-					return pattern.isLocal && pattern.isDisabled;
-				},
-				callback: ( items ) => {
-					setIsPublishModalOpen( { items } );
-				},
-				isPrimary: false,
-				isDestructive: false,
-				supportsBulk: true,
-			},
-			{
-				id: 'unpause',
-				label: ( items ) => {
-					return sprintf(
-						/* translators: %d: number of patterns */
-						_n(
-							'Re-enable %d Pattern',
-							'Re-enable %d Patterns',
-							items.length,
-							'pattern-wrangler'
-						),
-						items.length
-					);
-				},
-				icon: 'controls-play',
-				isEligible: ( pattern ) => {
-					// Pattern must be local and enabled.
-					return ! pattern.isLocal && pattern.isDisabled;
-				},
-				callback: ( items ) => {
-					setIsUnpauseModalOpen( { items } );
-				},
-				isPrimary: false,
-				isDestructive: false,
-				supportsBulk: true,
-			},
-			{
 				id: 'copy-to-local',
 				label: __( 'Copy to New Pattern', 'pattern-wrangler' ),
 				icon: 'edit',
@@ -1146,31 +880,6 @@ const Interface = ( props ) => {
 				},
 				isPrimary: false,
 				isDestructive: false,
-			},
-			{
-				id: 'disable-preview',
-				label: ( items ) => {
-					return sprintf(
-						/* translators: %d: number of patterns */
-						_n(
-							'Disable %d Pattern',
-							'Disable %d Patterns',
-							items.length,
-							'pattern-wrangler'
-						),
-						items.length
-					);
-				},
-				icon: 'controls-pause',
-				callback: ( items ) => {
-					setIsPauseModalOpen( { items } );
-				},
-				isEligible: ( item ) => {
-					return ! item.isDisabled;
-				},
-				isDestructive: true,
-				supportsBulk: true,
-				isPrimary: false,
 			},
 			{
 				id: 'copy',
@@ -1232,6 +941,72 @@ const Interface = ( props ) => {
 				isDestructive: false,
 			},
 			{
+				id: 'delete',
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n(
+							'Delete %d Pattern',
+							'Delete %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'trash',
+				isEligible: ( pattern ) => {
+					// Pattern must be local and disabled.
+					return pattern.isLocal && pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsDeleteModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: true,
+				supportsBulk: true,
+			},
+			{
+				id: 'disable-preview',
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n(
+							'Disable %d Pattern',
+							'Disable %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'controls-pause',
+				callback: ( items ) => {
+					setIsPauseModalOpen( { items } );
+				},
+				isEligible: ( item ) => {
+					return ! item.isDisabled;
+				},
+				isDestructive: true,
+				supportsBulk: true,
+				isPrimary: false,
+			},
+			{
+				id: 'duplicate',
+				label: __( 'Duplicate Pattern', 'pattern-wrangler' ),
+				icon: 'copy',
+				callback: ( items ) => {
+					const item = items[ 0 ];
+					setIsDuplicateModalOpen( item );
+				},
+				isEligible: ( item ) => {
+					return item.isLocal && ! item.isDisabled;
+				},
+				isPrimary: false,
+				isDestructive: false,
+				supportsBulk: false,
+			},
+			{
 				id: 'export',
 				label: __( 'Export to JSON', 'pattern-wrangler' ),
 				icon: 'edit',
@@ -1261,6 +1036,83 @@ const Interface = ( props ) => {
 				},
 				isPrimary: false,
 				isDestructive: false,
+			},
+			{
+				id: 'get-code',
+				label: __( 'Get Code', 'pattern-wrangler' ),
+				icon: 'code',
+				callback: ( items ) => {
+					setIsGetCodeModalOpen( { item: items[ 0 ] } );
+				},
+				isEligible: ( item ) => {
+					return item.isLocal && ! item.isDisabled;
+				},
+				isPrimary: false,
+				supportsBulk: false,
+			},
+			{
+				id: 'publish',
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n(
+							'Publish %d Pattern',
+							'Publish %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'yes-alt',
+				isEligible: ( pattern ) => {
+					// Pattern must be local and disabled.
+					return pattern.isLocal && pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsPublishModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: false,
+				supportsBulk: true,
+			},
+			{
+				id: 'unpause',
+				label: ( items ) => {
+					return sprintf(
+						/* translators: %d: number of patterns */
+						_n(
+							'Re-enable %d Pattern',
+							'Re-enable %d Patterns',
+							items.length,
+							'pattern-wrangler'
+						),
+						items.length
+					);
+				},
+				icon: 'controls-play',
+				isEligible: ( pattern ) => {
+					// Pattern must be local and enabled.
+					return ! pattern.isLocal && pattern.isDisabled;
+				},
+				callback: ( items ) => {
+					setIsUnpauseModalOpen( { items } );
+				},
+				isPrimary: false,
+				isDestructive: false,
+				supportsBulk: true,
+			},
+			{
+				id: 'quick-edit',
+				label: __( 'Quick Edit', 'pattern-wrangler' ),
+				icon: 'edit',
+				callback: ( items ) => {
+					setIsQuickEditModalOpen( { item: items[ 0 ] } );
+				},
+				isEligible: ( pattern ) => {
+					return pattern.isLocal && ! pattern.isDisabled;
+				},
+				isPrimary: false,
 			},
 		],
 		[ categories, patterns ]
@@ -1752,12 +1604,6 @@ const Interface = ( props ) => {
 	 * @param {Object} newView The new view object.
 	 */
 	const onChangeView = ( newView ) => {
-		const currentPage = parseInt( view.page, 10 ) || 1;
-		const nextPage = parseInt( newView.page, 10 ) || 1;
-		if ( nextPage !== currentPage ) {
-			resetPreviewBatchState( 0 );
-		}
-
 		// Create query args object with view state.
 		const changeQueryArgs = getQueryArgs( window.location.href );
 		changeQueryArgs.paged = newView.page || 1;
@@ -1868,15 +1714,15 @@ const Interface = ( props ) => {
 		// Update the view state.
 		//setView( newView );
 	};
-
 	useEffect( () => {
-		resetPreviewBatchState( patternsDisplay.length );
+		resetPreviewQueue( patternsDisplay );
 	}, [ patternsDisplay ] );
 
 	useEffect( () => {
 		return () => {
-			batchControllerRef.current.generation++;
-			batchControllerRef.current.settledIds = new Set();
+			previewQueueRef.current.generation++;
+			previewQueueRef.current.orderedIds = [];
+			previewQueueRef.current.statusById = {};
 		};
 	}, [] );
 
@@ -2647,6 +2493,32 @@ const Interface = ( props ) => {
 					<PatternGetCodeModal
 						item={ isGetCodeModalOpen.item }
 						onRequestClose={ () => setIsGetCodeModalOpen( null ) }
+					/>
+				) }
+				{ isDuplicateModalOpen && (
+					<PatternDuplicateModal
+						item={ isDuplicateModalOpen }
+						onRequestClose={ () => setIsDuplicateModalOpen( null ) }
+						isOpen={ isDuplicateModalOpen }
+						categories={ localCategories }
+						title={ isDuplicateModalOpen.title + ' ' + __( '(Copy)', 'pattern-wrangler' ) }
+						onDuplicate={ async( patternId ) => {
+							if ( patternId ) {
+								const getPatternResponse = await apiFetch( {
+									path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ patternId }`,
+									method: 'GET',
+								} );
+								if ( getPatternResponse ) {
+									dispatch( patternsStore ).addPattern( getPatternResponse );
+								}
+							}
+						} }
+						syncedDefaultStatus={
+							'synced' === isDuplicateModalOpen.patternType
+								? 'synced'
+								: 'unsynced'
+						}
+						copyPatternId={ isDuplicateModalOpen.id }
 					/>
 				) }
 			</DataViews>

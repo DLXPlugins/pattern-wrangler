@@ -93,6 +93,21 @@ class Rest {
 		);
 
 		/**
+		 * For duplicating a pattern.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/patterns/duplicate',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'rest_duplicate_pattern' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_others_posts' );
+				},
+			)
+		);
+
+		/**
 		 * For updating a pattern category.
 		 */
 		register_rest_route(
@@ -848,6 +863,78 @@ class Rest {
 	}
 
 	/**
+	 * Duplicate a pattern.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 *
+	 * @return WP_REST_Response The REST response.
+	 */
+	public function rest_duplicate_pattern( $request ) {
+		// Check nonce and permissions.
+		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-duplicate-pattern-' . absint( $request->get_param( 'patternId' ) ) ) || ! current_user_can( 'edit_others_posts' ) ) {
+			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to duplicate patterns.' ) );
+		}
+
+		$pattern_title       = sanitize_text_field( $request->get_param( 'patternTitle' ) );
+		$pattern_categories  = Functions::sanitize_array_recursive( $request->get_param( 'patternCategories' ) ); // Cats are in format, [name, id].
+		$pattern_sync_status = sanitize_text_field( $request->get_param( 'patternSyncStatus' ) );
+		$pattern_id          = absint( $request->get_param( 'patternId' ) );
+
+		// Get the original pattern.
+		$maybe_pattern_content = Functions::get_pattern_by_id( $pattern_id );
+		$content               = '';
+		if ( null !== $maybe_pattern_content ) {
+			$content = $maybe_pattern_content;
+		}
+		if ( empty( $content ) ) {
+			return rest_ensure_response( array( 'error' => 'Failed to get pattern content or pattern content is empty.' ) );
+		}
+
+		// Get categories into right format.
+		$categories = array();
+
+		// Create the pattern.
+		$pattern_id = wp_insert_post(
+			array(
+				'post_title'   => $pattern_title,
+				'post_content' => wp_slash( $content ),
+				'post_status'  => 'publish',
+				'post_type'    => 'wp_block',
+			)
+		);
+
+		// If unsynced, set the sync status.
+		if ( 'unsynced' === $pattern_sync_status ) {
+			update_post_meta( $pattern_id, 'wp_pattern_sync_status', 'unsynced' );
+		}
+
+		// Set categories.
+		$terms_to_add = array();
+		foreach ( $pattern_categories as $category ) {
+			if ( is_numeric( $category['id'] ) && 0 !== $category['id'] ) {
+				$terms_to_add[] = absint( $category['id'] );
+			} else {
+				$terms_to_add[] = sanitize_text_field( $category['name'] );
+			}
+		}
+
+		// Add terms.
+		$terms_affected_ids = wp_set_post_terms( $pattern_id, $terms_to_add, 'wp_pattern_category' );
+
+		/**
+		 * Action: dlx_pw_pattern_duplicated
+		 *
+		 * @param int $pattern_id The pattern ID.
+		 * @param array $terms_affected_ids The terms affected IDs.
+		 */
+		do_action( 'dlx_pw_pattern_duplicated', $pattern_id, $terms_affected_ids );
+
+		// Return the pattern ID.
+		return rest_ensure_response( array( 'patternId' => $pattern_id ) );
+	}
+
+	/**
 	 * Create a pattern.
 	 *
 	 * @param WP_REST_Request $request The REST request.
@@ -1301,20 +1388,21 @@ class Rest {
 				}
 
 				$patterns[ $pattern['name'] ] = array(
-					'id'            => Functions::get_sanitized_pattern_id( $pattern['name'] ),
-					'title'         => $pattern['title'],
-					'slug'          => $pattern['name'],
-					'content'       => $pattern['content'],
-					'categories'    => $categories,
-					'categorySlugs' => $category_slugs,
-					'isDisabled'    => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
-					'isLocal'       => false,
-					'syncStatus'    => 'registered',
-					'viewportWidth' => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
-					'patternType'   => 'registered',
-					'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
-					'siteId'        => get_current_blog_id(),
-					'asset'         => $has_asset ? $asset_slug : null,
+					'id'             => Functions::get_sanitized_pattern_id( $pattern['name'] ),
+					'title'          => $pattern['title'],
+					'slug'           => $pattern['name'],
+					'content'        => $pattern['content'],
+					'categories'     => $categories,
+					'categorySlugs'  => $category_slugs,
+					'isDisabled'     => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
+					'isLocal'        => false,
+					'syncStatus'     => 'registered',
+					'viewportWidth'  => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
+					'patternType'    => 'registered',
+					'editNonce'      => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
+					'siteId'         => get_current_blog_id(),
+					'asset'          => $has_asset ? $asset_slug : null,
+					'duplicateNonce' => '',
 				);
 			}
 		}
@@ -1332,20 +1420,21 @@ class Rest {
 				$category_slugs[]  = sanitize_title( $category->slug );
 			}
 			$patterns[ $pattern->post_name ] = array(
-				'id'            => $pattern->ID,
-				'title'         => $pattern->post_title,
-				'slug'          => $pattern->post_name,
-				'content'       => $pattern->post_content,
-				'categories'    => $category_labels,
-				'categorySlugs' => $category_slugs,
-				'isDisabled'    => 'draft' === $pattern->post_status,
-				'isLocal'       => true,
-				'syncStatus'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'id'             => $pattern->ID,
+				'title'          => $pattern->post_title,
+				'slug'           => $pattern->post_name,
+				'content'        => $pattern->post_content,
+				'categories'     => $category_labels,
+				'categorySlugs'  => $category_slugs,
+				'isDisabled'     => 'draft' === $pattern->post_status,
+				'isLocal'        => true,
+				'syncStatus'     => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
-				'patternType'   => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
-				'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
-				'siteId'        => get_current_blog_id(),
-				'asset'         => null,
+				'patternType'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'editNonce'      => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
+				'duplicateNonce' => wp_create_nonce( 'dlx-pw-patterns-view-duplicate-pattern-' . $pattern->ID ),
+				'siteId'         => get_current_blog_id(),
+				'asset'          => null,
 			);
 		}
 

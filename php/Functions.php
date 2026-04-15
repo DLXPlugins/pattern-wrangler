@@ -426,40 +426,28 @@ class Functions {
 	 *
 	 * @param string|int $pattern_id The pattern ID.
 	 *
-	 * @return string|null The pattern content or null if not found.
+	 * @return string|null The pattern content or null if not found. Note you may need to call wp_slash on content if inserting into the database.
 	 */
 	public static function get_pattern_by_id( $pattern_id ) {
+		$pattern_content = null;
 		// Perform query.
 		if ( is_numeric( $pattern_id ) ) {
-			global $wp_query;
-			$temp     = $wp_query;
-			$wp_query = new \WP_Query(
-				array(
-					'p'         => $pattern_id,
-					'post_type' => 'wp_block',
-				)
-			);
-			if ( ! $wp_query->have_posts() ) {
+			$pattern = get_post( $pattern_id );
+			if ( ! $pattern || 'wp_block' !== $pattern->post_type ) {
 				return null;
-			} else {
-				$wp_query->the_post();
-				$pattern_content = $wp_query->post->post_content;
 			}
-			$wp_query = $temp;
+			$pattern_content = $pattern->post_content;
 		} elseif ( empty( $pattern_content ) && $pattern_id ) {
 			$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 			foreach ( $registered_patterns as $pattern ) {
 				if ( $pattern_id === $pattern['slug'] || $pattern_id === $pattern['name'] ) {
 					$pattern_content = $pattern['content'];
-					return $pattern_content;
 					break;
 				}
 			}
-			if ( ! isset( $pattern_content ) ) {
-				return null;
-			}
 		}
-		return null;
+
+		return $pattern_content;
 	}
 
 	/**

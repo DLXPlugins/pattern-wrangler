@@ -179,6 +179,7 @@ const PatternTagModal = ( props ) => {
 											onChange={ ( tokens ) => {
 												field.onChange( tokens );
 											} }
+											tokenizeOnBlur={ true }
 											tokenizeOnSpace={ false }
 											allowMultiple={ true }
 											placeholder={ __( 'Add a category', 'pattern-wrangler' ) }

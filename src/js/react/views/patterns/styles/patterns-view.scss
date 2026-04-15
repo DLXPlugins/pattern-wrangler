@@ -252,7 +252,6 @@ dlx-patterns-view-filters-wrapper {
 
 .dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__title-field {
 	display: flex;
-	padding-left: 16px;
 	white-space: unset;
 
 	.pattern-title {
@@ -263,6 +262,10 @@ dlx-patterns-view-filters-wrapper {
 			font-size: 16px;
 		}
 	}
+}
+.dlx-patterns-view-container .dataviews-view-grid .dataviews-view-grid__card .dataviews-view-grid__title {
+	padding-left: 16px;
+	padding-right: 16px;
 }
 .dlx-patterns-view-container .dataviews-view-grid__title ~ * {
 	display: none !important;
