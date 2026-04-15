@@ -4,7 +4,7 @@ Tags: patterns, block patterns, pattern, pattern builder, synced patterns
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 2.3.5
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,6 +72,8 @@ If you have any issues with the previews, please be patient in your support requ
 This plugin integrates well with the following:
 
 * <a href="https://wordpress.org/plugins/synced-pattern-popups/">Synced Pattern Popups</a>: Synced Pattern Popups helps you create popups using the WordPress editor you already know, not yet another builder.
+* <a href="https://wordpress.org/plugins/block-visibility/">Block Visibility</a>: Easily create dynamic content in WordPress that will increase conversions, enhance the user experience, and improve your workflow.
+* Spectra, Kadence, and GenerateBlocks.
 
 If you have an idea for other integrations, please leave a support thread.
 
@@ -140,6 +142,20 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 7. An organized patterns view, demonstrating a trimmed down library and less category clutter.
 
 == Changelog ==
+
+= 2.4.0 =
+* Released 2026-04-15
+* New: DataView Grid has been updated to the latest, allowing for more view customization and better accessibility.
+* New: Dedicated sticky bar to handle pattern actions and pagination.
+* New: Can Duplicate a synced/unsynced pattern from the Quick Action menu.
+* New: Added Zoom icon to previews.
+* New: Added Spectra blocks compatibility.
+* New: Added Kandence Blocks compatibility.
+* New: Added GeneratePress One and GenerateBlocks compatibility.
+* New: Added Block Visibility compatibility.
+* Fix: Preview now runs JavaScript and is much more reliable.
+* Fix: Pattern preview iFrame loading states and queuing have been added for heavy pattern libraries such as WooCommerce.
+* Fix: Editing a pattern now returns you back to the Patterns View screen reliably.
 
 = 2.3.5 =
 * Released 2026-03-16
@@ -276,5 +292,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.3.5 =
-Fix for title clickability and now showing which categories are available in the modals. Added sidebar when editing a pattern that shows the code/embed options.
+= 2.4.0 =
+Introduces an updated DataView Grid with improved customization and accessibility, along with a new sticky bar for pattern actions and pagination. It adds pattern duplication from the Quick Actions menu, preview zoom, and expanded compatibility with Spectra, Kadence Blocks, GeneratePress One, GenerateBlocks, and Block Visibility. Previews are now more reliable with JavaScript support and improved iFrame loading/queuing, and editing a pattern now correctly returns you to the Patterns View.
