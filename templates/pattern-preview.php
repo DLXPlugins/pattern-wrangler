@@ -33,6 +33,13 @@ if ( '' === $pattern_id ) {
 	die( 'Pattern not found.' );
 }
 
+// Adding Spectra compatibility.
+if ( class_exists( 'UAGB_Init_Blocks' ) && is_numeric( $pattern_id ) ) {
+
+	$post_assets = new \UAGB_Post_Assets( intval( $pattern_id ) );
+	$post_assets->enqueue_scripts();
+}
+
 $scale          = 1;
 $aspect_ratio   = 1 / 1;
 $viewport_width = 1600;

@@ -33,6 +33,13 @@ if ( ! $wp_query->have_posts() ) {
 	$wp_query->the_post();
 }
 
+// Adding Spectra compatibility.
+if ( class_exists( 'UAGB_Init_Blocks' ) && is_numeric( $pattern_id ) ) {
+
+	$post_assets = new \UAGB_Post_Assets( intval( $pattern_id ) );
+	$post_assets->enqueue_scripts();
+}
+
 /**
  * Action to output custom actions.
  */
