@@ -2501,7 +2501,18 @@ const Interface = ( props ) => {
 						onRequestClose={ () => setIsDuplicateModalOpen( null ) }
 						isOpen={ isDuplicateModalOpen }
 						categories={ localCategories }
-						title={ __( 'Duplicate Pattern', 'pattern-wrangler' ) }
+						title={ isDuplicateModalOpen.title + ' ' + __( '(Copy)', 'pattern-wrangler' ) }
+						onDuplicate={ async( patternId ) => {
+							if ( patternId ) {
+								const getPatternResponse = await apiFetch( {
+									path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ patternId }`,
+									method: 'GET',
+								} );
+								if ( getPatternResponse ) {
+									dispatch( patternsStore ).addPattern( getPatternResponse );
+								}
+							}
+						} }
 						syncedDefaultStatus={
 							'synced' === isDuplicateModalOpen.patternType
 								? 'synced'

@@ -36,7 +36,6 @@ import Notice from '../../../../components/Notice';
  * @return {Object} The rendered component.
  */
 const PatternDuplicateModal = ( props ) => {
-	console.log( props );
 	const originalCategories = props.categories || [];
 	const categories = ( props.categories || [] ).map( ( category ) => {
 		return category.label || category.name;
@@ -68,8 +67,8 @@ const PatternDuplicateModal = ( props ) => {
 		setValue,
 	} = useForm( {
 		defaultValues: {
-			patternId: props.copyPatternId || 0,
-			patternNonce: props.patternNonce || '',
+			patternId: props.item?.id || 0,
+			patternNonce: props.item?.duplicateNonce || '',
 			patternTitle: props.title || '',
 			patternCategories: props.item.categories || [],
 			patternSyncStatus: props.syncedDefaultStatus || syncedDefaultStatus,
@@ -114,20 +113,21 @@ const PatternDuplicateModal = ( props ) => {
 			method: 'POST',
 			data: {
 				patternId: formData.patternId,
-				patternNonce: formData.patternNonce,
-				nonce: dlxEnhancedPatternsView.duplicateNonce,
+				nonce: formData.patternNonce,
 				patternTitle: formData.patternTitle,
 				patternCategories: newCategories,
 				patternSyncStatus: formData.patternSyncStatus,
-				patternCopyId: formData.patternCopyId,
 			},
 		} );
 		if ( response?.error ) {
 			setError( 'patternTitle', { message: response.error } );
-		} else {
+		} else if ( formData.editPatternAfterDuplicating ) {
 			const patternId = response.patternId;
 			const redirectUrl = encodeURIComponent( window.location.href );
 			window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
+		} else {
+			props.onDuplicate( response.patternId );
+			props.onRequestClose();
 		}
 		setIsSaving( false );
 	};
@@ -263,7 +263,10 @@ const PatternDuplicateModal = ( props ) => {
 								name="editPatternAfterDuplicating"
 								render={ ( { field } ) => (
 									<ToggleControl
-										label={ __( 'Edit Pattern After Duplicating', 'pattern-wrangler' ) }
+										label={ __(
+											'Edit Pattern After Duplicating',
+											'pattern-wrangler'
+										) }
 										checked={ field.value }
 										onChange={ ( value ) => field.onChange( value ) }
 										disabled={ isSaving }
