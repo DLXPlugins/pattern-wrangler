@@ -67,7 +67,7 @@ const ResponsiveIframe = ( {
 	useEffect( () => {
 		hasSettledRef.current = false;
 		setIsLoaded( false );
-	}, [ src, queueGeneration ] );
+	}, [ src ] );
 
 	useEffect( () => {
 		const iframe = iframeRef.current;
@@ -86,7 +86,7 @@ const ResponsiveIframe = ( {
 		return () => {
 			iframe.removeEventListener( 'load', handleLoad );
 		};
-	}, [ src, queueGeneration, item.viewportWidth ] );
+	}, [ src, item.viewportWidth ] );
 
 	const [ resizeListener, { width: containerWidth, height: containerHeight } ] =
 		useResizeObserver();
@@ -164,7 +164,7 @@ const ResponsiveIframe = ( {
 								>
 									<ReactSpinner3
 										size={ 40 }
-										speedMultiplier={ 1.1 }
+										speedMultiplier={ 1.75 }
 										color="#9ca0a5"
 									/>
 								</div>
@@ -172,7 +172,7 @@ const ResponsiveIframe = ( {
 
 							<iframe
 								ref={ iframeRef }
-								key={ `preview-${ item.id }-${ queueGeneration }` }
+								key={ `preview-${ item.id }` }
 								src={ src }
 								tabIndex={ -1 }
 								title={ title }

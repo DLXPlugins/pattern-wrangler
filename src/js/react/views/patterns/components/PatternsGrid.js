@@ -68,7 +68,7 @@ const PatternsGrid = ( props ) => {
 					<div className="dataviews-wrapper">
 						<div className="dlx-patterns-view-container-header">
 							<h1>{ __( 'Loading patterns…', 'pattern-wrangler' ) }</h1>
-							<ReactSpinner3 size={ 80 } speedMultiplier={ 1.4 } color="#2172EB" />
+							<ReactSpinner3 size={ 94 } speedMultiplier={ 1.8 } color="#9ca0a5" />
 						</div>
 					</div>
 				</div>
@@ -126,6 +126,13 @@ const Interface = ( props ) => {
 		statusById: {},
 	} );
 
+	const loadedPreviewSignaturesRef = useRef( new Set() );
+
+	const getPreviewSignature = ( item ) => {
+		const viewportWidth = item.viewportWidth || 1200;
+		return `${ item.id }::${ viewportWidth }`;
+	};
+
 	const { categories } = useSelect( () => {
 		return {
 			categories: select( patternsStore ).getCategories(),
@@ -164,9 +171,25 @@ const Interface = ( props ) => {
 
 	const buildPreviewQueueState = ( items, generation ) => {
 		const statusById = {};
+		let activeCount = 0;
 
-		items.forEach( ( item, index ) => {
-			statusById[ item.id ] = index < previewConcurrency ? 'loading' : 'queued';
+		items.forEach( ( item ) => {
+			const previewSignature = getPreviewSignature( item );
+			const isAlreadyLoaded =
+				loadedPreviewSignaturesRef.current.has( previewSignature );
+
+			if ( isAlreadyLoaded ) {
+				statusById[ item.id ] = 'settled';
+				return;
+			}
+
+			if ( activeCount < previewConcurrency ) {
+				statusById[ item.id ] = 'loading';
+				activeCount++;
+				return;
+			}
+
+			statusById[ item.id ] = 'queued';
 		} );
 
 		return {
@@ -223,10 +246,15 @@ const Interface = ( props ) => {
 			return;
 		}
 
+		const pattern = patternsDisplay.find( ( item ) => item.id === patternId );
+
+		if ( pattern && status === 'settled' ) {
+			loadedPreviewSignaturesRef.current.add( getPreviewSignature( pattern ) );
+		}
+
 		setPreviewQueueState( ( current ) => {
 			const currentStatus = current.statusById[ patternId ];
 
-			// Ignore duplicate settles/errors after an item has already finished.
 			if ( currentStatus === 'settled' || currentStatus === 'error' ) {
 				return current;
 			}
