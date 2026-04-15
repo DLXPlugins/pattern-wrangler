@@ -1338,7 +1338,7 @@ class Rest {
 		if ( current_user_can( 'edit_others_posts' ) ) {
 			foreach ( $registered_patterns as $pattern ) {
 				// If pattern is remote, or doesn't have an inserter, ignore it.
-				if ( isset( $pattern['inserter'] ) && false === $pattern['inserter'] ) {
+				if ( isset( $pattern['inserter'] ) && false === $pattern['inserter'] && isset( $pattern['source'] ) && 'theme' !== $pattern['source'] ) {
 					continue;
 				}
 
