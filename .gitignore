@@ -138,3 +138,5 @@ dlx-pattern-wrangler.zip
 pattern-wrangler.zip
 
 package-lock.json
+
+.DS_Store
