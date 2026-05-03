@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
 import { downloadBlob } from '@wordpress/blob';
 import { escapeAttribute } from '@wordpress/escape-html';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf, _x } from '@wordpress/i18n';
 import {
 	Button,
 	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
@@ -401,7 +401,7 @@ const Interface = ( props ) => {
 									exportPattern( item );
 								} }
 							>
-								{ __( 'Export Pattern', 'pattern-wrangler' ) }
+								{ _x( 'Export', 'Export pattern', 'pattern-wrangler' ) }
 							</Button>
 						</>
 					) }
@@ -427,7 +427,7 @@ const Interface = ( props ) => {
 									exportPattern( item );
 								} }
 							>
-								{ __( 'Export Pattern', 'pattern-wrangler' ) }
+								{ _x( 'Export', 'Export Pattern', 'pattern-wrangler' ) }
 							</Button>
 						</>
 					) }
@@ -2330,6 +2330,27 @@ const Interface = ( props ) => {
 						onRequestClose={ () => setIsAddNewPatternModalOpen( false ) }
 						categories={ localCategories }
 						title={ __( 'Create New Pattern', 'pattern-wrangler' ) }
+						onEdit={ async( { patternId } ) => {
+							if ( patternId ) {
+								const getPatternResponse = await apiFetch( {
+									path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ patternId }`,
+									method: 'GET',
+								} );
+								if ( getPatternResponse ) {
+									dispatch( patternsStore ).addPattern( getPatternResponse );
+								}
+							}
+							setIsAddNewPatternModalOpen( false );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Pattern created', 'pattern-wrangler' ),
+								title: __( 'Pattern Created', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
+						} }
 					/>
 				) }
 				{ isCopyToLocalModalOpen && (
@@ -2339,7 +2360,39 @@ const Interface = ( props ) => {
 						categories={ localCategories }
 						title={ __( 'Copy Pattern to Local', 'pattern-wrangler' ) }
 						syncedDefaultStatus={ 'unsynced' }
-						copyPatternId={ isCopyToLocalModalOpen.item.id }
+						patternTitle={ isCopyToLocalModalOpen.item.title }
+						patternCategories={ isCopyToLocalModalOpen.item.categories }
+						copyItem={ isCopyToLocalModalOpen.item }
+						onEdit={ async( { disableRegisteredPattern, patternId } ) => {
+							if ( patternId ) {
+								const getPatternResponse = await apiFetch( {
+									path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ patternId }`,
+									method: 'GET',
+								} );
+								if ( getPatternResponse ) {
+									dispatch( patternsStore ).addPattern( getPatternResponse );
+								}
+
+								// Now disable the registered pattern.
+								if ( disableRegisteredPattern ) {
+									const itemIdsAndNonces = [ {
+										id: isCopyToLocalModalOpen.item.id,
+										nonce: isCopyToLocalModalOpen.item.editNonce,
+									} ];
+									dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
+								}
+							}
+							setIsCopyToLocalModalOpen( false );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Local pattern created', 'pattern-wrangler' ),
+								title: __( 'Patterns Copied to Local', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
+						} }
 					/>
 				) }
 				{ isQuickEditModalOpen && (
@@ -2364,6 +2417,15 @@ const Interface = ( props ) => {
 								editResponse.categorySlugs
 							);
 							setIsQuickEditModalOpen( null );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Pattern updated', 'pattern-wrangler' ),
+								title: __( 'Pattern Updated', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
 						} }
 					/>
 				) }
