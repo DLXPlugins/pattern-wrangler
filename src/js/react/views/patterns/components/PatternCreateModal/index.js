@@ -49,12 +49,13 @@ const PatternCreateModal = ( props ) => {
 		const categoryObject = originalCategories.find( ( c ) => cleanForSlug( c.label || c.name ) === categorySlug );
 		return escapeHTML( categoryObject.label );
 	} );
-	const [ copyPatternId ] = useState( props.copyPatternId || 0 );
+	const [ copyPatternId ] = useState( props.copyItem?.id || 0 );
 	const [ syncedDefaultStatus ] = useState( props.syncedDefaultStatus || 'synced' );
 	const [ syncedDisabled ] = useState( props.syncedDisabled || false );
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ isEditMode, setIsEditMode ] = useState( props.isEditMode || false );
 	const [ disableRegisteredPattern, setDisableRegisteredPattern ] = useState( false );
+	const [ editPatternAferCreating, setEditPatternAferCreating ] = useState( true );
 	const [ showExpandedSuggestions, setShowExpandedSuggestions ] = useState( true );
 
 	const {
@@ -123,13 +124,14 @@ const PatternCreateModal = ( props ) => {
 				patternSyncStatus: formData.patternSyncStatus,
 				patternCopyId: formData.patternCopyId,
 				disableRegisteredPattern,
+
 			},
 		} );
 		if ( response?.error ) {
 			setError( 'patternTitle', { message: response.error } );
 		} else {
 			const patternId = response.patternId;
-			if ( ! isEditMode ) {
+			if ( ! isEditMode && editPatternAferCreating ) {
 				const redirectUrl = encodeURIComponent( window.location.href );
 				window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
 			} else {
@@ -272,6 +274,22 @@ const PatternCreateModal = ( props ) => {
 										onChange={ ( value ) => setDisableRegisteredPattern( value ) }
 										help={ __(
 											'Disable the registered pattern when you copy it to local.',
+											'pattern-wrangler'
+										) }
+										disabled={ isSaving }
+									/>
+								</div>
+							)
+						}
+						{
+							! isEditMode && (
+								<div className="dlx-pw-modal-admin-row">
+									<ToggleControl
+										label={ __( 'Edit Pattern After Creating', 'pattern-wrangler' ) }
+										checked={ editPatternAferCreating }
+										onChange={ ( value ) => setEditPatternAferCreating( value ) }
+										help={ __(
+											'Edit the pattern after creating it. Uncheck to stay on this screen.',
 											'pattern-wrangler'
 										) }
 										disabled={ isSaving }
