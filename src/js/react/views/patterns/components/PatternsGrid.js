@@ -398,6 +398,18 @@ const Interface = ( props ) => {
 							>
 								{ _x( 'Export', 'Export pattern', 'pattern-wrangler' ) }
 							</Button>
+							{ ' | ' }
+							<Button
+								variant="link"
+								isDestructive={ true }
+								onClick={ ( e ) => {
+									e.preventDefault();
+									e.stopPropagation();
+									setIsDeleteModalOpen( { items: [ item ] } );
+								} }
+							>
+								{ _x( 'Delete', 'Delete pattern', 'pattern-wrangler' ) }
+							</Button>
 						</>
 					) }
 					{ ! item.isLocal && (
@@ -932,8 +944,8 @@ const Interface = ( props ) => {
 				},
 				icon: 'trash',
 				isEligible: ( pattern ) => {
-					// Pattern must be local and disabled.
-					return pattern.isLocal && pattern.isDisabled;
+					// Pattern must be local
+					return pattern.isLocal;
 				},
 				callback: ( items ) => {
 					setIsDeleteModalOpen( { items } );
