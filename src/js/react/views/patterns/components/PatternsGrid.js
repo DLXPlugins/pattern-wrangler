@@ -19,7 +19,7 @@ import {
 	removeQueryArgs,
 	cleanForSlug,
 } from '@wordpress/url';
-import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
+import { useSelect, dispatch, select } from '@wordpress/data';
 import { ReactSpinner3 } from '@mediaron/react-spinners';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
@@ -48,11 +48,11 @@ const defaultLayouts = {
 };
 
 const PatternsGrid = ( props ) => {
-	const { data, loading, error } = useSelect( ( select ) => {
+	const { data, loading, error } = useSelect( ( newSelect ) => {
 		return {
-			data: select( patternsStore ).getData(),
-			loading: select( patternsStore ).getLoading(),
-			error: select( patternsStore ).getError(),
+			data: newSelect( patternsStore ).getData(),
+			loading: newSelect( patternsStore ).getLoading(),
+			error: newSelect( patternsStore ).getError(),
 		};
 	} );
 
@@ -142,12 +142,6 @@ const Interface = ( props ) => {
 		return Object.values( categories ).filter( ( category ) => category.count > 0 );
 	}, [ categories ] );
 
-	const { assets } = useSelect( () => {
-		return {
-			assets: select( patternsStore ).getAssets(),
-		};
-	} );
-
 	const [ localCategories, setLocalCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
 	const [ snackbar, setSnackbar ] = useState( {
@@ -159,6 +153,7 @@ const Interface = ( props ) => {
 	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] =
 		useState( false );
 	const [ isCopyToLocalModalOpen, setIsCopyToLocalModalOpen ] = useState( false );
+	// eslint-disable-next-line no-unused-vars
 	const [ copyPatternId, setCopyPatternId ] = useState( 0 );
 	const [ isQuickEditModalOpen, setIsQuickEditModalOpen ] = useState( null );
 	const [ isPauseModalOpen, setIsPauseModalOpen ] = useState( null );
@@ -453,25 +448,6 @@ const Interface = ( props ) => {
 		return defaultView;
 	} );
 
-	/**
-	 * Return the initial batch state for the current page.
-	 *
-	 * @param {number} totalItems Number of items on the page.
-	 * @return {Object} The initial batch state.
-	 */
-	const getInitialPreviewBatchState = ( totalItems ) => {
-		const initialBatchSize = Math.min(
-			previewBatchSize,
-			Math.max( totalItems, 0 )
-		);
-		return {
-			visibleCount: initialBatchSize,
-			activeStart: 0,
-			activeSize: initialBatchSize,
-			completedCount: 0,
-		};
-	};
-
 	const fields = useMemo(
 		() => [
 			{
@@ -662,7 +638,7 @@ const Interface = ( props ) => {
 			{
 				id: 'categories',
 				label: __( 'Categories', 'pattern-wrangler' ),
-				render: ( { item } ) => {
+				render: () => {
 					return null;
 				},
 				enableSorting: false,
@@ -680,13 +656,13 @@ const Interface = ( props ) => {
 										category.customLabel || category.label || category.name,
 								value: category.slug,
 							};
-						  } )
+						} )
 						: null,
 			},
 			{
 				id: 'assets',
 				label: __( 'Filter Patterns by Source', 'pattern-wrangler' ),
-				render: ( { item } ) => {
+				render: () => {
 					return null;
 				},
 				enableHiding: false,
@@ -705,7 +681,7 @@ const Interface = ( props ) => {
 									value: asset.slug,
 								};
 							}
-						  )
+						)
 						: null,
 			},
 			{
@@ -934,7 +910,7 @@ const Interface = ( props ) => {
 						// Copying is not supported on Mozilla (firefox).
 					}
 				},
-				isEligible: ( pattern ) => {
+				isEligible: () => {
 					return true;
 				},
 				isPrimary: false,
@@ -1825,15 +1801,6 @@ const Interface = ( props ) => {
 			}
 		}
 	}, [ data ] );
-
-	/**
-	 * Get the total number of items for the current view.
-	 *
-	 * @return {number} The total number of items for the current view.
-	 */
-	const totalItems = useMemo( () => {
-		return getFilteredPatternsCount( view );
-	}, [ view ] );
 
 	/**
 	 * Check if pagination is needed.
