@@ -2363,7 +2363,7 @@ const Interface = ( props ) => {
 						patternTitle={ isCopyToLocalModalOpen.item.title }
 						patternCategories={ isCopyToLocalModalOpen.item.categories }
 						copyItem={ isCopyToLocalModalOpen.item }
-						onEdit={ async( { patternId } ) => {
+						onEdit={ async( { disableRegisteredPattern, patternId } ) => {
 							if ( patternId ) {
 								const getPatternResponse = await apiFetch( {
 									path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ patternId }`,
@@ -2371,6 +2371,15 @@ const Interface = ( props ) => {
 								} );
 								if ( getPatternResponse ) {
 									dispatch( patternsStore ).addPattern( getPatternResponse );
+								}
+
+								// Now disable the registered pattern.
+								if ( disableRegisteredPattern ) {
+									const itemIdsAndNonces = [ {
+										id: isCopyToLocalModalOpen.item.id,
+										nonce: isCopyToLocalModalOpen.item.editNonce,
+									} ];
+									dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
 								}
 							}
 							setIsCopyToLocalModalOpen( false );

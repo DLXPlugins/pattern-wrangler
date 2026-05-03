@@ -158,7 +158,7 @@ const PatternCreateModal = ( props ) => {
 				const redirectUrl = encodeURIComponent( window.location.href );
 				window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
 			} else {
-				props.onEdit( response );
+				props.onEdit( { disableRegisteredPattern, ...response } );
 			}
 		}
 		setIsSaving( false );
