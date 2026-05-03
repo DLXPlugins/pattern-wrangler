@@ -1,11 +1,13 @@
 // eslint-disable-next-line no-unused-vars
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
 	ToggleControl,
 	TextControl,
 	Modal,
 	Button,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControl as ToggleGroupControl,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	FormTokenField,
 } from '@wordpress/components';
@@ -13,13 +15,30 @@ import apiFetch from '@wordpress/api-fetch';
 import { AlertTriangle } from 'lucide-react';
 import { escapeHTML } from '@wordpress/escape-html';
 
-import { __, _n } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import { cleanForSlug } from '@wordpress/url';
 
 // Local imports.
 import Notice from '../../../../components/Notice';
 
+const EDIT_PATTERN_CONFIG_KEY = 'dlx-pw-edit-pattern-config';
+
+/**
+ * Get the edit pattern config from local storage.
+ *
+ * @return {Object} The edit pattern config.
+ */
+const getEditPatternConfig = () => {
+	const editPatternConfig = localStorage.getItem( EDIT_PATTERN_CONFIG_KEY );
+	if ( editPatternConfig ) {
+		return JSON.parse( editPatternConfig );
+	}
+	return {
+		editPatternAferCreating: true,
+		disableRegisteredPattern: false,
+	};
+};
 /**
  * Pattern Create Modal.
  *
@@ -53,19 +72,15 @@ const PatternCreateModal = ( props ) => {
 	const [ syncedDefaultStatus ] = useState( props.syncedDefaultStatus || 'synced' );
 	const [ syncedDisabled ] = useState( props.syncedDisabled || false );
 	const [ isSaving, setIsSaving ] = useState( false );
-	const [ isEditMode, setIsEditMode ] = useState( props.isEditMode || false );
-	const [ disableRegisteredPattern, setDisableRegisteredPattern ] = useState( false );
-	const [ editPatternAferCreating, setEditPatternAferCreating ] = useState( true );
+	const [ isEditMode ] = useState( props.isEditMode || false );
+	const [ disableRegisteredPattern, setDisableRegisteredPattern ] = useState( getEditPatternConfig().disableRegisteredPattern ?? false );
+	const [ editPatternAferCreating, setEditPatternAferCreating ] = useState( getEditPatternConfig().editPatternAferCreating ?? true );
 	const [ showExpandedSuggestions, setShowExpandedSuggestions ] = useState( true );
 
 	const {
 		control,
-		getValues,
 		handleSubmit,
-		reset,
 		setError,
-		trigger,
-		setValue,
 	} = useForm( {
 		defaultValues: {
 			patternId: props.patternId || 0,
@@ -76,8 +91,9 @@ const PatternCreateModal = ( props ) => {
 			patternCopyId: copyPatternId,
 		},
 	} );
+	// eslint-disable-next-line no-unused-vars
 	const formValues = useWatch( { control } );
-	const { errors, isDirty, dirtyFields } = useFormState( {
+	const { errors } = useFormState( {
 		control,
 	} );
 
@@ -131,6 +147,13 @@ const PatternCreateModal = ( props ) => {
 			setError( 'patternTitle', { message: response.error } );
 		} else {
 			const patternId = response.patternId;
+			// Save edit pattern config to local storage.
+			if ( ! isEditMode ) {
+				localStorage.setItem( 'dlx-pw-edit-pattern-config', JSON.stringify( {
+					editPatternAferCreating,
+					disableRegisteredPattern,
+				} ) );
+			}
 			if ( ! isEditMode && editPatternAferCreating ) {
 				const redirectUrl = encodeURIComponent( window.location.href );
 				window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
