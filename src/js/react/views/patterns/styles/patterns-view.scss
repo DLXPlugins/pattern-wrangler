@@ -41,6 +41,11 @@ body div.updated.warning {
 
 .fancybox__container {
 	z-index: 100000;
+
+	/* Fancybox .f-button can override [hidden] display; force toolbar slots off-screen when hidden. */
+	[data-dlxpw-toolbar][hidden] {
+		display: none !important;
+	}
 }
 
 /* WordPress modals above Fancybox preview (z-index 100000) on patterns view. */

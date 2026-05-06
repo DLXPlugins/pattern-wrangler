@@ -119,6 +119,34 @@ const copyPatternMarkupToClipboard = async( pattern ) => {
 };
 
 /**
+ * Visibility map for Fancybox preview toolbar keys (`data-dlxpw-toolbar`).
+ * Aligns with PatternsGrid quick links: local edit only when enabled; export always when a row exists.
+ *
+ * @param {Object|undefined} pattern Active pattern row from previewToolbarPatterns.
+ * @return {Object<string, boolean>} Keys disable, delete, edit, export, copy.
+ */
+const getPreviewToolbarButtonVisibility = ( pattern ) => {
+	if ( ! pattern ) {
+		return {
+			disable: false,
+			delete: false,
+			edit: false,
+			export: false,
+			copy: false,
+		};
+	}
+	const hasCopyableContent =
+		'string' === typeof pattern.content && pattern.content.trim();
+	return {
+		disable: ! pattern.isLocal && ! pattern.isDisabled,
+		delete: !! pattern.isLocal,
+		edit: !! pattern.isLocal && ! pattern.isDisabled,
+		export: true,
+		copy: !! hasCopyableContent,
+	};
+};
+
+/**
  * Show or hide toolbar controls from the active slide pattern.
  *
  * @param {Object} fancybox Fancybox instance from event callbacks.
@@ -133,6 +161,7 @@ const syncPreviewToolbarButtons = ( fancybox ) => {
 	}
 
 	const pattern = getActivePreviewPattern();
+	const visibility = getPreviewToolbarButtonVisibility( pattern );
 
 	const setBtn = ( key, visible ) => {
 		const el = root.querySelector( `[data-dlxpw-toolbar="${ key }"]` );
@@ -140,28 +169,15 @@ const syncPreviewToolbarButtons = ( fancybox ) => {
 			return;
 		}
 		el.hidden = ! visible;
-		el.toggleAttribute( 'disabled', ! visible );
+		el.removeAttribute( 'disabled' );
 		el.setAttribute( 'aria-hidden', visible ? 'false' : 'true' );
 	};
 
-	setBtn(
-		'disable',
-		!! ( pattern && ! pattern.isLocal && ! pattern.isDisabled )
-	);
-	setBtn( 'delete', !! ( pattern && pattern.isLocal ) );
-	setBtn(
-		'edit',
-		!! ( pattern && pattern.isLocal )
-	);
-	setBtn( 'export', !! pattern );
-	setBtn(
-		'copy',
-		!! (
-			pattern &&
-			'string' === typeof pattern.content &&
-			pattern.content.trim()
-		)
-	);
+	setBtn( 'disable', visibility.disable );
+	setBtn( 'delete', visibility.delete );
+	setBtn( 'edit', visibility.edit );
+	setBtn( 'export', visibility.export );
+	setBtn( 'copy', visibility.copy );
 };
 
 /**
@@ -276,7 +292,7 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 		},
 		Carousel: {
 			Toolbar: {
-				absolute: true,
+				absolute: false,
 				enabled: true,
 				display: {
 					left: [ 'disablePattern', 'deletePattern' ],
