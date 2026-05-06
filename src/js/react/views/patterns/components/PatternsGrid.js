@@ -351,16 +351,6 @@ const Interface = ( props ) => {
 			}
 		};
 
-		const onPreviewCopyRequest = ( event ) => {
-			const pattern = getPatternFromPreviewEvent(
-				event.detail?.patternId
-			);
-			if ( pattern && ! pattern.isLocal ) {
-				setCopyPatternId( pattern.id );
-				setIsCopyToLocalModalOpen( { item: pattern } );
-			}
-		};
-
 		document.addEventListener(
 			'dlxpw-pattern-preview-delete-request',
 			onPreviewDeleteRequest
@@ -376,10 +366,6 @@ const Interface = ( props ) => {
 		document.addEventListener(
 			'dlxpw-pattern-preview-export-request',
 			onPreviewExportRequest
-		);
-		document.addEventListener(
-			'dlxpw-pattern-preview-copy-request',
-			onPreviewCopyRequest
 		);
 
 		return () => {
@@ -398,10 +384,6 @@ const Interface = ( props ) => {
 			document.removeEventListener(
 				'dlxpw-pattern-preview-export-request',
 				onPreviewExportRequest
-			);
-			document.removeEventListener(
-				'dlxpw-pattern-preview-copy-request',
-				onPreviewCopyRequest
 			);
 		};
 	}, [ patterns, exportPattern, getPatternFromPreviewEvent ] );

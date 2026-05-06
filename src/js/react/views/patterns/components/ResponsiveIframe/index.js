@@ -77,6 +77,48 @@ const dispatchPreviewToolbarEvent = ( name, patternId ) => {
 };
 
 /**
+ * Copy the active pattern block markup to the system clipboard from the preview toolbar.
+ *
+ * @param {Object|undefined} pattern Pattern row from previewToolbarPatterns.
+ * @return {Promise<void>} Resolves when the copy attempt finishes.
+ */
+const copyPatternMarkupToClipboard = async( pattern ) => {
+	if ( ! pattern || 'string' !== typeof pattern.content ) {
+		return;
+	}
+	const text = pattern.content.trim();
+	if ( '' === text ) {
+		return;
+	}
+	let copied = false;
+	try {
+		if ( navigator.clipboard?.writeText ) {
+			await navigator.clipboard.writeText( text );
+			copied = true;
+		}
+	} catch ( e ) {
+		// Use textarea fallback below.
+	}
+	if ( ! copied ) {
+		const textarea = document.createElement( 'textarea' );
+		textarea.value = text;
+		textarea.style.position = 'fixed';
+		textarea.style.opacity = '0';
+		textarea.style.pointerEvents = 'none';
+		document.body.appendChild( textarea );
+		textarea.select();
+		try {
+			// eslint-disable-next-line-deprecation
+			document.execCommand( 'copy' );
+			copied = true;
+		} catch ( err ) {
+			copied = false;
+		}
+		document.body.removeChild( textarea );
+	}
+};
+
+/**
  * Show or hide toolbar controls from the active slide pattern.
  *
  * @param {Object} fancybox Fancybox instance from event callbacks.
@@ -112,7 +154,14 @@ const syncPreviewToolbarButtons = ( fancybox ) => {
 		!! ( pattern && pattern.isLocal )
 	);
 	setBtn( 'export', !! pattern );
-	setBtn( 'copy', !! ( pattern && ! pattern.isLocal ) );
+	setBtn(
+		'copy',
+		!! (
+			pattern &&
+			'string' === typeof pattern.content &&
+			pattern.content.trim()
+		)
+	);
 };
 
 /**
@@ -202,18 +251,15 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 		},
 		copyPattern: {
 			tpl: `<button type="button" class="f-button" title="${ __(
-				'Copy to New Pattern',
+				'Copy pattern markup',
 				'pattern-wrangler'
 			) }" data-dlxpw-toolbar="copy" aria-label="${ __(
-				'Copy to New Pattern',
+				'Copy pattern markup',
 				'pattern-wrangler'
 			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>`,
 			click: () => {
-				const id = getActivePreviewPattern()?.id;
-				dispatchPreviewToolbarEvent(
-					'dlxpw-pattern-preview-copy-request',
-					id
-				);
+				const pattern = getActivePreviewPattern();
+				void copyPatternMarkupToClipboard( pattern );
 			},
 		},
 	};
