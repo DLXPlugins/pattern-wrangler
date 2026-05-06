@@ -207,6 +207,29 @@ const Interface = ( props ) => {
 		setPreviewQueueState( nextState );
 	};
 
+	useEffect( () => {
+		const onPreviewDeleteRequest = ( event ) => {
+			const patternId = event.detail?.patternId;
+			if ( ! patternId ) {
+				return;
+			}
+			const pattern = patterns.find( ( p ) => p.id === patternId );
+			if ( pattern && pattern.isLocal ) {
+				setIsDeleteModalOpen( { items: [ pattern ] } );
+			}
+		};
+		document.addEventListener(
+			'dlxpw-pattern-preview-delete-request',
+			onPreviewDeleteRequest
+		);
+		return () => {
+			document.removeEventListener(
+				'dlxpw-pattern-preview-delete-request',
+				onPreviewDeleteRequest
+			);
+		};
+	}, [ patterns ] );
+
 	const promoteQueuedPreviews = ( currentStatusById ) => {
 		const nextStatusById = { ...currentStatusById };
 
@@ -460,6 +483,264 @@ const Interface = ( props ) => {
 		return defaultView;
 	} );
 
+	/**
+	 * Filtered and sorted patterns for the current view (full list, no pagination).
+	 *
+	 * @param {Object} newView The view object.
+	 * @return {Array} Patterns in display order.
+	 */
+	const getFilteredPatternsOrdered = ( newView ) => {
+		let patternsCopy = [ ...patterns ];
+
+		if ( null === patternsCopy || 0 === patternsCopy.length ) {
+			patternsCopy = [ ...data.patterns ];
+		}
+
+		const orderBy = newView?.sort?.field;
+		const order = newView?.sort?.direction;
+
+		if ( 'title' === orderBy ) {
+			if ( 'desc' === order ) {
+				patternsCopy.sort( ( a, b ) => b.title.localeCompare( a.title ) );
+			} else {
+				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
+			}
+		}
+
+		const filters = newView?.filters || [];
+		if ( filters.length > 0 ) {
+			filters.forEach( ( filter ) => {
+				switch ( filter.field ) {
+					case 'categories':
+						if ( filter.value ) {
+							const cleanedFilterValues = filter.value.map( ( value ) =>
+								cleanForSlug( value )
+							);
+
+							if ( filter.operator === 'isAny' ) {
+								patternsCopy = patternsCopy.filter( ( pattern ) => {
+									const patternCategories = pattern.categorySlugs || [];
+									return patternCategories.some( ( category ) => {
+										const tempSlug =
+											category.name ||
+											category.label ||
+											category.toString() ||
+											'';
+										const categoryToCheck = cleanForSlug( tempSlug );
+										return cleanedFilterValues.includes( categoryToCheck );
+									} );
+								} );
+							} else if ( filter.operator === 'isNone' ) {
+								patternsCopy = patternsCopy.filter( ( pattern ) => {
+									const patternCategories = pattern.categorySlugs || [];
+
+									const hasExcludedCategory = patternCategories.some(
+										( category ) => {
+											const tempSlug =
+												category.name ||
+												category.label ||
+												category.toString() ||
+												'';
+											const categoryToCheck = cleanForSlug( tempSlug );
+											return cleanedFilterValues.includes( categoryToCheck );
+										}
+									);
+
+									return ! hasExcludedCategory;
+								} );
+							}
+						}
+						break;
+					case 'assets':
+						if ( filter.value && filter.operator === 'is' ) {
+							patternsCopy = patternsCopy.filter( ( pattern ) => {
+								return pattern.asset === filter.value;
+							} );
+						}
+						break;
+					case 'patternType':
+						if ( filter.value ) {
+							switch ( filter.value ) {
+								case 'all':
+									break;
+								case 'local':
+									patternsCopy = patternsCopy.filter(
+										( pattern ) => pattern.isLocal
+									);
+									break;
+								case 'registered':
+									patternsCopy = patternsCopy.filter(
+										( pattern ) => ! pattern.isLocal
+									);
+									break;
+							}
+						}
+						break;
+					case 'patternStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'local' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'unsynced':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											if ( pattern.syncStatus ) {
+												return (
+													pattern.syncStatus === 'unsynced' && pattern.isLocal
+												);
+											}
+											return false;
+										} );
+										break;
+									case 'synced':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											if ( pattern.syncStatus ) {
+												return (
+													pattern.syncStatus === 'synced' && pattern.isLocal
+												);
+											}
+											return false;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+					case 'patternLocalStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'local' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'draft':
+									case 'paused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return pattern.isDisabled && pattern.isLocal;
+										} );
+										break;
+									case 'published':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return ! pattern.isDisabled && pattern.isLocal;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+					case 'patternRegisteredStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'registered' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'paused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return pattern.isDisabled && ! pattern.isLocal;
+										} );
+										break;
+									case 'unpaused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return ! pattern.isDisabled && ! pattern.isLocal;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+					case 'patternLocalRegisteredStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'all' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'disabled':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return pattern.isDisabled;
+										} );
+										break;
+									case 'enabled':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return ! pattern.isDisabled;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+				}
+			} );
+		}
+
+		const searchField = newView?.search || '';
+
+		if ( 'undefined' !== searchField && '' !== searchField ) {
+			patternsCopy = patternsCopy.filter( ( pattern ) => {
+				const patternLabel = pattern.label || pattern.title;
+				return patternLabel
+					.toLowerCase()
+					.includes( ( newView.search || searchField ).toLowerCase() );
+			} );
+		}
+
+		return patternsCopy;
+	};
+
+	/**
+	 * Get the total count of filtered patterns without pagination.
+	 *
+	 * @param {Object} newView The new view object.
+	 * @return {number} The total count of filtered patterns.
+	 */
+	const getFilteredPatternsCount = ( newView ) => {
+		return getFilteredPatternsOrdered( newView ).length;
+	};
+
+	/**
+	 * Retrieve a list of modified patterns based on query vars and the current view (paginated).
+	 *
+	 * @param {Object} newView The new view object.
+	 * @return {Array} The patterns for display.
+	 */
+	const getPatternsForDisplay = ( newView ) => {
+		const ordered = getFilteredPatternsOrdered( newView );
+		return ordered.slice(
+			( newView.page - 1 ) * newView.perPage,
+			newView.page * newView.perPage
+		);
+	};
+
+	const lightboxGalleryItems = useMemo( () => {
+		return getFilteredPatternsOrdered( view );
+	}, [ view, patterns, data?.patterns ] );
+
 	const fields = useMemo(
 		() => [
 			{
@@ -619,6 +900,7 @@ const Interface = ( props ) => {
 										src={ previewUrl }
 										title={ `Preview: ${ item.title }` }
 										item={ item }
+										galleryItems={ patternsDisplay ?? lightboxGalleryItems }
 										queueGeneration={ previewQueueState.generation }
 										queueStatus={ previewStatus }
 										onPreviewSettled={ ( patternId, generation ) => {
@@ -823,7 +1105,7 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
 			},
 		],
-		[ nonEmptyCategories, patternsDisplay, previewQueueState ]
+		[ nonEmptyCategories, patternsDisplay, previewQueueState, lightboxGalleryItems ]
 	);
 
 	const actions = useMemo(
@@ -1105,486 +1387,6 @@ const Interface = ( props ) => {
 		],
 		[ categories, patterns ]
 	);
-
-	/**
-	 * Get the total count of filtered patterns without pagination.
-	 *
-	 * @param {Object} newView The new view object.
-	 * @return {number} The total count of filtered patterns.
-	 */
-	const getFilteredPatternsCount = ( newView ) => {
-		let patternsCopy = [ ...patterns ];
-
-		if ( null === patternsCopy || 0 === patternsCopy.length ) {
-			patternsCopy = [ ...data.patterns ];
-		}
-
-		const orderBy = newView?.sort?.field;
-		const order = newView?.sort?.direction;
-
-		if ( 'title' === orderBy ) {
-			if ( 'desc' === order ) {
-				patternsCopy.sort( ( a, b ) => b.title.localeCompare( a.title ) );
-			} else {
-				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
-			}
-		}
-
-		// Filter by categories.
-		const filters = newView?.filters || [];
-		if ( filters.length > 0 ) {
-			filters.forEach( ( filter ) => {
-				switch ( filter.field ) {
-					case 'categories':
-						if ( filter.value ) {
-							// filter.value is an array.
-							// Clean the filter values once for efficiency
-							const cleanedFilterValues = filter.value.map( ( value ) =>
-								cleanForSlug( value )
-							);
-
-							if ( filter.operator === 'isAny' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
-									return patternCategories.some( ( category ) => {
-										const tempSlug =
-											category.name ||
-											category.label ||
-											category.toString() ||
-											'';
-										const categoryToCheck = cleanForSlug( tempSlug );
-										return cleanedFilterValues.includes( categoryToCheck );
-									} );
-								} );
-							} else if ( filter.operator === 'isNone' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
-
-									// Exclude patterns that have ANY of the categories in filter.value
-									// Check if this pattern has any excluded categories
-									const hasExcludedCategory = patternCategories.some(
-										( category ) => {
-											const tempSlug =
-												category.name ||
-												category.label ||
-												category.toString() ||
-												'';
-											const categoryToCheck = cleanForSlug( tempSlug );
-											return cleanedFilterValues.includes( categoryToCheck );
-										}
-									);
-
-									// Return true to keep the pattern only if it has NO excluded categories
-									return ! hasExcludedCategory;
-								} );
-							}
-						}
-						break;
-					case 'assets':
-						if ( filter.value ) {
-							if ( filter.operator === 'is' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									return pattern.asset === filter.value;
-								} );
-							}
-						}
-						break;
-					case 'patternType':
-						if ( filter.value ) {
-							switch ( filter.value ) {
-								case 'all':
-									break;
-								case 'local':
-									patternsCopy = patternsCopy.filter(
-										( pattern ) => pattern.isLocal
-									);
-									break;
-								case 'registered':
-									patternsCopy = patternsCopy.filter(
-										( pattern ) => ! pattern.isLocal
-									);
-									break;
-							}
-						}
-						break;
-					case 'patternStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'local' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'unsynced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'unsynced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
-										break;
-									case 'synced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'synced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternLocalStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'local' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'draft':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && pattern.isLocal;
-										} );
-										break;
-									case 'published':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && pattern.isLocal;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternRegisteredStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'registered' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'paused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && ! pattern.isLocal;
-										} );
-										break;
-									case 'unpaused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && ! pattern.isLocal;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternLocalRegisteredStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'all' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'disabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled;
-										} );
-										break;
-									case 'enabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-				}
-			} );
-		}
-
-		// Do search.
-		const searchField = newView?.search || '';
-
-		if ( 'undefined' !== searchField && '' !== searchField ) {
-			patternsCopy = patternsCopy.filter( ( pattern ) => {
-				const patternLabel = pattern.label || pattern.title;
-				return patternLabel
-					.toLowerCase()
-					.includes( ( newView.search || searchField ).toLowerCase() );
-			} );
-		}
-
-		// Return the total count without pagination.
-		return patternsCopy.length;
-	};
-
-	/**
-	 * Retrieve a list of modified patterns based on query vars and the current view.
-	 *
-	 * @param {Object} newView The new view object.
-	 * @return {Array} The patterns for display.
-	 */
-	const getPatternsForDisplay = ( newView ) => {
-		let patternsCopy = [ ...patterns ];
-
-		if ( null === patternsCopy || 0 === patternsCopy.length ) {
-			patternsCopy = [ ...data.patterns ];
-		}
-
-		const orderBy = newView?.sort?.field;
-		const order = newView?.sort?.direction;
-
-		if ( 'title' === orderBy ) {
-			if ( 'desc' === order ) {
-				patternsCopy.sort( ( a, b ) => b.title.localeCompare( a.title ) );
-			} else {
-				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
-			}
-		}
-
-		// Filter by categories.
-		const filters = newView?.filters || [];
-		if ( filters.length > 0 ) {
-			filters.forEach( ( filter ) => {
-				switch ( filter.field ) {
-					case 'categories':
-						if ( filter.value ) {
-							// filter.value is an array.
-							// Clean the filter values once for efficiency
-							const cleanedFilterValues = filter.value.map( ( value ) =>
-								cleanForSlug( value )
-							);
-
-							if ( filter.operator === 'isAny' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
-									return patternCategories.some( ( category ) => {
-										const tempSlug =
-											category.name ||
-											category.label ||
-											category.toString() ||
-											'';
-										const categoryToCheck = cleanForSlug( tempSlug );
-										return cleanedFilterValues.includes( categoryToCheck );
-									} );
-								} );
-							} else if ( filter.operator === 'isNone' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
-
-									// Exclude patterns that have ANY of the categories in filter.value
-									// Check if this pattern has any excluded categories
-									const hasExcludedCategory = patternCategories.some(
-										( category ) => {
-											const tempSlug =
-												category.name ||
-												category.label ||
-												category.toString() ||
-												'';
-											const categoryToCheck = cleanForSlug( tempSlug );
-											return cleanedFilterValues.includes( categoryToCheck );
-										}
-									);
-
-									// Return true to keep the pattern only if it has NO excluded categories
-									return ! hasExcludedCategory;
-								} );
-							}
-						}
-						break;
-					case 'assets':
-						if ( filter.value ) {
-							patternsCopy = patternsCopy.filter( ( pattern ) => {
-								return pattern.asset === filter.value;
-							} );
-						}
-						break;
-					case 'patternType':
-						if ( filter.value ) {
-							switch ( filter.value ) {
-								case 'all':
-									break;
-								case 'local':
-									patternsCopy = patternsCopy.filter(
-										( pattern ) => pattern.isLocal
-									);
-									break;
-								case 'registered':
-									patternsCopy = patternsCopy.filter(
-										( pattern ) => ! pattern.isLocal
-									);
-									break;
-							}
-						}
-						break;
-					case 'patternStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'local' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'unsynced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'unsynced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
-										break;
-									case 'synced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'synced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternLocalStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'local' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'draft':
-									case 'paused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && pattern.isLocal;
-										} );
-										break;
-									case 'published':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && pattern.isLocal;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternRegisteredStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'registered' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'paused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && ! pattern.isLocal;
-										} );
-										break;
-									case 'unpaused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && ! pattern.isLocal;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternLocalRegisteredStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'all' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'disabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled;
-										} );
-										break;
-									case 'enabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-				}
-			} );
-		}
-
-		// Do search.
-		const searchField = newView?.search || '';
-
-		if ( 'undefined' !== searchField && '' !== searchField ) {
-			patternsCopy = patternsCopy.filter( ( pattern ) => {
-				const patternLabel = pattern.label || pattern.title;
-				return patternLabel
-					.toLowerCase()
-					.includes( ( newView.search || searchField ).toLowerCase() );
-			} );
-		}
-
-		// Return the patterns for display with pagination.
-		return patternsCopy.slice(
-			( newView.page - 1 ) * newView.perPage,
-			newView.page * newView.perPage
-		);
-	};
 
 	/**
 	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.

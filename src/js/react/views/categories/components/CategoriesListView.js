@@ -4,31 +4,24 @@ import {
 	useMemo,
 	useEffect,
 } from '@wordpress/element';
-import { useResizeObserver } from '@wordpress/compose';
-import { downloadBlob } from '@wordpress/blob';
-import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
-import { escapeAttribute } from '@wordpress/escape-html';
-import '@fancyapps/ui/dist/fancybox/fancybox.css';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
 	Button,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControl as ToggleGroupControl,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	FormFileUpload,
 } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
-import { DataViews } from '@wordpress/dataviews';
-import { Eye } from 'lucide-react';
 import {
 	addQueryArgs,
 	getQueryArgs,
 	getQueryArg,
 	removeQueryArgs,
-	cleanForSlug,
 } from '@wordpress/url';
-import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
+import { useSelect, dispatch } from '@wordpress/data';
 import BeatLoader from 'react-spinners/BeatLoader';
-import { useForm, FormProvider, useWatch, useFormState } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import Snackbar from './Snackbar';
 import categoriesStore from '../store';
 import CategoryCard from './CategoryCard';
@@ -93,12 +86,6 @@ const CategoriesListView = ( props ) => {
 
 const Interface = ( props ) => {
 	const { categories } = props;
-
-	const { doNotShowAgain } = useSelect( ( newSelect ) => {
-		return {
-			doNotShowAgain: newSelect( categoriesStore ).getDoNotShowAgain(),
-		};
-	} );
 
 	const [ isAddNewCategoryModalOpen, setIsAddNewCategoryModalOpen ] =
 		useState( false );

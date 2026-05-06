@@ -1,35 +1,116 @@
 import { useRef, useState, useEffect } from 'react';
 import { useResizeObserver } from '@wordpress/compose';
+import { __ } from '@wordpress/i18n';
 import ZoomIcon from '../Icons/ZoomIcon';
 import { ReactSpinner3 } from '@mediaron/react-spinners';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
-import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.umd.js';
+import '@fancyapps/ui/dist/fancybox/fancybox.sidebar.css';
+import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.js';
+import { Sidebar } from '@fancyapps/ui/dist/fancybox/fancybox.sidebar.js';
 
-const popPatternPreview = ( item ) => {
-	const viewportWidth = item.viewportWidth || 1200;
+/**
+ * Builds Fancybox instance options (second argument to Fancybox.show).
+ * Fancybox v6 does not read plugins, Sidebar, Carousel, closeButton, or startIndex from slide items.
+ *
+ * Merges `extra.Carousel` so gallery options (e.g. infinite) do not replace Toolbar config.
+ *
+ * @param {Object} extra Partial options merged after defaults.
+ * @return {Object} Options for Fancybox.show.
+ */
+const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
+	const { Carousel: extraCarousel = {}, item, ...restExtra } = extra;
 
-	const previewUrl = item?.id
-		? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+	const items = {};
+	if ( item?.isLocal ) {
+		items.deletePattern = {
+			tpl: `<button type="button" class="f-button" title="${ __(
+				'Delete pattern',
+				'pattern-wrangler'
+			) }" data-dlxpw-toolbar-delete aria-label="${ __(
+				'Delete pattern',
+				'pattern-wrangler'
+			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>`,
+			click: () => {
+				Fancybox.close();
+				document.dispatchEvent(
+					new CustomEvent( 'dlxpw-pattern-preview-delete-request', {
+						bubbles: true,
+						detail: { patternId: item.id },
+					} )
+				);
+			},
+		};
+	}
+
+	return {
+		closeButton: false,
+		Carousel: {
+			Toolbar: {
+				absolute: true,
+				enabled: true,
+				display: {
+					left: [],
+					middle: [ 'deletePattern' ],
+					right: [ 'close' ],
+				},
+				items,
+			},
+			...extraCarousel,
+		},
+		...restExtra,
+	};
+};
+
+const buildPatternPreviewSlide = ( patternItem ) => {
+	const viewportWidth = patternItem.viewportWidth || 1200;
+	const previewUrl = patternItem?.id
+		? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ patternItem.id }&viewport_width=${ viewportWidth }`
 		: '';
 
-	Fancybox.show( [
-		{
-			src: previewUrl,
-			caption: item.title,
-			type: 'iframe',
-			closeButton: true,
-		},
-	] );
+	return {
+		src: previewUrl,
+		caption: patternItem.title,
+		type: 'iframe',
+	};
+};
+
+const popPatternPreview = ( item, galleryItems ) => {
+	if ( ! galleryItems || galleryItems.length < 2 ) {
+		Fancybox.show(
+			[ buildPatternPreviewSlide( item ) ],
+			getPatternPreviewFancyboxOptions()
+		);
+		return;
+	}
+
+	const slides = galleryItems.map( ( patternItem ) =>
+		buildPatternPreviewSlide( patternItem )
+	);
+	let startIndex = galleryItems.findIndex( ( p ) => p.id === item.id );
+	if ( startIndex < 0 ) {
+		startIndex = 0;
+	}
+
+	Fancybox.show(
+		slides,
+		getPatternPreviewFancyboxOptions( {
+			startIndex,
+			Carousel: {
+				infinite: false,
+			},
+			item,
+		} )
+	);
 };
 
 const ResponsiveIframe = ( {
 	src,
 	title,
 	item,
+	galleryItems = null,
 	onPreviewSettled = null,
 	onPreviewError = null,
 	queueGeneration = 0,
-	queueStatus = 'loading',
 } ) => {
 	const iframeRef = useRef( null );
 	const containerRef = useRef( null );
@@ -123,7 +204,7 @@ const ResponsiveIframe = ( {
 			rel="noopener noreferrer"
 			onClick={ ( e ) => {
 				e.preventDefault();
-				popPatternPreview( item );
+				popPatternPreview( item, galleryItems );
 			} }
 			aria-hidden="true"
 		>
