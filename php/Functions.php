@@ -451,6 +451,49 @@ class Functions {
 	}
 
 	/**
+	 * Resolve nested pattern references in pattern content before saving.
+	 *
+	 * @param string $content Pattern content to normalize.
+	 *
+	 * @return string Normalized pattern content.
+	 */
+	public static function resolve_pattern_markup_for_storage( $content ) {
+		if ( ! is_string( $content ) || '' === trim( $content ) ) {
+			return $content;
+		}
+
+		// Only parse when pattern references exist in markup.
+		if ( false === strpos( $content, '<!-- wp:pattern' ) ) {
+			return $content;
+		}
+
+		if (
+			! function_exists( 'parse_blocks' ) ||
+			! function_exists( 'serialize_blocks' ) ||
+			! function_exists( 'resolve_pattern_blocks' )
+		) {
+			return $content;
+		}
+
+		$blocks = parse_blocks( $content );
+		if ( ! is_array( $blocks ) || empty( $blocks ) ) {
+			return $content;
+		}
+
+		$resolved_blocks = resolve_pattern_blocks( $blocks );
+		if ( ! is_array( $resolved_blocks ) || empty( $resolved_blocks ) ) {
+			return $content;
+		}
+
+		$resolved_content = serialize_blocks( $resolved_blocks );
+		if ( ! is_string( $resolved_content ) || '' === trim( $resolved_content ) ) {
+			return $content;
+		}
+
+		return $resolved_content;
+	}
+
+	/**
 	 * Check if a pattern is synced.
 	 *
 	 * @param int $pattern_id The pattern ID.

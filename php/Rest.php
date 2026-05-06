@@ -813,6 +813,7 @@ class Rest {
 		if ( null !== $maybe_pattern_content ) {
 			$content = $maybe_pattern_content;
 		}
+		$content = Functions::resolve_pattern_markup_for_storage( $content );
 
 		// Create the pattern.
 		$pattern_id = wp_insert_post(
@@ -887,6 +888,7 @@ class Rest {
 		if ( null !== $maybe_pattern_content ) {
 			$content = $maybe_pattern_content;
 		}
+		$content = Functions::resolve_pattern_markup_for_storage( $content );
 		if ( empty( $content ) ) {
 			return rest_ensure_response( array( 'error' => 'Failed to get pattern content or pattern content is empty.' ) );
 		}
