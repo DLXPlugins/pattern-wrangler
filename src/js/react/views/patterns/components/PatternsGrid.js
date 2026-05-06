@@ -171,6 +171,82 @@ const Interface = ( props ) => {
 	const [ isTagPatternModalOpen, setIsTagPatternModalOpen ] = useState( null );
 	const [ isDuplicateModalOpen, setIsDuplicateModalOpen ] = useState( null );
 
+	/**
+	 * Keep empty search query args as `search=` instead of `search`.
+	 *
+	 * @param {string} url URL string to normalize.
+	 * @return {string} Normalized URL string.
+	 */
+	const normalizeEmptySearchQueryArg = ( url ) => {
+		try {
+			const parsedUrl = new URL( url, window.location.origin );
+			const hasEmptySearchValue =
+				parsedUrl.searchParams.has( 'search' ) &&
+				'' === parsedUrl.searchParams.get( 'search' );
+
+			if ( hasEmptySearchValue ) {
+				parsedUrl.searchParams.set( 'search', '' );
+			}
+
+			return `${ parsedUrl.pathname }${ parsedUrl.search }${ parsedUrl.hash }`;
+		} catch ( error ) {
+			return url;
+		}
+	};
+
+	/**
+	 * Convert all-pattern status values to registered status values.
+	 *
+	 * @param {string} status The all-pattern status value.
+	 * @return {string} The registered status value.
+	 */
+	const mapCombinedStatusToRegisteredStatus = ( status ) => {
+		switch ( status ) {
+			case 'enabled':
+				return 'unpaused';
+			case 'disabled':
+				return 'paused';
+			case 'both':
+				return 'both';
+			default:
+				return '';
+		}
+	};
+
+	/**
+	 * Build status filter defaults based on pattern type query args.
+	 *
+	 * @param {Object} queryArgs URL query args object.
+	 * @return {Object} Normalized status values.
+	 */
+	const getNormalizedStatusFilters = ( queryArgs ) => {
+		const patternType = queryArgs?.patternType || 'all';
+		const patternStatus = queryArgs?.patternStatus || 'both';
+		const patternLocalStatus = queryArgs?.patternLocalStatus || 'both';
+		const patternLocalRegisteredStatus =
+			queryArgs?.patternLocalRegisteredStatus || 'enabled';
+		let patternRegisteredStatus = queryArgs?.patternRegisteredStatus || 'both';
+
+		if (
+			'registered' === patternType &&
+			! queryArgs?.patternRegisteredStatus &&
+			queryArgs?.patternLocalRegisteredStatus
+		) {
+			patternRegisteredStatus =
+				mapCombinedStatusToRegisteredStatus(
+					queryArgs?.patternLocalRegisteredStatus
+				) || 'both';
+		}
+
+		return {
+			patternType,
+			patternStatus,
+			patternLocalStatus,
+			patternRegisteredStatus,
+			patternLocalRegisteredStatus,
+		};
+	};
+
 	const buildPreviewQueueState = ( items, generation ) => {
 		const statusById = {};
 		let activeCount = 0;
@@ -394,53 +470,47 @@ const Interface = ( props ) => {
 	 * @return {Object} The default view.
 	 */
 	const getDefaultView = () => {
+		const queryArgs = getQueryArgs( window.location.href );
+		const normalizedStatusFilters = getNormalizedStatusFilters( queryArgs );
+
 		return {
 			type: 'grid',
 			paginationInfo: {
 				totalItems: patterns.length,
 				totalPages: 0,
 			},
-			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
-			perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 10,
+			page: parseInt( queryArgs.paged ) || 1,
+			perPage: parseInt( queryArgs.perPage ) || 10,
 			defaultPerPage: 10,
 			sort: {
-				field: escapeAttribute(
-					getQueryArgs( window.location.href ).orderby || 'title'
-				),
-				direction: escapeAttribute(
-					getQueryArgs( window.location.href ).order || 'asc'
-				),
+				field: escapeAttribute( queryArgs.orderby || 'title' ),
+				direction: escapeAttribute( queryArgs.order || 'asc' ),
 			},
 			titleField: 'title',
 			mediaField: 'pattern-view-json',
 			layout: defaultLayouts.grid.layout,
 			fields: [ 'title', 'pattern-view-json' ],
-			search: escapeAttribute( getQueryArgs( window.location.href )?.search || '' ),
+			search: escapeAttribute( queryArgs?.search || '' ),
 			filters: [
 				{
 					field: 'patternType',
-					value: getQueryArgs( window.location.href )?.patternType || 'all',
+					value: normalizedStatusFilters.patternType,
 				},
 				{
 					field: 'patternStatus',
-					value: getQueryArgs( window.location.href )?.patternStatus || 'both',
+					value: normalizedStatusFilters.patternStatus,
 				},
 				{
 					field: 'patternLocalStatus',
-					value:
-						getQueryArgs( window.location.href )?.patternLocalStatus || 'both',
+					value: normalizedStatusFilters.patternLocalStatus,
 				},
 				{
 					field: 'patternRegisteredStatus',
-					value:
-						getQueryArgs( window.location.href )?.patternRegisteredStatus ||
-						'both',
+					value: normalizedStatusFilters.patternRegisteredStatus,
 				},
 				{
 					field: 'patternLocalRegisteredStatus',
-					value:
-						getQueryArgs( window.location.href )?.patternLocalRegisteredStatus ||
-						'enabled',
+					value: normalizedStatusFilters.patternLocalRegisteredStatus,
 				},
 			],
 		};
@@ -1512,12 +1582,8 @@ const Interface = ( props ) => {
 		const patternStatusFilter = newView.filters?.find(
 			( filter ) => filter.field === 'patternStatus'
 		);
-		if ( patternTypeFilter ) {
-			changeQueryArgs.patternType = patternTypeFilter.value;
-		}
-		if ( patternStatusFilter ) {
-			changeQueryArgs.patternStatus = patternStatusFilter.value;
-		}
+		const patternTypeValue = patternTypeFilter?.value || 'all';
+		changeQueryArgs.patternType = patternTypeValue;
 
 		// Get registered/local pattern disabled/enabled status from filters.
 		const patternRegisteredStatusFilter = newView.filters?.find(
@@ -1529,22 +1595,55 @@ const Interface = ( props ) => {
 		const patternLocalRegisteredStatusFilter = newView.filters?.find(
 			( filter ) => filter.field === 'patternLocalRegisteredStatus'
 		);
-		if ( patternRegisteredStatusFilter && ! patternLocalRegisteredStatusFilter ) {
+
+		if ( 'registered' === patternTypeValue ) {
 			changeQueryArgs.patternRegisteredStatus =
-				patternRegisteredStatusFilter.value;
-		}
-		if ( patternLocalStatusFilter && ! patternLocalRegisteredStatusFilter ) {
-			changeQueryArgs.patternLocalStatus = patternLocalStatusFilter.value;
-		}
-		if ( patternLocalRegisteredStatusFilter ) {
+				patternRegisteredStatusFilter?.value ||
+				mapCombinedStatusToRegisteredStatus(
+					patternLocalRegisteredStatusFilter?.value
+				) ||
+				'both';
+			changeQueryArgs.patternStatus = '';
+			changeQueryArgs.patternLocalStatus = '';
+			changeQueryArgs.patternLocalRegisteredStatus = '';
+		} else if ( 'local' === patternTypeValue ) {
+			changeQueryArgs.patternStatus = patternStatusFilter?.value || 'both';
+			changeQueryArgs.patternLocalStatus =
+				patternLocalStatusFilter?.value || 'both';
+			changeQueryArgs.patternRegisteredStatus = '';
+			changeQueryArgs.patternLocalRegisteredStatus = '';
+		} else {
 			changeQueryArgs.patternLocalRegisteredStatus =
-				patternLocalRegisteredStatusFilter.value;
+				patternLocalRegisteredStatusFilter?.value || 'enabled';
+			changeQueryArgs.patternStatus = '';
+			changeQueryArgs.patternLocalStatus = '';
+			changeQueryArgs.patternRegisteredStatus = '';
 		}
 
 		// Update URL without page reload using addQueryArgs.
 		let newUrl = addQueryArgs( window.location.pathname, changeQueryArgs );
 		if ( getQueryArgs( window.location.href ).search && ! newView.search ) {
 			newUrl = removeQueryArgs( newUrl, 'search' );
+		}
+		if ( 'registered' === patternTypeValue ) {
+			newUrl = removeQueryArgs(
+				removeQueryArgs(
+					removeQueryArgs( newUrl, 'patternStatus' ),
+					'patternLocalStatus'
+				),
+				'patternLocalRegisteredStatus'
+			);
+		} else if ( 'local' === patternTypeValue ) {
+			newUrl = removeQueryArgs(
+				removeQueryArgs( newUrl, 'patternRegisteredStatus' ),
+				'patternLocalRegisteredStatus'
+			);
+		} else {
+			newUrl = removeQueryArgs(
+				removeQueryArgs( newUrl, 'patternStatus' ),
+				'patternLocalStatus'
+			);
+			newUrl = removeQueryArgs( newUrl, 'patternRegisteredStatus' );
 		}
 
 		// If no filters are set, add a patternType and patternLocalRegisteredStatus filters with value 'all' and 'enabled' respectively.
@@ -1567,6 +1666,7 @@ const Interface = ( props ) => {
 			changeQueryArgs.categories = '';
 			newUrl = removeQueryArgs( newUrl, 'categories' );
 		}
+		newUrl = normalizeEmptySearchQueryArg( newUrl );
 
 		setPatternsDisplay( getPatternsForDisplay( newView ) );
 
