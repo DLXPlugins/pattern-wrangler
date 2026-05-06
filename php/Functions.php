@@ -172,8 +172,8 @@ class Functions {
 			// Get category count from registered patterns.
 			$category_count = 0;
 			foreach ( $pattern_registry as $pattern ) {
-				$pattern_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
-				if ( in_array( $category['name'], $pattern_categories, true ) ) {
+				$pattern_registery_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
+				if ( in_array( $category['name'], $pattern_registery_categories, true ) ) {
 					++$category_count;
 				}
 			}

@@ -66,7 +66,7 @@ const PatternCreateModal = ( props ) => {
 		const categorySlug = cleanForSlug( category.label || category.name || category );
 		// Find category label from slug.
 		const categoryObject = originalCategories.find( ( c ) => cleanForSlug( c.label || c.name ) === categorySlug );
-		return escapeHTML( categoryObject.label );
+		return escapeHTML( categoryObject?.label ?? ( category.label || category.name || category ) );
 	} );
 	const [ copyPatternId ] = useState( props.copyItem?.id || 0 );
 	const [ syncedDefaultStatus ] = useState( props.syncedDefaultStatus || 'synced' );
