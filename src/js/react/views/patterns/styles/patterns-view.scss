@@ -41,7 +41,20 @@ body div.updated.warning {
 
 .fancybox__container {
 	z-index: 100000;
+
+	/* Fancybox .f-button can override [hidden] display; force toolbar slots off-screen when hidden. */
+	[data-dlxpw-toolbar][hidden] {
+		display: none !important;
+	}
 }
+
+/* WordPress modals above Fancybox preview (z-index 100000) on patterns view. */
+.components-modal__screen-overlay,
+.components-modal__screen-container,
+.components-modal__frame {
+	z-index: 100100;
+}
+
 .dlx-patterns-view-container {
 	padding: 24px 48px;
 
@@ -293,6 +306,11 @@ dlx-patterns-view-filters-wrapper {
 }
 .has-iframe .fancybox__content iframe {
 	overflow: scroll;
+}
+.f-caption {
+	font-size: 16px;
+	line-height: 1.5;
+	font-weight: 500;
 }
 
 

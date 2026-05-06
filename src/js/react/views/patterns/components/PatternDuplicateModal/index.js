@@ -4,18 +4,17 @@ import {
 	TextControl,
 	Modal,
 	Button,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControl as ToggleGroupControl,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	FormTokenField,
 	ToggleControl,
 } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { AlertTriangle } from 'lucide-react';
-import { escapeHTML } from '@wordpress/escape-html';
-
 import { __ } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
-import { cleanForSlug } from '@wordpress/url';
 
 // Local imports.
 import Notice from '../../../../components/Notice';
@@ -40,18 +39,6 @@ const PatternDuplicateModal = ( props ) => {
 	const categories = ( props.categories || [] ).map( ( category ) => {
 		return category.label || category.name;
 	} );
-	const localPatternCategories = ( props.patternCategories || [] ).map(
-		( category ) => {
-			const categorySlug = cleanForSlug(
-				category.label || category.name || category
-			);
-			// Find category label from slug.
-			const categoryObject = originalCategories.find(
-				( c ) => cleanForSlug( c.label || c.name ) === categorySlug
-			);
-			return escapeHTML( categoryObject.label );
-		}
-	);
 	const [ copyPatternId ] = useState( props.copyPatternId || 0 );
 	const [ syncedDefaultStatus ] = useState( props.syncedDefaultStatus || 'synced' );
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -59,12 +46,8 @@ const PatternDuplicateModal = ( props ) => {
 
 	const {
 		control,
-		getValues,
 		handleSubmit,
-		reset,
 		setError,
-		trigger,
-		setValue,
 	} = useForm( {
 		defaultValues: {
 			patternId: props.item?.id || 0,
@@ -76,8 +59,9 @@ const PatternDuplicateModal = ( props ) => {
 			editPatternAfterDuplicating: props.editPatternAfterDuplicating || true,
 		},
 	} );
+	// eslint-disable-next-line no-unused-vars
 	const formValues = useWatch( { control } );
-	const { errors, isDirty, dirtyFields } = useFormState( {
+	const { errors } = useFormState( {
 		control,
 	} );
 
