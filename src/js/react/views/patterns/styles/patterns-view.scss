@@ -46,6 +46,40 @@ body div.updated.warning {
 	[data-dlxpw-toolbar][hidden] {
 		display: none !important;
 	}
+
+	[data-dlxpw-toolbar^="preview-"] {
+		border-radius: 4px;
+		transition: background-color 150ms ease, color 150ms ease;
+	}
+
+	[data-dlxpw-toolbar^="preview-"]:hover {
+		background: rgba(255, 255, 255, 0.14);
+	}
+
+	[data-dlxpw-toolbar^="preview-"]:focus-visible {
+		outline: 2px solid #72aee6;
+		outline-offset: 2px;
+	}
+
+	[data-dlxpw-toolbar^="preview-"].is-selected {
+		background: #135e96;
+		color: #FFFFFF;
+	}
+
+	&[data-dlxpw-preview-device="desktop"] .f-html {
+		width: 100%;
+		max-width: unset;
+	}
+
+	&[data-dlxpw-preview-device="tablet"] .f-html {
+		width: 768px !important;
+		max-width: 100%;
+	}
+
+	&[data-dlxpw-preview-device="mobile"] .f-html {
+		width: 390px !important;
+		max-width: 100%;
+	}
 }
 
 /* WordPress modals above Fancybox preview (z-index 100000) on patterns view. */
@@ -302,7 +336,7 @@ dlx-patterns-view-filters-wrapper {
 	overflow: hidden;
 }
 .fancybox__iframe {
-	width: 85vw !important;
+	max-width: 85vw;
 }
 .has-iframe .fancybox__content iframe {
 	overflow: scroll;

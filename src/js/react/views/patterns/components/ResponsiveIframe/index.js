@@ -10,12 +10,65 @@ import { canonicalPatternId, patternIdsEqual } from '../../utils/patternIdUtils'
 
 /** Patterns available for the open preview (single row or gallery). */
 let previewToolbarPatterns = [];
+let previewDeviceMode = 'desktop';
+
+const PREVIEW_DEVICE_MOBILE_WIDTH = 425;
+const PREVIEW_DEVICE_TABLET_WIDTH = 768;
 
 /**
  * @param {Array} patterns Pattern rows for toolbar resolution.
  */
 const setPreviewToolbarPatterns = ( patterns ) => {
 	previewToolbarPatterns = Array.isArray( patterns ) ? patterns : [];
+};
+
+/**
+ * @param {string} mode Preview mode slug.
+ * @return {number|null} Viewport width or null for unconstrained desktop.
+ */
+const getPreviewModeViewportWidth = ( mode ) => {
+	if ( 'mobile' === mode ) {
+		return PREVIEW_DEVICE_MOBILE_WIDTH;
+	}
+	if ( 'tablet' === mode ) {
+		return PREVIEW_DEVICE_TABLET_WIDTH;
+	}
+	return null;
+};
+
+/**
+ * @param {Object} fancybox Fancybox instance.
+ * @return {HTMLElement|null} Fancybox container.
+ */
+const getFancyboxContainer = ( fancybox ) => {
+	if ( fancybox && 'function' === typeof fancybox.getContainer ) {
+		return fancybox.getContainer();
+	}
+	return document.querySelector( '.fancybox__container' );
+};
+
+/**
+ * @param {Object} fancybox Fancybox instance.
+ */
+const syncPreviewToolbarDeviceState = ( fancybox ) => {
+	const root = getFancyboxContainer( fancybox );
+	if ( ! root ) {
+		return;
+	}
+	root.setAttribute( 'data-dlxpw-preview-device', previewDeviceMode );
+
+	const toolbarModes = [ 'desktop', 'tablet', 'mobile' ];
+	toolbarModes.forEach( ( mode ) => {
+		const el = root.querySelector(
+			`[data-dlxpw-toolbar="preview-${ mode }"]`
+		);
+		if ( ! el ) {
+			return;
+		}
+		const isSelected = previewDeviceMode === mode;
+		el.classList.toggle( 'is-selected', isSelected );
+		el.setAttribute( 'aria-pressed', isSelected ? 'true' : 'false' );
+	} );
 };
 
 /**
@@ -152,10 +205,7 @@ const getPreviewToolbarButtonVisibility = ( pattern ) => {
  * @param {Object} fancybox Fancybox instance from event callbacks.
  */
 const syncPreviewToolbarButtons = ( fancybox ) => {
-	const root =
-		fancybox && 'function' === typeof fancybox.getContainer
-			? fancybox.getContainer()
-			: document.querySelector( '.fancybox__container' );
+	const root = getFancyboxContainer( fancybox );
 	if ( ! root ) {
 		return;
 	}
@@ -178,6 +228,16 @@ const syncPreviewToolbarButtons = ( fancybox ) => {
 	setBtn( 'edit', visibility.edit );
 	setBtn( 'export', visibility.export );
 	setBtn( 'copy', visibility.copy );
+	syncPreviewToolbarDeviceState( fancybox );
+};
+
+/**
+ * @param {Object} fancybox Fancybox instance.
+ * @param {string} mode Device mode slug (`desktop`, `tablet`, `mobile`).
+ */
+const setPreviewDeviceMode = ( fancybox, mode ) => {
+	previewDeviceMode = mode;
+	syncPreviewToolbarDeviceState( fancybox );
 };
 
 /**
@@ -278,6 +338,42 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 				void copyPatternMarkupToClipboard( pattern );
 			},
 		},
+		previewDesktop: {
+			tpl: `<button type="button" class="f-button" title="${ __(
+				'Desktop preview',
+				'pattern-wrangler'
+			) }" data-dlxpw-toolbar="preview-desktop" aria-label="${ __(
+				'Desktop preview',
+				'pattern-wrangler'
+			) }" aria-pressed="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></button>`,
+			click: ( event, button ) => {
+				setPreviewDeviceMode( button?.fancybox, 'desktop' );
+			},
+		},
+		previewTablet: {
+			tpl: `<button type="button" class="f-button" title="${ __(
+				'Tablet preview',
+				'pattern-wrangler'
+			) }" data-dlxpw-toolbar="preview-tablet" aria-label="${ __(
+				'Tablet preview',
+				'pattern-wrangler'
+			) }" aria-pressed="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></button>`,
+			click: ( event, button ) => {
+				setPreviewDeviceMode( button?.fancybox, 'tablet' );
+			},
+		},
+		previewMobile: {
+			tpl: `<button type="button" class="f-button" title="${ __(
+				'Mobile preview',
+				'pattern-wrangler'
+			) }" data-dlxpw-toolbar="preview-mobile" aria-label="${ __(
+				'Mobile preview',
+				'pattern-wrangler'
+			) }" aria-pressed="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="2" width="8" height="20" rx="2"/><line x1="11" y1="19" x2="13" y2="19"/></svg></button>`,
+			click: ( event, button ) => {
+				setPreviewDeviceMode( button?.fancybox, 'mobile' );
+			},
+		},
 	};
 
 	return {
@@ -297,7 +393,12 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 				display: {
 					left: [ 'disablePattern', 'deletePattern' ],
 					middle: [ 'editPattern', 'exportPattern', 'copyPattern' ],
-					right: [ 'close' ],
+					right: [
+						'previewDesktop',
+						'previewTablet',
+						'previewMobile',
+						'close',
+					],
 				},
 				items: toolbarItems,
 			},
@@ -308,13 +409,19 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 };
 
 const buildPatternPreviewSlide = ( patternItem ) => {
-	const viewportWidth = patternItem.viewportWidth || 1200;
+	const viewportWidth =
+		getPreviewModeViewportWidth( previewDeviceMode ) ??
+		patternItem.viewportWidth ??
+		null;
+	const previewArgs = {
+		action: 'dlxpw_pattern_preview',
+		pattern_id: patternItem.id,
+	};
+	if ( null !== viewportWidth ) {
+		previewArgs.viewport_width = viewportWidth;
+	}
 	const previewUrl = patternItem?.id
-		? addQueryArgs( ajaxurl, {
-			action: 'dlxpw_pattern_preview',
-			pattern_id: patternItem.id,
-			viewport_width: viewportWidth,
-		} )
+		? addQueryArgs( ajaxurl, previewArgs )
 		: '';
 
 	return {
@@ -325,6 +432,7 @@ const buildPatternPreviewSlide = ( patternItem ) => {
 };
 
 const popPatternPreview = ( item, galleryItems ) => {
+	previewDeviceMode = 'desktop';
 	const listForToolbar =
 		galleryItems && galleryItems.length >= 2 ? galleryItems : [ item ];
 	setPreviewToolbarPatterns( listForToolbar );
