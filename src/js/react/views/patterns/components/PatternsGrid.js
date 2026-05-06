@@ -1,5 +1,11 @@
 /* eslint-disable react/no-unknown-property */
-import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
+import {
+	useState,
+	useMemo,
+	useEffect,
+	useRef,
+	useCallback,
+} from '@wordpress/element';
 import { downloadBlob } from '@wordpress/blob';
 import { escapeAttribute } from '@wordpress/escape-html';
 import { __, _n, sprintf, _x } from '@wordpress/i18n';
@@ -33,6 +39,7 @@ import PatternTagModal from './PatternTagModal';
 import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
 import ResponsiveIframe from './ResponsiveIframe';
+import { canonicalPatternId, patternIdsEqual } from '../utils/patternIdUtils';
 
 const defaultLayouts = {
 	grid: {
@@ -207,29 +214,6 @@ const Interface = ( props ) => {
 		setPreviewQueueState( nextState );
 	};
 
-	useEffect( () => {
-		const onPreviewDeleteRequest = ( event ) => {
-			const patternId = event.detail?.patternId;
-			if ( ! patternId ) {
-				return;
-			}
-			const pattern = patterns.find( ( p ) => p.id === patternId );
-			if ( pattern && pattern.isLocal ) {
-				setIsDeleteModalOpen( { items: [ pattern ] } );
-			}
-		};
-		document.addEventListener(
-			'dlxpw-pattern-preview-delete-request',
-			onPreviewDeleteRequest
-		);
-		return () => {
-			document.removeEventListener(
-				'dlxpw-pattern-preview-delete-request',
-				onPreviewDeleteRequest
-			);
-		};
-	}, [ patterns ] );
-
 	const promoteQueuedPreviews = ( currentStatusById ) => {
 		const nextStatusById = { ...currentStatusById };
 
@@ -264,7 +248,9 @@ const Interface = ( props ) => {
 			return;
 		}
 
-		const pattern = patternsDisplay.find( ( item ) => item.id === patternId );
+		const pattern = patternsDisplay.find( ( item ) =>
+			patternIdsEqual( item.id, patternId )
+		);
 
 		if ( pattern && status === 'settled' ) {
 			loadedPreviewSignaturesRef.current.add( getPreviewSignature( pattern ) );
@@ -293,7 +279,7 @@ const Interface = ( props ) => {
 		} );
 	};
 
-	const exportPattern = ( item ) => {
+	const exportPattern = useCallback( ( item ) => {
 		const isLocal = item.isLocal;
 		const title = item.title;
 		let syncStatus = 'unsynced';
@@ -313,7 +299,112 @@ const Interface = ( props ) => {
 			2
 		);
 		downloadBlob( `${ title }.json`, fileContent, 'application/json' );
-	};
+	}, [] );
+
+	const getPatternFromPreviewEvent = useCallback(
+		( patternId ) => {
+			if ( '' === canonicalPatternId( patternId ) ) {
+				return undefined;
+			}
+			return patterns.find( ( p ) => patternIdsEqual( p.id, patternId ) );
+		},
+		[ patterns ]
+	);
+
+	useEffect( () => {
+		const onPreviewDeleteRequest = ( event ) => {
+			const pattern = getPatternFromPreviewEvent(
+				event.detail?.patternId
+			);
+			if ( pattern && pattern.isLocal ) {
+				setIsDeleteModalOpen( { items: [ pattern ] } );
+			}
+		};
+
+		const onPreviewDisableRequest = ( event ) => {
+			const pattern = getPatternFromPreviewEvent(
+				event.detail?.patternId
+			);
+			if ( pattern && ! pattern.isLocal && ! pattern.isDisabled ) {
+				setIsPauseModalOpen( { items: [ pattern ] } );
+			}
+		};
+
+		const onPreviewEditRequest = ( event ) => {
+			const pattern = getPatternFromPreviewEvent(
+				event.detail?.patternId
+			);
+			if ( pattern && pattern.isLocal && ! pattern.isDisabled ) {
+				const redirectUrl = encodeURIComponent(
+					window.location.href
+				);
+				window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ pattern.id }&action=edit&redirect_to=${ redirectUrl }`;
+			}
+		};
+
+		const onPreviewExportRequest = ( event ) => {
+			const pattern = getPatternFromPreviewEvent(
+				event.detail?.patternId
+			);
+			if ( pattern ) {
+				exportPattern( pattern );
+			}
+		};
+
+		const onPreviewCopyRequest = ( event ) => {
+			const pattern = getPatternFromPreviewEvent(
+				event.detail?.patternId
+			);
+			if ( pattern && ! pattern.isLocal ) {
+				setCopyPatternId( pattern.id );
+				setIsCopyToLocalModalOpen( { item: pattern } );
+			}
+		};
+
+		document.addEventListener(
+			'dlxpw-pattern-preview-delete-request',
+			onPreviewDeleteRequest
+		);
+		document.addEventListener(
+			'dlxpw-pattern-preview-disable-request',
+			onPreviewDisableRequest
+		);
+		document.addEventListener(
+			'dlxpw-pattern-preview-edit-request',
+			onPreviewEditRequest
+		);
+		document.addEventListener(
+			'dlxpw-pattern-preview-export-request',
+			onPreviewExportRequest
+		);
+		document.addEventListener(
+			'dlxpw-pattern-preview-copy-request',
+			onPreviewCopyRequest
+		);
+
+		return () => {
+			document.removeEventListener(
+				'dlxpw-pattern-preview-delete-request',
+				onPreviewDeleteRequest
+			);
+			document.removeEventListener(
+				'dlxpw-pattern-preview-disable-request',
+				onPreviewDisableRequest
+			);
+			document.removeEventListener(
+				'dlxpw-pattern-preview-edit-request',
+				onPreviewEditRequest
+			);
+			document.removeEventListener(
+				'dlxpw-pattern-preview-export-request',
+				onPreviewExportRequest
+			);
+			document.removeEventListener(
+				'dlxpw-pattern-preview-copy-request',
+				onPreviewCopyRequest
+			);
+		};
+	}, [ patterns, exportPattern, getPatternFromPreviewEvent ] );
 
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
@@ -848,7 +939,11 @@ const Interface = ( props ) => {
 					const viewportWidth = item.viewportWidth || 1200;
 
 					const previewUrl = item?.id
-						? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+						? addQueryArgs( ajaxurl, {
+							action: 'dlxpw_pattern_preview',
+							pattern_id: item.id,
+							viewport_width: viewportWidth,
+						} )
 						: '';
 
 					// Determine badge type based on pattern properties.

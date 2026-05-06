@@ -1,12 +1,119 @@
 import { useRef, useState, useEffect } from 'react';
 import { useResizeObserver } from '@wordpress/compose';
-import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
+import { __, _x } from '@wordpress/i18n';
 import ZoomIcon from '../Icons/ZoomIcon';
 import { ReactSpinner3 } from '@mediaron/react-spinners';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
-import '@fancyapps/ui/dist/fancybox/fancybox.sidebar.css';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.js';
-import { Sidebar } from '@fancyapps/ui/dist/fancybox/fancybox.sidebar.js';
+import { canonicalPatternId, patternIdsEqual } from '../../utils/patternIdUtils';
+
+/** Patterns available for the open preview (single row or gallery). */
+let previewToolbarPatterns = [];
+
+/**
+ * @param {Array} patterns Pattern rows for toolbar resolution.
+ */
+const setPreviewToolbarPatterns = ( patterns ) => {
+	previewToolbarPatterns = Array.isArray( patterns ) ? patterns : [];
+};
+
+/**
+ * @param {string} src Preview iframe URL.
+ * @return {string|null} Raw `pattern_id` query value, or null.
+ */
+const parsePatternIdFromSlideSrc = ( src ) => {
+	if ( ! src || 'string' !== typeof src ) {
+		return null;
+	}
+	try {
+		const u = new URL( src, window.location.origin );
+		const raw = u.searchParams.get( 'pattern_id' );
+		return null !== raw && '' !== raw ? raw : null;
+	} catch ( e ) {
+		const match = src.match( /[?&]pattern_id=([^&]+)/ );
+		if ( ! match ) {
+			return null;
+		}
+		try {
+			return decodeURIComponent( match[ 1 ].replace( /\+/g, ' ' ) );
+		} catch ( err ) {
+			return match[ 1 ];
+		}
+	}
+};
+
+/**
+ * Resolves the pattern row for the current Fancybox slide preview URL.
+ *
+ * @return {Object|undefined} Matching pattern or undefined.
+ */
+const getActivePreviewPattern = () => {
+	const slide =
+		'function' === typeof Fancybox.getSlide ? Fancybox.getSlide() : null;
+	const raw = parsePatternIdFromSlideSrc( slide?.src );
+	if ( null === raw || '' === canonicalPatternId( raw ) ) {
+		return undefined;
+	}
+	return previewToolbarPatterns.find( ( p ) => patternIdsEqual( p.id, raw ) );
+};
+
+/**
+ * Dispatches a preview-toolbar custom event on document.
+ *
+ * @param {string}        name      Event name.
+ * @param {number|string} patternId Pattern post ID.
+ */
+const dispatchPreviewToolbarEvent = ( name, patternId ) => {
+	if ( '' === canonicalPatternId( patternId ) ) {
+		return;
+	}
+	document.dispatchEvent(
+		new CustomEvent( name, {
+			bubbles: true,
+			detail: { patternId },
+		} )
+	);
+};
+
+/**
+ * Show or hide toolbar controls from the active slide pattern.
+ *
+ * @param {Object} fancybox Fancybox instance from event callbacks.
+ */
+const syncPreviewToolbarButtons = ( fancybox ) => {
+	const root =
+		fancybox && 'function' === typeof fancybox.getContainer
+			? fancybox.getContainer()
+			: document.querySelector( '.fancybox__container' );
+	if ( ! root ) {
+		return;
+	}
+
+	const pattern = getActivePreviewPattern();
+
+	const setBtn = ( key, visible ) => {
+		const el = root.querySelector( `[data-dlxpw-toolbar="${ key }"]` );
+		if ( ! el ) {
+			return;
+		}
+		el.hidden = ! visible;
+		el.toggleAttribute( 'disabled', ! visible );
+		el.setAttribute( 'aria-hidden', visible ? 'false' : 'true' );
+	};
+
+	setBtn(
+		'disable',
+		!! ( pattern && ! pattern.isLocal && ! pattern.isDisabled )
+	);
+	setBtn( 'delete', !! ( pattern && pattern.isLocal ) );
+	setBtn(
+		'edit',
+		!! ( pattern && pattern.isLocal )
+	);
+	setBtn( 'export', !! pattern );
+	setBtn( 'copy', !! ( pattern && ! pattern.isLocal ) );
+};
 
 /**
  * Builds Fancybox instance options (second argument to Fancybox.show).
@@ -18,42 +125,119 @@ import { Sidebar } from '@fancyapps/ui/dist/fancybox/fancybox.sidebar.js';
  * @return {Object} Options for Fancybox.show.
  */
 const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
-	const { Carousel: extraCarousel = {}, item, ...restExtra } = extra;
+	const { Carousel: extraCarousel = {}, ...restExtra } = extra;
 
-	const items = {};
-	if ( item?.isLocal ) {
-		items.deletePattern = {
+	const toolbarItems = {
+		disablePattern: {
 			tpl: `<button type="button" class="f-button" title="${ __(
+				'Disable pattern',
+				'pattern-wrangler'
+			) }" data-dlxpw-toolbar="disable" aria-label="${ __(
+				'Disable pattern',
+				'pattern-wrangler'
+			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>`,
+			click: () => {
+				const id = getActivePreviewPattern()?.id;
+				Fancybox.close();
+				dispatchPreviewToolbarEvent(
+					'dlxpw-pattern-preview-disable-request',
+					id
+				);
+			},
+		},
+		deletePattern: {
+			tpl: `<button type="button" class="f-button pattern-preview-fancybox-toolbar-btn--destructive" title="${ __(
 				'Delete pattern',
 				'pattern-wrangler'
-			) }" data-dlxpw-toolbar-delete aria-label="${ __(
+			) }" data-dlxpw-toolbar="delete" aria-label="${ __(
 				'Delete pattern',
 				'pattern-wrangler'
 			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>`,
 			click: () => {
+				const id = getActivePreviewPattern()?.id;
+				if ( '' === canonicalPatternId( id ) ) {
+					return;
+				}
 				Fancybox.close();
-				document.dispatchEvent(
-					new CustomEvent( 'dlxpw-pattern-preview-delete-request', {
-						bubbles: true,
-						detail: { patternId: item.id },
-					} )
+				dispatchPreviewToolbarEvent(
+					'dlxpw-pattern-preview-delete-request',
+					id
 				);
 			},
-		};
-	}
+		},
+		editPattern: {
+			tpl: `<button type="button" class="f-button" title="${ __(
+				'Edit pattern',
+				'pattern-wrangler'
+			) }" data-dlxpw-toolbar="edit" aria-label="${ __(
+				'Edit pattern',
+				'pattern-wrangler'
+			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`,
+			click: () => {
+				const id = getActivePreviewPattern()?.id;
+				Fancybox.close();
+				dispatchPreviewToolbarEvent(
+					'dlxpw-pattern-preview-edit-request',
+					id
+				);
+			},
+		},
+		exportPattern: {
+			tpl: `<button type="button" class="f-button" title="${ _x(
+				'Export',
+				'Export pattern file',
+				'pattern-wrangler'
+			) }" data-dlxpw-toolbar="export" aria-label="${ _x(
+				'Export',
+				'Export pattern file',
+				'pattern-wrangler'
+			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>`,
+			click: () => {
+				const id = getActivePreviewPattern()?.id;
+				dispatchPreviewToolbarEvent(
+					'dlxpw-pattern-preview-export-request',
+					id
+				);
+			},
+		},
+		copyPattern: {
+			tpl: `<button type="button" class="f-button" title="${ __(
+				'Copy to New Pattern',
+				'pattern-wrangler'
+			) }" data-dlxpw-toolbar="copy" aria-label="${ __(
+				'Copy to New Pattern',
+				'pattern-wrangler'
+			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>`,
+			click: () => {
+				const id = getActivePreviewPattern()?.id;
+				dispatchPreviewToolbarEvent(
+					'dlxpw-pattern-preview-copy-request',
+					id
+				);
+			},
+		},
+	};
 
 	return {
 		closeButton: false,
+		on: {
+			ready: ( fb ) => {
+				syncPreviewToolbarButtons( fb );
+			},
+			'Carousel.change': ( fb ) => {
+				syncPreviewToolbarButtons( fb );
+			},
+		},
 		Carousel: {
 			Toolbar: {
 				absolute: true,
 				enabled: true,
 				display: {
-					left: [],
-					middle: [ 'deletePattern' ],
+					left: [ 'disablePattern', 'deletePattern' ],
+					middle: [ 'editPattern', 'exportPattern', 'copyPattern' ],
 					right: [ 'close' ],
 				},
-				items,
+				items: toolbarItems,
 			},
 			...extraCarousel,
 		},
@@ -64,7 +248,11 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 const buildPatternPreviewSlide = ( patternItem ) => {
 	const viewportWidth = patternItem.viewportWidth || 1200;
 	const previewUrl = patternItem?.id
-		? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ patternItem.id }&viewport_width=${ viewportWidth }`
+		? addQueryArgs( ajaxurl, {
+			action: 'dlxpw_pattern_preview',
+			pattern_id: patternItem.id,
+			viewport_width: viewportWidth,
+		} )
 		: '';
 
 	return {
@@ -75,6 +263,10 @@ const buildPatternPreviewSlide = ( patternItem ) => {
 };
 
 const popPatternPreview = ( item, galleryItems ) => {
+	const listForToolbar =
+		galleryItems && galleryItems.length >= 2 ? galleryItems : [ item ];
+	setPreviewToolbarPatterns( listForToolbar );
+
 	if ( ! galleryItems || galleryItems.length < 2 ) {
 		Fancybox.show(
 			[ buildPatternPreviewSlide( item ) ],
@@ -86,7 +278,9 @@ const popPatternPreview = ( item, galleryItems ) => {
 	const slides = galleryItems.map( ( patternItem ) =>
 		buildPatternPreviewSlide( patternItem )
 	);
-	let startIndex = galleryItems.findIndex( ( p ) => p.id === item.id );
+	let startIndex = galleryItems.findIndex( ( p ) =>
+		patternIdsEqual( p.id, item.id )
+	);
 	if ( startIndex < 0 ) {
 		startIndex = 0;
 	}
@@ -98,7 +292,6 @@ const popPatternPreview = ( item, galleryItems ) => {
 			Carousel: {
 				infinite: false,
 			},
-			item,
 		} )
 	);
 };

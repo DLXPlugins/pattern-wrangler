@@ -42,6 +42,22 @@ body div.updated.warning {
 .fancybox__container {
 	z-index: 100000;
 }
+
+.fancybox__container .pattern-preview-fancybox-toolbar-btn--destructive {
+	color: #b32d2e;
+}
+
+.fancybox__container .pattern-preview-fancybox-toolbar-btn--destructive:hover {
+	color: #8a2424;
+}
+
+/* WordPress modals above Fancybox preview (z-index 100000) on patterns view. */
+.components-modal__screen-overlay,
+.components-modal__screen-container,
+.components-modal__frame {
+	z-index: 100100;
+}
+
 .dlx-patterns-view-container {
 	padding: 24px 48px;
 
