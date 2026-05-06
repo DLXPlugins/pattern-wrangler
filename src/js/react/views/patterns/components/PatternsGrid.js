@@ -925,6 +925,7 @@ const Interface = ( props ) => {
 							action: 'dlxpw_pattern_preview',
 							pattern_id: item.id,
 							viewport_width: viewportWidth,
+							iframe_preview: true,
 						} )
 						: '';
 
