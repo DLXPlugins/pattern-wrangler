@@ -1,4 +1,4 @@
-=== Pattern Wrangler - Manage Block Patterns and Pattern Categories ===
+=== Pattern Wrangler - Simple Block Pattern Management ===
 Contributors: ronalfy
 Tags: patterns, block patterns, pattern, pattern builder, synced patterns
 Requires at least: 6.8
@@ -12,7 +12,11 @@ Curate and manage your block patterns, registered patterns, synced patterns, and
 
 == Description ==
 
-Pattern Wrangler makes managing WordPress block patterns easy, and is designed for both hybrid classic/block themes, block themes, and is compatible with most page builders through its shortcode support. Pattern Wrangler allows you to curate the pattern experience for your clients, controlling down to the pattern and category what the client sees in the block editor.
+Pattern Wrangler curates your bloated pattern library, and makes managing WordPress block patterns easy. If you have manage dozens of patterns, you will love this plugin.
+
+It is designed for both hybrid classic/block themes, block themes, and is compatible with most page builders through its shortcode support and code support. Pattern Wrangler allows you to manage patterns for your clients, controlling down to the block pattern and category what the client sees in the block editor.
+
+The plugin features several pattern builder helpers, such as duplicating a pattern easily, deleting patterns, copying registered patterns to a synced pattern, and much more.
 
 https://www.youtube.com/watch?v=tFnnki9ZOLg
 
@@ -20,18 +24,19 @@ https://www.youtube.com/watch?v=tFnnki9ZOLg
 
 Here are the major features:
 
-* **New Patterns Screen** - A new Patterns screen now shows at a glance all of the patterns available for your site. You can sort through both local and registered patterns, and selectively disable or enable whatever patterns you'd like your client to see. A real-time preview is available by clicking on the pattern. 
-* **New Categories Screen** - Manage both registered and local categories in one intuitive interface. Bulk-disable categories, or map them to existing ones.
-* **Hide All Patterns** - Completely hide patterns from the block editor in one click. This also hides the Patterns menu item.
+* **Patterns View Screen** - A new block patterns screen now shows at a glance all of the available items for your site. You can sort through both local (synced and unsynced) and registered patterns, and selectively disable or enable whatever items you'd like your client to see. A real-time preview is available by clicking on the pattern. 
+* **Dedicated Categories Screen** - Manage both registered and local categories in one intuitive interface. Bulk-disable categories, or map them to existing ones.
+* **Hide All Patterns** - Completely hide items from the block editor in one click. This also hides the menu item.
 * **Selective Hiding** - Hide core, remote, theme, or plugin patterns while keeping your custom patterns visible. You can also hide synced and unsynced patterns together or separately. If you need to hide WooCommerce patterns, you can do so by hiding all plugin patterns, or using the Patterns View to disable the patterns individually.
 * **Category Management** - Disable, map, and rename registered categories from themes and plugins for better organization. This will help you keep local and registered patterns organized together. For example, you'd like to create a "Call to Action" category for a local pattern, but a registered category already exists, do you have a duplicate in the patterns view. In this case, map the registered category to the local one and remove the duplicate.
 * **Output Patterns Anywhere** - Use a shortcode or PHP function to display local patterns in page builders, widgets, your theme, or in other blocks. This works well in Multisite and allows you to use synced patterns across the network.
 * **Pattern Preview** - Preview a pattern on the frontend with shortcuts in the block editor.
+* **Pattern Builder Features** - Quickly duplicate a pattern, copy a local pattern to a synced pattern, delete, copy, and export patterns.
 * **Cross-Site Pattern Copying** - Transfer patterns, including the remote images, between WordPress sites effortlessly. This is useful if you're copying a pattern from one site to another or copying a pattern from a production site to a development site.
 
 Available features on the Patterns screen include:
 
-* Sort between Local and Registered patterns.
+* Sort between Local and Registered block patterns.
 * Filter between categories and pattern source.
 * Click a pattern to view a real-time preview in a lightbox.
 * Copy registered patterns to a local copy.
@@ -61,7 +66,7 @@ Available features on the Categories screen include:
 
 Requires WordPress 6.8 or higher. 6.9 is recommended.
 
-Fully compatible with most themes, including block themes. Ideal for hybrid setups and page builders. If you need to use a block in a page builder or classic editor, you can create a new pattern, configure the block, and use the built-in shortcode. If you need to use the pattern in a template, you can use the built-in PHP function, which is available for all local patterns.
+Fully compatible with most themes, including block themes, to manage patterns. Ideal for hybrid setups and page builders. If you need to use a block in a page builder or classic editor, you can create a new pattern, configure the block, and use the built-in shortcode. If you need to use the pattern in a template, you can use the built-in PHP function, which is available for all local patterns.
 
 This plugin has been tested almost exclusively with <a href="https://wordpress.org/themes/ollie/">the Ollie theme</a>, which is a phenomenal block theme. All the 202x themes have also been tested, as well as Blocksy, Astra, and GeneratePress.
 
