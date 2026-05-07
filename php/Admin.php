@@ -160,6 +160,12 @@ class Admin {
 		// Get array values.
 		$form_data = Functions::sanitize_array_recursive( $form_data );
 
+		if ( isset( $form_data['patternsDefaultView'] ) ) {
+			$patterns_default_view = Functions::sanitize_patterns_default_view_slug( $form_data['patternsDefaultView'] );
+			update_user_meta( get_current_user_id(), Functions::get_patterns_default_view_meta_key(), $patterns_default_view );
+			unset( $form_data['patternsDefaultView'] );
+		}
+
 		// Update options.
 		Options::update_options( $form_data );
 
@@ -203,6 +209,8 @@ class Admin {
 		// Pull in nonces to default options before returning.
 		$default_options['saveNonce']  = $options['saveNonce'];
 		$default_options['resetNonce'] = $options['resetNonce'];
+
+		$default_options['patternsDefaultView'] = Functions::get_patterns_default_view_slug_for_user( get_current_user_id() );
 
 		// Send success message.
 		wp_send_json_success(
@@ -609,6 +617,7 @@ class Admin {
 					'isUserNetworkAdmin'      => current_user_can( 'manage_network' ),
 					'canShowRatingsNag'       => Functions::can_show_ratings_nag(),
 					'dismissRatingsNagNonce'  => wp_create_nonce( 'dlx-pw-admin-dismiss-ratings-nag' ),
+					'patternsDefaultView'     => Functions::get_patterns_default_view_slug_for_user( get_current_user_id() ),
 				)
 			);
 			\wp_set_script_translations( 'dlx-pw-admin', 'pattern-wrangler' );
@@ -661,6 +670,7 @@ class Admin {
 					'doNotShowAgain'            => get_user_meta( get_current_user_id(), 'dlx_pw_do_not_show_again', true ) ?? false,
 					'syncedPatternPopupsActive' => Functions::is_activated( 'synced-pattern-popups/sppopups.php' ),
 					'syncedPatternPopupsUrl'    => esc_url_raw( admin_url( 'themes.php?page=simplest-popup-patterns' ) ),
+					'patternsDefaultView'       => Functions::get_patterns_default_view_slug_for_user( get_current_user_id() ),
 				)
 			);
 			\wp_set_script_translations( 'dlx-pw-patterns-view', 'pattern-wrangler' );

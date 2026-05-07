@@ -40,6 +40,10 @@ import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
 import ResponsiveIframe from './ResponsiveIframe';
 import { canonicalPatternId, patternIdsEqual } from '../utils/patternIdUtils';
+import {
+	mergePresetIntoQueryArgs,
+	urlHasExplicitPatternFilters,
+} from '../utils/patternsDefaultViewPresets';
 
 const defaultLayouts = {
 	grid: {
@@ -470,7 +474,13 @@ const Interface = ( props ) => {
 	 * @return {Object} The default view.
 	 */
 	const getDefaultView = () => {
-		const queryArgs = getQueryArgs( window.location.href );
+		const rawQueryArgs = getQueryArgs( window.location.href );
+		const presetSlug =
+			typeof dlxEnhancedPatternsView !== 'undefined' &&
+			dlxEnhancedPatternsView.patternsDefaultView
+				? dlxEnhancedPatternsView.patternsDefaultView
+				: 'all';
+		const queryArgs = mergePresetIntoQueryArgs( rawQueryArgs, presetSlug );
 		const normalizedStatusFilters = getNormalizedStatusFilters( queryArgs );
 
 		return {
@@ -1682,6 +1692,24 @@ const Interface = ( props ) => {
 		// Update the view state.
 		//setView( newView );
 	};
+
+	useEffect( () => {
+		const raw = getQueryArgs( window.location.href );
+		if ( urlHasExplicitPatternFilters( raw ) ) {
+			return;
+		}
+		const slug =
+			typeof dlxEnhancedPatternsView !== 'undefined' &&
+			dlxEnhancedPatternsView.patternsDefaultView
+				? dlxEnhancedPatternsView.patternsDefaultView
+				: 'all';
+		if ( 'all' === slug ) {
+			return;
+		}
+		onChangeView( getDefaultView() );
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- One-time URL sync for user preset.
+	}, [] );
+
 	useEffect( () => {
 		resetPreviewQueue( patternsDisplay );
 	}, [ patternsDisplay ] );

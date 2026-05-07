@@ -23,39 +23,37 @@ const Main = () => {
 	const data = dlxPatternWranglerAdmin.options;
 	const networkOptions = dlxPatternWranglerAdmin.networkOptions;
 
-	const [ showRatingsNag, setShowRatingsNag ] = useState( dlxPatternWranglerAdmin.canShowRatingsNag );
+	const [ showRatingsNag, setShowRatingsNag ] = useState(
+		dlxPatternWranglerAdmin.canShowRatingsNag
+	);
 
-	const {
-		control,
-		handleSubmit,
-		getValues,
-		reset,
-		setError,
-		trigger,
-	} = useForm( {
-		defaultValues: {
-			hideAllPatterns: data.hideAllPatterns,
-			hideCorePatterns: data.hideCorePatterns,
-			hidePatternsMenu: data.hidePatternsMenu,
-			hideRemotePatterns: data.hideRemotePatterns,
-			hideCoreSyncedPatterns: data.hideCoreSyncedPatterns,
-			hideCoreUnsyncedPatterns: data.hideCoreUnsyncedPatterns,
-			disablePatternImporterBlock: data.disablePatternImporterBlock,
-			allowFrontendPatternPreview: data.allowFrontendPatternPreview,
-			hideUncategorizedPatterns: data.hideUncategorizedPatterns,
-			showCustomizerUI: data.showCustomizerUI,
-			loadCustomizerCSSBlockEditor: data.loadCustomizerCSSBlockEditor,
-			loadCustomizerCSSFrontend: data.loadCustomizerCSSFrontend,
-			hideThemePatterns: data.hideThemePatterns,
-			hidePluginPatterns: data.hidePluginPatterns,
-			enableEnhancedView: data.enableEnhancedView,
-			showMenusUI: data.showMenusUI,
-			makePatternsExportable: data.makePatternsExportable,
-			patternWranglerMenuLocation: data.patternWranglerMenuLocation,
-			saveNonce: dlxPatternWranglerAdmin.saveNonce,
-			resetNonce: dlxPatternWranglerAdmin.resetNonce,
-		},
-	} );
+	const { control, handleSubmit, getValues, reset, setError, trigger } =
+		useForm( {
+			defaultValues: {
+				hideAllPatterns: data.hideAllPatterns,
+				hideCorePatterns: data.hideCorePatterns,
+				hidePatternsMenu: data.hidePatternsMenu,
+				hideRemotePatterns: data.hideRemotePatterns,
+				hideCoreSyncedPatterns: data.hideCoreSyncedPatterns,
+				hideCoreUnsyncedPatterns: data.hideCoreUnsyncedPatterns,
+				disablePatternImporterBlock: data.disablePatternImporterBlock,
+				allowFrontendPatternPreview: data.allowFrontendPatternPreview,
+				hideUncategorizedPatterns: data.hideUncategorizedPatterns,
+				showCustomizerUI: data.showCustomizerUI,
+				loadCustomizerCSSBlockEditor: data.loadCustomizerCSSBlockEditor,
+				loadCustomizerCSSFrontend: data.loadCustomizerCSSFrontend,
+				hideThemePatterns: data.hideThemePatterns,
+				hidePluginPatterns: data.hidePluginPatterns,
+				enableEnhancedView: data.enableEnhancedView,
+				showMenusUI: data.showMenusUI,
+				makePatternsExportable: data.makePatternsExportable,
+				patternWranglerMenuLocation: data.patternWranglerMenuLocation,
+				patternsDefaultView:
+					dlxPatternWranglerAdmin.patternsDefaultView || 'all',
+				saveNonce: dlxPatternWranglerAdmin.saveNonce,
+				resetNonce: dlxPatternWranglerAdmin.resetNonce,
+			},
+		} );
 	const formValues = useWatch( { control } );
 	const { errors, isDirty, dirtyFields } = useFormState( {
 		control,
@@ -67,8 +65,7 @@ const Main = () => {
 	const dismissRatingsNag = async() => {
 		SendCommand( 'dlx_pw_dismiss_ratings_nag', {
 			nonce: dlxPatternWranglerAdmin.dismissRatingsNagNonce,
-		} ).then( () => {
-		} );
+		} ).then( () => {} );
 	};
 
 	/**
@@ -412,9 +409,7 @@ const Main = () => {
 	 */
 	const getShowPatternsImporterBlock = () => {
 		const patternsBlockData = {
-			canUseBlock: ! getValues(
-				'disablePatternImporterBlock'
-			),
+			canUseBlock: ! getValues( 'disablePatternImporterBlock' ),
 			networkCanUseBlock: true,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
@@ -438,9 +433,7 @@ const Main = () => {
 				);
 			}
 		} else {
-			patternsBlockData.canUseBlock = getValues(
-				'disablePatternImporterBlock'
-			);
+			patternsBlockData.canUseBlock = getValues( 'disablePatternImporterBlock' );
 			patternsBlockData.networkCanUseBlock = true;
 		}
 		return (
@@ -509,10 +502,7 @@ const Main = () => {
 					control={ control }
 					render={ ( { field: { onChange, value } } ) => (
 						<ToggleControl
-							label={ __(
-								'Hide Theme Patterns',
-								'pattern-wrangler'
-							) }
+							label={ __( 'Hide Theme Patterns', 'pattern-wrangler' ) }
 							checked={ value || 'default' === value }
 							disabled={ ! themePatternData.networkCanShow }
 							onChange={ ( boolValue ) => {
@@ -565,10 +555,7 @@ const Main = () => {
 					control={ control }
 					render={ ( { field: { onChange, value } } ) => (
 						<ToggleControl
-							label={ __(
-								'Hide Plugin Patterns',
-								'pattern-wrangler'
-							) }
+							label={ __( 'Hide Plugin Patterns', 'pattern-wrangler' ) }
 							checked={ value || 'default' === 'value' }
 							disabled={ ! pluginPatternData.networkCanShow }
 							onChange={ ( boolValue ) => {
@@ -609,7 +596,10 @@ const Main = () => {
 			networkAllPatternsDisabled: false,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if ( networkOptions.patternConfiguration === 'disabled' || 'hide' === networkOptions.hideAllPatterns ) {
+			if (
+				networkOptions.patternConfiguration === 'disabled' ||
+				'hide' === networkOptions.hideAllPatterns
+			) {
 				hideAllPatternsData.allPatternsDisabled = true;
 				hideAllPatternsData.networkAllPatternsDisabled = true;
 			} else if ( 'show' === networkOptions.hideAllPatterns ) {
@@ -685,7 +675,10 @@ const Main = () => {
 							dismissRatingsNag();
 						} }
 					>
-						{ __( 'Thank you for using Pattern Wrangler! Please show your support by leaving a kind review on WordPress.org.', 'pattern-wrangler' ) }
+						{ __(
+							'Thank you for using Pattern Wrangler! Please show your support by leaving a kind review on WordPress.org.',
+							'pattern-wrangler'
+						) }
 						<div className="dlx-admin-component-row-button buttons-ratings-nag">
 							<Button
 								variant="secondary"
@@ -763,6 +756,65 @@ const Main = () => {
 												) }
 											/>
 										) }
+									/>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									{ __( 'Default Patterns View', 'pattern-wrangler' ) }
+								</th>
+								<td>
+									<Controller
+										name="patternsDefaultView"
+										control={ control }
+										render={ ( { field: { onChange, value } } ) => {
+											return (
+												<SelectControl
+													label={ __(
+														'Default filter when opening the Pattern Library',
+														'pattern-wrangler'
+													) }
+													hideLabelFromVision={ true }
+													value={ value }
+													options={ [
+														{
+															label: __( 'All Patterns', 'pattern-wrangler' ),
+															value: 'all',
+														},
+														{
+															label: __(
+																'All Local Patterns',
+																'pattern-wrangler'
+															),
+															value: 'all_local',
+														},
+														{
+															label: __( 'Synced Patterns', 'pattern-wrangler' ),
+															value: 'synced_local',
+														},
+														{
+															label: __(
+																'Unsynced Patterns',
+																'pattern-wrangler'
+															),
+															value: 'unsynced_local',
+														},
+														{
+															label: __(
+																'Registered Patterns',
+																'pattern-wrangler'
+															),
+															value: 'registered',
+														},
+													] }
+													onChange={ onChange }
+													help={ __(
+														'Your personal default when the library URL has no filter parameters.',
+														'pattern-wrangler'
+													) }
+												/>
+											);
+										} }
 									/>
 								</td>
 							</tr>
@@ -972,17 +1024,31 @@ const Main = () => {
 											control={ control }
 											render={ ( { field: { onChange, value } } ) => (
 												<SelectControl
-													label={ __( 'Pattern Wrangler Menu Location', 'pattern-wrangler' ) }
+													label={ __(
+														'Pattern Wrangler Menu Location',
+														'pattern-wrangler'
+													) }
 													value={ value }
 													onChange={ ( newValue ) => {
 														onChange( newValue );
 													} }
-													disabled={ getValues( 'hidePatternsMenu' ) && getValues( 'hideAllPatterns' ) }
+													disabled={
+														getValues( 'hidePatternsMenu' ) &&
+														getValues( 'hideAllPatterns' )
+													}
 												>
-													<option value="above_media">{ __( 'Above Media', 'pattern-wrangler' ) }</option>
-													<option value="below_appearance">{ __( 'Below Appearance', 'pattern-wrangler' ) }</option>
-													<option value="below_settings">{ __( 'Below Settings', 'pattern-wrangler' ) }</option>
-													<option value="in_appearance">{ __( 'In Appearance', 'pattern-wrangler' ) }</option>
+													<option value="above_media">
+														{ __( 'Above Media', 'pattern-wrangler' ) }
+													</option>
+													<option value="below_appearance">
+														{ __( 'Below Appearance', 'pattern-wrangler' ) }
+													</option>
+													<option value="below_settings">
+														{ __( 'Below Settings', 'pattern-wrangler' ) }
+													</option>
+													<option value="in_appearance">
+														{ __( 'In Appearance', 'pattern-wrangler' ) }
+													</option>
 												</SelectControl>
 											) }
 										/>
