@@ -340,6 +340,24 @@ class Functions {
 	}
 
 	/**
+	 * Whether revisions should be disabled for the wp_block post type.
+	 *
+	 * Network option applies when the plugin is network-activated (Functions::is_multisite).
+	 *
+	 * @return bool True if revisions are disabled.
+	 */
+	public static function are_pattern_revisions_disabled() {
+		$options     = Options::get_options();
+		$site_off    = (bool) ( $options['disablePatternRevisions'] ?? false );
+		$network_off = false;
+		if ( self::is_multisite( false ) ) {
+			$network     = Options::get_network_options();
+			$network_off = (bool) ( $network['disablePatternRevisionsForNetwork'] ?? false );
+		}
+		return $site_off || $network_off;
+	}
+
+	/**
 	 * Check if core patterns are enabled for the current site.
 	 *
 	 * @param int $site_id The site ID.

@@ -94,6 +94,9 @@ class Patterns {
 		// Make patterns exportable.
 		add_filter( 'register_post_type_args', array( $this, 'make_patterns_post_type_exportable' ), 5, 2 );
 
+		// Optionally remove revisions support from wp_block.
+		add_action( 'init', array( $this, 'maybe_remove_pattern_revisions_support' ), 11 );
+
 		// Register tax terms as categories.
 		add_action( 'rest_api_init', array( $this, 'register_terms_as_pattern_categories' ) );
 
@@ -299,6 +302,16 @@ class Patterns {
 			$args['_builtin']   = false;
 		}
 		return $args;
+	}
+
+	/**
+	 * Ensure revisions support is not active if core or another plugin added it after registration.
+	 */
+	public function maybe_remove_pattern_revisions_support() {
+		if ( ! Functions::are_pattern_revisions_disabled() ) {
+			return;
+		}
+		remove_post_type_support( 'wp_block', 'revisions' );
 	}
 
 	/**

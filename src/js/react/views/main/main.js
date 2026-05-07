@@ -47,6 +47,7 @@ const Main = () => {
 				enableEnhancedView: data.enableEnhancedView,
 				showMenusUI: data.showMenusUI,
 				makePatternsExportable: data.makePatternsExportable,
+				disablePatternRevisions: data.disablePatternRevisions,
 				patternWranglerMenuLocation: data.patternWranglerMenuLocation,
 				patternsDefaultView:
 					dlxPatternWranglerAdmin.patternsDefaultView || 'all',
@@ -66,6 +67,54 @@ const Main = () => {
 		SendCommand( 'dlx_pw_dismiss_ratings_nag', {
 			nonce: dlxPatternWranglerAdmin.dismissRatingsNagNonce,
 		} ).then( () => {} );
+	};
+
+	/**
+	 * Toggle for disabling wp_block revisions (site option; network may override).
+	 *
+	 * @return {React.ReactNode} Control markup.
+	 */
+	const getDisablePatternRevisionsToggleControl = () => {
+		const networkLocksRevisions =
+			dlxPatternWranglerAdmin.isMultisite &&
+			networkOptions.disablePatternRevisionsForNetwork;
+		return (
+			<div className="dlx-admin__row">
+				<Controller
+					name="disablePatternRevisions"
+					control={ control }
+					render={ ( { field: { onChange, value } } ) => (
+						<ToggleControl
+							label={ __(
+								'Disable Pattern Revisions',
+								'pattern-wrangler'
+							) }
+							checked={ networkLocksRevisions ? true : value }
+							disabled={ networkLocksRevisions }
+							help={ __(
+								'Turn off revisions for the Patterns (wp_block) post type.',
+								'pattern-wrangler'
+							) }
+							onChange={ ( boolValue ) => {
+								onChange( boolValue );
+							} }
+						/>
+					) }
+				/>
+				{ dlxPatternWranglerAdmin.isMultisite && networkLocksRevisions && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						variant="info"
+						icon={ () => <Info /> }
+					>
+						{ __(
+							'This setting is overridden by the network settings.',
+							'pattern-wrangler'
+						) }
+					</Notice>
+				) }
+			</div>
+		);
 	};
 
 	/**
@@ -994,6 +1043,7 @@ const Main = () => {
 											) }
 										/>
 									</div>
+									{ getDisablePatternRevisionsToggleControl() }
 									{ getShowPatternsImporterBlock() }
 									<div className="dlx-admin__row">
 										<Controller

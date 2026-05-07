@@ -80,6 +80,7 @@ class Options {
 				case 'loadCustomizerCSSFrontend':
 				case 'makePatternsExportable':
 				case 'enableEnhancedView':
+				case 'disablePatternRevisions':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
 				default:
@@ -112,6 +113,7 @@ class Options {
 			switch ( $key ) {
 				case 'disablePatternImporterBlock':
 				case 'disablePatternExporterForNetwork':
+				case 'disablePatternRevisionsForNetwork':
 				case 'enableEnhancedView':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
@@ -217,6 +219,7 @@ class Options {
 			'loadCustomizerCSSBlockEditor' => false,
 			'loadCustomizerCSSFrontend'    => true,
 			'makePatternsExportable'       => false,
+			'disablePatternRevisions'      => false,
 			'enableEnhancedView'           => true,
 			'patternWranglerMenuLocation'  => 'above_media', /* Can be above_media, below_appearance, below_settings, in_appearance. */
 		);
@@ -238,19 +241,20 @@ class Options {
 	 */
 	public static function get_network_defaults() {
 		$defaults = array(
-			'patternMothershipSiteId'          => 1,
-			'patternConfiguration'             => 'hybrid', // Can be `nework_only`, `local_only`, `hybrid`, or `disabled`.
-			'hideSyncedPatternsForNetwork'     => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
-			'hideUnsyncedPatternsForNetwork'   => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.
-			'disablePatternImporterBlock'      => false, // If false, site admins can still configure this option per site.
-			'disablePatternExporterForNetwork' => false, // If true, site admins will not see a pattern exporter option.
-			'hideCorePatterns'                 => 'default',
-			'hideRemotePatterns'               => 'default',
-			'enableEnhancedView'               => true,
-			'hideAllPatterns'                  => 'default',
-			'hideThemePatterns'                => 'default',
-			'hidePluginPatterns'               => 'default',
-			'hideUncategorizedPatterns'        => 'default',
+			'patternMothershipSiteId'           => 1,
+			'patternConfiguration'              => 'hybrid', // Can be `nework_only`, `local_only`, `hybrid`, or `disabled`.
+			'hideSyncedPatternsForNetwork'      => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
+			'hideUnsyncedPatternsForNetwork'    => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.
+			'disablePatternImporterBlock'       => false, // If false, site admins can still configure this option per site.
+			'disablePatternExporterForNetwork'  => false, // If true, site admins will not see a pattern exporter option.
+			'disablePatternRevisionsForNetwork' => false, // When true and plugin is network-active, disables wp_block revisions on all sites (overrides per-site setting).
+			'hideCorePatterns'                  => 'default',
+			'hideRemotePatterns'                => 'default',
+			'enableEnhancedView'                => true,
+			'hideAllPatterns'                   => 'default',
+			'hideThemePatterns'                 => 'default',
+			'hidePluginPatterns'                => 'default',
+			'hideUncategorizedPatterns'         => 'default',
 		);
 		/**
 		 * Allow options to be extended by plugins.
