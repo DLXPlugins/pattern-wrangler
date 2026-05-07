@@ -1,9 +1,5 @@
 /* eslint-disable react/no-unknown-property */
-import {
-	useState,
-	useMemo,
-	useEffect,
-} from '@wordpress/element';
+import { useState, useMemo, useEffect } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
 	Button,
@@ -92,8 +88,12 @@ const Interface = ( props ) => {
 	const [ isDeleteCategoryModalOpen, setIsDeleteCategoryModalOpen ] =
 		useState( false );
 	const [ isEditCategoryModalOpen, setIsEditCategoryModalOpen ] = useState( false );
-	const [ isEditRegisteredCategoryModalOpen, setIsEditRegisteredCategoryModalOpen ] = useState( false );
-	const [ isPauseCategoryModalOpen, setIsPauseCategoryModalOpen ] = useState( false );
+	const [
+		isEditRegisteredCategoryModalOpen,
+		setIsEditRegisteredCategoryModalOpen,
+	] = useState( false );
+	const [ isPauseCategoryModalOpen, setIsPauseCategoryModalOpen ] =
+		useState( false );
 	const [ isMapCategoryModalOpen, setIsMapCategoryModalOpen ] = useState( false );
 	const [ view, setView ] = useState( null );
 	const [ categoriesDisplay, setCategoriesDisplay ] = useState( [] );
@@ -138,7 +138,8 @@ const Interface = ( props ) => {
 				_n(
 					'Enabling %d Category',
 					'Enabling %d Categories',
-					categoriesToEnable.length, 'pattern-wrangler'
+					categoriesToEnable.length,
+					'pattern-wrangler'
 				),
 				categoriesToEnable.length
 			),
@@ -172,7 +173,8 @@ const Interface = ( props ) => {
 				_n(
 					'%d Category Enabled',
 					'%d Categories Enabled',
-					categoriesToEnable.length, 'pattern-wrangler'
+					categoriesToEnable.length,
+					'pattern-wrangler'
 				),
 				categoriesToEnable.length
 			),
@@ -289,21 +291,33 @@ const Interface = ( props ) => {
 			( filter ) => filter.field === 'categoryLocalRegisteredStatus'
 		);
 
-		if ( categoryRegisteredStatusFilter && 'registered' === changeQueryArgs.categoryType ) {
+		if (
+			categoryRegisteredStatusFilter &&
+			'registered' === changeQueryArgs.categoryType
+		) {
 			changeQueryArgs.categoryRegisteredStatus =
 				categoryRegisteredStatusFilter.value;
 		}
-		if ( 'registered' === changeQueryArgs.categoryType && ! categoryRegisteredStatusFilter ) {
+		if (
+			'registered' === changeQueryArgs.categoryType &&
+			! categoryRegisteredStatusFilter
+		) {
 			changeQueryArgs.categoryRegisteredStatus = 'enabled';
 		}
 		if ( categoryLocalStatusFilter && 'local' === changeQueryArgs.categoryType ) {
 			changeQueryArgs.categoryLocalStatus = categoryLocalStatusFilter.value;
 		}
-		if ( categoryLocalRegisteredStatusFilter && 'both' === changeQueryArgs.categoryType ) {
+		if (
+			categoryLocalRegisteredStatusFilter &&
+			'both' === changeQueryArgs.categoryType
+		) {
 			changeQueryArgs.categoryLocalRegisteredStatus =
 				categoryLocalRegisteredStatusFilter.value;
 		}
-		if ( 'both' === changeQueryArgs.categoryType && ! categoryLocalRegisteredStatusFilter ) {
+		if (
+			'both' === changeQueryArgs.categoryType &&
+			! categoryLocalRegisteredStatusFilter
+		) {
 			changeQueryArgs.categoryLocalRegisteredStatus = 'enabled';
 		}
 
@@ -339,7 +353,9 @@ const Interface = ( props ) => {
 			];
 		}
 
-		setCategoriesDisplay( getCategoriesForDisplay( { ...newView, ...changeQueryArgs } ) );
+		setCategoriesDisplay(
+			getCategoriesForDisplay( { ...newView, ...changeQueryArgs } )
+		);
 
 		window.history.pushState( {}, '', newUrl );
 
@@ -490,17 +506,39 @@ const Interface = ( props ) => {
 		if ( null === view ) {
 			const filters = [];
 			if ( getQueryArg( window.location.href, 'categoryType' ) ) {
-				filters.push( { field: 'categoryType', operator: 'is', value: getQueryArg( window.location.href, 'categoryType' ) } );
+				filters.push( {
+					field: 'categoryType',
+					operator: 'is',
+					value: getQueryArg( window.location.href, 'categoryType' ),
+				} );
 			} else {
 				filters.push( { field: 'categoryType', operator: 'is', value: 'both' } );
 			}
 			if ( getQueryArg( window.location.href, 'categoryRegisteredStatus' ) ) {
-				filters.push( { field: 'categoryRegisteredStatus', operator: 'is', value: getQueryArg( window.location.href, 'categoryRegisteredStatus' ) } );
+				filters.push( {
+					field: 'categoryRegisteredStatus',
+					operator: 'is',
+					value: getQueryArg( window.location.href, 'categoryRegisteredStatus' ),
+				} );
 			}
 			if ( getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) ) {
-				filters.push( { field: 'categoryLocalRegisteredStatus', operator: 'is', value: getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) } );
-			} else if ( ! getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) && ! getQueryArg( window.location.href, 'categoryType' ) ) {
-				filters.push( { field: 'categoryLocalRegisteredStatus', operator: 'is', value: 'enabled' } );
+				filters.push( {
+					field: 'categoryLocalRegisteredStatus',
+					operator: 'is',
+					value: getQueryArg(
+						window.location.href,
+						'categoryLocalRegisteredStatus'
+					),
+				} );
+			} else if (
+				! getQueryArg( window.location.href, 'categoryLocalRegisteredStatus' ) &&
+				! getQueryArg( window.location.href, 'categoryType' )
+			) {
+				filters.push( {
+					field: 'categoryLocalRegisteredStatus',
+					operator: 'is',
+					value: 'enabled',
+				} );
 			}
 			setView( {
 				filters,
@@ -547,7 +585,9 @@ const Interface = ( props ) => {
 
 				// When all animations complete, update the store.
 				if ( completedAnimations === totalAnimations ) {
-					dispatch( categoriesStore ).setCategories( pendingDeleteResponse.categories );
+					dispatch( categoriesStore ).setCategories(
+						pendingDeleteResponse.categories
+					);
 					setDeletedCategoryIds( new Set() );
 					setPendingDeleteResponse( null );
 					setSnackbar( {
@@ -567,7 +607,8 @@ const Interface = ( props ) => {
 							_n(
 								'%d Category Deleted',
 								'%d Categories Deleted',
-								pendingDeleteResponse.termIdsDeleted.length, 'pattern-wrangler'
+								pendingDeleteResponse.termIdsDeleted.length,
+								'pattern-wrangler'
 							),
 							pendingDeleteResponse.termIdsDeleted.length
 						),
@@ -642,38 +683,40 @@ const Interface = ( props ) => {
 	const getBulkActions = () => {
 		return (
 			<>
-				<div className="dlx-patterns-view-button-actions-wrapper dlx-bulk-action-toolbar-top">
-					<CategoryBulkActions
-						categories={ categoriesDisplay }
-						actions={ actions }
-					/>
+				<div className="dlx-patterns-view-pagination-container">
+					<div className="dlx-patterns-view-pagination-item">
+						<CategoryBulkActions
+							categories={ categoriesDisplay }
+							actions={ actions }
+						/>
+					</div>
 				</div>
 			</>
 		);
 	};
 
 	return (
-		<div className="dlx-patterns-view-container-wrapper">
-			<div className="dlx-patterns-view-container">
-				<div className="dlx-patterns-view-container-header">
-					<h1>{ __( 'Pattern Categories', 'pattern-wrangler' ) }</h1>
-				</div>
-				<div className="dlx-patterns-view-quick-buttons-wrapper">
-					<Button
-						variant="primary"
-						className="dlx-patterns-view-quick-button"
-						onClick={ () => {
-							setIsAddNewCategoryModalOpen( {
-								isOpen: true,
-								termId: 0,
-							} );
-						} }
-					>
-						{ __( 'Add New Category', 'pattern-wrangler' ) }
-					</Button>
-				</div>
-				<div className="dlx-patterns-view-categories">
-					<FormProvider { ...methods }>
+		<FormProvider { ...methods }>
+			<div className="dlx-patterns-view-container-wrapper">
+				<div className="dlx-patterns-view-container">
+					<div className="dlx-patterns-view-container-header">
+						<h1>{ __( 'Pattern Categories', 'pattern-wrangler' ) }</h1>
+					</div>
+					<div className="dlx-patterns-view-quick-buttons-wrapper">
+						<Button
+							variant="primary"
+							className="dlx-patterns-view-quick-button"
+							onClick={ () => {
+								setIsAddNewCategoryModalOpen( {
+									isOpen: true,
+									termId: 0,
+								} );
+							} }
+						>
+							{ __( 'Add New Category', 'pattern-wrangler' ) }
+						</Button>
+					</div>
+					<div className="dlx-patterns-view-categories">
 						<div className="dlx-patterns-view-button-actions-wrapper">
 							<ToggleGroupControl
 								label={ __( 'Category Type', 'pattern-wrangler' ) }
@@ -699,28 +742,37 @@ const Interface = ( props ) => {
 									switch ( value ) {
 										case 'both':
 											myNewView.filters =
-											myNewView.filters?.filter(
-												( filter ) =>
-													filter.field !== 'categoryRegisteredStatus'
-											) || [];
-											myNewView.filters.push( { field: 'categoryLocalRegisteredStatus', operator: 'is', value: 'enabled' } );
+												myNewView.filters?.filter(
+													( filter ) =>
+														filter.field !== 'categoryRegisteredStatus'
+												) || [];
+											myNewView.filters.push( {
+												field: 'categoryLocalRegisteredStatus',
+												operator: 'is',
+												value: 'enabled',
+											} );
 											break;
 										case 'local':
 											myNewView.filters =
-											myNewView.filters?.filter(
-												( filter ) =>
-													filter.field !== 'categoryRegisteredStatus' &&
-													filter.field !== 'categoryLocalRegisteredStatus'
-											) || [];
+												myNewView.filters?.filter(
+													( filter ) =>
+														filter.field !== 'categoryRegisteredStatus' &&
+														filter.field !== 'categoryLocalRegisteredStatus'
+												) || [];
 											break;
 										case 'registered':
 											myNewView.filters =
-											myNewView.filters?.filter(
-												( filter ) => {
-													return filter.field !== 'categoryLocalRegisteredStatus' && filter.field !== 'categoryRegisteredStatus';
-												}
-											) || [];
-											myNewView.filters.push( { field: 'categoryRegisteredStatus', operator: 'is', value: 'enabled' } );
+												myNewView.filters?.filter( ( filter ) => {
+													return (
+														filter.field !== 'categoryLocalRegisteredStatus' &&
+														filter.field !== 'categoryRegisteredStatus'
+													);
+												} ) || [];
+											myNewView.filters.push( {
+												field: 'categoryRegisteredStatus',
+												operator: 'is',
+												value: 'enabled',
+											} );
 											break;
 										default:
 											break;
@@ -891,190 +943,205 @@ const Interface = ( props ) => {
 								)
 							}
 						</div>
-						{ getBulkActions() }
 						<div className="dlx-patterns-view-categories-list">
 							{ CategoryList }
 						</div>
-						{ getBulkActions() }
-					</FormProvider>
+					</div>
+					{ snackbar.isVisible && (
+						<Snackbar
+							isVisible={ snackbar.isVisible }
+							message={ snackbar.message }
+							title={ snackbar.title }
+							type={ snackbar.type }
+							onClose={ () => {
+								setSnackbar( {
+									...snackbar,
+									isVisible: false,
+								} );
+							} }
+						/>
+					) }
+					{ isAddNewCategoryModalOpen.isOpen && (
+						<CategoryCreateModal
+							isOpen={ isAddNewCategoryModalOpen.isOpen }
+							onRequestClose={ () => setIsAddNewCategoryModalOpen( false ) }
+							termId={ isAddNewCategoryModalOpen.termId }
+							onCreate={ ( createdCategory ) => {
+								dispatch( categoriesStore ).addCategory( createdCategory );
+								setIsAddNewCategoryModalOpen( false );
+								setSnackbar( {
+									isVisible: true,
+									message: __(
+										'Category created successfully.',
+										'pattern-wrangler'
+									),
+									title: __( 'Category Created', 'pattern-wrangler' ),
+									type: 'success',
+								} );
+							} }
+						/>
+					) }
+					{ isDeleteCategoryModalOpen.isOpen && (
+						<CategoryDeleteModal
+							isOpen={ isDeleteCategoryModalOpen.isOpen }
+							onRequestClose={ () => setIsDeleteCategoryModalOpen( false ) }
+							items={ isDeleteCategoryModalOpen.items }
+							onDelete={ ( categoriesResponse, itemIdsAndNonces ) => {
+								// Get IDs of categories being deleted.
+								const deletedIds = new Set(
+									itemIdsAndNonces.map( ( item ) => item.id )
+								);
+
+								// Store the response to use after animation completes.
+								setPendingDeleteResponse( categoriesResponse );
+
+								// Mark categories as deleted to trigger fade out animation.
+								setDeletedCategoryIds( deletedIds );
+
+								// Unselect all.
+								setValue( 'categoriesSelected', [] );
+								setValue( 'bulkActionSelected', false );
+							} }
+						/>
+					) }
+					{ isEditCategoryModalOpen.isOpen && (
+						<CategoryCreateModal
+							isOpen={ isEditCategoryModalOpen.isOpen }
+							onRequestClose={ () => setIsEditCategoryModalOpen( false ) }
+							termId={ isEditCategoryModalOpen.category.id }
+							termTitle={ isEditCategoryModalOpen.category.label }
+							termSlug={ isEditCategoryModalOpen.category.slug }
+							termNonce={ isEditCategoryModalOpen.category.editNonce }
+							isEditMode={ true }
+							onEdit={ ( editedCategory ) => {
+								dispatch( categoriesStore ).updateCategory( editedCategory );
+								setIsEditCategoryModalOpen( false );
+								setSnackbar( {
+									isVisible: true,
+									message: __(
+										'Category edited successfully.',
+										'pattern-wrangler'
+									),
+									title: __( 'Category Edited', 'pattern-wrangler' ),
+									type: 'success',
+								} );
+							} }
+						/>
+					) }
+					{ isEditRegisteredCategoryModalOpen.isOpen && (
+						<RegisteredCategoryEditModal
+							isOpen={ isEditRegisteredCategoryModalOpen.isOpen }
+							onRequestClose={ () => setIsEditRegisteredCategoryModalOpen( false ) }
+							termTitle={
+								isEditRegisteredCategoryModalOpen.category.customLabel ||
+								isEditRegisteredCategoryModalOpen.category.label
+							}
+							termSlug={ isEditRegisteredCategoryModalOpen.category.slug }
+							termNonce={ isEditRegisteredCategoryModalOpen.category.editNonce }
+							onEditRegisteredCategory={ ( editedCategory ) => {
+								dispatch( categoriesStore ).updateRegisteredCategory(
+									editedCategory
+								);
+								setIsEditRegisteredCategoryModalOpen( false );
+								setSnackbar( {
+									isVisible: true,
+									message: __(
+										'Category edited successfully.',
+										'pattern-wrangler'
+									),
+									title: __( 'Category Edited', 'pattern-wrangler' ),
+									type: 'success',
+								} );
+							} }
+						/>
+					) }
+					{ isPauseCategoryModalOpen.isOpen && (
+						<CategoryPauseModal
+							isOpen={ isPauseCategoryModalOpen.isOpen }
+							onRequestClose={ () => setIsPauseCategoryModalOpen( false ) }
+							items={ isPauseCategoryModalOpen.items }
+							onPauseCategory={ ( categoriesResponse, itemSlugsAndNonces ) => {
+								setIsPauseCategoryModalOpen( false );
+								dispatch( categoriesStore ).setCategories(
+									categoriesResponse.categories
+								);
+
+								// Unselect all.
+								setValue( 'categoriesSelected', [] );
+								setValue( 'bulkActionSelected', false );
+								setSnackbar( {
+									isVisible: true,
+									message: sprintf(
+										/* translators: %d: number of categories */
+										_n(
+											'%d category disabled successfully.',
+											'%d Categories disabled successfully.',
+											itemSlugsAndNonces.length,
+											'pattern-wrangler'
+										),
+										itemSlugsAndNonces.length
+									),
+									title: sprintf(
+										/* translators: %d: number of categories */
+										_n(
+											'%d Category Disabled',
+											'%d Categories Disabled',
+											itemSlugsAndNonces.length,
+											'pattern-wrangler'
+										),
+										itemSlugsAndNonces.length
+									),
+									type: 'success',
+								} );
+							} }
+						/>
+					) }
+					{ isMapCategoryModalOpen.isOpen && (
+						<CategoryMapModal
+							isOpen={ isMapCategoryModalOpen.isOpen }
+							onRequestClose={ () => setIsMapCategoryModalOpen( false ) }
+							items={ isMapCategoryModalOpen.items }
+							onMapCategory={ ( categoriesResponse, itemSlugsAndNonces ) => {
+								setIsMapCategoryModalOpen( false );
+								dispatch( categoriesStore ).setCategories(
+									categoriesResponse.categories
+								);
+
+								setSnackbar( {
+									isVisible: true,
+									message: sprintf(
+										/* translators: %d: number of categories */
+										_n(
+											'%d category mapped successfully.',
+											'%d Categories mapped successfully.',
+											itemSlugsAndNonces.length,
+											'pattern-wrangler'
+										),
+										itemSlugsAndNonces.length
+									),
+									title: sprintf(
+										/* translators: %d: number of categories */
+										_n(
+											'%d Category Mapped',
+											'%d Categories Mapped',
+											itemSlugsAndNonces.length,
+											'pattern-wrangler'
+										),
+										itemSlugsAndNonces.length
+									),
+									type: 'success',
+								} );
+
+								// Unselect all.
+								setValue( 'categoriesSelected', [] );
+								setValue( 'bulkActionSelected', false );
+							} }
+						/>
+					) }
 				</div>
-				{ snackbar.isVisible && (
-					<Snackbar
-						isVisible={ snackbar.isVisible }
-						message={ snackbar.message }
-						title={ snackbar.title }
-						type={ snackbar.type }
-						onClose={ () => {
-							setSnackbar( {
-								...snackbar,
-								isVisible: false,
-							} );
-						} }
-					/>
-				) }
-				{ isAddNewCategoryModalOpen.isOpen && (
-					<CategoryCreateModal
-						isOpen={ isAddNewCategoryModalOpen.isOpen }
-						onRequestClose={ () => setIsAddNewCategoryModalOpen( false ) }
-						termId={ isAddNewCategoryModalOpen.termId }
-						onCreate={ ( createdCategory ) => {
-							dispatch( categoriesStore ).addCategory( createdCategory );
-							setIsAddNewCategoryModalOpen( false );
-							setSnackbar( {
-								isVisible: true,
-								message: __(
-									'Category created successfully.',
-									'pattern-wrangler'
-								),
-								title: __( 'Category Created', 'pattern-wrangler' ),
-								type: 'success',
-							} );
-						} }
-					/>
-				) }
-				{ isDeleteCategoryModalOpen.isOpen && (
-					<CategoryDeleteModal
-						isOpen={ isDeleteCategoryModalOpen.isOpen }
-						onRequestClose={ () => setIsDeleteCategoryModalOpen( false ) }
-						items={ isDeleteCategoryModalOpen.items }
-						onDelete={ ( categoriesResponse, itemIdsAndNonces ) => {
-							// Get IDs of categories being deleted.
-							const deletedIds = new Set( itemIdsAndNonces.map( ( item ) => item.id ) );
-
-							// Store the response to use after animation completes.
-							setPendingDeleteResponse( categoriesResponse );
-
-							// Mark categories as deleted to trigger fade out animation.
-							setDeletedCategoryIds( deletedIds );
-
-							// Unselect all.
-							setValue( 'categoriesSelected', [] );
-							setValue( 'bulkActionSelected', false );
-						} }
-					/>
-				) }
-				{ isEditCategoryModalOpen.isOpen && (
-					<CategoryCreateModal
-						isOpen={ isEditCategoryModalOpen.isOpen }
-						onRequestClose={ () => setIsEditCategoryModalOpen( false ) }
-						termId={ isEditCategoryModalOpen.category.id }
-						termTitle={ isEditCategoryModalOpen.category.label }
-						termSlug={ isEditCategoryModalOpen.category.slug }
-						termNonce={ isEditCategoryModalOpen.category.editNonce }
-						isEditMode={ true }
-						onEdit={ ( editedCategory ) => {
-							dispatch( categoriesStore ).updateCategory( editedCategory );
-							setIsEditCategoryModalOpen( false );
-							setSnackbar( {
-								isVisible: true,
-								message: __(
-									'Category edited successfully.',
-									'pattern-wrangler'
-								),
-								title: __( 'Category Edited', 'pattern-wrangler' ),
-								type: 'success',
-							} );
-						} }
-					/>
-				) }
-				{ isEditRegisteredCategoryModalOpen.isOpen && (
-					<RegisteredCategoryEditModal
-						isOpen={ isEditRegisteredCategoryModalOpen.isOpen }
-						onRequestClose={ () => setIsEditRegisteredCategoryModalOpen( false ) }
-						termTitle={ isEditRegisteredCategoryModalOpen.category.customLabel || isEditRegisteredCategoryModalOpen.category.label }
-						termSlug={ isEditRegisteredCategoryModalOpen.category.slug }
-						termNonce={ isEditRegisteredCategoryModalOpen.category.editNonce }
-						onEditRegisteredCategory={ ( editedCategory ) => {
-							dispatch( categoriesStore ).updateRegisteredCategory( editedCategory );
-							setIsEditRegisteredCategoryModalOpen( false );
-							setSnackbar( {
-								isVisible: true,
-								message: __( 'Category edited successfully.', 'pattern-wrangler' ),
-								title: __( 'Category Edited', 'pattern-wrangler' ),
-								type: 'success',
-							} );
-						} }
-					/>
-				) }
-				{ isPauseCategoryModalOpen.isOpen && (
-					<CategoryPauseModal
-						isOpen={ isPauseCategoryModalOpen.isOpen }
-						onRequestClose={ () => setIsPauseCategoryModalOpen( false ) }
-						items={ isPauseCategoryModalOpen.items }
-						onPauseCategory={ ( categoriesResponse, itemSlugsAndNonces ) => {
-							setIsPauseCategoryModalOpen( false );
-							dispatch( categoriesStore ).setCategories( categoriesResponse.categories );
-
-							// Unselect all.
-							setValue( 'categoriesSelected', [] );
-							setValue( 'bulkActionSelected', false );
-							setSnackbar( {
-								isVisible: true,
-								message: sprintf(
-									/* translators: %d: number of categories */
-									_n(
-										'%d category disabled successfully.',
-										'%d Categories disabled successfully.',
-										itemSlugsAndNonces.length,
-										'pattern-wrangler'
-									),
-									itemSlugsAndNonces.length
-								),
-								title: sprintf(
-									/* translators: %d: number of categories */
-									_n(
-										'%d Category Disabled',
-										'%d Categories Disabled',
-										itemSlugsAndNonces.length, 'pattern-wrangler'
-									),
-									itemSlugsAndNonces.length
-								),
-								type: 'success',
-							} );
-						} }
-					/>
-				) }
-				{ isMapCategoryModalOpen.isOpen && (
-					<CategoryMapModal
-						isOpen={ isMapCategoryModalOpen.isOpen }
-						onRequestClose={ () => setIsMapCategoryModalOpen( false ) }
-						items={ isMapCategoryModalOpen.items }
-						onMapCategory={ ( categoriesResponse, itemSlugsAndNonces ) => {
-							setIsMapCategoryModalOpen( false );
-							dispatch( categoriesStore ).setCategories( categoriesResponse.categories );
-
-							setSnackbar( {
-								isVisible: true,
-								message: sprintf(
-									/* translators: %d: number of categories */
-									_n(
-										'%d category mapped successfully.',
-										'%d Categories mapped successfully.',
-										itemSlugsAndNonces.length,
-										'pattern-wrangler'
-									),
-									itemSlugsAndNonces.length
-								),
-								title: sprintf(
-									/* translators: %d: number of categories */
-									_n(
-										'%d Category Mapped',
-										'%d Categories Mapped',
-										itemSlugsAndNonces.length, 'pattern-wrangler'
-									),
-									itemSlugsAndNonces.length
-								),
-								type: 'success',
-							} );
-
-							// Unselect all.
-							setValue( 'categoriesSelected', [] );
-							setValue( 'bulkActionSelected', false );
-						} }
-					/>
-				) }
 			</div>
-		</div>
+			{ getBulkActions() }
+		</FormProvider>
 	);
 };
 
