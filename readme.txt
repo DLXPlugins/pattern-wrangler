@@ -144,7 +144,7 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 == Changelog ==
 
 = 2.4.5 =
-* Released 2026-05-10
+* Released 2026-05-07
 * New: Lightbox pattern preview has a quick toolbar, allowing you to edit, delete, export, and copy a pattern from the preview.
 * New: Lightbox preview now acts as a gallery/carousel for visible patterns.
 * New: Lightbox preview has mobile|tablet|desktop quick switcher.
@@ -310,4 +310,4 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 == Upgrade Notice ==
 
 = 2.4.5 =
-Numerous improvements and features added to the lightbox pattern preview, including quick toolbar shortcuts, mobile previews, and carousel/gallery support. You can now disable pattern revisions network or site-wide. Set a default view, saved per user preference, and much more.
+Numerous improvements and features added to the lightbox pattern preview, including quick toolbar shortcuts, mobile previews, and carousel/gallery support. You can now disable pattern revisions network or site-wide. Set a default view, saved per user preference. Deleting patterns is made much more prominent per a feature request. The category bulk action bar now matches the pattern view. Several bug fixes involving categories not showing up, refreshing the pattern view wouldn't rememeber state.
