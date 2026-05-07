@@ -39,6 +39,7 @@ body div.updated.warning {
 .fancybox__container {
 	z-index: 100000;
 }
+
 .dlx-patterns-view-container {
 	padding: 20px;
 
@@ -69,7 +70,8 @@ body div.updated.warning {
 		border: 1px solid #eaeaea;
 	}
 
-	.components-button.is-pressed:hover:not(:disabled,[aria-disabled=true]), .components-button.is-pressed:not(:disabled,[aria-disabled=true]) {
+	.components-button.is-pressed:hover:not(:disabled, [aria-disabled=true]),
+	.components-button.is-pressed:not(:disabled, [aria-disabled=true]) {
 		background-color: var(--wp-components-color-foreground, #1e1e1e);
 		color: var(--wp-components-color-background, #fff);
 	}
@@ -79,13 +81,15 @@ body div.updated.warning {
 	display: flex;
 	gap: 8px;
 	justify-content: flex-end;
-	padding-bottom: 16px;
+	padding-bottom: 24px;
 }
+
 .dlx-patterns-view-button-actions-wrapper {
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 24px;
 	row-gap: 12px;
+	padding-bottom: 24px;
 
 	@include respond-to('medium') {
 		grid-template-columns: auto auto 1fr;
@@ -125,6 +129,7 @@ body div.updated.warning {
 	white-space: nowrap;
 	border: 1px solid transparent;
 }
+
 .pattern-badge-wrapper {
 	display: flex;
 	justify-content: flex-end;
@@ -149,11 +154,13 @@ body div.updated.warning {
 	color: #FFFFFF;
 	border-color: #ccffcc;
 }
+
 .pattern-badge-disabled {
 	background-color: #f8e7e7;
 	color: #660000;
 	border-color: #ffd9d9;
 }
+
 .pattern-badge-enabled {
 	background-color: #e7f5ff;
 	color: #0066cc;
@@ -170,7 +177,7 @@ body div.updated.warning {
 /**
  * Snackbar styles.
  */
- .dlx-pw-snackbar.components-snackbar {
+.dlx-pw-snackbar.components-snackbar {
 	position: fixed;
 	top: 32px;
 	right: 0;
@@ -182,6 +189,7 @@ body div.updated.warning {
 		display: flex;
 		align-items: center;
 	}
+
 	.components-snackbar__icon {
 		position: absolute;
 		top: 24px;
@@ -191,6 +199,7 @@ body div.updated.warning {
 		bottom: auto;
 		line-height: 0;
 	}
+
 	.components-snackbar__content-with-icon {
 		padding-left: 50px;
 	}
@@ -203,41 +212,46 @@ body div.updated.warning {
 			animation-timing-function: linear;
 		}
 	}
+
 	&.dlx-pw-snackbar-success {
 		background: #14720D;
 		color: #FFF;
 	}
+
 	&.dlx-pw-snackbar-error,
 	&.dlx-pw-snackbar-critical {
 		background: #820000;
 		color: #FFF;
 	}
+
 	&.dlx-pw-snackbar-warning {
 		background: #FFC107;
 		color: #000;
 	}
- }
- .dlx-pw-modal-admin-row {
-	margin-bottom: 16px;
- }
+}
 
- .dlx-pw-modal-admin-row-buttons {
+.dlx-pw-modal-admin-row {
+	margin-bottom: 16px;
+}
+
+.dlx-pw-modal-admin-row-buttons {
 	display: flex;
 	gap: 8px;
 	justify-content: flex-start;
 	flex-direction: row-reverse;
 	align-items: center;
 	padding-top: 16px;
- }
- .components-toggle-group-control {
-	border: 1px solid #ccc;
- }
+}
 
- /* Lucide React Icons Styles */
+.components-toggle-group-control {
+	border: 1px solid #ccc;
+}
+
+/* Lucide React Icons Styles */
 svg.lucide {
 	color: inherit;
 	fill: none !important;
-	
+
 	path,
 	circle,
 	rect,
@@ -246,17 +260,21 @@ svg.lucide {
 		color: currentColor !important;
 	}
 }
+
 .pattern-title-categories {
 	width: 100%;
 }
+
 .dlx-patterns-view-categories-list {
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 16px;
+
 	@include respond-to('medium') {
 		grid-template-columns: 1fr 1fr;
 	}
 }
+
 .dlx-patterns-view-category-card {
 	background: #FAFAFA;
 	color: #333333;
@@ -300,6 +318,7 @@ svg.lucide {
 		line-height: 1;
 		white-space: nowrap;
 	}
+
 	&__mapped-status {
 		display: flex;
 		align-items: center;
@@ -315,6 +334,7 @@ svg.lucide {
 		line-height: 1;
 		white-space: nowrap;
 	}
+
 	&__enabled-status-icon {
 		width: 12px;
 		height: 12px;
@@ -333,19 +353,21 @@ svg.lucide {
 		white-space: nowrap;
 		border: 1px solid transparent;
 	}
-	
+
 	&.is-local {
 		.dlx-patterns-view-category-card__type {
 			background-color: #696969;
 			color: #FFFFFF;
 		}
 	}
+
 	&.is-registered {
 		.dlx-patterns-view-category-card__type {
 			background-color: #f0f8ff;
 			color: #0066cc;
 		}
 	}
+
 	&__content {
 		display: flex;
 		flex-direction: column;
@@ -355,11 +377,13 @@ svg.lucide {
 	&__label {
 		font-size: 1.4em;
 	}
+
 	&__slug {
 		font-size: 0.9em;
 		color: #777777;
 		font-style: italic;
 	}
+
 	&__actions {
 		position: absolute;
 		bottom: 16px;
@@ -370,6 +394,7 @@ svg.lucide {
 		align-items: center;
 		margin-top: 16px;
 	}
+
 	&__checkbox {
 		position: absolute;
 		top: 16px;
@@ -378,10 +403,12 @@ svg.lucide {
 		z-index: 1;
 		pointer-events: none;
 	}
+
 	&.is-selected &__checkbox {
 		opacity: 1;
 		pointer-events: auto;
 	}
+
 	&:hover &__checkbox,
 	&:focus-within &__checkbox {
 		opacity: 1;
@@ -392,6 +419,7 @@ svg.lucide {
 		opacity: 0;
 		transition: opacity 0.3s ease-in-out;
 	}
+
 	&:hover .invisible-until-hover,
 	&:focus-within .invisible-until-hover {
 		opacity: 1;
@@ -421,10 +449,12 @@ svg.lucide {
 		}
 	}
 }
+
 .dlx-pw-modal-admin-row {
 	.is-required label {
 		position: relative;
 	}
+
 	.is-required label:after {
 		position: absolute;
 		display: inline-block;
@@ -438,20 +468,41 @@ svg.lucide {
 	}
 }
 
-.dlx-bulk-action-toolbar-top .dataviews-bulk-actions-footer__container {
-	display: flex;
-	padding: 24px 0;
-	justify-content: flex-start;
-	align-items: center;
-	gap: 12px;
-	min-height: 48px;
-}
-.dlx-bulk-action-toolbar-top .components-checkbox-control__label {
+.dlx-patterns-view-pagination-container .components-checkbox-control__label {
 	color: #1e1e1e;
-    font-weight: 500;
-    font-size: 11px;
-    text-transform: uppercase;
+	font-weight: 500;
+	font-size: 11px;
+	text-transform: uppercase;
 }
-.dlx-bulk-action-toolbar-top .components-flex {
+
+.dlx-patterns-view-category-bulk-actions {
+	display: flex;
 	gap: 12px;
+	flex-direction: row;
+	align-items: center;
+	min-height: 32px;
+}
+
+.dlx-patterns-view-pagination-container .components-flex {
+	gap: 12px;
+}
+
+
+.dlx-patterns-view-pagination-container {
+	position: sticky;
+	bottom: 0;
+	right: 0;
+	background: #f6f7f7;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 24px;
+	box-sizing: border-box;
+	width: 100%;
+	border-top: 1px solid #c3c4c7;
+	z-index: 1000;
+
+	.components-base-control__field {
+		margin-bottom: 0 !important;
+	}
 }
