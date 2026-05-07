@@ -1,8 +1,14 @@
 /* eslint-disable react/no-unknown-property */
-import { useState, useMemo, useEffect, useRef } from '@wordpress/element';
+import {
+	useState,
+	useMemo,
+	useEffect,
+	useRef,
+	useCallback,
+} from '@wordpress/element';
 import { downloadBlob } from '@wordpress/blob';
 import { escapeAttribute } from '@wordpress/escape-html';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf, _x } from '@wordpress/i18n';
 import {
 	Button,
 	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
@@ -19,7 +25,7 @@ import {
 	removeQueryArgs,
 	cleanForSlug,
 } from '@wordpress/url';
-import { useDispatch, useSelect, dispatch, select } from '@wordpress/data';
+import { useSelect, dispatch, select } from '@wordpress/data';
 import { ReactSpinner3 } from '@mediaron/react-spinners';
 import Snackbar from './Snackbar';
 import PatternCreateModal from './PatternCreateModal';
@@ -33,6 +39,11 @@ import PatternTagModal from './PatternTagModal';
 import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
 import ResponsiveIframe from './ResponsiveIframe';
+import { canonicalPatternId, patternIdsEqual } from '../utils/patternIdUtils';
+import {
+	mergePresetIntoQueryArgs,
+	urlHasExplicitPatternFilters,
+} from '../utils/patternsDefaultViewPresets';
 
 const defaultLayouts = {
 	grid: {
@@ -48,11 +59,11 @@ const defaultLayouts = {
 };
 
 const PatternsGrid = ( props ) => {
-	const { data, loading, error } = useSelect( ( select ) => {
+	const { data, loading, error } = useSelect( ( newSelect ) => {
 		return {
-			data: select( patternsStore ).getData(),
-			loading: select( patternsStore ).getLoading(),
-			error: select( patternsStore ).getError(),
+			data: newSelect( patternsStore ).getData(),
+			loading: newSelect( patternsStore ).getLoading(),
+			error: newSelect( patternsStore ).getError(),
 		};
 	} );
 
@@ -142,12 +153,6 @@ const Interface = ( props ) => {
 		return Object.values( categories ).filter( ( category ) => category.count > 0 );
 	}, [ categories ] );
 
-	const { assets } = useSelect( () => {
-		return {
-			assets: select( patternsStore ).getAssets(),
-		};
-	} );
-
 	const [ localCategories, setLocalCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
 	const [ snackbar, setSnackbar ] = useState( {
@@ -159,6 +164,7 @@ const Interface = ( props ) => {
 	const [ isAddNewPatternModalOpen, setIsAddNewPatternModalOpen ] =
 		useState( false );
 	const [ isCopyToLocalModalOpen, setIsCopyToLocalModalOpen ] = useState( false );
+	// eslint-disable-next-line no-unused-vars
 	const [ copyPatternId, setCopyPatternId ] = useState( 0 );
 	const [ isQuickEditModalOpen, setIsQuickEditModalOpen ] = useState( null );
 	const [ isPauseModalOpen, setIsPauseModalOpen ] = useState( null );
@@ -168,6 +174,82 @@ const Interface = ( props ) => {
 	const [ isGetCodeModalOpen, setIsGetCodeModalOpen ] = useState( null );
 	const [ isTagPatternModalOpen, setIsTagPatternModalOpen ] = useState( null );
 	const [ isDuplicateModalOpen, setIsDuplicateModalOpen ] = useState( null );
+
+	/**
+	 * Keep empty search query args as `search=` instead of `search`.
+	 *
+	 * @param {string} url URL string to normalize.
+	 * @return {string} Normalized URL string.
+	 */
+	const normalizeEmptySearchQueryArg = ( url ) => {
+		try {
+			const parsedUrl = new URL( url, window.location.origin );
+			const hasEmptySearchValue =
+				parsedUrl.searchParams.has( 'search' ) &&
+				'' === parsedUrl.searchParams.get( 'search' );
+
+			if ( hasEmptySearchValue ) {
+				parsedUrl.searchParams.set( 'search', '' );
+			}
+
+			return `${ parsedUrl.pathname }${ parsedUrl.search }${ parsedUrl.hash }`;
+		} catch ( error ) {
+			return url;
+		}
+	};
+
+	/**
+	 * Convert all-pattern status values to registered status values.
+	 *
+	 * @param {string} status The all-pattern status value.
+	 * @return {string} The registered status value.
+	 */
+	const mapCombinedStatusToRegisteredStatus = ( status ) => {
+		switch ( status ) {
+			case 'enabled':
+				return 'unpaused';
+			case 'disabled':
+				return 'paused';
+			case 'both':
+				return 'both';
+			default:
+				return '';
+		}
+	};
+
+	/**
+	 * Build status filter defaults based on pattern type query args.
+	 *
+	 * @param {Object} queryArgs URL query args object.
+	 * @return {Object} Normalized status values.
+	 */
+	const getNormalizedStatusFilters = ( queryArgs ) => {
+		const patternType = queryArgs?.patternType || 'all';
+		const patternStatus = queryArgs?.patternStatus || 'both';
+		const patternLocalStatus = queryArgs?.patternLocalStatus || 'both';
+		const patternLocalRegisteredStatus =
+			queryArgs?.patternLocalRegisteredStatus || 'enabled';
+		let patternRegisteredStatus = queryArgs?.patternRegisteredStatus || 'both';
+
+		if (
+			'registered' === patternType &&
+			! queryArgs?.patternRegisteredStatus &&
+			queryArgs?.patternLocalRegisteredStatus
+		) {
+			patternRegisteredStatus =
+				mapCombinedStatusToRegisteredStatus(
+					queryArgs?.patternLocalRegisteredStatus
+				) || 'both';
+		}
+
+		return {
+			patternType,
+			patternStatus,
+			patternLocalStatus,
+			patternRegisteredStatus,
+			patternLocalRegisteredStatus,
+		};
+	};
 
 	const buildPreviewQueueState = ( items, generation ) => {
 		const statusById = {};
@@ -246,7 +328,9 @@ const Interface = ( props ) => {
 			return;
 		}
 
-		const pattern = patternsDisplay.find( ( item ) => item.id === patternId );
+		const pattern = patternsDisplay.find( ( item ) =>
+			patternIdsEqual( item.id, patternId )
+		);
 
 		if ( pattern && status === 'settled' ) {
 			loadedPreviewSignaturesRef.current.add( getPreviewSignature( pattern ) );
@@ -275,7 +359,7 @@ const Interface = ( props ) => {
 		} );
 	};
 
-	const exportPattern = ( item ) => {
+	const exportPattern = useCallback( ( item ) => {
 		const isLocal = item.isLocal;
 		const title = item.title;
 		let syncStatus = 'unsynced';
@@ -295,7 +379,94 @@ const Interface = ( props ) => {
 			2
 		);
 		downloadBlob( `${ title }.json`, fileContent, 'application/json' );
-	};
+	}, [] );
+
+	const getPatternFromPreviewEvent = useCallback(
+		( patternId ) => {
+			if ( '' === canonicalPatternId( patternId ) ) {
+				return undefined;
+			}
+			return patterns.find( ( p ) => patternIdsEqual( p.id, patternId ) );
+		},
+		[ patterns ]
+	);
+
+	useEffect( () => {
+		const onPreviewDeleteRequest = ( event ) => {
+			const pattern = getPatternFromPreviewEvent(
+				event.detail?.patternId
+			);
+			if ( pattern && pattern.isLocal ) {
+				setIsDeleteModalOpen( { items: [ pattern ] } );
+			}
+		};
+
+		const onPreviewDisableRequest = ( event ) => {
+			const pattern = getPatternFromPreviewEvent(
+				event.detail?.patternId
+			);
+			if ( pattern && ! pattern.isLocal && ! pattern.isDisabled ) {
+				setIsPauseModalOpen( { items: [ pattern ] } );
+			}
+		};
+
+		const onPreviewEditRequest = ( event ) => {
+			const pattern = getPatternFromPreviewEvent(
+				event.detail?.patternId
+			);
+			if ( pattern && pattern.isLocal && ! pattern.isDisabled ) {
+				const redirectUrl = encodeURIComponent(
+					window.location.href
+				);
+				window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ pattern.id }&action=edit&redirect_to=${ redirectUrl }`;
+			}
+		};
+
+		const onPreviewExportRequest = ( event ) => {
+			const pattern = getPatternFromPreviewEvent(
+				event.detail?.patternId
+			);
+			if ( pattern ) {
+				exportPattern( pattern );
+			}
+		};
+
+		document.addEventListener(
+			'dlxpw-pattern-preview-delete-request',
+			onPreviewDeleteRequest
+		);
+		document.addEventListener(
+			'dlxpw-pattern-preview-disable-request',
+			onPreviewDisableRequest
+		);
+		document.addEventListener(
+			'dlxpw-pattern-preview-edit-request',
+			onPreviewEditRequest
+		);
+		document.addEventListener(
+			'dlxpw-pattern-preview-export-request',
+			onPreviewExportRequest
+		);
+
+		return () => {
+			document.removeEventListener(
+				'dlxpw-pattern-preview-delete-request',
+				onPreviewDeleteRequest
+			);
+			document.removeEventListener(
+				'dlxpw-pattern-preview-disable-request',
+				onPreviewDisableRequest
+			);
+			document.removeEventListener(
+				'dlxpw-pattern-preview-edit-request',
+				onPreviewEditRequest
+			);
+			document.removeEventListener(
+				'dlxpw-pattern-preview-export-request',
+				onPreviewExportRequest
+			);
+		};
+	}, [ patterns, exportPattern, getPatternFromPreviewEvent ] );
 
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
@@ -303,53 +474,53 @@ const Interface = ( props ) => {
 	 * @return {Object} The default view.
 	 */
 	const getDefaultView = () => {
+		const rawQueryArgs = getQueryArgs( window.location.href );
+		const presetSlug =
+			typeof dlxEnhancedPatternsView !== 'undefined' &&
+			dlxEnhancedPatternsView.patternsDefaultView
+				? dlxEnhancedPatternsView.patternsDefaultView
+				: 'all';
+		const queryArgs = mergePresetIntoQueryArgs( rawQueryArgs, presetSlug );
+		const normalizedStatusFilters = getNormalizedStatusFilters( queryArgs );
+
 		return {
 			type: 'grid',
 			paginationInfo: {
 				totalItems: patterns.length,
 				totalPages: 0,
 			},
-			page: parseInt( getQueryArgs( window.location.href ).paged ) || 1,
-			perPage: parseInt( getQueryArgs( window.location.href ).perPage ) || 10,
+			page: parseInt( queryArgs.paged ) || 1,
+			perPage: parseInt( queryArgs.perPage ) || 10,
 			defaultPerPage: 10,
 			sort: {
-				field: escapeAttribute(
-					getQueryArgs( window.location.href ).orderby || 'title'
-				),
-				direction: escapeAttribute(
-					getQueryArgs( window.location.href ).order || 'asc'
-				),
+				field: escapeAttribute( queryArgs.orderby || 'title' ),
+				direction: escapeAttribute( queryArgs.order || 'asc' ),
 			},
 			titleField: 'title',
 			mediaField: 'pattern-view-json',
 			layout: defaultLayouts.grid.layout,
 			fields: [ 'title', 'pattern-view-json' ],
-			search: escapeAttribute( getQueryArgs( window.location.href )?.search || '' ),
+			search: escapeAttribute( queryArgs?.search || '' ),
 			filters: [
 				{
 					field: 'patternType',
-					value: getQueryArgs( window.location.href )?.patternType || 'all',
+					value: normalizedStatusFilters.patternType,
 				},
 				{
 					field: 'patternStatus',
-					value: getQueryArgs( window.location.href )?.patternStatus || 'both',
+					value: normalizedStatusFilters.patternStatus,
 				},
 				{
 					field: 'patternLocalStatus',
-					value:
-						getQueryArgs( window.location.href )?.patternLocalStatus || 'both',
+					value: normalizedStatusFilters.patternLocalStatus,
 				},
 				{
 					field: 'patternRegisteredStatus',
-					value:
-						getQueryArgs( window.location.href )?.patternRegisteredStatus ||
-						'both',
+					value: normalizedStatusFilters.patternRegisteredStatus,
 				},
 				{
 					field: 'patternLocalRegisteredStatus',
-					value:
-						getQueryArgs( window.location.href )?.patternLocalRegisteredStatus ||
-						'enabled',
+					value: normalizedStatusFilters.patternLocalRegisteredStatus,
 				},
 			],
 		};
@@ -401,7 +572,19 @@ const Interface = ( props ) => {
 									exportPattern( item );
 								} }
 							>
-								{ __( 'Export Pattern', 'pattern-wrangler' ) }
+								{ _x( 'Export', 'Export pattern', 'pattern-wrangler' ) }
+							</Button>
+							{ ' | ' }
+							<Button
+								variant="link"
+								isDestructive={ true }
+								onClick={ ( e ) => {
+									e.preventDefault();
+									e.stopPropagation();
+									setIsDeleteModalOpen( { items: [ item ] } );
+								} }
+							>
+								{ _x( 'Delete', 'Delete pattern', 'pattern-wrangler' ) }
 							</Button>
 						</>
 					) }
@@ -427,7 +610,7 @@ const Interface = ( props ) => {
 									exportPattern( item );
 								} }
 							>
-								{ __( 'Export Pattern', 'pattern-wrangler' ) }
+								{ _x( 'Export', 'Export Pattern', 'pattern-wrangler' ) }
 							</Button>
 						</>
 					) }
@@ -454,23 +637,262 @@ const Interface = ( props ) => {
 	} );
 
 	/**
-	 * Return the initial batch state for the current page.
+	 * Filtered and sorted patterns for the current view (full list, no pagination).
 	 *
-	 * @param {number} totalItems Number of items on the page.
-	 * @return {Object} The initial batch state.
+	 * @param {Object} newView The view object.
+	 * @return {Array} Patterns in display order.
 	 */
-	const getInitialPreviewBatchState = ( totalItems ) => {
-		const initialBatchSize = Math.min(
-			previewBatchSize,
-			Math.max( totalItems, 0 )
-		);
-		return {
-			visibleCount: initialBatchSize,
-			activeStart: 0,
-			activeSize: initialBatchSize,
-			completedCount: 0,
-		};
+	const getFilteredPatternsOrdered = ( newView ) => {
+		let patternsCopy = [ ...patterns ];
+
+		if ( null === patternsCopy || 0 === patternsCopy.length ) {
+			patternsCopy = [ ...data.patterns ];
+		}
+
+		const orderBy = newView?.sort?.field;
+		const order = newView?.sort?.direction;
+
+		if ( 'title' === orderBy ) {
+			if ( 'desc' === order ) {
+				patternsCopy.sort( ( a, b ) => b.title.localeCompare( a.title ) );
+			} else {
+				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
+			}
+		}
+
+		const filters = newView?.filters || [];
+		if ( filters.length > 0 ) {
+			filters.forEach( ( filter ) => {
+				switch ( filter.field ) {
+					case 'categories':
+						if ( filter.value ) {
+							const cleanedFilterValues = filter.value.map( ( value ) =>
+								cleanForSlug( value )
+							);
+
+							if ( filter.operator === 'isAny' ) {
+								patternsCopy = patternsCopy.filter( ( pattern ) => {
+									const patternCategories = pattern.categorySlugs || [];
+									return patternCategories.some( ( category ) => {
+										const tempSlug =
+											category.name ||
+											category.label ||
+											category.toString() ||
+											'';
+										const categoryToCheck = cleanForSlug( tempSlug );
+										return cleanedFilterValues.includes( categoryToCheck );
+									} );
+								} );
+							} else if ( filter.operator === 'isNone' ) {
+								patternsCopy = patternsCopy.filter( ( pattern ) => {
+									const patternCategories = pattern.categorySlugs || [];
+
+									const hasExcludedCategory = patternCategories.some(
+										( category ) => {
+											const tempSlug =
+												category.name ||
+												category.label ||
+												category.toString() ||
+												'';
+											const categoryToCheck = cleanForSlug( tempSlug );
+											return cleanedFilterValues.includes( categoryToCheck );
+										}
+									);
+
+									return ! hasExcludedCategory;
+								} );
+							}
+						}
+						break;
+					case 'assets':
+						if ( filter.value && filter.operator === 'is' ) {
+							patternsCopy = patternsCopy.filter( ( pattern ) => {
+								return pattern.asset === filter.value;
+							} );
+						}
+						break;
+					case 'patternType':
+						if ( filter.value ) {
+							switch ( filter.value ) {
+								case 'all':
+									break;
+								case 'local':
+									patternsCopy = patternsCopy.filter(
+										( pattern ) => pattern.isLocal
+									);
+									break;
+								case 'registered':
+									patternsCopy = patternsCopy.filter(
+										( pattern ) => ! pattern.isLocal
+									);
+									break;
+							}
+						}
+						break;
+					case 'patternStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'local' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'unsynced':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											if ( pattern.syncStatus ) {
+												return (
+													pattern.syncStatus === 'unsynced' && pattern.isLocal
+												);
+											}
+											return false;
+										} );
+										break;
+									case 'synced':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											if ( pattern.syncStatus ) {
+												return (
+													pattern.syncStatus === 'synced' && pattern.isLocal
+												);
+											}
+											return false;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+					case 'patternLocalStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'local' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'draft':
+									case 'paused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return pattern.isDisabled && pattern.isLocal;
+										} );
+										break;
+									case 'published':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return ! pattern.isDisabled && pattern.isLocal;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+					case 'patternRegisteredStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'registered' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'paused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return pattern.isDisabled && ! pattern.isLocal;
+										} );
+										break;
+									case 'unpaused':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return ! pattern.isDisabled && ! pattern.isLocal;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+					case 'patternLocalRegisteredStatus':
+						if ( filter.value ) {
+							const patternTypeFilter = filters.find(
+								( f ) => f.field === 'patternType'
+							);
+							if (
+								patternTypeFilter &&
+								patternTypeFilter.value === 'all' &&
+								filter.value
+							) {
+								switch ( filter.value ) {
+									case 'disabled':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return pattern.isDisabled;
+										} );
+										break;
+									case 'enabled':
+										patternsCopy = patternsCopy.filter( ( pattern ) => {
+											return ! pattern.isDisabled;
+										} );
+										break;
+									case 'both':
+										break;
+								}
+							}
+						}
+						break;
+				}
+			} );
+		}
+
+		const searchField = newView?.search || '';
+
+		if ( 'undefined' !== searchField && '' !== searchField ) {
+			patternsCopy = patternsCopy.filter( ( pattern ) => {
+				const patternLabel = pattern.label || pattern.title;
+				return patternLabel
+					.toLowerCase()
+					.includes( ( newView.search || searchField ).toLowerCase() );
+			} );
+		}
+
+		return patternsCopy;
 	};
+
+	/**
+	 * Get the total count of filtered patterns without pagination.
+	 *
+	 * @param {Object} newView The new view object.
+	 * @return {number} The total count of filtered patterns.
+	 */
+	const getFilteredPatternsCount = ( newView ) => {
+		return getFilteredPatternsOrdered( newView ).length;
+	};
+
+	/**
+	 * Retrieve a list of modified patterns based on query vars and the current view (paginated).
+	 *
+	 * @param {Object} newView The new view object.
+	 * @return {Array} The patterns for display.
+	 */
+	const getPatternsForDisplay = ( newView ) => {
+		const ordered = getFilteredPatternsOrdered( newView );
+		return ordered.slice(
+			( newView.page - 1 ) * newView.perPage,
+			newView.page * newView.perPage
+		);
+	};
+
+	const lightboxGalleryItems = useMemo( () => {
+		return getFilteredPatternsOrdered( view );
+	}, [ view, patterns, data?.patterns ] );
 
 	const fields = useMemo(
 		() => [
@@ -579,7 +1001,12 @@ const Interface = ( props ) => {
 					const viewportWidth = item.viewportWidth || 1200;
 
 					const previewUrl = item?.id
-						? `${ ajaxurl }?action=dlxpw_pattern_preview&pattern_id=${ item.id }&viewport_width=${ viewportWidth }`
+						? addQueryArgs( ajaxurl, {
+							action: 'dlxpw_pattern_preview',
+							pattern_id: item.id,
+							viewport_width: viewportWidth,
+							iframe_preview: true,
+						} )
 						: '';
 
 					// Determine badge type based on pattern properties.
@@ -631,6 +1058,7 @@ const Interface = ( props ) => {
 										src={ previewUrl }
 										title={ `Preview: ${ item.title }` }
 										item={ item }
+										galleryItems={ patternsDisplay ?? lightboxGalleryItems }
 										queueGeneration={ previewQueueState.generation }
 										queueStatus={ previewStatus }
 										onPreviewSettled={ ( patternId, generation ) => {
@@ -662,7 +1090,7 @@ const Interface = ( props ) => {
 			{
 				id: 'categories',
 				label: __( 'Categories', 'pattern-wrangler' ),
-				render: ( { item } ) => {
+				render: () => {
 					return null;
 				},
 				enableSorting: false,
@@ -680,13 +1108,13 @@ const Interface = ( props ) => {
 										category.customLabel || category.label || category.name,
 								value: category.slug,
 							};
-						  } )
+						} )
 						: null,
 			},
 			{
 				id: 'assets',
 				label: __( 'Filter Patterns by Source', 'pattern-wrangler' ),
-				render: ( { item } ) => {
+				render: () => {
 					return null;
 				},
 				enableHiding: false,
@@ -705,7 +1133,7 @@ const Interface = ( props ) => {
 									value: asset.slug,
 								};
 							}
-						  )
+						)
 						: null,
 			},
 			{
@@ -835,7 +1263,7 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
 			},
 		],
-		[ nonEmptyCategories, patternsDisplay, previewQueueState ]
+		[ nonEmptyCategories, patternsDisplay, previewQueueState, lightboxGalleryItems ]
 	);
 
 	const actions = useMemo(
@@ -934,7 +1362,7 @@ const Interface = ( props ) => {
 						// Copying is not supported on Mozilla (firefox).
 					}
 				},
-				isEligible: ( pattern ) => {
+				isEligible: () => {
 					return true;
 				},
 				isPrimary: false,
@@ -956,8 +1384,8 @@ const Interface = ( props ) => {
 				},
 				icon: 'trash',
 				isEligible: ( pattern ) => {
-					// Pattern must be local and disabled.
-					return pattern.isLocal && pattern.isDisabled;
+					// Pattern must be local
+					return pattern.isLocal;
 				},
 				callback: ( items ) => {
 					setIsDeleteModalOpen( { items } );
@@ -1119,486 +1547,6 @@ const Interface = ( props ) => {
 	);
 
 	/**
-	 * Get the total count of filtered patterns without pagination.
-	 *
-	 * @param {Object} newView The new view object.
-	 * @return {number} The total count of filtered patterns.
-	 */
-	const getFilteredPatternsCount = ( newView ) => {
-		let patternsCopy = [ ...patterns ];
-
-		if ( null === patternsCopy || 0 === patternsCopy.length ) {
-			patternsCopy = [ ...data.patterns ];
-		}
-
-		const orderBy = newView?.sort?.field;
-		const order = newView?.sort?.direction;
-
-		if ( 'title' === orderBy ) {
-			if ( 'desc' === order ) {
-				patternsCopy.sort( ( a, b ) => b.title.localeCompare( a.title ) );
-			} else {
-				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
-			}
-		}
-
-		// Filter by categories.
-		const filters = newView?.filters || [];
-		if ( filters.length > 0 ) {
-			filters.forEach( ( filter ) => {
-				switch ( filter.field ) {
-					case 'categories':
-						if ( filter.value ) {
-							// filter.value is an array.
-							// Clean the filter values once for efficiency
-							const cleanedFilterValues = filter.value.map( ( value ) =>
-								cleanForSlug( value )
-							);
-
-							if ( filter.operator === 'isAny' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
-									return patternCategories.some( ( category ) => {
-										const tempSlug =
-											category.name ||
-											category.label ||
-											category.toString() ||
-											'';
-										const categoryToCheck = cleanForSlug( tempSlug );
-										return cleanedFilterValues.includes( categoryToCheck );
-									} );
-								} );
-							} else if ( filter.operator === 'isNone' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
-
-									// Exclude patterns that have ANY of the categories in filter.value
-									// Check if this pattern has any excluded categories
-									const hasExcludedCategory = patternCategories.some(
-										( category ) => {
-											const tempSlug =
-												category.name ||
-												category.label ||
-												category.toString() ||
-												'';
-											const categoryToCheck = cleanForSlug( tempSlug );
-											return cleanedFilterValues.includes( categoryToCheck );
-										}
-									);
-
-									// Return true to keep the pattern only if it has NO excluded categories
-									return ! hasExcludedCategory;
-								} );
-							}
-						}
-						break;
-					case 'assets':
-						if ( filter.value ) {
-							if ( filter.operator === 'is' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									return pattern.asset === filter.value;
-								} );
-							}
-						}
-						break;
-					case 'patternType':
-						if ( filter.value ) {
-							switch ( filter.value ) {
-								case 'all':
-									break;
-								case 'local':
-									patternsCopy = patternsCopy.filter(
-										( pattern ) => pattern.isLocal
-									);
-									break;
-								case 'registered':
-									patternsCopy = patternsCopy.filter(
-										( pattern ) => ! pattern.isLocal
-									);
-									break;
-							}
-						}
-						break;
-					case 'patternStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'local' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'unsynced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'unsynced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
-										break;
-									case 'synced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'synced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternLocalStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'local' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'draft':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && pattern.isLocal;
-										} );
-										break;
-									case 'published':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && pattern.isLocal;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternRegisteredStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'registered' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'paused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && ! pattern.isLocal;
-										} );
-										break;
-									case 'unpaused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && ! pattern.isLocal;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternLocalRegisteredStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'all' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'disabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled;
-										} );
-										break;
-									case 'enabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-				}
-			} );
-		}
-
-		// Do search.
-		const searchField = newView?.search || '';
-
-		if ( 'undefined' !== searchField && '' !== searchField ) {
-			patternsCopy = patternsCopy.filter( ( pattern ) => {
-				const patternLabel = pattern.label || pattern.title;
-				return patternLabel
-					.toLowerCase()
-					.includes( ( newView.search || searchField ).toLowerCase() );
-			} );
-		}
-
-		// Return the total count without pagination.
-		return patternsCopy.length;
-	};
-
-	/**
-	 * Retrieve a list of modified patterns based on query vars and the current view.
-	 *
-	 * @param {Object} newView The new view object.
-	 * @return {Array} The patterns for display.
-	 */
-	const getPatternsForDisplay = ( newView ) => {
-		let patternsCopy = [ ...patterns ];
-
-		if ( null === patternsCopy || 0 === patternsCopy.length ) {
-			patternsCopy = [ ...data.patterns ];
-		}
-
-		const orderBy = newView?.sort?.field;
-		const order = newView?.sort?.direction;
-
-		if ( 'title' === orderBy ) {
-			if ( 'desc' === order ) {
-				patternsCopy.sort( ( a, b ) => b.title.localeCompare( a.title ) );
-			} else {
-				patternsCopy.sort( ( a, b ) => a.title.localeCompare( b.title ) );
-			}
-		}
-
-		// Filter by categories.
-		const filters = newView?.filters || [];
-		if ( filters.length > 0 ) {
-			filters.forEach( ( filter ) => {
-				switch ( filter.field ) {
-					case 'categories':
-						if ( filter.value ) {
-							// filter.value is an array.
-							// Clean the filter values once for efficiency
-							const cleanedFilterValues = filter.value.map( ( value ) =>
-								cleanForSlug( value )
-							);
-
-							if ( filter.operator === 'isAny' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
-									return patternCategories.some( ( category ) => {
-										const tempSlug =
-											category.name ||
-											category.label ||
-											category.toString() ||
-											'';
-										const categoryToCheck = cleanForSlug( tempSlug );
-										return cleanedFilterValues.includes( categoryToCheck );
-									} );
-								} );
-							} else if ( filter.operator === 'isNone' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
-
-									// Exclude patterns that have ANY of the categories in filter.value
-									// Check if this pattern has any excluded categories
-									const hasExcludedCategory = patternCategories.some(
-										( category ) => {
-											const tempSlug =
-												category.name ||
-												category.label ||
-												category.toString() ||
-												'';
-											const categoryToCheck = cleanForSlug( tempSlug );
-											return cleanedFilterValues.includes( categoryToCheck );
-										}
-									);
-
-									// Return true to keep the pattern only if it has NO excluded categories
-									return ! hasExcludedCategory;
-								} );
-							}
-						}
-						break;
-					case 'assets':
-						if ( filter.value ) {
-							patternsCopy = patternsCopy.filter( ( pattern ) => {
-								return pattern.asset === filter.value;
-							} );
-						}
-						break;
-					case 'patternType':
-						if ( filter.value ) {
-							switch ( filter.value ) {
-								case 'all':
-									break;
-								case 'local':
-									patternsCopy = patternsCopy.filter(
-										( pattern ) => pattern.isLocal
-									);
-									break;
-								case 'registered':
-									patternsCopy = patternsCopy.filter(
-										( pattern ) => ! pattern.isLocal
-									);
-									break;
-							}
-						}
-						break;
-					case 'patternStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'local' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'unsynced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'unsynced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
-										break;
-									case 'synced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'synced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternLocalStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'local' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'draft':
-									case 'paused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && pattern.isLocal;
-										} );
-										break;
-									case 'published':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && pattern.isLocal;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternRegisteredStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'registered' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'paused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && ! pattern.isLocal;
-										} );
-										break;
-									case 'unpaused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && ! pattern.isLocal;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-					case 'patternLocalRegisteredStatus':
-						if ( filter.value ) {
-							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
-							);
-							if (
-								patternTypeFilter &&
-								patternTypeFilter.value === 'all' &&
-								filter.value
-							) {
-								switch ( filter.value ) {
-									case 'disabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled;
-										} );
-										break;
-									case 'enabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled;
-										} );
-										break;
-									case 'both':
-										break;
-								}
-							}
-						}
-						break;
-				}
-			} );
-		}
-
-		// Do search.
-		const searchField = newView?.search || '';
-
-		if ( 'undefined' !== searchField && '' !== searchField ) {
-			patternsCopy = patternsCopy.filter( ( pattern ) => {
-				const patternLabel = pattern.label || pattern.title;
-				return patternLabel
-					.toLowerCase()
-					.includes( ( newView.search || searchField ).toLowerCase() );
-			} );
-		}
-
-		// Return the patterns for display with pagination.
-		return patternsCopy.slice(
-			( newView.page - 1 ) * newView.perPage,
-			newView.page * newView.perPage
-		);
-	};
-
-	/**
 	 * When a view is changed, we need to adjust the fields and showMedia based on the view type.
 	 *
 	 * @param {Object} newView The new view object.
@@ -1644,12 +1592,8 @@ const Interface = ( props ) => {
 		const patternStatusFilter = newView.filters?.find(
 			( filter ) => filter.field === 'patternStatus'
 		);
-		if ( patternTypeFilter ) {
-			changeQueryArgs.patternType = patternTypeFilter.value;
-		}
-		if ( patternStatusFilter ) {
-			changeQueryArgs.patternStatus = patternStatusFilter.value;
-		}
+		const patternTypeValue = patternTypeFilter?.value || 'all';
+		changeQueryArgs.patternType = patternTypeValue;
 
 		// Get registered/local pattern disabled/enabled status from filters.
 		const patternRegisteredStatusFilter = newView.filters?.find(
@@ -1661,22 +1605,55 @@ const Interface = ( props ) => {
 		const patternLocalRegisteredStatusFilter = newView.filters?.find(
 			( filter ) => filter.field === 'patternLocalRegisteredStatus'
 		);
-		if ( patternRegisteredStatusFilter && ! patternLocalRegisteredStatusFilter ) {
+
+		if ( 'registered' === patternTypeValue ) {
 			changeQueryArgs.patternRegisteredStatus =
-				patternRegisteredStatusFilter.value;
-		}
-		if ( patternLocalStatusFilter && ! patternLocalRegisteredStatusFilter ) {
-			changeQueryArgs.patternLocalStatus = patternLocalStatusFilter.value;
-		}
-		if ( patternLocalRegisteredStatusFilter ) {
+				patternRegisteredStatusFilter?.value ||
+				mapCombinedStatusToRegisteredStatus(
+					patternLocalRegisteredStatusFilter?.value
+				) ||
+				'both';
+			changeQueryArgs.patternStatus = '';
+			changeQueryArgs.patternLocalStatus = '';
+			changeQueryArgs.patternLocalRegisteredStatus = '';
+		} else if ( 'local' === patternTypeValue ) {
+			changeQueryArgs.patternStatus = patternStatusFilter?.value || 'both';
+			changeQueryArgs.patternLocalStatus =
+				patternLocalStatusFilter?.value || 'both';
+			changeQueryArgs.patternRegisteredStatus = '';
+			changeQueryArgs.patternLocalRegisteredStatus = '';
+		} else {
 			changeQueryArgs.patternLocalRegisteredStatus =
-				patternLocalRegisteredStatusFilter.value;
+				patternLocalRegisteredStatusFilter?.value || 'enabled';
+			changeQueryArgs.patternStatus = '';
+			changeQueryArgs.patternLocalStatus = '';
+			changeQueryArgs.patternRegisteredStatus = '';
 		}
 
 		// Update URL without page reload using addQueryArgs.
 		let newUrl = addQueryArgs( window.location.pathname, changeQueryArgs );
 		if ( getQueryArgs( window.location.href ).search && ! newView.search ) {
 			newUrl = removeQueryArgs( newUrl, 'search' );
+		}
+		if ( 'registered' === patternTypeValue ) {
+			newUrl = removeQueryArgs(
+				removeQueryArgs(
+					removeQueryArgs( newUrl, 'patternStatus' ),
+					'patternLocalStatus'
+				),
+				'patternLocalRegisteredStatus'
+			);
+		} else if ( 'local' === patternTypeValue ) {
+			newUrl = removeQueryArgs(
+				removeQueryArgs( newUrl, 'patternRegisteredStatus' ),
+				'patternLocalRegisteredStatus'
+			);
+		} else {
+			newUrl = removeQueryArgs(
+				removeQueryArgs( newUrl, 'patternStatus' ),
+				'patternLocalStatus'
+			);
+			newUrl = removeQueryArgs( newUrl, 'patternRegisteredStatus' );
 		}
 
 		// If no filters are set, add a patternType and patternLocalRegisteredStatus filters with value 'all' and 'enabled' respectively.
@@ -1699,6 +1676,7 @@ const Interface = ( props ) => {
 			changeQueryArgs.categories = '';
 			newUrl = removeQueryArgs( newUrl, 'categories' );
 		}
+		newUrl = normalizeEmptySearchQueryArg( newUrl );
 
 		setPatternsDisplay( getPatternsForDisplay( newView ) );
 
@@ -1714,6 +1692,24 @@ const Interface = ( props ) => {
 		// Update the view state.
 		//setView( newView );
 	};
+
+	useEffect( () => {
+		const raw = getQueryArgs( window.location.href );
+		if ( urlHasExplicitPatternFilters( raw ) ) {
+			return;
+		}
+		const slug =
+			typeof dlxEnhancedPatternsView !== 'undefined' &&
+			dlxEnhancedPatternsView.patternsDefaultView
+				? dlxEnhancedPatternsView.patternsDefaultView
+				: 'all';
+		if ( 'all' === slug ) {
+			return;
+		}
+		onChangeView( getDefaultView() );
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- One-time URL sync for user preset.
+	}, [] );
+
 	useEffect( () => {
 		resetPreviewQueue( patternsDisplay );
 	}, [ patternsDisplay ] );
@@ -1825,15 +1821,6 @@ const Interface = ( props ) => {
 			}
 		}
 	}, [ data ] );
-
-	/**
-	 * Get the total number of items for the current view.
-	 *
-	 * @return {number} The total number of items for the current view.
-	 */
-	const totalItems = useMemo( () => {
-		return getFilteredPatternsCount( view );
-	}, [ view ] );
 
 	/**
 	 * Check if pagination is needed.
@@ -2330,6 +2317,27 @@ const Interface = ( props ) => {
 						onRequestClose={ () => setIsAddNewPatternModalOpen( false ) }
 						categories={ localCategories }
 						title={ __( 'Create New Pattern', 'pattern-wrangler' ) }
+						onEdit={ async( { patternId } ) => {
+							if ( patternId ) {
+								const getPatternResponse = await apiFetch( {
+									path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ patternId }`,
+									method: 'GET',
+								} );
+								if ( getPatternResponse ) {
+									dispatch( patternsStore ).addPattern( getPatternResponse );
+								}
+							}
+							setIsAddNewPatternModalOpen( false );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Pattern created', 'pattern-wrangler' ),
+								title: __( 'Pattern Created', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
+						} }
 					/>
 				) }
 				{ isCopyToLocalModalOpen && (
@@ -2339,7 +2347,39 @@ const Interface = ( props ) => {
 						categories={ localCategories }
 						title={ __( 'Copy Pattern to Local', 'pattern-wrangler' ) }
 						syncedDefaultStatus={ 'unsynced' }
-						copyPatternId={ isCopyToLocalModalOpen.item.id }
+						patternTitle={ isCopyToLocalModalOpen.item.title }
+						patternCategories={ isCopyToLocalModalOpen.item.categories }
+						copyItem={ isCopyToLocalModalOpen.item }
+						onEdit={ async( { disableRegisteredPattern, patternId } ) => {
+							if ( patternId ) {
+								const getPatternResponse = await apiFetch( {
+									path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ patternId }`,
+									method: 'GET',
+								} );
+								if ( getPatternResponse ) {
+									dispatch( patternsStore ).addPattern( getPatternResponse );
+								}
+
+								// Now disable the registered pattern.
+								if ( disableRegisteredPattern ) {
+									const itemIdsAndNonces = [ {
+										id: isCopyToLocalModalOpen.item.id,
+										nonce: isCopyToLocalModalOpen.item.editNonce,
+									} ];
+									dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
+								}
+							}
+							setIsCopyToLocalModalOpen( false );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Local pattern created', 'pattern-wrangler' ),
+								title: __( 'Patterns Copied to Local', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
+						} }
 					/>
 				) }
 				{ isQuickEditModalOpen && (
@@ -2364,6 +2404,15 @@ const Interface = ( props ) => {
 								editResponse.categorySlugs
 							);
 							setIsQuickEditModalOpen( null );
+							setSnackbar( {
+								isVisible: true,
+								message: __( 'Pattern updated', 'pattern-wrangler' ),
+								title: __( 'Pattern Updated', 'pattern-wrangler' ),
+								type: 'success',
+								onClose: () => {
+									setSnackbar( { isVisible: false } );
+								},
+							} );
 						} }
 					/>
 				) }

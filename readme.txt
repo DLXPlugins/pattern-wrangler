@@ -4,7 +4,7 @@ Tags: patterns, block patterns, pattern, pattern builder, synced patterns
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 2.4.0
+Stable tag: 2.4.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -142,6 +142,23 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 7. An organized patterns view, demonstrating a trimmed down library and less category clutter.
 
 == Changelog ==
+
+= 2.4.5 =
+* Released 2026-05-07
+* New: Lightbox pattern preview has a quick toolbar, allowing you to edit, delete, export, and copy a pattern from the preview.
+* New: Lightbox preview now acts as a gallery/carousel for visible patterns.
+* New: Lightbox preview has mobile|tablet|desktop quick switcher.
+* New: Categories bulk action view now matches the Patterns View screen.
+* New: Can set the default patterns view from the admin settings. This is saved per user.
+* New: Can disable pattern revisions network or site-wide.
+* New: Delete button for local patterns is much more prominent (feature request) on the card, bulk actions, and preview modal.
+* New: Copying a pattern to local now inherits the title and categories, saving some time.
+* New: You can skip editing a pattern when creating, copying, or duplicating a pattern and stay on the current screen.
+* Fix: Refreshing on the Patterns View screen wouldn't always take you to the correct view.
+* Fix: Resolving certain theme categories from not displaying due to a conflicting variable.
+* Fix: Copying certain full-page patterns would lose the reference when switching themes.
+* Update: Updated DataViews component to 14.2.0.
+* Update: Updated Fancybox to 6.1.4.
 
 = 2.4.0 =
 * Released 2026-04-15
@@ -292,5 +309,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.4.0 =
-Introduces an updated DataView Grid with improved customization and accessibility, along with a new sticky bar for pattern actions and pagination. It adds pattern duplication from the Quick Actions menu, preview zoom, and expanded compatibility with Spectra, Kadence Blocks, GeneratePress One, GenerateBlocks, and Block Visibility. Previews are now more reliable with JavaScript support and improved iFrame loading/queuing, and editing a pattern now correctly returns you to the Patterns View.
+= 2.4.5 =
+Numerous improvements and features added to the lightbox pattern preview, including quick toolbar shortcuts, mobile previews, and carousel/gallery support. You can now disable pattern revisions network or site-wide. Set a default view, saved per user preference. Deleting patterns is made much more prominent per a feature request. The category bulk action bar now matches the pattern view. Several bug fixes involving categories not showing up, refreshing the pattern view wouldn't rememeber state.

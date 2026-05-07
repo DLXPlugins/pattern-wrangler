@@ -2,53 +2,28 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import {
 	ToggleControl,
-	TextControl,
-	Tooltip,
-	SelectControl,
-	PanelBody,
-	Popover,
-	BaseControl,
-	Button,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControl as ToggleGroupControl,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
-import { useAsyncResource } from 'use-async-resource';
-import { AlertTriangle, CheckCircle } from 'lucide-react';
 
-import { __, _n } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
-import classNames from 'classnames';
-
-// Local imports.
-import SendCommand from '../../utils/SendCommand';
-import Notice from '../../components/Notice';
 import SaveResetButtons from '../../components/SaveResetButtons';
-import SitePicker from '../../components/SitePicker';
 
-const Settings = ( props ) => {
+const Settings = () => {
 	const data = dlxPatternWranglerNetworkAdminSettings.options;
 
-	const [ selectedSiteId, setSelectedSiteId ] = useState(
-		dlxPatternWranglerNetworkAdminSettings.selectedSite
-	);
+	// eslint-disable-next-line no-unused-vars
 	const [ selectedSitePermalink, setSelectedSitePermalink ] = useState(
 		dlxPatternWranglerNetworkAdminSettings.selectedSitePermalink
 	);
+	// eslint-disable-next-line no-unused-vars
 	const [ selectedSiteTitle, setSelectedSiteTitle ] = useState(
 		dlxPatternWranglerNetworkAdminSettings.selectedSiteTitle
 	);
-	const [ selectedSitePatternsUrl, setSelectedSitePatternsUrl ] = useState(
-		dlxPatternWranglerNetworkAdminSettings.selectedSitePatternsUrl
-	);
-	const {
-		control,
-		handleSubmit,
-		getValues,
-		reset,
-		setError,
-		trigger,
-		setValue,
-	} = useForm( {
+	const { control, handleSubmit, reset, setError, trigger } = useForm( {
 		defaultValues: {
 			patternConfiguration: data.patternConfiguration,
 			patternMothershipSiteId: data.patternMothershipSiteId,
@@ -58,6 +33,7 @@ const Settings = ( props ) => {
 			hideUnsyncedPatternsForNetwork: data.hideUnsyncedPatternsForNetwork,
 			disablePatternImporterBlock: data.disablePatternImporterBlock,
 			disablePatternExporterForNetwork: data.disablePatternExporterForNetwork,
+			disablePatternRevisionsForNetwork: data.disablePatternRevisionsForNetwork,
 			hideCorePatterns: data.hideCorePatterns,
 			hideRemotePatterns: data.hideRemotePatterns,
 			hideAllPatterns: data.hideAllPatterns,
@@ -70,56 +46,6 @@ const Settings = ( props ) => {
 	const { errors, isDirty, dirtyFields } = useFormState( {
 		control,
 	} );
-
-	/**
-	 * Get the Site Picker.
-	 *
-	 * @return {React.ReactNode} The Site Picker.
-	 */
-	const getSitePicker = () => {
-		switch ( formValues.patternConfiguration ) {
-			case 'network_only':
-			case 'hybrid':
-				return (
-					<div className="dlx-admin__row">
-						<BaseControl
-							id="dlx-pw-network-settings-default-patterns-source"
-							label={ __( 'Default Patterns Source', 'pattern-wrangler' ) }
-							help={ __(
-								'Select the site that will be used as the source of truth for patterns across the network.',
-								'pattern-wrangler'
-							) }
-						>
-							<SitePicker
-								restEndpoint={
-									dlxPatternWranglerNetworkAdminSettings.restEndpoint
-								}
-								restNonce={ dlxPatternWranglerNetworkAdminSettings.restNonce }
-								selectedSite={ selectedSiteId }
-								savedTitle={ selectedSiteTitle }
-								savedPermalink={ selectedSitePermalink }
-								selectedSitePatternsUrl={ selectedSitePatternsUrl }
-								onItemSelect={ ( e, valueSuggestion ) => {
-									// If value is not null, parse it as an integer.
-									const newValue = valueSuggestion.id
-										? parseInt( valueSuggestion.id )
-										: null;
-									if ( newValue ) {
-										setValue( 'patternMothershipSiteId', newValue );
-										setSelectedSiteId( newValue );
-										setSelectedSitePatternsUrl(
-											valueSuggestion.selectedSitePatternsUrl
-										);
-									}
-								} }
-							/>
-						</BaseControl>
-					</div>
-				);
-			default:
-				return null;
-		}
-	};
 
 	return (
 		<>
@@ -219,7 +145,10 @@ const Settings = ( props ) => {
 															value="default"
 															label={ __( 'Default', 'pattern-wrangler' ) }
 															showTooltip={ true }
-															aria-label={ __( 'No Change. Let site admins decide.', 'pattern-wrangler' ) }
+															aria-label={ __(
+																'No Change. Let site admins decide.',
+																'pattern-wrangler'
+															) }
 														/>
 														<ToggleGroupControlOption
 															value="show"
@@ -331,7 +260,10 @@ const Settings = ( props ) => {
 											render={ ( { field } ) => (
 												<>
 													<ToggleGroupControl
-														label={ __( 'Hide Theme Patterns', 'pattern-wrangler' ) }
+														label={ __(
+															'Hide Theme Patterns',
+															'pattern-wrangler'
+														) }
 														isAdaptiveWidth={ true }
 														value={ field.value }
 														onChange={ ( value ) => {
@@ -374,7 +306,10 @@ const Settings = ( props ) => {
 											render={ ( { field } ) => (
 												<>
 													<ToggleGroupControl
-														label={ __( 'Hide Plugin Patterns', 'pattern-wrangler' ) }
+														label={ __(
+															'Hide Plugin Patterns',
+															'pattern-wrangler'
+														) }
 														isAdaptiveWidth={ true }
 														value={ field.value }
 														onChange={ ( value ) => {
@@ -539,6 +474,26 @@ const Settings = ( props ) => {
 													) }
 													help={ __(
 														'If enabled, the Pattern Exporter will be disabled for all sites in the network.',
+														'pattern-wrangler'
+													) }
+													checked={ field.value }
+													onChange={ field.onChange }
+												/>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											control={ control }
+											name="disablePatternRevisionsForNetwork"
+											render={ ( { field } ) => (
+												<ToggleControl
+													label={ __(
+														'Disable Pattern Revisions',
+														'pattern-wrangler'
+													) }
+													help={ __(
+														'If enabled, revisions are turned off for the Patterns (wp_block) post type on all sites. This overrides each site’s Pattern Wrangler setting.',
 														'pattern-wrangler'
 													) }
 													checked={ field.value }

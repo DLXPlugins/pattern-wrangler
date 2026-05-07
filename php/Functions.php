@@ -172,8 +172,8 @@ class Functions {
 			// Get category count from registered patterns.
 			$category_count = 0;
 			foreach ( $pattern_registry as $pattern ) {
-				$pattern_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
-				if ( in_array( $category['name'], $pattern_categories, true ) ) {
+				$pattern_registery_categories = isset( $pattern['categories'] ) ? $pattern['categories'] : array();
+				if ( in_array( $category['name'], $pattern_registery_categories, true ) ) {
 					++$category_count;
 				}
 			}
@@ -340,6 +340,24 @@ class Functions {
 	}
 
 	/**
+	 * Whether revisions should be disabled for the wp_block post type.
+	 *
+	 * Network option applies when the plugin is network-activated (Functions::is_multisite).
+	 *
+	 * @return bool True if revisions are disabled.
+	 */
+	public static function are_pattern_revisions_disabled() {
+		$options     = Options::get_options();
+		$site_off    = (bool) ( $options['disablePatternRevisions'] ?? false );
+		$network_off = false;
+		if ( self::is_multisite( false ) ) {
+			$network     = Options::get_network_options();
+			$network_off = (bool) ( $network['disablePatternRevisionsForNetwork'] ?? false );
+		}
+		return $site_off || $network_off;
+	}
+
+	/**
 	 * Check if core patterns are enabled for the current site.
 	 *
 	 * @param int $site_id The site ID.
@@ -448,6 +466,49 @@ class Functions {
 		}
 
 		return $pattern_content;
+	}
+
+	/**
+	 * Resolve nested pattern references in pattern content before saving.
+	 *
+	 * @param string $content Pattern content to normalize.
+	 *
+	 * @return string Normalized pattern content.
+	 */
+	public static function resolve_pattern_markup_for_storage( $content ) {
+		if ( ! is_string( $content ) || '' === trim( $content ) ) {
+			return $content;
+		}
+
+		// Only parse when pattern references exist in markup.
+		if ( false === strpos( $content, '<!-- wp:pattern' ) ) {
+			return $content;
+		}
+
+		if (
+			! function_exists( 'parse_blocks' ) ||
+			! function_exists( 'serialize_blocks' ) ||
+			! function_exists( 'resolve_pattern_blocks' )
+		) {
+			return $content;
+		}
+
+		$blocks = parse_blocks( $content );
+		if ( ! is_array( $blocks ) || empty( $blocks ) ) {
+			return $content;
+		}
+
+		$resolved_blocks = resolve_pattern_blocks( $blocks );
+		if ( ! is_array( $resolved_blocks ) || empty( $resolved_blocks ) ) {
+			return $content;
+		}
+
+		$resolved_content = serialize_blocks( $resolved_blocks );
+		if ( ! is_string( $resolved_content ) || '' === trim( $resolved_content ) ) {
+			return $content;
+		}
+
+		return $resolved_content;
 	}
 
 	/**
@@ -833,5 +894,52 @@ class Functions {
 			$highest_priority = absint( $highest_priority - $subtract );
 		}
 		return $highest_priority;
+	}
+
+	/**
+	 * User meta key for the Patterns Library default view preset (scoped per site).
+	 *
+	 * @return string Meta key.
+	 */
+	public static function get_patterns_default_view_meta_key() {
+		return sprintf( 'dlx_pw_patterns_default_view_%d', (int) get_current_blog_id() );
+	}
+
+	/**
+	 * Allowed slugs for Patterns Library default view presets.
+	 *
+	 * @return string[] Slugs.
+	 */
+	public static function get_allowed_patterns_default_view_slugs() {
+		return array( 'all', 'all_local', 'synced_local', 'unsynced_local', 'registered' );
+	}
+
+	/**
+	 * Sanitize a Patterns Library default view slug.
+	 *
+	 * @param string $slug Raw slug.
+	 * @return string Sanitized slug or `all`.
+	 */
+	public static function sanitize_patterns_default_view_slug( $slug ) {
+		$slug = sanitize_text_field( (string) $slug );
+		if ( in_array( $slug, self::get_allowed_patterns_default_view_slugs(), true ) ) {
+			return $slug;
+		}
+		return 'all';
+	}
+
+	/**
+	 * Get the Patterns Library default view slug for a user (current site).
+	 *
+	 * @param int $user_id User ID.
+	 * @return string Slug.
+	 */
+	public static function get_patterns_default_view_slug_for_user( $user_id ) {
+		$user_id = absint( $user_id );
+		if ( ! $user_id ) {
+			return 'all';
+		}
+		$stored = get_user_meta( $user_id, self::get_patterns_default_view_meta_key(), true );
+		return self::sanitize_patterns_default_view_slug( (string) $stored );
 	}
 }

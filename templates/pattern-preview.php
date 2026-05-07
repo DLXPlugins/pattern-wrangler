@@ -260,13 +260,21 @@ if ( ! wp_is_block_theme() ) {
 		<?php wp_head(); ?>
 	</head>
 
-	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; display: relative; box-sizing: border-box; width: 100%; padding: 24px;">
-		<?php wp_body_open(); ?>
+	<?php
+	$can_overflow = true;
+	if ( isset( $_GET['iframe_preview'] ) && $_GET['iframe_preview'] ) {
+		$can_overflow = false;
+	}
+	?>
+	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; <?php echo ! $can_overflow ? 'overflow: hidden;' : ''; ?> display: relative; box-sizing: border-box; width: 100%; padding: 24px;">
+	<?php
+		wp_body_open();
+	?>
 		<div class="wp-site-blocks">
 			<header class="wp-block-template-part site-header">
 				<?php block_header_area(); ?>
 			</header>
-			<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto; aspect-ratio: 1/1;">
+			<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto;">
 				<?php
 				if ( wp_is_block_theme() ) {
 					echo apply_filters( 'the_content', $blocks );
