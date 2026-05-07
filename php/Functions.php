@@ -877,4 +877,51 @@ class Functions {
 		}
 		return $highest_priority;
 	}
+
+	/**
+	 * User meta key for the Patterns Library default view preset (scoped per site).
+	 *
+	 * @return string Meta key.
+	 */
+	public static function get_patterns_default_view_meta_key() {
+		return sprintf( 'dlx_pw_patterns_default_view_%d', (int) get_current_blog_id() );
+	}
+
+	/**
+	 * Allowed slugs for Patterns Library default view presets.
+	 *
+	 * @return string[] Slugs.
+	 */
+	public static function get_allowed_patterns_default_view_slugs() {
+		return array( 'all', 'all_local', 'synced_local', 'unsynced_local', 'registered' );
+	}
+
+	/**
+	 * Sanitize a Patterns Library default view slug.
+	 *
+	 * @param string $slug Raw slug.
+	 * @return string Sanitized slug or `all`.
+	 */
+	public static function sanitize_patterns_default_view_slug( $slug ) {
+		$slug = sanitize_text_field( (string) $slug );
+		if ( in_array( $slug, self::get_allowed_patterns_default_view_slugs(), true ) ) {
+			return $slug;
+		}
+		return 'all';
+	}
+
+	/**
+	 * Get the Patterns Library default view slug for a user (current site).
+	 *
+	 * @param int $user_id User ID.
+	 * @return string Slug.
+	 */
+	public static function get_patterns_default_view_slug_for_user( $user_id ) {
+		$user_id = absint( $user_id );
+		if ( ! $user_id ) {
+			return 'all';
+		}
+		$stored = get_user_meta( $user_id, self::get_patterns_default_view_meta_key(), true );
+		return self::sanitize_patterns_default_view_slug( (string) $stored );
+	}
 }
