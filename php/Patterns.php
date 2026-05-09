@@ -26,14 +26,14 @@ class Patterns {
 	/**
 	 * Holds the registered categories *before* filters. Can access after `init` action.
 	 *
-	 * @var WP_Block_Pattern_Categories_Registry $registered_categories_registry
+	 * @var \WP_Block_Pattern_Categories_Registry $registered_categories_registry
 	 */
 	private static $registered_categories_registry = null;
 
 	/**
 	 * Holds the registered patterns *before* filters. Can access after `init` action.
 	 *
-	 * @var WP_Block_Patterns_Registry $registered_patterns_registry
+	 * @var \WP_Block_Patterns_Registry $registered_patterns_registry
 	 */
 	private static $registered_patterns_registry = null;
 
@@ -179,7 +179,7 @@ class Patterns {
 	/**
 	 * Get registered categories *before* filters.
 	 *
-	 * @return WP_Block_Pattern_Categories_Registry
+	 * @return \WP_Block_Pattern_Categories_Registry
 	 */
 	public function get_registered_categories() {
 		if ( null === self::$registered_categories_registry ) {
@@ -193,7 +193,7 @@ class Patterns {
 	/**
 	 * Get registered patterns.
 	 *
-	 * @return WP_Block_Patterns_Registry
+	 * @return \WP_Block_Patterns_Registry
 	 */
 	public function get_registered_patterns() {
 		if ( null === self::$registered_patterns_registry ) {
@@ -707,8 +707,8 @@ class Patterns {
 	/**
 	 * Modify REST query to exclude any patterns if disabled.
 	 *
-	 * @param array           $args    Array of arguments for WP_Query.
-	 * @param WP_REST_Request $request The REST API request.
+	 * @param array            $args    Array of arguments for WP_Query.
+	 * @param \WP_REST_Request $request The REST API request.
 	 *
 	 * @return array
 	 */
@@ -787,8 +787,8 @@ class Patterns {
 	/**
 	 * Modify term query in REST to disable any deactivated terms.
 	 *
-	 * @param array           $args    Array of arguments for WP_Query.
-	 * @param WP_REST_Request $request The REST API request.
+	 * @param array            $args    Array of arguments for WP_Query.
+	 * @param \WP_REST_Request $request The REST API request.
 	 *
 	 * @return array
 	 */

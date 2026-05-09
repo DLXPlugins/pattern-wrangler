@@ -4,7 +4,7 @@ Tags: patterns, block patterns, pattern, pattern builder, synced patterns
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 2.4.5
+Stable tag: 2.4.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -147,6 +147,11 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 7. An organized patterns view, demonstrating a trimmed down library and less category clutter.
 
 == Changelog ==
+
+= 2.4.6 =
+* Released 2026-05-09
+* Fix: Previews would prevent blocks with header/footer markup from displaying.
+* Fix: Previews wouldn't strip out excess space above the preview markup.
 
 = 2.4.5 =
 * Released 2026-05-07
@@ -314,5 +319,5 @@ That being said, some patterns are unsalvageable, and should just be disabled or
 
 == Upgrade Notice ==
 
-= 2.4.5 =
-Numerous improvements and features added to the lightbox pattern preview, including quick toolbar shortcuts, mobile previews, and carousel/gallery support. You can now disable pattern revisions network or site-wide. Set a default view, saved per user preference. Deleting patterns is made much more prominent per a feature request. The category bulk action bar now matches the pattern view. Several bug fixes involving categories not showing up, refreshing the pattern view wouldn't rememeber state.
+= 2.4.6 =
+Fixing header/footer preview markup from being displayed. Fixing excess top spacing in some previews.
