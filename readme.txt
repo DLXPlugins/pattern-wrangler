@@ -1,4 +1,4 @@
-=== Pattern Wrangler - Simple Block Pattern Management ===
+=== Pattern Wrangler - Simple Block Patterns Management ===
 Contributors: ronalfy
 Tags: patterns, block patterns, pattern, pattern builder, synced patterns
 Requires at least: 6.8
