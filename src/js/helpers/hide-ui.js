@@ -23,6 +23,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		Array.from( grandparent.children ).forEach( ( element ) => {
 			if ( element !== parent ) {
 				element.style.display = 'none';
+			} else {
+				element.style.padding = 0;
+				element.style.marginTop = 0;
+				element.style.marginBottom = 0;
 			}
 		} );
 

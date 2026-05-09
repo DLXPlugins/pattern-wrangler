@@ -175,7 +175,7 @@ add_action(
 		);
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
-			'body { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } img { max-width: 100%; height: auto; }'
+			'body { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } #pattern-preview-content header, #pattern-preview-content footer { display: inherit; } img { max-width: 100%; height: auto; }'
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
 
@@ -240,7 +240,7 @@ if ( ! wp_is_block_theme() ) {
 	}
 	\setup_postdata( $current_post );
 	?>
-	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1600px; margin: 0 auto;">
+	<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1600px; width: 100%; margin: 0 auto;">
 		<?php
 		echo apply_filters( 'the_content', $pattern_content );
 		?>
