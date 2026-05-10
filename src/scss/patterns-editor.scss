@@ -217,6 +217,9 @@
 	border: 1px solid #e0e0e0;
 	border-radius: 4px;
 	padding: 4px;
+	overflow: hidden;
+	max-height: 175px;
+	aspect-ratio: 1 / 1;
 }
 
 .dlx-pw-version-item-popover-content .components-dropdown-menu__menu {
