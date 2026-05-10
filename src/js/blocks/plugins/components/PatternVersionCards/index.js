@@ -5,56 +5,34 @@ import { memo, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { parse } from '@wordpress/blocks';
 import { BlockPreview } from '@wordpress/block-editor';
-import { Button, DropdownMenu } from '@wordpress/components';
-import { moreVertical } from '@wordpress/icons';
+import { Button } from '@wordpress/components';
+import PatternVersionDropdownMenu from '../PatternVersionDropdownMenu';
 
 /**
  * One saved pattern version row with preview.
  *
- * @param {Object} props         Props.
- * @param {Object} props.version Version object from REST (id, title, content, description, date).
+ * @param {Object}   props                Props.
+ * @param {Object}   props.version        Version object from REST (id, title, content, description, date).
+ * @param {Function} props.onPreviewClick The function to call when the preview button is clicked.
  * @return {JSX.Element} Markup.
  */
-function PatternVersionCard( { version } ) {
+function PatternVersionCard( { version, onPreviewClick } ) {
 	const blocks = useMemo( () => parse( version.content ), [ version.content ] );
 
 	return (
 		<div className="dlx-pw-version-item">
 			<div className="dlx-pw-version-item-header">
 				<h4 className="dlx-pw-version-item-header">{ version.title }</h4>
-				<DropdownMenu
-					icon={ moreVertical }
-					label={ __( 'More', 'pattern-wrangler' ) }
-					toggleProps={ {
-						isSmall: true,
-					} }
-					popoverProps={ {
-						placement: 'left-start',
-						offset: 5,
-						className: 'dlx-pw-version-item-popover-content',
-					} }
-					controls={ [
-						{
-							title: __( 'Restore', 'pattern-wrangler' ),
-							onClick: () => console.log( 'restore' ),
-						},
-						{
-							title: __( 'Delete', 'pattern-wrangler' ),
-							onClick: () => console.log( 'delete' ),
-						},
-						{
-							title: __( 'Export', 'pattern-wrangler' ),
-							onClick: () => console.log( 'export' ),
-						},
-						{
-							title: __( 'Copy', 'pattern-wrangler' ),
-							onClick: () => console.log( 'copy' ),
-						},
-					] }
-				/>
+				<PatternVersionDropdownMenu />
 			</div>
 			<div className="dlx-pw-version-item-media">
 				<BlockPreview blocks={ blocks } />
+				<Button
+					variant="link"
+					className="dlx-pw-version-item-preview-button"
+					label={ __( 'Preview', 'pattern-wrangler' ) }
+					onClick={ () => onPreviewClick( version ) }
+				/>
 			</div>
 			<div className="dlx-pw-version-item-content">{ version.description }</div>
 			<div className="dlx-pw-version-item-footer">
@@ -80,15 +58,20 @@ const MemoPatternVersionCard = memo( PatternVersionCard );
 /**
  * Grid of pattern versions. Memoized so parent state (e.g. modal open) does not re-render previews.
  *
- * @param {Object}   props          Props.
- * @param {Object[]} props.versions Version rows from REST.
+ * @param {Object}   props                Props.
+ * @param {Object[]} props.versions       Version rows from REST.
+ * @param {Function} props.onPreviewClick The function to call when the preview button is clicked.
  * @return {JSX.Element} Markup.
  */
-function PatternVersionCards( { versions } ) {
+function PatternVersionCards( { versions, onPreviewClick } ) {
 	return (
 		<div className="dlx-pw-versions-grid">
 			{ versions.map( ( v ) => (
-				<MemoPatternVersionCard key={ v.id } version={ v } />
+				<MemoPatternVersionCard
+					key={ v.id }
+					version={ v }
+					onPreviewClick={ onPreviewClick }
+				/>
 			) ) }
 		</div>
 	);

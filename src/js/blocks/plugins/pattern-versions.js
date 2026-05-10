@@ -2,16 +2,12 @@ import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginSidebar } from '@wordpress/editor';
-import {
-	Button,
-	Spinner,
-	PanelBody,
-	BaseControl,
-} from '@wordpress/components';
+import { Button, Spinner, PanelBody, BaseControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
 import PatternVersionCreateModal from './components/PatternVersionCreateModal';
 import PatternVersionCards from './components/PatternVersionCards';
+import PatternPreviewVersionModal from './components/PatternPreviewVersionModal';
 
 const PatternWranglerIcon = (
 	<svg
@@ -67,6 +63,7 @@ const PatternVersionsSidebar = () => {
 	const [ versions, setVersions ] = useState( [] );
 	const [ loadingList, setLoadingList ] = useState( false );
 	const [ createVersionModalOpen, setCreateVersionModalOpen ] = useState( false );
+	const [ previewVersionModalOpen, setPreviewVersionModalOpen ] = useState( null );
 
 	const fetchVersions = useCallback( async() => {
 		if ( ! postId ) {
@@ -129,7 +126,12 @@ const PatternVersionsSidebar = () => {
 					<div className="dlx-pw-admin-row">
 						{ loadingList && <Spinner /> }
 						{ ! loadingList && versions.length > 0 && (
-							<PatternVersionCards versions={ versions } />
+							<PatternVersionCards
+								versions={ versions }
+								onPreviewClick={ ( version ) => {
+									setPreviewVersionModalOpen( { version } );
+								} }
+							/>
 						) }
 						{ ! loadingList && postId && versions.length === 0 && (
 							<p className="description">
@@ -158,6 +160,12 @@ const PatternVersionsSidebar = () => {
 						);
 						fetchVersions();
 					} }
+				/>
+			) }
+			{ previewVersionModalOpen && (
+				<PatternPreviewVersionModal
+					version={ previewVersionModalOpen.version }
+					onRequestClose={ () => setPreviewVersionModalOpen( false ) }
 				/>
 			) }
 		</>
