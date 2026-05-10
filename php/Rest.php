@@ -1835,6 +1835,7 @@ class Rest {
 				'description'    => $post->post_excerpt,
 				'date'           => $post->post_date_gmt,
 				'categoryIds'    => $cat_ids,
+				'content'        => wp_unslash( $post->post_content ),
 				$sync_status_key => $pattern_sync_status_meta,
 			);
 		}

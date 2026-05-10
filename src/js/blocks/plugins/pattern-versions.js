@@ -2,7 +2,23 @@ import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginSidebar } from '@wordpress/editor';
-import { Button, Spinner, PanelBody } from '@wordpress/components';
+import { parse } from '@wordpress/blocks';
+import { BlockPreview } from '@wordpress/block-editor';
+import {
+	Button,
+	Spinner,
+	PanelBody,
+	Card,
+	CardMedia,
+	CardBody,
+	CardHeader,
+	CardFooter,
+	CardDivider,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
+	__experimentalText as Text,
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
+	__experimentalHeading as Heading,
+} from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
 import PatternVersionCreateModal from '../../react/views/patterns/components/PatternVersionCreateModal';
@@ -109,41 +125,65 @@ const PatternVersionsSidebar = () => {
 							{ __( 'Save Version', 'pattern-wrangler' ) }
 						</Button>
 					</div>
-
-					{ loadingList && <Spinner /> }
-					{ ! loadingList && versions.length > 0 && (
-						<ul
-							className="dlx-pw-versions-list"
-							style={ {
-								listStyle: 'disc',
-								marginLeft: '1.25em',
-								maxHeight: '200px',
-								overflow: 'auto',
-							} }
-						>
-							{ versions.map( ( v ) => (
-								<li key={ v.id } style={ { marginBottom: '6px' } }>
-									<strong>{ v.title }</strong>
-									{ v.description ? (
-										<span
-											className="description"
-											style={ {
-												display: 'block',
-												fontSize: '12px',
-											} }
-										>
-											{ v.description }
-										</span>
-									) : null }
-								</li>
-							) ) }
-						</ul>
-					) }
-					{ ! loadingList && postId && versions.length === 0 && (
-						<p className="description">
-							{ __( 'No versions yet.', 'pattern-wrangler' ) }
-						</p>
-					) }
+					<div className="dlx-pw-admin-row">
+						{ loadingList && <Spinner /> }
+						{ ! loadingList && versions.length > 0 && (
+							<div className="dlx-pw-versions-grid">
+								{ versions.map( ( v ) => (
+									<>
+										<div key={ v.id } className="dlx-pw-version-item">
+											<div className="dlx-pw-version-item-header">
+												<h4 className="dlx-pw-version-item-header">
+													{ v.title }
+												</h4>
+											</div>
+											<div className="dlx-pw-version-item-media">
+												<BlockPreview blocks={ parse( v.content ) } />
+											</div>
+											<div className="dlx-pw-version-item-content">
+												{ v.description }
+											</div>
+											<div className="dlx-pw-version-item-footer">
+												<Button
+													variant="link"
+													label={ __( 'Restore', 'pattern-wrangler' ) }
+												>
+													{ __( 'Restore', 'pattern-wrangler' ) }
+												</Button>
+												{ ' | ' }
+												<Button
+													variant="link"
+													isDestructive
+													label={ __( 'Delete', 'pattern-wrangler' ) }
+												>
+													{ __( 'Delete', 'pattern-wrangler' ) }
+												</Button>
+												{ ' | ' }
+												<Button
+													variant="link"
+													label={ __( 'Export', 'pattern-wrangler' ) }
+												>
+													{ __( 'Export', 'pattern-wrangler' ) }
+												</Button>
+												{ ' | ' }
+												<Button
+													variant="link"
+													label={ __( 'Copy', 'pattern-wrangler' ) }
+												>
+													{ __( 'Copy', 'pattern-wrangler' ) }
+												</Button>
+											</div>
+										</div>
+									</>
+								) ) }
+							</div>
+						) }
+						{ ! loadingList && postId && versions.length === 0 && (
+							<p className="description">
+								{ __( 'No versions yet.', 'pattern-wrangler' ) }
+							</p>
+						) }
+					</div>
 				</PanelBody>
 			</PluginSidebar>
 			{ createVersionModalOpen && (

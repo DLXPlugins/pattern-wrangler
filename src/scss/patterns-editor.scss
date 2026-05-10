@@ -2,6 +2,10 @@
 	margin-bottom: 16px;
 }
 
+.dlx-pw-admin-row {
+	margin-bottom: 16px;
+}
+
 .dlx-pw-modal-admin-row-buttons {
 	display: flex;
 	gap: 8px;
@@ -177,4 +181,30 @@
 			color: var(--dlx-pw-admin--color-notice--warning-alt);
 		}
 	}
+}
+
+.dlx-pw-versions-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 16px;
+}
+
+.dlx-pw-version-item {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	padding: 16px;
+	gap: 8px;
+}
+
+.dlx-pw-version-item-header {
+	margin: 0;
+	padding: 0;
+}
+
+.dlx-pw-version-item-media {
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	padding: 4px;
 }
