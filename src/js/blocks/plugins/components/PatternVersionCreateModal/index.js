@@ -13,7 +13,7 @@ import { __ } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 
 // Local imports.
-import Notice from '../../../../components/Notice';
+import Notice from '../../../../react/components/Notice';
 
 /**
  * Pattern Create Modal.

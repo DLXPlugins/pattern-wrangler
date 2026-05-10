@@ -2,19 +2,16 @@ import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginSidebar } from '@wordpress/editor';
-import { parse } from '@wordpress/blocks';
-import { BlockPreview } from '@wordpress/block-editor';
-import { moreVertical } from '@wordpress/icons';
 import {
 	Button,
 	Spinner,
 	PanelBody,
 	BaseControl,
-	DropdownMenu,
 } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
-import PatternVersionCreateModal from '../../react/views/patterns/components/PatternVersionCreateModal';
+import PatternVersionCreateModal from './components/PatternVersionCreateModal';
+import PatternVersionCards from './components/PatternVersionCards';
 
 const PatternWranglerIcon = (
 	<svg
@@ -132,72 +129,7 @@ const PatternVersionsSidebar = () => {
 					<div className="dlx-pw-admin-row">
 						{ loadingList && <Spinner /> }
 						{ ! loadingList && versions.length > 0 && (
-							<div className="dlx-pw-versions-grid">
-								{ versions.map( ( v ) => (
-									<>
-										<div key={ v.id } className="dlx-pw-version-item">
-											<div className="dlx-pw-version-item-header">
-												<h4 className="dlx-pw-version-item-header">
-													{ v.title }
-												</h4>
-												<DropdownMenu
-													icon={ moreVertical }
-													label={ __( 'More', 'pattern-wrangler' ) }
-													toggleProps={ {
-														isSmall: true,
-													} }
-													popoverProps={ {
-														placement: 'left-start',
-														offset: 5,
-														className: 'dlx-pw-version-item-popover-content',
-													} }
-													controls={ [
-														{
-															title: __( 'Restore', 'pattern-wrangler' ),
-															onClick: () => console.log( 'restore' ),
-														},
-														{
-															title: __( 'Delete', 'pattern-wrangler' ),
-															onClick: () => console.log( 'delete' ),
-														},
-														{
-															title: __( 'Export', 'pattern-wrangler' ),
-															onClick: () => console.log( 'export' ),
-														},
-														{
-															title: __( 'Copy', 'pattern-wrangler' ),
-															onClick: () => console.log( 'copy' ),
-														},
-													] }
-												/>
-											</div>
-											<div className="dlx-pw-version-item-media">
-												<BlockPreview blocks={ parse( v.content ) } />
-											</div>
-											<div className="dlx-pw-version-item-content">
-												{ v.description }
-											</div>
-											<div className="dlx-pw-version-item-footer">
-												<Button
-													variant="link"
-													label={ __( 'Restore', 'pattern-wrangler' ) }
-												>
-													{ __( 'Restore', 'pattern-wrangler' ) }
-												</Button>
-												{ ' | ' }
-												<Button
-													variant="link"
-													isDestructive
-													label={ __( 'Delete', 'pattern-wrangler' ) }
-												>
-													{ __( 'Delete', 'pattern-wrangler' ) }
-												</Button>
-											</div>
-											<div className="dlx-pw-version-item-date">{ v.date }</div>
-										</div>
-									</>
-								) ) }
-							</div>
+							<PatternVersionCards versions={ versions } />
 						) }
 						{ ! loadingList && postId && versions.length === 0 && (
 							<p className="description">

@@ -1831,8 +1831,8 @@ class Rest {
 			$pattern_sync_status_meta = ( 'unsynced' === $pattern_sync_status_meta ) ? 'unsynced' : '';
 			$versions[]               = array(
 				'id'             => absint( $post->ID ),
-				'title'          => get_the_title( $post ),
-				'description'    => $post->post_excerpt,
+				'title'          => sanitize_text_field( wp_unslash( get_the_title( $post ) ) ),
+				'description'    => wp_trim_words( sanitize_textarea_field( wp_unslash( $post->post_excerpt ) ), 35 ),
 				'date'           => esc_html( Functions::get_i18n_date( $post->post_date, true ) ),
 				'categoryIds'    => $cat_ids,
 				'content'        => wp_unslash( $post->post_content ),
