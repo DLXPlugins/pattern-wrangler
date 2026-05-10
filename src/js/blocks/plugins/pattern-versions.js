@@ -8,6 +8,7 @@ import apiFetch from '@wordpress/api-fetch';
 import PatternVersionCreateModal from './components/PatternVersionCreateModal';
 import PatternVersionCards from './components/PatternVersionCards';
 import PatternPreviewVersionModal from './components/PatternPreviewVersionModal';
+import VersionDeleteModal from './components/VersionDeleteModal/index';
 
 const PatternWranglerIcon = (
 	<svg
@@ -64,6 +65,7 @@ const PatternVersionsSidebar = () => {
 	const [ loadingList, setLoadingList ] = useState( false );
 	const [ createVersionModalOpen, setCreateVersionModalOpen ] = useState( false );
 	const [ previewVersionModalOpen, setPreviewVersionModalOpen ] = useState( null );
+	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( false );
 
 	const fetchVersions = useCallback( async() => {
 		if ( ! postId ) {
@@ -88,9 +90,29 @@ const PatternVersionsSidebar = () => {
 		}
 	}, [ postId, createNotice ] );
 
+	const closeAllModals = useCallback( () => {
+		setCreateVersionModalOpen( false );
+		setPreviewVersionModalOpen( null );
+	}, [] );
+
 	useEffect( () => {
 		fetchVersions();
 	}, [ fetchVersions ] );
+
+	const handleActionClick = useCallback( ( action, version ) => {
+		switch ( action ) {
+			case 'delete':
+				closeAllModals();
+				setIsDeleteModalOpen( { version } );
+				break;
+			case 'export':
+				break;
+			case 'copy':
+				break;
+			case 'restore':
+				break;
+		}
+	}, [] );
 
 	return (
 		<>
@@ -131,9 +153,7 @@ const PatternVersionsSidebar = () => {
 								onPreviewClick={ ( version ) => {
 									setPreviewVersionModalOpen( { version } );
 								} }
-								onActionClick={ ( action, version ) => {
-									console.log( 'action', action, version );
-								} }
+								onActionClick={ handleActionClick }
 							/>
 						) }
 						{ ! loadingList && postId && versions.length === 0 && (
@@ -169,8 +189,30 @@ const PatternVersionsSidebar = () => {
 				<PatternPreviewVersionModal
 					version={ previewVersionModalOpen.version }
 					onRequestClose={ () => setPreviewVersionModalOpen( false ) }
-					onActionClick={ ( action, version ) => {
-						console.log( 'action', action, version );
+					onActionClick={ handleActionClick }
+				/>
+			) }
+			{ isDeleteModalOpen && (
+				<VersionDeleteModal
+					id={ isDeleteModalOpen.version.id }
+					nonce={ isDeleteModalOpen.version.deleteNonce }
+					onRequestClose={ () => setIsDeleteModalOpen( false ) }
+					onDelete={ () => {
+						setIsDeleteModalOpen( false );
+						createNotice(
+							'success',
+							sprintf(
+								// translators: %s: the version title.
+								__( 'Pattern Version %s deleted.', 'pattern-wrangler' ),
+								isDeleteModalOpen.version.title
+							),
+							{ type: 'snackbar', isDismissible: true }
+						);
+						setVersions(
+							versions.filter(
+								( version ) => version.id !== isDeleteModalOpen.version.id
+							)
+						);
 					} }
 				/>
 			) }

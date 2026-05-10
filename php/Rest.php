@@ -336,6 +336,19 @@ class Rest {
 						return current_user_can( 'edit_posts' );
 					},
 				),
+				array(
+					'methods'             => 'DELETE',
+					'callback'            => array( $this, 'rest_delete_pattern_version' ),
+					'args'                => array(
+						'id' => array(
+							'type'     => 'integer',
+							'required' => true,
+						),
+					),
+					'permission_callback' => function () {
+						return current_user_can( 'delete_posts' );
+					},
+				),
 			)
 		);
 	}
@@ -343,9 +356,9 @@ class Rest {
 	/**
 	 * Delete a pattern.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_delete_pattern( $request ) {
 
@@ -380,9 +393,9 @@ class Rest {
 	/**
 	 * Delete a category.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_delete_category( $request ) {
 
@@ -427,9 +440,9 @@ class Rest {
 	/**
 	 * Disable a registered category.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_disable_category( $request ) {
 
@@ -503,9 +516,9 @@ class Rest {
 	/**
 	 * Re-enable a registered category.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_enable_category( $request ) {
 
@@ -1837,6 +1850,8 @@ class Rest {
 				'categoryIds'    => $cat_ids,
 				'content'        => wp_unslash( $post->post_content ),
 				$sync_status_key => $pattern_sync_status_meta,
+				'deleteNonce'    => wp_create_nonce( 'dlx-pw-versions-delete-version-' . $post->ID ),
+				'restoreNonce'   => wp_create_nonce( 'dlx-pw-versions-restore-version-' . $post->ID ),
 			);
 		}
 
@@ -1869,7 +1884,7 @@ class Rest {
 		}
 
 		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
-		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-versions-create-version-' . $parent_id ) || ! current_user_can( 'edit_posts' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-versions-create-version-' . $parent_id ) ) {
 			return new \WP_Error(
 				'rest_forbidden',
 				__( 'You do not have permission to create versions for this pattern.', 'pattern-wrangler' ),
@@ -1946,6 +1961,58 @@ class Rest {
 			array(
 				'id'    => absint( $version_id ),
 				'title' => $title,
+			)
+		);
+	}
+
+	/**
+	 * Delete a pattern version checkpoint (pw_versions).
+	 *
+	 * @param \WP_REST_Request $request REST request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function rest_delete_pattern_version( $request ) {
+		$options = Options::get_options();
+		if ( empty( $options['enableVersionsModule'] ) ) {
+			return new \WP_Error(
+				'dlx_pw_versions_disabled',
+				__( 'Pattern versions are disabled.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$version_id = absint( $request->get_param( 'id' ) );
+		if ( ! $version_id || ! current_user_can( 'delete_post', $version_id ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You cannot delete this version.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-versions-delete-version-' . $version_id ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You do not have permission to delete this version.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$version = get_post( $version_id );
+		if ( ! $version || Versions::POST_TYPE !== $version->post_type ) {
+			return new \WP_Error(
+				'rest_invalid_param',
+				__( 'Invalid version.', 'pattern-wrangler' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		wp_delete_post( $version_id, true );
+
+		return rest_ensure_response(
+			array(
+				'id' => absint( $version_id ),
 			)
 		);
 	}
