@@ -14,16 +14,20 @@ import PatternVersionDropdownMenu from '../PatternVersionDropdownMenu';
  * @param {Object}   props                Props.
  * @param {Object}   props.version        Version object from REST (id, title, content, description, date).
  * @param {Function} props.onPreviewClick The function to call when the preview button is clicked.
+ * @param {Function} props.onActionClick  The function to call when a dropdown item is clicked.
  * @return {JSX.Element} Markup.
  */
-function PatternVersionCard( { version, onPreviewClick } ) {
+function PatternVersionCard( { version, onPreviewClick, onActionClick } ) {
 	const blocks = useMemo( () => parse( version.content ), [ version.content ] );
 
 	return (
 		<div className="dlx-pw-version-item">
 			<div className="dlx-pw-version-item-header">
 				<h4 className="dlx-pw-version-item-header">{ version.title }</h4>
-				<PatternVersionDropdownMenu />
+				<PatternVersionDropdownMenu
+					version={ version }
+					onActionClick={ onActionClick }
+				/>
 			</div>
 			<div className="dlx-pw-version-item-media">
 				<BlockPreview blocks={ blocks } />
@@ -36,7 +40,11 @@ function PatternVersionCard( { version, onPreviewClick } ) {
 			</div>
 			<div className="dlx-pw-version-item-content">{ version.description }</div>
 			<div className="dlx-pw-version-item-footer">
-				<Button variant="link" label={ __( 'Restore', 'pattern-wrangler' ) }>
+				<Button
+					variant="link"
+					label={ __( 'Restore', 'pattern-wrangler' ) }
+					onClick={ () => onActionClick( 'restore', version ) }
+				>
 					{ __( 'Restore', 'pattern-wrangler' ) }
 				</Button>
 				{ ' | ' }
@@ -44,6 +52,7 @@ function PatternVersionCard( { version, onPreviewClick } ) {
 					variant="link"
 					isDestructive
 					label={ __( 'Delete', 'pattern-wrangler' ) }
+					onClick={ () => onActionClick( 'delete', version ) }
 				>
 					{ __( 'Delete', 'pattern-wrangler' ) }
 				</Button>
@@ -61,9 +70,10 @@ const MemoPatternVersionCard = memo( PatternVersionCard );
  * @param {Object}   props                Props.
  * @param {Object[]} props.versions       Version rows from REST.
  * @param {Function} props.onPreviewClick The function to call when the preview button is clicked.
+ * @param {Function} props.onActionClick  The function to call when a dropdown item is clicked.
  * @return {JSX.Element} Markup.
  */
-function PatternVersionCards( { versions, onPreviewClick } ) {
+function PatternVersionCards( { versions, onPreviewClick, onActionClick } ) {
 	return (
 		<div className="dlx-pw-versions-grid">
 			{ versions.map( ( v ) => (
@@ -71,6 +81,7 @@ function PatternVersionCards( { versions, onPreviewClick } ) {
 					key={ v.id }
 					version={ v }
 					onPreviewClick={ onPreviewClick }
+					onActionClick={ onActionClick }
 				/>
 			) ) }
 		</div>

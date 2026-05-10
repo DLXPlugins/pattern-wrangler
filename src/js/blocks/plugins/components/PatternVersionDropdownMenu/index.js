@@ -5,11 +5,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * A dropdown menu for a pattern version.
  *
- * @param {Object} props         The props.
- * @param {Object} props.version The version object from REST (id, title, content, description, date).
+ * @param {Object}   props               The props.
+ * @param {Object}   props.version       Version object from REST (id, title, content, description, date).
+ * @param {Function} props.onActionClick The function to call when a dropdown item is clicked.
  * @return {JSX.Element} The dropdown menu.
  */
-export default function PatternVersionDropdownMenu( { version } ) {
+export default function PatternVersionDropdownMenu( {
+	version = {},
+	onActionClick = () => {},
+} ) {
 	return (
 		<DropdownMenu
 			icon={ moreVertical }
@@ -25,19 +29,19 @@ export default function PatternVersionDropdownMenu( { version } ) {
 			controls={ [
 				{
 					title: __( 'Restore', 'pattern-wrangler' ),
-					onClick: () => console.log( 'restore' ),
+					onClick: () => onActionClick( 'restore', version ),
 				},
 				{
 					title: __( 'Delete', 'pattern-wrangler' ),
-					onClick: () => console.log( 'delete' ),
+					onClick: () => onActionClick( 'delete', version ),
 				},
 				{
 					title: __( 'Export', 'pattern-wrangler' ),
-					onClick: () => console.log( 'export' ),
+					onClick: () => onActionClick( 'export', version ),
 				},
 				{
 					title: __( 'Copy', 'pattern-wrangler' ),
-					onClick: () => console.log( 'copy' ),
+					onClick: () => onActionClick( 'copy', version ),
 				},
 			] }
 		/>

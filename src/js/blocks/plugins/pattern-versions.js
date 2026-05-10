@@ -131,6 +131,9 @@ const PatternVersionsSidebar = () => {
 								onPreviewClick={ ( version ) => {
 									setPreviewVersionModalOpen( { version } );
 								} }
+								onActionClick={ ( action, version ) => {
+									console.log( 'action', action, version );
+								} }
 							/>
 						) }
 						{ ! loadingList && postId && versions.length === 0 && (
@@ -166,6 +169,9 @@ const PatternVersionsSidebar = () => {
 				<PatternPreviewVersionModal
 					version={ previewVersionModalOpen.version }
 					onRequestClose={ () => setPreviewVersionModalOpen( false ) }
+					onActionClick={ ( action, version ) => {
+						console.log( 'action', action, version );
+					} }
 				/>
 			) }
 		</>

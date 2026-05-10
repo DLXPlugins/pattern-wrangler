@@ -9,8 +9,9 @@ import PatternVersionDropdownMenu from '../PatternVersionDropdownMenu';
 /**
  * Pattern Create Modal.
  *
- * @param {Object} props         The props.
- * @param {Object} props.version The version object from REST (id, title, content, description, date).
+ * @param {Object}   props               The props.
+ * @param {Object}   props.version       The version object from REST (id, title, content, description, date).
+ * @param {Function} props.onActionClick The function to call when a dropdown item is clicked.
  * @return {Object} The rendered component.
  */
 const PatternPreviewVersionModal = ( props ) => {
@@ -26,7 +27,12 @@ const PatternPreviewVersionModal = ( props ) => {
 				onRequestClose={ props.onRequestClose }
 				focusOnMount="firstContentElement"
 				isFullScreen={ true }
-				headerActions={ <PatternVersionDropdownMenu version={ props.version } /> }
+				headerActions={
+					<PatternVersionDropdownMenu
+						version={ props.version }
+						onActionClick={ props.onActionClick }
+					/>
+				}
 			>
 				<div className="dlx-pw-modal-content">
 					<BlockPreview blocks={ blocks } />
