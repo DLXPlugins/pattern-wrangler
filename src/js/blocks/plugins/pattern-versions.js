@@ -5,6 +5,7 @@ import { PluginSidebar } from '@wordpress/editor';
 import { Button, Spinner, PanelBody, BaseControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
+import { copyToClipboard } from '../../utils/pattern-code-helpers';
 import PatternVersionCreateModal from './components/PatternVersionCreateModal';
 import PatternVersionCards from './components/PatternVersionCards';
 import PatternPreviewVersionModal from './components/PatternPreviewVersionModal';
@@ -99,7 +100,7 @@ const PatternVersionsSidebar = () => {
 		fetchVersions();
 	}, [ fetchVersions ] );
 
-	const handleActionClick = useCallback( ( action, version ) => {
+	const handleActionClick = useCallback( async( action, version ) => {
 		switch ( action ) {
 			case 'delete':
 				closeAllModals();
@@ -107,12 +108,27 @@ const PatternVersionsSidebar = () => {
 				break;
 			case 'export':
 				break;
-			case 'copy':
+			case 'copy': {
+				const ok = await copyToClipboard( version.content ?? '' );
+				if ( ok ) {
+					createNotice(
+						'success',
+						__( 'Version copied to clipboard.', 'pattern-wrangler' ),
+						{ type: 'snackbar', isDismissible: true }
+					);
+				} else {
+					createNotice(
+						'error',
+						__( 'Could not copy to clipboard.', 'pattern-wrangler' ),
+						{ type: 'snackbar', isDismissible: true }
+					);
+				}
 				break;
+			}
 			case 'restore':
 				break;
 		}
-	}, [] );
+	}, [ closeAllModals, createNotice ] );
 
 	return (
 		<>
