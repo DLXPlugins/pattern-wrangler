@@ -1833,7 +1833,7 @@ class Rest {
 				'id'             => absint( $post->ID ),
 				'title'          => get_the_title( $post ),
 				'description'    => $post->post_excerpt,
-				'date'           => $post->post_date_gmt,
+				'date'           => esc_html( Functions::get_i18n_date( $post->post_date, true ) ),
 				'categoryIds'    => $cat_ids,
 				'content'        => wp_unslash( $post->post_content ),
 				$sync_status_key => $pattern_sync_status_meta,

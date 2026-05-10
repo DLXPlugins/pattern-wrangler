@@ -192,21 +192,8 @@ const PatternVersionsSidebar = () => {
 												>
 													{ __( 'Delete', 'pattern-wrangler' ) }
 												</Button>
-												{ ' | ' }
-												<Button
-													variant="link"
-													label={ __( 'Export', 'pattern-wrangler' ) }
-												>
-													{ __( 'Export', 'pattern-wrangler' ) }
-												</Button>
-												{ ' | ' }
-												<Button
-													variant="link"
-													label={ __( 'Copy', 'pattern-wrangler' ) }
-												>
-													{ __( 'Copy', 'pattern-wrangler' ) }
-												</Button>
 											</div>
+											<div className="dlx-pw-version-item-date">{ v.date }</div>
 										</div>
 									</>
 								) ) }

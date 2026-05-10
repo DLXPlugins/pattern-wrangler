@@ -512,6 +512,23 @@ class Functions {
 	}
 
 	/**
+	 * Get the i18n date of a pattern.
+	 *
+	 * @param string $date The date to format.
+	 * @param bool   $with_time Whether to include the time. Default false.
+	 *
+	 * @return string The i18n date.
+	 */
+	public static function get_i18n_date( $date, $with_time = false ) {
+		$date_format = get_option( 'date_format' );
+		$time_format = get_option( 'time_format' );
+		if ( $with_time ) {
+			$date_format .= ' ' . $time_format;
+		}
+		return date_i18n( $date_format, strtotime( $date ) );
+	}
+
+	/**
 	 * Check if a pattern is synced.
 	 *
 	 * @param int $pattern_id The pattern ID.
