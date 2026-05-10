@@ -1,0 +1,8 @@
+node_modules
+build
+dist
+vendor
+*.min.js
+package-lock.json
+composer.lock
+pattern-wrangler.zip

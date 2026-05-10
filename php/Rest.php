@@ -1895,7 +1895,7 @@ class Rest {
 			);
 		}
 
-		$title = sanitize_text_field( $request->get_param( 'title' ) );
+		$title = sanitize_text_field( wp_unslash( $request->get_param( 'title' ) ) );
 		if ( '' === $title ) {
 			return new \WP_Error(
 				'rest_invalid_param',
@@ -1905,6 +1905,8 @@ class Rest {
 		}
 		$excerpt = sanitize_textarea_field( (string) wp_unslash( $request->get_param( 'description' ) ) );
 
+		$current_user = wp_get_current_user();
+
 		$version_id = wp_insert_post(
 			array(
 				'post_title'   => $title,
@@ -1912,7 +1914,8 @@ class Rest {
 				'post_excerpt' => wp_slash( $excerpt ),
 				'post_status'  => 'publish',
 				'post_type'    => Versions::POST_TYPE,
-				'post_parent'  => $parent_id,
+				'post_parent'  => absint( $parent_id ),
+				'post_author'  => absint( $current_user->ID ),
 			),
 			true
 		);

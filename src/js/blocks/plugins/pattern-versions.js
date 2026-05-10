@@ -4,21 +4,7 @@ import { registerPlugin } from '@wordpress/plugins';
 import { PluginSidebar } from '@wordpress/editor';
 import { parse } from '@wordpress/blocks';
 import { BlockPreview } from '@wordpress/block-editor';
-import {
-	Button,
-	Spinner,
-	PanelBody,
-	Card,
-	CardMedia,
-	CardBody,
-	CardHeader,
-	CardFooter,
-	CardDivider,
-	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
-	__experimentalText as Text,
-	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
-	__experimentalHeading as Heading,
-} from '@wordpress/components';
+import { Button, Spinner, PanelBody, BaseControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
 import PatternVersionCreateModal from '../../react/views/patterns/components/PatternVersionCreateModal';
@@ -64,10 +50,11 @@ const PatternWranglerIcon = (
  * @return {JSX.Element} Markup.
  */
 const PatternVersionsSidebar = () => {
-	const { postId } = useSelect( ( selectStore ) => {
+	const { postId, hasUnsavedChanges } = useSelect( ( selectStore ) => {
 		const editor = selectStore( 'core/editor' );
 		return {
 			postId: editor.getCurrentPostId(),
+			hasUnsavedChanges: editor.isEditedPostDirty(),
 		};
 	}, [] );
 
@@ -108,22 +95,32 @@ const PatternVersionsSidebar = () => {
 		<>
 			<PluginSidebar
 				name="dlx-pattern-wrangler-versions"
-				title={ __( 'Pattern versions', 'pattern-wrangler' ) }
+				title={ __( 'Pattern Wrangler', 'pattern-wrangler' ) }
 				className="dlx-pw-preview-sidebar"
 				icon={ PatternWranglerIcon }
 			>
-				<PanelBody
-					title={ __( 'Pattern versions', 'pattern-wrangler' ) }
-					icon={ PatternWranglerIcon }
-				>
+				<PanelBody title={ __( 'Pattern versions', 'pattern-wrangler' ) }>
 					<div className="dlx-pw-admin-row">
-						<Button
-							variant="secondary"
-							onClick={ () => setCreateVersionModalOpen( true ) }
-							disabled={ ! postId }
+						<BaseControl
+							id="dlx-pw-versions-save-version"
+							label={ __( 'Save Version', 'pattern-wrangler' ) }
+							help={
+								hasUnsavedChanges
+									? __(
+										'Save or update the pattern in the editor before creating a version.',
+										'pattern-wrangler'
+									  )
+									: undefined
+							}
 						>
-							{ __( 'Save Version', 'pattern-wrangler' ) }
-						</Button>
+							<Button
+								variant="secondary"
+								onClick={ () => setCreateVersionModalOpen( true ) }
+								disabled={ ! postId || hasUnsavedChanges }
+							>
+								{ __( 'Save New Version', 'pattern-wrangler' ) }
+							</Button>
+						</BaseControl>
 					</div>
 					<div className="dlx-pw-admin-row">
 						{ loadingList && <Spinner /> }
