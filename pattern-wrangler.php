@@ -80,6 +80,9 @@ class PatternWrangler {
 		$rest = new Rest();
 		$rest->run();
 
+		$versions = new Versions();
+		$versions->run();
+
 		if ( Functions::is_multisite( true ) ) {
 			$network_admin = new Network_Admin();
 			$network_admin->run();

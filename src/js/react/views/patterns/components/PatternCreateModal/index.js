@@ -62,26 +62,34 @@ const PatternCreateModal = ( props ) => {
 	const categories = ( props.categories || [] ).map( ( category ) => {
 		return category.label || category.name;
 	} );
-	const localPatternCategories = ( props.patternCategories || [] ).map( ( category ) => {
-		const categorySlug = cleanForSlug( category.label || category.name || category );
-		// Find category label from slug.
-		const categoryObject = originalCategories.find( ( c ) => cleanForSlug( c.label || c.name ) === categorySlug );
-		return escapeHTML( categoryObject?.label ?? ( category.label || category.name || category ) );
-	} );
+	const localPatternCategories = ( props.patternCategories || [] ).map(
+		( category ) => {
+			const categorySlug = cleanForSlug(
+				category.label || category.name || category
+			);
+			// Find category label from slug.
+			const categoryObject = originalCategories.find(
+				( c ) => cleanForSlug( c.label || c.name ) === categorySlug
+			);
+			return escapeHTML(
+				categoryObject?.label ?? ( category.label || category.name || category )
+			);
+		}
+	);
 	const [ copyPatternId ] = useState( props.copyItem?.id || 0 );
 	const [ syncedDefaultStatus ] = useState( props.syncedDefaultStatus || 'synced' );
 	const [ syncedDisabled ] = useState( props.syncedDisabled || false );
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ isEditMode ] = useState( props.isEditMode || false );
-	const [ disableRegisteredPattern, setDisableRegisteredPattern ] = useState( getEditPatternConfig().disableRegisteredPattern ?? false );
-	const [ editPatternAferCreating, setEditPatternAferCreating ] = useState( getEditPatternConfig().editPatternAferCreating ?? true );
+	const [ disableRegisteredPattern, setDisableRegisteredPattern ] = useState(
+		getEditPatternConfig().disableRegisteredPattern ?? false
+	);
+	const [ editPatternAferCreating, setEditPatternAferCreating ] = useState(
+		getEditPatternConfig().editPatternAferCreating ?? true
+	);
 	const [ showExpandedSuggestions, setShowExpandedSuggestions ] = useState( true );
 
-	const {
-		control,
-		handleSubmit,
-		setError,
-	} = useForm( {
+	const { control, handleSubmit, setError } = useForm( {
 		defaultValues: {
 			patternId: props.patternId || 0,
 			patternNonce: props.patternNonce || '',
@@ -105,12 +113,10 @@ const PatternCreateModal = ( props ) => {
 	 * @return {string|null} The label id.
 	 */
 	const getIdByValue = ( labelValue ) => {
-		const label = originalCategories.find(
-			( findLabel ) => {
-				const findNewLabel = findLabel.label || findLabel.name;
-				return findNewLabel.toLowerCase() === labelValue.toLowerCase();
-			}
-		);
+		const label = originalCategories.find( ( findLabel ) => {
+			const findNewLabel = findLabel.label || findLabel.name;
+			return findNewLabel.toLowerCase() === labelValue.toLowerCase();
+		} );
 		return label ? label.id : 0;
 	};
 
@@ -140,7 +146,6 @@ const PatternCreateModal = ( props ) => {
 				patternSyncStatus: formData.patternSyncStatus,
 				patternCopyId: formData.patternCopyId,
 				disableRegisteredPattern,
-
 			},
 		} );
 		if ( response?.error ) {
@@ -149,10 +154,13 @@ const PatternCreateModal = ( props ) => {
 			const patternId = response.patternId;
 			// Save edit pattern config to local storage.
 			if ( ! isEditMode ) {
-				localStorage.setItem( 'dlx-pw-edit-pattern-config', JSON.stringify( {
-					editPatternAferCreating,
-					disableRegisteredPattern,
-				} ) );
+				localStorage.setItem(
+					'dlx-pw-edit-pattern-config',
+					JSON.stringify( {
+						editPatternAferCreating,
+						disableRegisteredPattern,
+					} )
+				);
 			}
 			if ( ! isEditMode && editPatternAferCreating ) {
 				const redirectUrl = encodeURIComponent( window.location.href );
@@ -245,10 +253,16 @@ const PatternCreateModal = ( props ) => {
 													setShowExpandedSuggestions( true );
 												}
 											} }
-											__experimentalExpandOnFocus={ ( field.value.length === 0 && showExpandedSuggestions ) || showExpandedSuggestions }
+											__experimentalExpandOnFocus={
+												( field.value.length === 0 && showExpandedSuggestions ) ||
+												showExpandedSuggestions
+											}
 										/>
 										<p className="description">
-											{ __( 'Separate with commas or press the Enter key.', 'pattern-wrangler' ) }
+											{ __(
+												'Separate with commas or press the Enter key.',
+												'pattern-wrangler'
+											) }
 										</p>
 									</>
 								) }
@@ -288,38 +302,34 @@ const PatternCreateModal = ( props ) => {
 								) }
 							/>
 						</div>
-						{
-							copyPatternId !== 0 && (
-								<div className="dlx-pw-modal-admin-row">
-									<ToggleControl
-										label={ __( 'Disable Registered Pattern', 'pattern-wrangler' ) }
-										checked={ disableRegisteredPattern }
-										onChange={ ( value ) => setDisableRegisteredPattern( value ) }
-										help={ __(
-											'Disable the registered pattern when you copy it to local.',
-											'pattern-wrangler'
-										) }
-										disabled={ isSaving }
-									/>
-								</div>
-							)
-						}
-						{
-							! isEditMode && (
-								<div className="dlx-pw-modal-admin-row">
-									<ToggleControl
-										label={ __( 'Edit Pattern After Creating', 'pattern-wrangler' ) }
-										checked={ editPatternAferCreating }
-										onChange={ ( value ) => setEditPatternAferCreating( value ) }
-										help={ __(
-											'Edit the pattern after creating it. Uncheck to stay on this screen.',
-											'pattern-wrangler'
-										) }
-										disabled={ isSaving }
-									/>
-								</div>
-							)
-						}
+						{ copyPatternId !== 0 && (
+							<div className="dlx-pw-modal-admin-row">
+								<ToggleControl
+									label={ __( 'Disable Registered Pattern', 'pattern-wrangler' ) }
+									checked={ disableRegisteredPattern }
+									onChange={ ( value ) => setDisableRegisteredPattern( value ) }
+									help={ __(
+										'Disable the registered pattern when you copy it to local.',
+										'pattern-wrangler'
+									) }
+									disabled={ isSaving }
+								/>
+							</div>
+						) }
+						{ ! isEditMode && (
+							<div className="dlx-pw-modal-admin-row">
+								<ToggleControl
+									label={ __( 'Edit Pattern After Creating', 'pattern-wrangler' ) }
+									checked={ editPatternAferCreating }
+									onChange={ ( value ) => setEditPatternAferCreating( value ) }
+									help={ __(
+										'Edit the pattern after creating it. Uncheck to stay on this screen.',
+										'pattern-wrangler'
+									) }
+									disabled={ isSaving }
+								/>
+							</div>
+						) }
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
 							<Button variant="primary" type="submit" disabled={ isSaving }>
 								{ getButtonText() }

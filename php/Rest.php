@@ -307,6 +307,37 @@ class Rest {
 				},
 			)
 		);
+
+		/**
+		 * Pattern version checkpoints (pw_versions).
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/versions',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'rest_get_pattern_versions' ),
+					'permission_callback' => function () {
+						return current_user_can( 'edit_posts' );
+					},
+					'args'                => array(
+						'parent' => array(
+							'type'              => 'integer',
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
+				),
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'rest_create_pattern_version' ),
+					'permission_callback' => function () {
+						return current_user_can( 'edit_posts' );
+					},
+				),
+			)
+		);
 	}
 
 	/**
@@ -804,14 +835,19 @@ class Rest {
 		$pattern_sync_status        = sanitize_text_field( $request->get_param( 'patternSyncStatus' ) );
 		$pattern_copy_id            = sanitize_text_field( $request->get_param( 'patternCopyId' ) ); // 0 if not copying.
 		$disable_registered_pattern = filter_var( $request->get_param( 'disableRegisteredPattern' ), FILTER_VALIDATE_BOOLEAN );
+		$pattern_content_override   = $request->get_param( 'patternContent' );
 
 		// Get categories into right format.
 		$categories = array();
 
-		$maybe_pattern_content = Functions::get_pattern_by_id( $pattern_copy_id );
-		$content               = '';
-		if ( null !== $maybe_pattern_content ) {
-			$content = $maybe_pattern_content;
+		$content = '';
+		if ( is_string( $pattern_content_override ) && '' !== trim( $pattern_content_override ) ) {
+			$content = $pattern_content_override;
+		} else {
+			$maybe_pattern_content = Functions::get_pattern_by_id( $pattern_copy_id );
+			if ( null !== $maybe_pattern_content ) {
+				$content = $maybe_pattern_content;
+			}
 		}
 		$content = Functions::resolve_pattern_markup_for_storage( $content );
 
@@ -1736,5 +1772,177 @@ class Rest {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * List pattern versions for a parent wp_block.
+	 *
+	 * @param \WP_REST_Request $request REST request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function rest_get_pattern_versions( $request ) {
+		$options = Options::get_options();
+		if ( empty( $options['enableVersionsModule'] ) ) {
+			return new \WP_Error(
+				'dlx_pw_versions_disabled',
+				__( 'Pattern versions are disabled.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$parent_id = absint( $request->get_param( 'parent' ) );
+		if ( ! $parent_id || ! current_user_can( 'edit_post', $parent_id ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You cannot view versions for this pattern.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$parent = get_post( $parent_id );
+		if ( ! $parent || 'wp_block' !== $parent->post_type ) {
+			return new \WP_Error(
+				'rest_invalid_param',
+				__( 'Invalid pattern.', 'pattern-wrangler' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$posts = get_posts(
+			array(
+				'post_type'      => Versions::POST_TYPE,
+				'post_parent'    => $parent_id,
+				'post_status'    => 'publish',
+				'orderby'        => 'post_date',
+				'order'          => 'DESC',
+				'posts_per_page' => 100,
+			)
+		);
+
+		$sync_status_key = Versions::PATTERN_SYNC_STATUS_META_KEY;
+		$versions        = array();
+		foreach ( $posts as $post ) {
+			$term_ids = wp_get_post_terms( $post->ID, 'wp_pattern_category', array( 'fields' => 'ids' ) );
+			if ( is_wp_error( $term_ids ) || ! is_array( $term_ids ) ) {
+				$term_ids = array();
+			}
+			$cat_ids                  = array_values( array_unique( array_map( 'absint', $term_ids ) ) );
+			$pattern_sync_status_meta = get_post_meta( $post->ID, $sync_status_key, true );
+			$pattern_sync_status_meta = ( 'unsynced' === $pattern_sync_status_meta ) ? 'unsynced' : '';
+			$versions[]               = array(
+				'id'             => absint( $post->ID ),
+				'title'          => get_the_title( $post ),
+				'description'    => $post->post_excerpt,
+				'date'           => $post->post_date_gmt,
+				'categoryIds'    => $cat_ids,
+				$sync_status_key => $pattern_sync_status_meta,
+			);
+		}
+
+		return rest_ensure_response( array( 'versions' => $versions ) );
+	}
+
+	/**
+	 * Create a pattern version checkpoint (pw_versions).
+	 *
+	 * @param \WP_REST_Request $request REST request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function rest_create_pattern_version( $request ) {
+		$options = Options::get_options();
+		if ( empty( $options['enableVersionsModule'] ) ) {
+			return new \WP_Error(
+				'dlx_pw_versions_disabled',
+				__( 'Pattern versions are disabled.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$parent_id = absint( $request->get_param( 'parentId' ) );
+		if ( ! $parent_id || ! current_user_can( 'edit_post', $parent_id ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You cannot create versions for this pattern.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-versions-create-version-' . $parent_id ) || ! current_user_can( 'edit_posts' ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You do not have permission to create versions for this pattern.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$parent = get_post( $parent_id );
+		if ( ! $parent || 'wp_block' !== $parent->post_type ) {
+			return new \WP_Error(
+				'rest_invalid_param',
+				__( 'Invalid pattern.', 'pattern-wrangler' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$content = Functions::resolve_pattern_markup_for_storage( $parent->post_content );
+		if ( '' === trim( $content ) ) {
+			return new \WP_Error(
+				'rest_invalid_param',
+				__( 'Version content cannot be empty.', 'pattern-wrangler' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$title = sanitize_text_field( $request->get_param( 'title' ) );
+		if ( '' === $title ) {
+			return new \WP_Error(
+				'rest_invalid_param',
+				__( 'Title is required.', 'pattern-wrangler' ),
+				array( 'status' => 400 )
+			);
+		}
+		$excerpt = sanitize_textarea_field( (string) wp_unslash( $request->get_param( 'description' ) ) );
+
+		$version_id = wp_insert_post(
+			array(
+				'post_title'   => $title,
+				'post_content' => wp_slash( $content ),
+				'post_excerpt' => wp_slash( $excerpt ),
+				'post_status'  => 'publish',
+				'post_type'    => Versions::POST_TYPE,
+				'post_parent'  => $parent_id,
+			),
+			true
+		);
+
+		if ( is_wp_error( $version_id ) ) {
+			return $version_id;
+		}
+
+		$sync_status_key   = Versions::PATTERN_SYNC_STATUS_META_KEY;
+		$parent_terms      = wp_get_post_terms( $parent_id, 'wp_pattern_category', array( 'fields' => 'ids' ) );
+		$category_term_ids = array();
+		if ( ! is_wp_error( $parent_terms ) && is_array( $parent_terms ) ) {
+			$category_term_ids = array_values( array_unique( array_map( 'absint', $parent_terms ) ) );
+		}
+
+		$parent_sync              = get_post_meta( $parent_id, $sync_status_key, true );
+		$pattern_sync_status_meta = ( 'unsynced' === $parent_sync ) ? 'unsynced' : '';
+
+		wp_set_post_terms( $version_id, $category_term_ids, 'wp_pattern_category', false );
+
+		if ( 'unsynced' === $pattern_sync_status_meta ) {
+			update_post_meta( $version_id, $sync_status_key, 'unsynced' );
+		} else {
+			delete_post_meta( $version_id, $sync_status_key );
+		}
+
+		return rest_ensure_response(
+			array(
+				'id'    => absint( $version_id ),
+				'title' => $title,
+			)
+		);
 	}
 }

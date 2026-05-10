@@ -48,6 +48,7 @@ const Main = () => {
 				showMenusUI: data.showMenusUI,
 				makePatternsExportable: data.makePatternsExportable,
 				disablePatternRevisions: data.disablePatternRevisions,
+				enableVersionsModule: data.enableVersionsModule ?? false,
 				patternWranglerMenuLocation: data.patternWranglerMenuLocation,
 				patternsDefaultView:
 					dlxPatternWranglerAdmin.patternsDefaultView || 'all',
@@ -85,10 +86,7 @@ const Main = () => {
 					control={ control }
 					render={ ( { field: { onChange, value } } ) => (
 						<ToggleControl
-							label={ __(
-								'Disable Pattern Revisions',
-								'pattern-wrangler'
-							) }
+							label={ __( 'Disable Pattern Revisions', 'pattern-wrangler' ) }
 							checked={ networkLocksRevisions ? true : value }
 							disabled={ networkLocksRevisions }
 							help={ __(
@@ -1100,6 +1098,35 @@ const Main = () => {
 														{ __( 'In Appearance', 'pattern-wrangler' ) }
 													</option>
 												</SelectControl>
+											) }
+										/>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									{ __( 'Pattern Versions', 'pattern-wrangler' ) }
+								</th>
+								<td>
+									<div className="dlx-admin__row">
+										<Controller
+											name="enableVersionsModule"
+											control={ control }
+											render={ ( { field: { onChange, value } } ) => (
+												<ToggleControl
+													label={ __(
+														'Enable pattern versions module',
+														'pattern-wrangler'
+													) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __(
+														'Adds checkpoints (snapshots) in the block editor sidebar and optional auto-snapshots on save.',
+														'pattern-wrangler'
+													) }
+												/>
 											) }
 										/>
 									</div>
