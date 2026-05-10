@@ -4,7 +4,14 @@ import { registerPlugin } from '@wordpress/plugins';
 import { PluginSidebar } from '@wordpress/editor';
 import { parse } from '@wordpress/blocks';
 import { BlockPreview } from '@wordpress/block-editor';
-import { Button, Spinner, PanelBody, BaseControl } from '@wordpress/components';
+import { moreVertical } from '@wordpress/icons';
+import {
+	Button,
+	Spinner,
+	PanelBody,
+	BaseControl,
+	DropdownMenu,
+} from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
 import PatternVersionCreateModal from '../../react/views/patterns/components/PatternVersionCreateModal';
@@ -133,6 +140,36 @@ const PatternVersionsSidebar = () => {
 												<h4 className="dlx-pw-version-item-header">
 													{ v.title }
 												</h4>
+												<DropdownMenu
+													icon={ moreVertical }
+													label={ __( 'More', 'pattern-wrangler' ) }
+													toggleProps={ {
+														isSmall: true,
+													} }
+													popoverProps={ {
+														placement: 'left-start',
+														offset: 5,
+														className: 'dlx-pw-version-item-popover-content',
+													} }
+													controls={ [
+														{
+															title: __( 'Restore', 'pattern-wrangler' ),
+															onClick: () => console.log( 'restore' ),
+														},
+														{
+															title: __( 'Delete', 'pattern-wrangler' ),
+															onClick: () => console.log( 'delete' ),
+														},
+														{
+															title: __( 'Export', 'pattern-wrangler' ),
+															onClick: () => console.log( 'export' ),
+														},
+														{
+															title: __( 'Copy', 'pattern-wrangler' ),
+															onClick: () => console.log( 'copy' ),
+														},
+													] }
+												/>
 											</div>
 											<div className="dlx-pw-version-item-media">
 												<BlockPreview blocks={ parse( v.content ) } />
