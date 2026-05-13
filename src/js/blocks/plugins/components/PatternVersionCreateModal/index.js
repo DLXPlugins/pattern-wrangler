@@ -8,6 +8,7 @@ import {
 } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { AlertTriangle } from 'lucide-react';
+import classnames from 'classnames';
 
 import { __ } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
@@ -112,6 +113,11 @@ const PatternVersionCreateModal = ( props ) => {
 											'Enter the title of the version.',
 											'pattern-wrangler'
 										) }
+										className={ classnames( {
+											'is-required': true,
+											'is-error': errors?.versionTitle,
+											'has-error': errors?.versionTitle,
+										} ) }
 										value={ field.value }
 										onChange={ ( value ) => field.onChange( value ) }
 										disabled={ isSaving }
@@ -123,15 +129,12 @@ const PatternVersionCreateModal = ( props ) => {
 							<Controller
 								control={ control }
 								name="versionDescription"
-								rules={ {
-									required: __(
-										'Version description is required.',
-										'pattern-wrangler'
-									),
-								} }
 								render={ ( { field } ) => (
 									<TextareaControl
-										label={ __( 'Version Description', 'pattern-wrangler' ) }
+										label={ __(
+											'Version Description (optional)',
+											'pattern-wrangler'
+										) }
 										help={ __(
 											'Enter the description of the version.',
 											'pattern-wrangler'
