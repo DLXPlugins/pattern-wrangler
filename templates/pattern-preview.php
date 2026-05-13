@@ -221,8 +221,9 @@ add_action(
 
 // Get header if theme is not FSE theme.
 if ( ! wp_is_block_theme() ) {
-	$blocks       = do_blocks( $pattern_content );
-	$current_post = $wp_query->post;
+	$blocks = do_blocks( $pattern_content );
+	global $wp_query;
+	$current_post = $wp_query->post ?? null;
 
 	/**
 	 * Filter to use default header or not.
