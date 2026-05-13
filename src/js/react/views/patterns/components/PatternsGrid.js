@@ -393,39 +393,29 @@ const Interface = ( props ) => {
 
 	useEffect( () => {
 		const onPreviewDeleteRequest = ( event ) => {
-			const pattern = getPatternFromPreviewEvent(
-				event.detail?.patternId
-			);
+			const pattern = getPatternFromPreviewEvent( event.detail?.patternId );
 			if ( pattern && pattern.isLocal ) {
 				setIsDeleteModalOpen( { items: [ pattern ] } );
 			}
 		};
 
 		const onPreviewDisableRequest = ( event ) => {
-			const pattern = getPatternFromPreviewEvent(
-				event.detail?.patternId
-			);
+			const pattern = getPatternFromPreviewEvent( event.detail?.patternId );
 			if ( pattern && ! pattern.isLocal && ! pattern.isDisabled ) {
 				setIsPauseModalOpen( { items: [ pattern ] } );
 			}
 		};
 
 		const onPreviewEditRequest = ( event ) => {
-			const pattern = getPatternFromPreviewEvent(
-				event.detail?.patternId
-			);
+			const pattern = getPatternFromPreviewEvent( event.detail?.patternId );
 			if ( pattern && pattern.isLocal && ! pattern.isDisabled ) {
-				const redirectUrl = encodeURIComponent(
-					window.location.href
-				);
+				const redirectUrl = encodeURIComponent( window.location.href );
 				window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ pattern.id }&action=edit&redirect_to=${ redirectUrl }`;
 			}
 		};
 
 		const onPreviewExportRequest = ( event ) => {
-			const pattern = getPatternFromPreviewEvent(
-				event.detail?.patternId
-			);
+			const pattern = getPatternFromPreviewEvent( event.detail?.patternId );
 			if ( pattern ) {
 				exportPattern( pattern );
 			}
@@ -599,7 +589,7 @@ const Interface = ( props ) => {
 									setIsCopyToLocalModalOpen( { item } );
 								} }
 							>
-								{ __( 'Copy to New Pattern', 'pattern-wrangler' ) }
+								{ _x( 'Copy to New', 'pattern-wrangler', 'Copy to New Pattern' ) }
 							</Button>
 							{ ' | ' }
 							<Button
@@ -611,6 +601,17 @@ const Interface = ( props ) => {
 								} }
 							>
 								{ _x( 'Export', 'Export Pattern', 'pattern-wrangler' ) }
+							</Button>
+							{ ' | ' }
+							<Button
+								variant="link"
+								onClick={ ( e ) => {
+									e.preventDefault();
+									e.stopPropagation();
+									setIsPauseModalOpen( { items: [ item ] } );
+								} }
+							>
+								{ _x( 'Disable', 'Disable Pattern', 'pattern-wrangler' ) }
 							</Button>
 						</>
 					) }
@@ -1006,7 +1007,7 @@ const Interface = ( props ) => {
 							pattern_id: item.id,
 							viewport_width: viewportWidth,
 							iframe_preview: true,
-						} )
+						  } )
 						: '';
 
 					// Determine badge type based on pattern properties.
@@ -1108,7 +1109,7 @@ const Interface = ( props ) => {
 										category.customLabel || category.label || category.name,
 								value: category.slug,
 							};
-						} )
+						  } )
 						: null,
 			},
 			{
@@ -1133,7 +1134,7 @@ const Interface = ( props ) => {
 									value: asset.slug,
 								};
 							}
-						)
+						  )
 						: null,
 			},
 			{
@@ -1263,7 +1264,12 @@ const Interface = ( props ) => {
 				label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
 			},
 		],
-		[ nonEmptyCategories, patternsDisplay, previewQueueState, lightboxGalleryItems ]
+		[
+			nonEmptyCategories,
+			patternsDisplay,
+			previewQueueState,
+			lightboxGalleryItems,
+		]
 	);
 
 	const actions = useMemo(
@@ -2362,10 +2368,12 @@ const Interface = ( props ) => {
 
 								// Now disable the registered pattern.
 								if ( disableRegisteredPattern ) {
-									const itemIdsAndNonces = [ {
-										id: isCopyToLocalModalOpen.item.id,
-										nonce: isCopyToLocalModalOpen.item.editNonce,
-									} ];
+									const itemIdsAndNonces = [
+										{
+											id: isCopyToLocalModalOpen.item.id,
+											nonce: isCopyToLocalModalOpen.item.editNonce,
+										},
+									];
 									dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
 								}
 							}
@@ -2550,7 +2558,11 @@ const Interface = ( props ) => {
 						onRequestClose={ () => setIsDuplicateModalOpen( null ) }
 						isOpen={ isDuplicateModalOpen }
 						categories={ localCategories }
-						title={ isDuplicateModalOpen.title + ' ' + __( '(Copy)', 'pattern-wrangler' ) }
+						title={
+							isDuplicateModalOpen.title +
+							' ' +
+							__( '(Copy)', 'pattern-wrangler' )
+						}
 						onDuplicate={ async( patternId ) => {
 							if ( patternId ) {
 								const getPatternResponse = await apiFetch( {
