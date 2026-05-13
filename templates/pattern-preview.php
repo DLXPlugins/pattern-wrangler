@@ -266,7 +266,7 @@ if ( ! wp_is_block_theme() ) {
 		$can_overflow = false;
 	}
 	?>
-	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; <?php echo ! $can_overflow ? 'overflow: hidden;' : ''; ?> display: relative; box-sizing: border-box; width: 100%; padding: 24px;">
+	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; <?php echo ! $can_overflow ? 'overflow: hidden;' : ''; ?> display: relative; box-sizing: border-box; width: 100%;">
 	<?php
 		wp_body_open();
 	?>
