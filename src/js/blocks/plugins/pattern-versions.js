@@ -300,11 +300,14 @@ const PatternVersionsSidebar = () => {
 					nonce={ isRestoreModalOpen.version.restoreNonce }
 					patternId={ postId }
 					onRequestClose={ () => setIsRestoreModalOpen( false ) }
-					onRestore={ ( { content, categories } ) => {
+					onRestore={ ( { content, categories }, shouldCreateSnapshot ) => {
 						const blocks = parse( content );
 						dispatch( 'core/editor' ).resetEditorBlocks( blocks );
 						dispatch( 'core/editor' ).editPost( { categories } );
 						dispatch( 'core/editor' ).savePost();
+						if ( shouldCreateSnapshot ) {
+							fetchVersions();
+						}
 						setIsRestoreModalOpen( false );
 					} }
 					isEditedPostDirty={ hasUnsavedChanges }

@@ -52,7 +52,7 @@ const VersionRestoreModal = ( props ) => {
 		if ( response.error ) {
 			setError( 'versionTitle', response.error );
 		}
-		props.onRestore( response );
+		props.onRestore( response, formValues.shouldCreateSnapshot );
 		setIsSaving( false );
 	};
 
