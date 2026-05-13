@@ -5,6 +5,7 @@ import { PluginSidebar } from '@wordpress/editor';
 import { Button, Spinner, PanelBody, BaseControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
+import { downloadBlob } from '@wordpress/blob';
 import { copyToClipboard } from '../../utils/pattern-code-helpers';
 import PatternVersionCreateModal from './components/PatternVersionCreateModal';
 import PatternVersionCards from './components/PatternVersionCards';
@@ -45,6 +46,28 @@ const PatternWranglerIcon = (
 		/>
 	</svg>
 );
+
+/**
+ * Build a safe download filename base for a version JSON export.
+ *
+ * @param {string} title     Version title.
+ * @param {number} versionId Version post ID when title is empty.
+ * @return {string} File base without extension.
+ */
+const getVersionExportFileBase = ( title, versionId ) => {
+	let base = ( title || '' ).trim();
+	if ( ! base ) {
+		base = sprintf( 'pattern-version-%d', versionId );
+	}
+	base = base
+		.replace( /[/\\?%*:|"<>]+/g, '-' )
+		.replace( /\s+/g, '-' )
+		.replace( /^-+|-+$/g, '' );
+	if ( ! base ) {
+		base = sprintf( 'pattern-version-%d', versionId );
+	}
+	return base;
+};
 
 /**
  * Pattern versions sidebar for wp_block.
@@ -100,35 +123,69 @@ const PatternVersionsSidebar = () => {
 		fetchVersions();
 	}, [ fetchVersions ] );
 
-	const handleActionClick = useCallback( async( action, version ) => {
-		switch ( action ) {
-			case 'delete':
-				closeAllModals();
-				setIsDeleteModalOpen( { version } );
-				break;
-			case 'export':
-				break;
-			case 'copy': {
-				const ok = await copyToClipboard( version.content ?? '' );
-				if ( ok ) {
-					createNotice(
-						'success',
-						__( 'Version copied to clipboard.', 'pattern-wrangler' ),
-						{ type: 'snackbar', isDismissible: true }
-					);
-				} else {
-					createNotice(
-						'error',
-						__( 'Could not copy to clipboard.', 'pattern-wrangler' ),
-						{ type: 'snackbar', isDismissible: true }
-					);
+	const handleActionClick = useCallback(
+		async( action, version ) => {
+			switch ( action ) {
+				case 'delete':
+					closeAllModals();
+					setIsDeleteModalOpen( { version } );
+					break;
+				case 'export': {
+					try {
+						const syncStatus =
+							version.wp_pattern_sync_status === 'unsynced' ? 'unsynced' : '';
+						const fileContent = JSON.stringify(
+							{
+								__file: 'wp_block',
+								title: version.title,
+								content: version.content ?? '',
+								syncStatus,
+							},
+							null,
+							2
+						);
+						const fileBase = getVersionExportFileBase(
+							version.title,
+							version.id
+						);
+						downloadBlob( `${ fileBase }.json`, fileContent, 'application/json' );
+						createNotice(
+							'success',
+							__( 'Version exported.', 'pattern-wrangler' ),
+							{ type: 'snackbar', isDismissible: true }
+						);
+					} catch ( err ) {
+						createNotice(
+							'error',
+							__( 'Could not export version.', 'pattern-wrangler' ),
+							{ type: 'snackbar', isDismissible: true }
+						);
+					}
+					break;
 				}
-				break;
+				case 'copy': {
+					const ok = await copyToClipboard( version.content ?? '' );
+					if ( ok ) {
+						createNotice(
+							'success',
+							__( 'Version copied to clipboard.', 'pattern-wrangler' ),
+							{ type: 'snackbar', isDismissible: true }
+						);
+					} else {
+						createNotice(
+							'error',
+							__( 'Could not copy to clipboard.', 'pattern-wrangler' ),
+							{ type: 'snackbar', isDismissible: true }
+						);
+					}
+					break;
+				}
+				case 'restore':
+					break;
 			}
-			case 'restore':
-				break;
-		}
-	}, [ closeAllModals, createNotice ] );
+		},
+		[ closeAllModals, createNotice ]
+	);
 
 	return (
 		<>
