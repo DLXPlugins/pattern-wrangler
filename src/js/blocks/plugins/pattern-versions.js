@@ -3,7 +3,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginSidebar } from '@wordpress/editor';
 import { Button, Spinner, PanelBody, BaseControl } from '@wordpress/components';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect, useDispatch, dispatch } from '@wordpress/data';
+import { parse } from '@wordpress/blocks';
 import apiFetch from '@wordpress/api-fetch';
 import { downloadBlob } from '@wordpress/blob';
 import { copyToClipboard } from '../../utils/pattern-code-helpers';
@@ -11,6 +12,7 @@ import PatternVersionCreateModal from './components/PatternVersionCreateModal';
 import PatternVersionCards from './components/PatternVersionCards';
 import PatternPreviewVersionModal from './components/PatternPreviewVersionModal';
 import VersionDeleteModal from './components/VersionDeleteModal/index';
+import VersionRestoreModal from './components/VersionRestoreModal/index';
 
 const PatternWranglerIcon = (
 	<svg
@@ -90,6 +92,7 @@ const PatternVersionsSidebar = () => {
 	const [ createVersionModalOpen, setCreateVersionModalOpen ] = useState( false );
 	const [ previewVersionModalOpen, setPreviewVersionModalOpen ] = useState( null );
 	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( false );
+	const [ isRestoreModalOpen, setIsRestoreModalOpen ] = useState( false );
 
 	const fetchVersions = useCallback( async() => {
 		if ( ! postId ) {
@@ -181,10 +184,12 @@ const PatternVersionsSidebar = () => {
 					break;
 				}
 				case 'restore':
+					closeAllModals();
+					setIsRestoreModalOpen( { version } );
 					break;
 			}
 		},
-		[ closeAllModals, createNotice ]
+		[ closeAllModals, createNotice, setIsRestoreModalOpen ]
 	);
 
 	return (
@@ -287,6 +292,22 @@ const PatternVersionsSidebar = () => {
 							)
 						);
 					} }
+				/>
+			) }
+			{ isRestoreModalOpen && (
+				<VersionRestoreModal
+					id={ isRestoreModalOpen.version.id }
+					nonce={ isRestoreModalOpen.version.restoreNonce }
+					patternId={ postId }
+					onRequestClose={ () => setIsRestoreModalOpen( false ) }
+					onRestore={ ( { content, categories } ) => {
+						const blocks = parse( content );
+						dispatch( 'core/editor' ).resetEditorBlocks( blocks );
+						dispatch( 'core/editor' ).editPost( { categories } );
+						dispatch( 'core/editor' ).savePost();
+						setIsRestoreModalOpen( false );
+					} }
+					isEditedPostDirty={ hasUnsavedChanges }
 				/>
 			) }
 		</>

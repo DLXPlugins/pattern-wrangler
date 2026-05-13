@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
 import React, { Suspense, useState, useEffect } from 'react';
-import { Modal, Button } from '@wordpress/components';
+import { Modal, Button, ToggleControl } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { AlertTriangle } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
-import { useForm, useWatch, useFormState } from 'react-hook-form';
+import { useForm, useWatch, useFormState, Controller } from 'react-hook-form';
 
 // Local imports.
 import Notice from '../../../../react/components/Notice';
@@ -12,17 +12,22 @@ import Notice from '../../../../react/components/Notice';
 /**
  * Version Delete Modal.
  *
- * @param {Object}   props                The props.
- * @param {string}   props.id             The id of the version.
- * @param {string}   props.nonce          The nonce of the version.
- * @param {Function} props.onRequestClose The function to call when the modal is closed.
- * @param {Function} props.onDelete       The function to call when the version is deleted.
+ * @param {Object}   props                      The props.
+ * @param {string}   props.id                   The id of the version.
+ * @param {string}   props.nonce                The nonce of the version.
+ * @param {boolean}  props.shouldCreateSnapshot Whether to show the modal again.
+ * @param {boolean}  props.isEditedPostDirty    Whether the edited post is dirty. Used to determine if a snapshot can be created.
+ * @param {Function} props.onRequestClose       The function to call when the modal is closed.
+ * @param {Function} props.onRestore            The function to call when the version is restored.
  * @return {Object} The rendered component.
  */
-const VersionDeleteModal = ( props ) => {
+const VersionRestoreModal = ( props ) => {
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ canCreateSnapshot ] = useState( ! props.isEditedPostDirty );
 	const { control, handleSubmit, setError } = useForm( {
-		defaultValues: {},
+		defaultValues: {
+			shouldCreateSnapshot: canCreateSnapshot,
+		},
 	} );
 	const formValues = useWatch( { control } );
 	const { errors } = useFormState( {
@@ -32,40 +37,34 @@ const VersionDeleteModal = ( props ) => {
 	const onSubmit = async() => {
 		setIsSaving( true );
 
-		const path = '/dlxplugins/pattern-wrangler/v1/versions';
+		const path = '/dlxplugins/pattern-wrangler/v1/versions/restore';
 
 		const response = await apiFetch( {
 			path,
-			method: 'DELETE',
+			method: 'POST',
 			data: {
 				id: props.id,
+				patternId: props.patternId,
 				nonce: props.nonce,
+				shouldCreateSnapshot: formValues.shouldCreateSnapshot,
 			},
 		} );
 		if ( response.error ) {
 			setError( 'versionTitle', response.error );
 		}
-		props.onDelete( response );
+		props.onRestore( response );
 		setIsSaving( false );
 	};
 
-	useEffect( () => {
-		if ( props.doNotShowAgain ) {
-			onSubmit( formValues );
-		}
-	}, [] );
-	if ( props.doNotShowAgain ) {
-		return null;
-	}
 	/**
 	 * Get the button text.
 	 *
 	 * @return {string} The button text.
 	 */
 	const getButtonText = () => {
-		let buttonText = __( 'Delete Version', 'pattern-wrangler' );
+		let buttonText = __( 'Restore Version', 'pattern-wrangler' );
 		if ( isSaving ) {
-			buttonText = __( 'Deleting Version…', 'pattern-wrangler' );
+			buttonText = __( 'Restoring Version…', 'pattern-wrangler' );
 		}
 		return buttonText;
 	};
@@ -76,7 +75,42 @@ const VersionDeleteModal = ( props ) => {
 	 * @return {string} The modal title.
 	 */
 	const getModalTitle = () => {
-		return __( 'Delete Version', 'pattern-wrangler' );
+		return __( 'Restore Version', 'pattern-wrangler' );
+	};
+
+	const getSnapshotToggle = () => {
+		return (
+			<div className="dlx-pw-modal-admin-row">
+				{ props.isEditedPostDirty && (
+					<Notice
+						className="dlx-pw-admin-notice"
+						status="warning"
+						inline={ true }
+						icon={ () => <AlertTriangle /> }
+					>
+						{ __(
+							'The existing pattern must be saved before creating a snapshot.',
+							'pattern-wrangler'
+						) }
+					</Notice>
+				) }
+				<Controller
+					control={ control }
+					name="shouldCreateSnapshot"
+					render={ ( { field } ) => (
+						<ToggleControl
+							label={ __(
+								'Create Snapshot of the current pattern',
+								'pattern-wrangler'
+							) }
+							checked={ field.value }
+							onChange={ ( value ) => field.onChange( value ) }
+							disabled={ isSaving || ! canCreateSnapshot }
+						/>
+					) }
+				/>
+			</div>
+		);
 	};
 
 	return (
@@ -91,11 +125,12 @@ const VersionDeleteModal = ( props ) => {
 						<div className="dlx-pw-modal-admin-row">
 							<p className="description">
 								{ __(
-									'Are you sure you want to delete this version? This action cannot be undone.',
+									'Are you sure you want to restore this version?',
 									'pattern-wrangler'
 								) }
 							</p>
 						</div>
+						{ getSnapshotToggle() }
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
 							<Button
 								variant="primary"
@@ -130,4 +165,4 @@ const VersionDeleteModal = ( props ) => {
 	);
 };
 
-export default VersionDeleteModal;
+export default VersionRestoreModal;

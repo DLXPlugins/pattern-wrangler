@@ -351,6 +351,28 @@ class Rest {
 				),
 			)
 		);
+		/**
+		 * Restore a pattern version checkpoint (pw_versions).
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/versions/restore',
+			array(
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'rest_restore_pattern_version' ),
+					'permission_callback' => function () {
+						return current_user_can( 'edit_posts' );
+					},
+					'args'                => array(
+						'id' => array(
+							'type'     => 'integer',
+							'required' => true,
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -581,9 +603,9 @@ class Rest {
 	/**
 	 * Re-enable a registered category.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_map_category( $request ) {
 
@@ -656,9 +678,9 @@ class Rest {
 	/**
 	 * Pause a pattern.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_pause_pattern( $request ) {
 
@@ -705,9 +727,9 @@ class Rest {
 	/**
 	 * Publish a pattern.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_publish_pattern( $request ) {
 
@@ -754,9 +776,9 @@ class Rest {
 	/**
 	 * Assign a category to a pattern.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_tag_pattern( $request ) {
 
@@ -832,9 +854,9 @@ class Rest {
 	/**
 	 * Create a pattern.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_create_pattern( $request ) {
 		// Check nonce and permissions.
@@ -915,9 +937,9 @@ class Rest {
 	/**
 	 * Duplicate a pattern.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_duplicate_pattern( $request ) {
 		// Check nonce and permissions.
@@ -988,9 +1010,9 @@ class Rest {
 	/**
 	 * Create a pattern.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_update_pattern( $request ) {
 		// Check nonce and permissions.
@@ -1071,9 +1093,9 @@ class Rest {
 	/**
 	 * Create a category.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_create_category( $request ) {
 		// Check nonce and permissions.
@@ -1128,9 +1150,9 @@ class Rest {
 	/**
 	 * Edit a registered category.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_edit_registered_category( $request ) {
 		// Check nonce and permissions.
@@ -1186,9 +1208,9 @@ class Rest {
 	/**
 	 * Update a category.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_update_category( $request ) {
 		// Check nonce and permissions.
@@ -1621,7 +1643,7 @@ class Rest {
 	/**
 	 * Get all categories.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_get_all_categories() {
 		// Check nonce and permissions.
@@ -1644,7 +1666,7 @@ class Rest {
 	/**
 	 * Returns the available sites in the network.
 	 *
-	 * @param WP_REST_Request $request The REST Request data.
+	 * @param \WP_REST_Request $request The REST Request data.
 	 **/
 	public function rest_get_sites( $request ) {
 		$search      = sanitize_text_field( urldecode( $request->get_param( 'search' ) ) );
@@ -1676,9 +1698,9 @@ class Rest {
 	/**
 	 * Get a pattern by ID.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
-	 * @return WP_REST_Response The REST response.
+	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_get_pattern( $request ) {
 		// Check nonce and permissions.
@@ -1729,7 +1751,7 @@ class Rest {
 	/**
 	 * Makes sure the search string is valid
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
 	 * @return bool Whether to the parameter is numeric or not.
 	 **/
@@ -1745,7 +1767,7 @@ class Rest {
 	/**
 	 * Sanitizes search string
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 *
 	 * @return string Sanitized search string.
 	 **/
@@ -1757,7 +1779,7 @@ class Rest {
 	/**
 	 * Sanitizes the pattern preview image.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 * @return array Sanitized pattern preview image.
 	 */
 	public function rest_preview_image_sanitize( $request ) {
@@ -1772,7 +1794,7 @@ class Rest {
 	/**
 	 * Validates the pattern preview image.
 	 *
-	 * @param WP_REST_Request $request The REST request.
+	 * @param \WP_REST_Request $request The REST request.
 	 * @return bool Whether the pattern preview image is valid.
 	 */
 	public function rest_preview_image_validate( $request ) {
@@ -2013,6 +2035,147 @@ class Rest {
 		return rest_ensure_response(
 			array(
 				'id' => absint( $version_id ),
+			)
+		);
+	}
+
+	/**
+	 * Restore a pattern version checkpoint (pw_versions).
+	 *
+	 * @param \WP_REST_Request $request REST request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function rest_restore_pattern_version( $request ) {
+		$options = Options::get_options();
+		if ( empty( $options['enableVersionsModule'] ) ) {
+			return new \WP_Error(
+				'dlx_pw_versions_disabled',
+				__( 'Pattern versions are disabled.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$version_id = absint( $request->get_param( 'id' ) );
+		if ( ! $version_id || ! current_user_can( 'edit_post', $version_id ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You cannot restore this version.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+		$pattern_id = absint( $request->get_param( 'patternId' ) );
+		if ( ! $pattern_id || ! current_user_can( 'edit_post', $pattern_id ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You cannot restore this version.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-versions-restore-version-' . $version_id ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You do not have permission to restore this version.', 'pattern-wrangler' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$version = get_post( $version_id );
+		if ( ! $version || Versions::POST_TYPE !== $version->post_type ) {
+			return new \WP_Error(
+				'rest_invalid_param',
+				__( 'Invalid version.', 'pattern-wrangler' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$can_create_snapshot = boolval( $request->get_param( 'shouldCreateSnapshot' ) );
+		$snapshot_id         = null;
+		if ( $can_create_snapshot ) {
+			$pattern = get_post( $pattern_id );
+			if ( ! $pattern || 'wp_block' !== $pattern->post_type ) {
+				return new \WP_Error(
+					'rest_invalid_param',
+					__( 'Invalid pattern.', 'pattern-wrangler' ),
+					array( 'status' => 400 )
+				);
+			}
+			$content = Functions::resolve_pattern_markup_for_storage( $pattern->post_content );
+			if ( '' === trim( $content ) ) {
+				return new \WP_Error(
+					'rest_invalid_param',
+					__( 'Version content cannot be empty.', 'pattern-wrangler' ),
+					array( 'status' => 400 )
+				);
+			}
+
+			$title   = esc_html__( 'Snapshot Before Restore', 'pattern-wrangler' );
+			$excerpt = esc_html__( 'This is a snapshot of the pattern before it was restored.', 'pattern-wrangler' );
+
+			$current_user = wp_get_current_user();
+
+			$snapshot_id = wp_insert_post(
+				array(
+					'post_title'   => $title,
+					'post_content' => wp_slash( $content ),
+					'post_excerpt' => wp_slash( $excerpt ),
+					'post_status'  => 'publish',
+					'post_type'    => Versions::POST_TYPE,
+					'post_parent'  => absint( $pattern_id ),
+					'post_author'  => absint( $current_user->ID ),
+				),
+				true
+			);
+
+			if ( is_wp_error( $snapshot_id ) ) {
+				return $snapshot_id;
+			}
+
+			$sync_status_key   = Versions::PATTERN_SYNC_STATUS_META_KEY;
+			$parent_terms      = wp_get_post_terms( $pattern_id, 'wp_pattern_category', array( 'fields' => 'ids' ) );
+			$category_term_ids = array();
+			if ( ! is_wp_error( $parent_terms ) && is_array( $parent_terms ) ) {
+				$category_term_ids = array_values( array_unique( array_map( 'absint', $parent_terms ) ) );
+			}
+
+			$parent_sync              = get_post_meta( $pattern_id, $sync_status_key, true );
+			$pattern_sync_status_meta = ( 'unsynced' === $parent_sync ) ? 'unsynced' : '';
+
+			wp_set_post_terms( $snapshot_id, $category_term_ids, 'wp_pattern_category', false );
+
+			if ( 'unsynced' === $pattern_sync_status_meta ) {
+				update_post_meta( $snapshot_id, $sync_status_key, 'unsynced' );
+			} else {
+				delete_post_meta( $snapshot_id, $sync_status_key );
+			}
+		}
+
+		$updated = wp_update_post(
+			array(
+				'ID'           => $pattern_id,
+				'post_content' => wp_slash( $version->post_content ),
+			)
+		);
+
+		// Set the version categories.
+		$version_categories = wp_get_post_terms( $version_id, 'wp_pattern_category', array( 'fields' => 'ids' ) );
+		if ( ! is_wp_error( $version_categories ) && is_array( $version_categories ) ) {
+			wp_set_post_terms( $pattern_id, $version_categories, 'wp_pattern_category', false );
+			$version_categories = array_values( array_unique( array_map( 'absint', $version_categories ) ) );
+		} else {
+			$version_categories = array();
+		}
+
+		if ( is_wp_error( $updated ) ) {
+			return $updated;
+		}
+
+		return rest_ensure_response(
+			array(
+				'content'    => wp_unslash( $version->post_content ),
+				'snapshotId' => absint( $snapshot_id ),
+				'categories' => $version_categories,
 			)
 		);
 	}
