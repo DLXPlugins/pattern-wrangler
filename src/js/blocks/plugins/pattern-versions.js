@@ -9,6 +9,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { downloadBlob } from '@wordpress/blob';
 import { copyToClipboard } from '../../utils/pattern-code-helpers';
 import PatternVersionCreateModal from './components/PatternVersionCreateModal';
+import PatternVersionCloneToPatternModal from './components/PatternVersionCloneToPatternModal';
 import PatternVersionCards from './components/PatternVersionCards';
 import PatternPreviewVersionModal from './components/PatternPreviewVersionModal';
 import VersionDeleteModal from './components/VersionDeleteModal/index';
@@ -97,6 +98,7 @@ const PatternVersionsSidebar = () => {
 	const [ previewVersionModalOpen, setPreviewVersionModalOpen ] = useState( null );
 	const [ isDeleteModalOpen, setIsDeleteModalOpen ] = useState( false );
 	const [ isRestoreModalOpen, setIsRestoreModalOpen ] = useState( false );
+	const [ cloneFromVersion, setCloneFromVersion ] = useState( null );
 
 	const fetchVersions = useCallback( async() => {
 		if ( ! postId ) {
@@ -124,6 +126,7 @@ const PatternVersionsSidebar = () => {
 	const closeAllModals = useCallback( () => {
 		setCreateVersionModalOpen( false );
 		setPreviewVersionModalOpen( null );
+		setCloneFromVersion( null );
 	}, [] );
 
 	useEffect( () => {
@@ -190,6 +193,10 @@ const PatternVersionsSidebar = () => {
 				case 'restore':
 					closeAllModals();
 					setIsRestoreModalOpen( { version } );
+					break;
+				case 'clone':
+					closeAllModals();
+					setCloneFromVersion( { version } );
 					break;
 			}
 		},
@@ -285,6 +292,14 @@ const PatternVersionsSidebar = () => {
 					version={ previewVersionModalOpen.version }
 					onRequestClose={ () => setPreviewVersionModalOpen( false ) }
 					onActionClick={ handleActionClick }
+				/>
+			) }
+			{ cloneFromVersion && (
+				<PatternVersionCloneToPatternModal
+					key={ cloneFromVersion.version.id }
+					version={ cloneFromVersion.version }
+					title={ __( 'Clone version to new pattern', 'pattern-wrangler' ) }
+					onRequestClose={ () => setCloneFromVersion( null ) }
 				/>
 			) }
 			{ isDeleteModalOpen && (
