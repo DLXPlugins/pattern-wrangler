@@ -39,7 +39,7 @@ const VersionRestoreModal = ( props ) => {
 
 		const path = '/dlxplugins/pattern-wrangler/v1/versions/restore';
 
-		const response = await apiFetch( {
+		apiFetch( {
 			path,
 			method: 'POST',
 			data: {
@@ -48,12 +48,20 @@ const VersionRestoreModal = ( props ) => {
 				nonce: props.nonce,
 				shouldCreateSnapshot: formValues.shouldCreateSnapshot,
 			},
-		} );
-		if ( response.error ) {
-			setError( 'versionTitle', response.error );
-		}
-		props.onRestore( response, formValues.shouldCreateSnapshot );
-		setIsSaving( false );
+		} )
+			.then( ( response ) => {
+				if ( response.error ) {
+					setError( 'versionTitle', response.error );
+				} else {
+					props.onRestore( response, formValues.shouldCreateSnapshot );
+				}
+			} )
+			.catch( ( error ) => {
+				setError( 'versionTitle', error.message );
+			} )
+			.finally( () => {
+				setIsSaving( false );
+			} );
 	};
 
 	/**
