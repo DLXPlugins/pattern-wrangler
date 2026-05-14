@@ -602,17 +602,21 @@ const Interface = ( props ) => {
 							>
 								{ _x( 'Export', 'Export Pattern', 'pattern-wrangler' ) }
 							</Button>
-							{ ' | ' }
-							<Button
-								variant="link"
-								onClick={ ( e ) => {
-									e.preventDefault();
-									e.stopPropagation();
-									setIsPauseModalOpen( { items: [ item ] } );
-								} }
-							>
-								{ _x( 'Disable', 'Disable Pattern', 'pattern-wrangler' ) }
-							</Button>
+							{ ! item.isDisabled && (
+								<>
+									{ ' | ' }
+									<Button
+										variant="link"
+										onClick={ ( e ) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setIsPauseModalOpen( { items: [ item ] } );
+										} }
+									>
+										{ _x( 'Disable', 'Disable Pattern', 'pattern-wrangler' ) }
+									</Button>
+								</>
+							) }
 						</>
 					) }
 				</div>
