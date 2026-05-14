@@ -858,9 +858,20 @@ const Interface = ( props ) => {
 		if ( 'undefined' !== searchField && '' !== searchField ) {
 			patternsCopy = patternsCopy.filter( ( pattern ) => {
 				const patternLabel = pattern.label || pattern.title;
-				return patternLabel
+				const patternLabelMatches = patternLabel
 					.toLowerCase()
 					.includes( ( newView.search || searchField ).toLowerCase() );
+				const patternCategoriesMatches = pattern.categorySlugs.some(
+					( category ) => {
+						const categoryName =
+							category.name || category.label || category.toString();
+						return categoryName
+							.toLowerCase()
+							.includes( ( newView.search || searchField ).toLowerCase() );
+					}
+				);
+				const patternMatches = [ patternLabelMatches, patternCategoriesMatches ];
+				return patternMatches.some( ( match ) => match );
 			} );
 		}
 
