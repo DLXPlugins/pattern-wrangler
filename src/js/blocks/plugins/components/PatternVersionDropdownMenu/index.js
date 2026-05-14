@@ -32,15 +32,19 @@ export default function PatternVersionDropdownMenu( {
 					onClick: () => onActionClick( 'restore', version ),
 				},
 				{
+					title: __( 'Clone to Pattern', 'pattern-wrangler' ),
+					onClick: () => onActionClick( 'clone', version ),
+				},
+				{
 					title: __( 'Delete', 'pattern-wrangler' ),
 					onClick: () => onActionClick( 'delete', version ),
 				},
 				{
-					title: __( 'Export', 'pattern-wrangler' ),
+					title: __( 'Export to JSON', 'pattern-wrangler' ),
 					onClick: () => onActionClick( 'export', version ),
 				},
 				{
-					title: __( 'Copy', 'pattern-wrangler' ),
+					title: __( 'Copy to Clipboard', 'pattern-wrangler' ),
 					onClick: () => onActionClick( 'copy', version ),
 				},
 			] }
