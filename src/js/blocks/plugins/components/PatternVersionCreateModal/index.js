@@ -53,7 +53,7 @@ const PatternVersionCreateModal = ( props ) => {
 	const onSubmit = async( formData ) => {
 		setIsSaving( true );
 
-		const response = await apiFetch( {
+		apiFetch( {
 			path: '/dlxplugins/pattern-wrangler/v1/versions',
 			method: 'POST',
 			data: {
@@ -62,13 +62,20 @@ const PatternVersionCreateModal = ( props ) => {
 				description: formData.versionDescription,
 				nonce: props.patternNonce,
 			},
-		} );
-		if ( response?.error ) {
-			setError( 'versionTitle', { message: response.error } );
-		} else {
-			props.onCreate( response );
-		}
-		setIsSaving( false );
+		} )
+			.then( ( response ) => {
+				if ( response?.error ) {
+					setError( 'versionTitle', { message: response.error } );
+				} else {
+					props.onCreate( response );
+				}
+			} )
+			.catch( ( error ) => {
+				setError( 'versionTitle', { message: error.message } );
+			} )
+			.finally( () => {
+				setIsSaving( false );
+			} );
 	};
 
 	/**

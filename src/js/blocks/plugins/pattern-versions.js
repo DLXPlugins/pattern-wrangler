@@ -77,13 +77,17 @@ const getVersionExportFileBase = ( title, versionId ) => {
  * @return {JSX.Element} Markup.
  */
 const PatternVersionsSidebar = () => {
-	const { postId, hasUnsavedChanges } = useSelect( ( selectStore ) => {
-		const editor = selectStore( 'core/editor' );
-		return {
-			postId: editor.getCurrentPostId(),
-			hasUnsavedChanges: editor.isEditedPostDirty(),
-		};
-	}, [] );
+	const { postId, hasUnsavedChanges, blockContent } = useSelect(
+		( selectStore ) => {
+			const editor = selectStore( 'core/editor' );
+			return {
+				postId: editor.getCurrentPostId(),
+				hasUnsavedChanges: editor.isEditedPostDirty(),
+				blockContent: editor.getEditedPostContent(),
+			};
+		},
+		[]
+	);
 
 	const { createNotice } = useDispatch( 'core/notices' );
 
@@ -192,6 +196,26 @@ const PatternVersionsSidebar = () => {
 		[ closeAllModals, createNotice, setIsRestoreModalOpen ]
 	);
 
+	/**
+	 * Get the help text for the save version button.
+	 *
+	 * @return {string} The help text.
+	 */
+	const getSaveVersionHelp = () => {
+		if ( hasUnsavedChanges ) {
+			return __(
+				'Save or update the pattern in the editor before creating a version.',
+				'pattern-wrangler'
+			);
+		}
+		if ( ! blockContent ) {
+			return __(
+				'The pattern has no content. Please add some content to the pattern before creating a version.',
+				'pattern-wrangler'
+			);
+		}
+		return undefined;
+	};
 	return (
 		<>
 			<PluginSidebar
@@ -205,19 +229,12 @@ const PatternVersionsSidebar = () => {
 						<BaseControl
 							id="dlx-pw-versions-save-version"
 							label={ __( 'Save Version', 'pattern-wrangler' ) }
-							help={
-								hasUnsavedChanges
-									? __(
-										'Save or update the pattern in the editor before creating a version.',
-										'pattern-wrangler'
-									  )
-									: undefined
-							}
+							help={ getSaveVersionHelp() }
 						>
 							<Button
 								variant="secondary"
 								onClick={ () => setCreateVersionModalOpen( true ) }
-								disabled={ ! postId || hasUnsavedChanges }
+								disabled={ ! postId || hasUnsavedChanges || ! blockContent }
 							>
 								{ __( 'Save New Version', 'pattern-wrangler' ) }
 							</Button>
