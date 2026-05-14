@@ -73,7 +73,7 @@ class Versions {
 			'capability_type'     => 'post',
 			'map_meta_cap'        => true,
 			'hierarchical'        => false,
-			'supports'            => array( 'title', 'editor', 'excerpt' ),
+			'supports'            => array( 'title', 'editor', 'excerpt', 'author' ),
 			'has_archive'         => false,
 			'rewrite'             => false,
 			'query_var'           => false,
