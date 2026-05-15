@@ -122,7 +122,7 @@ const PatternVersionCreateModal = ( props ) => {
 										) }
 										className={ classnames( {
 											'is-required': true,
-											'is-error': errors?.versionTitle,
+											'has-error': errors?.versionTitle,
 											'has-error': errors?.versionTitle,
 										} ) }
 										value={ field.value }

@@ -123,13 +123,11 @@ const CategoryCreateModal = ( props ) => {
 											'Enter the title of the category.',
 											'pattern-wrangler'
 										) }
-										className={
-											classnames( {
-												'is-required': true,
-												'is-error': errors?.termTitle,
-												'has-error': errors?.termTitle,
-											} )
-										}
+										className={ classnames( {
+											'is-required': true,
+											'has-error': errors?.termTitle,
+											'has-error': errors?.termTitle,
+										} ) }
 										value={ field.value }
 										onChange={ ( value ) => field.onChange( value ) }
 										onBlur={ () => {
@@ -170,19 +168,21 @@ const CategoryCreateModal = ( props ) => {
 											}
 										} }
 										disabled={ isSaving }
-										className={
-											classnames( {
-												'is-required': true,
-												'is-error': errors?.termSlug,
-												'has-error': errors?.termSlug,
-											} )
-										}
+										className={ classnames( {
+											'is-required': true,
+											'has-error': errors?.termSlug,
+											'has-error': errors?.termSlug,
+										} ) }
 									/>
 								) }
 							/>
 						</div>
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
-							<Button variant="primary" type="submit" disabled={ isSaving || hasErrors }>
+							<Button
+								variant="primary"
+								type="submit"
+								disabled={ isSaving || hasErrors }
+							>
 								{ getButtonText() }
 							</Button>
 							<Button
@@ -199,7 +199,9 @@ const CategoryCreateModal = ( props ) => {
 								status="error"
 								inline={ false }
 							>
-								{ Object.values( errors ).map( ( error ) => <p key={ error.message }>{ error.message }</p> ) }
+								{ Object.values( errors ).map( ( error ) => (
+									<p key={ error.message }>{ error.message }</p>
+								) ) }
 							</Notice>
 						) }
 					</form>

@@ -1,6 +1,7 @@
 @import '../../node_modules/@wordpress/components/build-style/style.css';
 @import './button-resets.scss';
 @import './breakpoints-mixin.scss';
+@import './admin-common.scss';
 
 @keyframes dlx-pw-rotate {
 	100% {
@@ -414,173 +415,6 @@ svg.lucide {
 	}
 }
 
-:root {
-	--dlx-pw-admin--color-notice--info: #e3f3f7;
-	--dlx-pw-admin--color-notice--info-alt: #3a8dc4;
-	--dlx-pw-admin--color-notice--success: #eaf5ea;
-	--dlx-pw-admin--color-notice--success-alt: #49a939;
-	--dlx-pw-admin--color-notice--warning: #fef6e1;
-	--dlx-pw-admin--color-notice--warning-alt: #e8a931;
-	--dlx-pw-admin--color-notice--error: #f5e5e4;
-	--dlx-pw-admin--color-notice--error-alt: #bc2b2c;
-	--dlx-pw-admin--color-notice--rating: #ff00f7;
-	--dlx-pw-admin--color-notice--rating-alt: #b1b1b1;
-}
-
-
-/* Error Notices */
-.dlx-pw-admin__notice {
-	margin: 10px 0;
-
-	&.dlx-pw-admin__notice--has-icon {
-		.components-notice__content {
-			display: grid;
-			grid-template-columns: 32px 1fr 1px;
-			align-items: center;
-		}
-
-		&.dlx-pw-admin__notice-appearance--inline .components-notice__content {
-			display: flex;
-
-			.dlx-pw-admin__notice-icon {
-				margin-right: 8px;
-			}
-		}
-	}
-
-	.is-error,
-	.is-critical {
-		background-color: #A13844;
-		border-left-color: #A13844;
-		color: #FFF;
-	}
-
-	.dlx-pw-admin__notice-message {
-		font-size: 1.2em;
-		line-height: 1.4;
-		font-weight: 500;
-	}
-
-	&.dlx-pw-admin__notice-appearance--block .components-notice {
-		border-left: 4px solid transparent;
-		padding: 15px 20px;
-		padding-left: 15px;
-		margin-bottom: 15px;
-		margin-left: 0;
-		margin-right: 0;
-	}
-
-	&.dlx-pw-admin__notice-appearance--inline .components-notice {
-		padding-left: 0;
-		margin-left: 0;
-		margin-right: 0;
-	}
-
-	svg {
-		display: flex;
-		align-items: center;
-		width: 24px;
-		height: 24px;
-	}
-
-	&.dlx-pw-admin__notice-type--error:not(.dlx-pw-admin__notice-appearance--inline) {
-		background-color: var(--dlx-pw-admin--color-notice--error);
-
-		.components-notice {
-			border-left-color: var(--dlx-pw-admin--color-notice--error-alt);
-		}
-
-		svg {
-			color: var(--dlx-pw-admin--color-notice--error-alt);
-		}
-
-		svg path {
-			fill: var(--dlx-pw-admin--color-notice--error-alt);
-		}
-	}
-
-	&.dlx-pw-admin__notice-type--error.dlx-pw-admin__notice-appearance--inline {
-		.dlx-pw-admin__notice-message {
-			color: #FFF;
-			fill: #FFF;
-		}
-
-		svg {
-			width: 16px;
-			height: 16px;
-			margin-left: 15px;
-			margin-right: 8px;
-		}
-
-		.components-notice__content {
-			padding: 8px 15px 8px 0;
-		}
-	}
-
-	&.dlx-pw-admin__notice-type--success {
-		background-color: var(--dlx-pw-admin--color-notice--success);
-
-		.components-notice {
-			border-left-color: var(--dlx-pw-admin--color-notice--success-alt);
-		}
-
-		svg path {
-			fill: var(--dlx-pw-admin--color-notice--success-alt)
-		}
-	}
-
-	&.dlx-pw-admin__notice-type--rating {
-		background-color: var(--dlx-pw-admin--color-notice--rating-alt);
-
-		.components-notice {
-			border-left-color: var(--dlx-pw-admin--color-notice--rating);
-		}
-
-		svg path {
-			fill: var(--dlx-pw-admin--color-notice--rating) !important;
-			stroke: var(--dlx-pw-admin--color-notice--rating) !important;
-		}
-	}
-
-	&.dlx-pw-admin__notice-type--info {
-		background-color: var(--dlx-pw-admin--color-notice--info);
-
-		.components-notice {
-			border-left-color: var(--dlx-pw-admin--color-notice--info-alt);
-		}
-
-		.dlx-pw-admin__notice-icon {
-			svg:not(.lucide) path {
-				fill: var(--dlx-pw-admin--color-notice--info-alt);
-			}
-
-			svg.lucide {
-				color: var(--dlx-pw-admin--color-notice--info-alt);
-			}
-		}
-
-		svg:not(.lucide) path {
-			fill: var(--dlx-pw-admin--color-notice--info-alt);
-		}
-	}
-
-	&.dlx-pw-admin__notice-type--warning {
-		background-color: var(--dlx-pw-admin--color-notice--warning);
-
-		.components-notice {
-			border-left-color: var(--dlx-pw-admin--color-notice--warning-alt);
-		}
-
-		svg:not(.lucide) path {
-			fill: var(--dlx-pw-admin--color-notice--warning-alt);
-		}
-
-		svg.lucide {
-			color: var(--dlx-pw-admin--color-notice--warning-alt);
-		}
-	}
-}
-
 /**
  * License.
  */
@@ -804,12 +638,6 @@ div.can-revoke {
 	}
 }
 
-.has-error {
-	input.components-text-control__input {
-		border: 1px solid var(--dlx-pw-admin--color-notice--error-alt);
-		background-color: var(--dlx-pw-admin--color-notice--error);
-	}
-}
 
 /* Toggle Styles */
 .components-form-toggle.is-checked .components-form-toggle__track {

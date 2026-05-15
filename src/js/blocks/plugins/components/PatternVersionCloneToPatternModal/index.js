@@ -209,7 +209,7 @@ const PatternVersionCloneToPatternModal = ( props ) => {
 										) }
 										className={ classnames( {
 											'is-required': true,
-											'is-error': errors?.patternTitle,
+											'has-error': errors?.patternTitle,
 											'has-error': errors?.patternTitle,
 										} ) }
 										value={ field.value }

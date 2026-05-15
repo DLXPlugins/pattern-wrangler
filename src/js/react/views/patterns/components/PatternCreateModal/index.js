@@ -18,6 +18,7 @@ import { escapeHTML } from '@wordpress/escape-html';
 import { __ } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import { cleanForSlug } from '@wordpress/url';
+import classnames from 'classnames';
 
 // Local imports.
 import Notice from '../../../../components/Notice';
@@ -98,11 +99,13 @@ const PatternCreateModal = ( props ) => {
 			patternSyncStatus: props.patternSyncStatus || syncedDefaultStatus,
 			patternCopyId: copyPatternId,
 		},
+		shouldFocusError: true,
 	} );
 	// eslint-disable-next-line no-unused-vars
 	const formValues = useWatch( { control } );
 	const { errors } = useFormState( {
 		control,
+		shouldFocusError: true,
 	} );
 
 	/**
@@ -208,16 +211,33 @@ const PatternCreateModal = ( props ) => {
 									),
 								} }
 								render={ ( { field } ) => (
-									<TextControl
-										label={ __( 'Pattern Title', 'pattern-wrangler' ) }
-										help={ __(
-											'Enter the title of the pattern.',
-											'pattern-wrangler'
+									<>
+										<TextControl
+											label={ __( 'Pattern Title', 'pattern-wrangler' ) }
+											help={ __(
+												'Enter the title of the pattern.',
+												'pattern-wrangler'
+											) }
+											className={ classnames( {
+												'is-required': true,
+												'has-error': errors?.patternTitle,
+											} ) }
+											value={ field.value }
+											onChange={ ( value ) => field.onChange( value ) }
+											disabled={ isSaving }
+											ref={ field.ref }
+										/>
+										{ errors?.patternTitle && (
+											<Notice
+												className="dlx-pw-admin-notice"
+												status="error"
+												inline={ true }
+												icon={ () => <AlertTriangle /> }
+											>
+												{ errors.patternTitle.message }
+											</Notice>
 										) }
-										value={ field.value }
-										onChange={ ( value ) => field.onChange( value ) }
-										disabled={ isSaving }
-									/>
+									</>
 								) }
 							/>
 						</div>
