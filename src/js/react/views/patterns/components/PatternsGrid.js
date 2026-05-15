@@ -517,6 +517,63 @@ const Interface = ( props ) => {
 	};
 
 	/**
+	 * View for DataViews reset: preset-based filters only, no URL search/categories/pagination carryover.
+	 *
+	 * @return {Object} View matching the user default preset with cleared search and category filters.
+	 */
+	const getResetView = () => {
+		const presetSlug =
+			typeof dlxEnhancedPatternsView !== 'undefined' &&
+			dlxEnhancedPatternsView.patternsDefaultView
+				? dlxEnhancedPatternsView.patternsDefaultView
+				: 'all';
+		const queryArgs = mergePresetIntoQueryArgs( {}, presetSlug );
+		const normalizedStatusFilters = getNormalizedStatusFilters( queryArgs );
+
+		return {
+			type: 'grid',
+			paginationInfo: {
+				totalItems: patterns.length,
+				totalPages: 0,
+			},
+			page: 1,
+			perPage: 10,
+			defaultPerPage: 10,
+			sort: {
+				field: 'title',
+				direction: 'asc',
+			},
+			titleField: 'title',
+			mediaField: 'pattern-view-json',
+			layout: defaultLayouts.grid.layout,
+			fields: [ 'title', 'pattern-view-json' ],
+			search: '',
+			filters: [
+				{
+					field: 'patternType',
+					value: normalizedStatusFilters.patternType,
+				},
+				{
+					field: 'patternStatus',
+					value: normalizedStatusFilters.patternStatus,
+				},
+				{
+					field: 'patternLocalStatus',
+					value: normalizedStatusFilters.patternLocalStatus,
+				},
+				{
+					field: 'patternRegisteredStatus',
+					value: normalizedStatusFilters.patternRegisteredStatus,
+				},
+				{
+					field: 'patternLocalRegisteredStatus',
+					value: normalizedStatusFilters.patternLocalRegisteredStatus,
+				},
+			],
+		};
+	};
+
+	/**
 	 * Returns the quick links for a pattern.
 	 *
 	 * @param {Object} item - The pattern item.
@@ -1880,6 +1937,10 @@ const Interface = ( props ) => {
 				onChangeSelection={ setSelectedItems }
 				defaultLayouts={ defaultLayouts }
 				searchLabel={ __( 'Search Patterns', 'pattern-wrangler' ) }
+				onReset={ () => {
+					setSelectedItems( [] );
+					onChangeView( getResetView() );
+				} }
 			>
 				<div className="dlx-patterns-view-container">
 					<div className="dlx-patterns-view-container-header">
