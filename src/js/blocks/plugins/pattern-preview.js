@@ -6,6 +6,7 @@ import { PluginPostStatusInfo } from '@wordpress/editor';
 import { getQueryArg } from '@wordpress/url';
 import { subscribe } from '@wordpress/data';
 import './pattern-code.js';
+import './pattern-versions.js';
 
 /**
  * Render a Preview Button.
@@ -13,6 +14,9 @@ import './pattern-code.js';
  * @return {Object} The rendered component.
  */
 const PatternPreviewButton = () => {
+	if ( ! dlxPatternWranglerPreview?.showFrontendPreviewButton ) {
+		return null;
+	}
 	return (
 		<PluginPostStatusInfo
 			icon="external"
@@ -20,9 +24,7 @@ const PatternPreviewButton = () => {
 			className="dlx-pw-preview-sidebar"
 		>
 			<div className="dlx-pw-preview-sidebar-content">
-				<Tooltip
-					text={ __( 'Preview Pattern in new tab', 'pattern-wrangler' ) }
-				>
+				<Tooltip text={ __( 'Preview Pattern in new tab', 'pattern-wrangler' ) }>
 					<Button
 						variant="tertiary"
 						href={ dlxPatternWranglerPreview.previewUrl }
@@ -59,7 +61,10 @@ registerPlugin( 'dlx-pattern-wrangler-preview-button', {
 
 // This takes in a redirect_to query arg and stores it in localStorage. It then subscribes to the block editor data, and when the back button is finally rendered, it will redirect to the stored redirect_to URL.
 const RedirectToPatternsPage = () => {
-	const redirectTo = useMemo( () => getQueryArg( window.location.href, 'redirect_to' ), [] );
+	const redirectTo = useMemo(
+		() => getQueryArg( window.location.href, 'redirect_to' ),
+		[]
+	);
 	useEffect( () => {
 		if ( redirectTo ) {
 			localStorage.setItem( 'dlx-pw-redirect-to', redirectTo );
@@ -79,11 +84,15 @@ registerPlugin( 'dlx-pattern-wrangler-redirect-to-patterns-page', {
  */
 const subscribeToData = () => {
 	const unsubscribe = subscribe( () => {
-		const backButton = document.querySelector( '.edit-post-fullscreen-mode-close' );
+		const backButton = document.querySelector(
+			'.edit-post-fullscreen-mode-close'
+		);
 		if ( backButton ) {
 			const redirecTo = localStorage.getItem( 'dlx-pw-redirect-to' );
 			if ( redirecTo ) {
-				backButton.href = decodeURIComponent( localStorage.getItem( 'dlx-pw-redirect-to' ) );
+				backButton.href = decodeURIComponent(
+					localStorage.getItem( 'dlx-pw-redirect-to' )
+				);
 				localStorage.removeItem( 'dlx-pw-redirect-to' );
 			}
 			unsubscribe();

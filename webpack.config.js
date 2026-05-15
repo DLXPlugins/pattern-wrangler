@@ -19,17 +19,11 @@ module.exports = ( env ) => {
 			devtool: 'production' === env.mode ? false : 'source-map',
 			entry: {
 				index: '/src/index.js',
-				'dlx-pw-preview': './src/js/blocks/plugins/pattern-preview.js',
+				'dlx-pw-preview': [ './src/js/blocks/plugins/pattern-preview.js' ],
 				'dlx-pw-fancybox': './src/js/fancybox/index.js',
-				'dlx-pw-patterns-view': [
-					'./src/js/react/views/patterns/index.js',
-				],
-				'dlx-pw-categories-view': [
-					'./src/js/react/views/categories/index.js',
-				],
-				'dlx-pw-hide-ui': [
-					'./src/js/helpers/hide-ui.js',
-				],
+				'dlx-pw-patterns-view': [ './src/js/react/views/patterns/index.js' ],
+				'dlx-pw-categories-view': [ './src/js/react/views/categories/index.js' ],
+				'dlx-pw-hide-ui': [ './src/js/helpers/hide-ui.js' ],
 			},
 			resolve: {
 				alias: {
@@ -50,6 +44,7 @@ module.exports = ( env ) => {
 				'dlx-pw-admin-css': './src/scss/admin.scss',
 				'dlx-pw-post-utilities': './src/js/utils/index.js',
 				'dlx-pw-admin-utils-css': './src/scss/admin-utils.scss',
+				'dlx-pw-patterns-editor': './src/scss/patterns-editor.scss',
 			},
 			resolve: {
 				alias: {

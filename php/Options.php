@@ -81,6 +81,7 @@ class Options {
 				case 'makePatternsExportable':
 				case 'enableEnhancedView':
 				case 'disablePatternRevisions':
+				case 'enableVersionsModule':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
 				default:
@@ -220,6 +221,7 @@ class Options {
 			'loadCustomizerCSSFrontend'    => true,
 			'makePatternsExportable'       => false,
 			'disablePatternRevisions'      => false,
+			'enableVersionsModule'         => false,
 			'enableEnhancedView'           => true,
 			'patternWranglerMenuLocation'  => 'above_media', /* Can be above_media, below_appearance, below_settings, in_appearance. */
 		);

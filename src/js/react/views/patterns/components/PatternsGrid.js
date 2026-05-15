@@ -602,17 +602,21 @@ const Interface = ( props ) => {
 							>
 								{ _x( 'Export', 'Export Pattern', 'pattern-wrangler' ) }
 							</Button>
-							{ ' | ' }
-							<Button
-								variant="link"
-								onClick={ ( e ) => {
-									e.preventDefault();
-									e.stopPropagation();
-									setIsPauseModalOpen( { items: [ item ] } );
-								} }
-							>
-								{ _x( 'Disable', 'Disable Pattern', 'pattern-wrangler' ) }
-							</Button>
+							{ ! item.isDisabled && (
+								<>
+									{ ' | ' }
+									<Button
+										variant="link"
+										onClick={ ( e ) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setIsPauseModalOpen( { items: [ item ] } );
+										} }
+									>
+										{ _x( 'Disable', 'Disable Pattern', 'pattern-wrangler' ) }
+									</Button>
+								</>
+							) }
 						</>
 					) }
 				</div>
@@ -858,9 +862,20 @@ const Interface = ( props ) => {
 		if ( 'undefined' !== searchField && '' !== searchField ) {
 			patternsCopy = patternsCopy.filter( ( pattern ) => {
 				const patternLabel = pattern.label || pattern.title;
-				return patternLabel
+				const patternLabelMatches = patternLabel
 					.toLowerCase()
 					.includes( ( newView.search || searchField ).toLowerCase() );
+				const patternCategoriesMatches = pattern.categorySlugs.some(
+					( category ) => {
+						const categoryName =
+							category.name || category.label || category.toString();
+						return categoryName
+							.toLowerCase()
+							.includes( ( newView.search || searchField ).toLowerCase() );
+					}
+				);
+				const patternMatches = [ patternLabelMatches, patternCategoriesMatches ];
+				return patternMatches.some( ( match ) => match );
 			} );
 		}
 
@@ -1920,6 +1935,15 @@ const Interface = ( props ) => {
 											dispatch( patternsStore ).addPattern( getPatternResponse );
 										}
 									}
+									setSnackbar( {
+										isVisible: true,
+										message: __( 'Pattern imported', 'pattern-wrangler' ),
+										title: __( 'Pattern Imported', 'pattern-wrangler' ),
+										type: 'success',
+										onClose: () => {
+											setSnackbar( { isVisible: false } );
+										},
+									} );
 								} catch ( err ) {}
 								// Reset so selecting the same file again triggers onChange.
 								event.target.value = '';

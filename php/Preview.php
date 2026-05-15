@@ -22,23 +22,22 @@ class Preview {
 	public function run() {
 		$options              = Options::get_options();
 		$can_preview_frontend = (bool) $options['allowFrontendPatternPreview'];
-		if ( ! $can_preview_frontend ) {
-			return;
+		if ( $can_preview_frontend ) {
+			// Add a preview button to the quick actions for the wp_block post type.
+			add_filter( 'post_row_actions', array( $this, 'add_preview_button_quick_action' ), 10, 2 );
+
+			// Add preview query var to frontend.
+			add_filter( 'query_vars', array( $this, 'add_preview_query_var' ) );
+
+			// Override the template for the wp_block post type.
+			add_filter( 'template_include', array( $this, 'maybe_override_template' ) );
+
+			// Add a preview for the patterns list view.
+			add_action( 'wp_ajax_dlxpw_pattern_preview', array( $this, 'pattern_preview' ) );
 		}
-		// Add a preview button to the quick actions for the wp_block post type.
-		add_filter( 'post_row_actions', array( $this, 'add_preview_button_quick_action' ), 10, 2 );
 
-		// Add preview query var to frontend.
-		add_filter( 'query_vars', array( $this, 'add_preview_query_var' ) );
-
-		// Override the template for the wp_block post type.
-		add_filter( 'template_include', array( $this, 'maybe_override_template' ) );
-
-		// Add a preview button to the top toolbar section.
+		// Block editor toolbar (preview button, pattern code, versions) when preview or versions module is on.
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_preview_toolbar_scripts' ) );
-
-		// Add a preview for the patterns list view.
-		add_action( 'wp_ajax_dlxpw_pattern_preview', array( $this, 'pattern_preview' ) );
 	}
 
 	/**
@@ -80,9 +79,18 @@ class Preview {
 	 */
 	public function enqueue_preview_toolbar_scripts() {
 		$screen = get_current_screen();
-		if ( 'wp_block' !== $screen->post_type ) {
+		if ( ! $screen || 'wp_block' !== $screen->post_type ) {
 			return;
 		}
+
+		$options     = Options::get_options();
+		$versions_on = ! empty( $options['enableVersionsModule'] );
+		$preview_on  = ! empty( $options['allowFrontendPatternPreview'] );
+
+		if ( ! $versions_on && ! $preview_on ) {
+			return;
+		}
+
 		$deps = require_once Functions::get_plugin_dir( 'build/dlx-pw-preview.asset.php' );
 		wp_enqueue_script(
 			'dlx-pattern-wrangler-preview',
@@ -91,25 +99,71 @@ class Preview {
 			$deps['version'],
 			true
 		);
+		wp_enqueue_style(
+			'dlx-pw-patterns-editor',
+			Functions::get_plugin_url( 'dist/dlx-pw-patterns-editor.css' ),
+			array(),
+			$deps['version'],
+			'all'
+		);
 		$post             = get_post();
 		$post_id          = $post ? absint( $post->ID ) : 0;
 		$sync_status_meta = $post_id ? get_post_meta( $post_id, 'wp_pattern_sync_status', true ) : '';
 		$sync_status      = ( 'unsynced' === $sync_status_meta ) ? 'unsynced' : 'synced';
 
+		$pattern_categories         = array();
+		$current_pattern_cat_labels = array();
+		if ( $versions_on ) {
+			$terms = get_terms(
+				array(
+					'taxonomy'   => 'wp_pattern_category',
+					'hide_empty' => false,
+				)
+			);
+			if ( ! is_wp_error( $terms ) ) {
+				foreach ( $terms as $term ) {
+					$pattern_categories[] = array(
+						'id'    => absint( $term->term_id ),
+						'label' => html_entity_decode( $term->name, ENT_QUOTES, 'UTF-8' ),
+						'name'  => sanitize_title( $term->slug ),
+					);
+				}
+			}
+			if ( $post_id ) {
+				$post_terms = wp_get_post_terms( $post_id, 'wp_pattern_category', array( 'fields' => 'all' ) );
+				if ( ! is_wp_error( $post_terms ) ) {
+					foreach ( $post_terms as $term ) {
+						$current_pattern_cat_labels[] = html_entity_decode( $term->name, ENT_QUOTES, 'UTF-8' );
+					}
+				}
+			}
+		}
+
 		wp_localize_script(
 			'dlx-pattern-wrangler-preview',
 			'dlxPatternWranglerPreview',
 			array(
-				'previewUrl'                => Functions::get_pattern_preview_url( get_the_ID() ),
-				'pattern'                   => array(
+				'previewUrl'                   => $preview_on ? Functions::get_pattern_preview_url( get_the_ID() ) : '',
+				'showFrontendPreviewButton'    => $preview_on,
+				'pattern'                      => array(
 					'id'         => $post_id ? absint( $post_id ) : 0,
 					'slug'       => $post ? sanitize_title( $post->post_name ) : '',
 					'syncStatus' => sanitize_text_field( $sync_status ),
 					'siteId'     => absint( get_current_blog_id() ),
+					'title'      => $post ? $post->post_title : '',
 				),
-				'isMultisite'               => is_multisite(),
-				'syncedPatternPopupsActive' => Functions::is_activated( 'synced-pattern-popups/sppopups.php' ),
-				'syncedPatternPopupsUrl'    => esc_url_raw( admin_url( 'themes.php?page=simplest-popup-patterns' ) ),
+				'isMultisite'                  => is_multisite(),
+				'syncedPatternPopupsActive'    => Functions::is_activated( 'synced-pattern-popups/sppopups.php' ),
+				'syncedPatternPopupsUrl'       => esc_url_raw( admin_url( 'themes.php?page=simplest-popup-patterns' ) ),
+				'versions'                     => array(
+					'enabled' => $versions_on,
+				),
+				'restUrl'                      => untrailingslashit( Functions::get_rest_url( 'dlxplugins/pattern-wrangler/v1' ) ),
+				'createNonce'                  => wp_create_nonce( 'dlx-pw-patterns-view-create-pattern' ),
+				'createVersionNonce'           => wp_create_nonce( 'dlx-pw-versions-create-version-' . $post_id ),
+				'getSiteBaseUrl'               => admin_url(),
+				'patternCategories'            => $pattern_categories,
+				'currentPatternCategoryLabels' => $current_pattern_cat_labels,
 			)
 		);
 	}
