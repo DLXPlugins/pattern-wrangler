@@ -665,6 +665,11 @@ class Patterns {
 	 * Add featured image support to wp_block post type.
 	 */
 	public function add_featured_image_support() {
+		// Exit early and don't add featured image support if enhance pattern preview is enabled.
+		$options = Options::get_options();
+		if ( true === (bool) $options['enableEnhancedView'] ) {
+			return;
+		}
 		add_post_type_support( 'wp_block', 'thumbnail' );
 	}
 
