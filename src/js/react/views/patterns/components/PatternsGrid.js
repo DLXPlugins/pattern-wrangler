@@ -44,6 +44,12 @@ import {
 	mergePresetIntoQueryArgs,
 	urlHasExplicitPatternFilters,
 } from '../utils/patternsDefaultViewPresets';
+import {
+	applyStoredPatternsLibraryViewPreferences,
+	getPreferredPatternsLibraryPerPage,
+	persistPatternsLibraryViewPreferencesIfChanged,
+	resetPatternsLibraryViewPreferences,
+} from '../utils/patternsLibraryViewStorage';
 
 const defaultLayouts = {
 	grid: {
@@ -529,6 +535,9 @@ const Interface = ( props ) => {
 				: 'all';
 		const queryArgs = mergePresetIntoQueryArgs( {}, presetSlug );
 		const normalizedStatusFilters = getNormalizedStatusFilters( queryArgs );
+		const resetPerPage = getPreferredPatternsLibraryPerPage( 10 );
+
+		resetPatternsLibraryViewPreferences();
 
 		return {
 			type: 'grid',
@@ -537,7 +546,7 @@ const Interface = ( props ) => {
 				totalPages: 0,
 			},
 			page: 1,
-			perPage: 10,
+			perPage: resetPerPage,
 			defaultPerPage: 10,
 			sort: {
 				field: 'title',
@@ -571,6 +580,33 @@ const Interface = ( props ) => {
 				},
 			],
 		};
+	};
+
+	/**
+	 * Default view from URL/preset plus optional category query and localStorage preferences.
+	 *
+	 * @return {Object} View object (same shape as initial useState).
+	 */
+	const getDefaultViewWithStoredPreferences = () => {
+		const defaultView = getDefaultView();
+		const queryCategories = decodeURIComponent(
+			getQueryArgs( window.location.href )?.categories || ''
+		);
+
+		if ( queryCategories ) {
+			defaultView.filters.push( {
+				field: 'categories',
+				value: queryCategories.split( ',' ),
+				operator: 'isAny',
+			} );
+		}
+
+		applyStoredPatternsLibraryViewPreferences(
+			defaultView,
+			getQueryArgs( window.location.href )
+		);
+
+		return defaultView;
 	};
 
 	/**
@@ -681,22 +717,7 @@ const Interface = ( props ) => {
 		);
 	};
 
-	const [ view, setView ] = useState( () => {
-		const defaultView = getDefaultView();
-		const queryCategories = decodeURIComponent(
-			getQueryArgs( window.location.href )?.categories || ''
-		);
-
-		if ( queryCategories ) {
-			defaultView.filters.push( {
-				field: 'categories',
-				value: queryCategories.split( ',' ),
-				operator: 'isAny',
-			} );
-		}
-
-		return defaultView;
-	} );
+	const [ view, setView ] = useState( () => getDefaultViewWithStoredPreferences() );
 
 	/**
 	 * Filtered and sorted patterns for the current view (full list, no pagination).
@@ -1630,6 +1651,8 @@ const Interface = ( props ) => {
 	 * @param {Object} newView The new view object.
 	 */
 	const onChangeView = ( newView ) => {
+		const previousViewForStorage = view;
+
 		// Create query args object with view state.
 		const changeQueryArgs = getQueryArgs( window.location.href );
 		changeQueryArgs.paged = newView.page || 1;
@@ -1767,6 +1790,11 @@ const Interface = ( props ) => {
 			...changeQueryArgs,
 		} );
 
+		persistPatternsLibraryViewPreferencesIfChanged(
+			previousViewForStorage,
+			newView
+		);
+
 		// Update the view state.
 		//setView( newView );
 	};
@@ -1784,7 +1812,7 @@ const Interface = ( props ) => {
 		if ( 'all' === slug ) {
 			return;
 		}
-		onChangeView( getDefaultView() );
+		onChangeView( getDefaultViewWithStoredPreferences() );
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- One-time URL sync for user preset.
 	}, [] );
 
@@ -1806,7 +1834,7 @@ const Interface = ( props ) => {
 	useEffect( () => {
 		// Listen for any history changes.
 		window.addEventListener( 'popstate', () => {
-			onChangeView( getDefaultView() );
+			onChangeView( getDefaultViewWithStoredPreferences() );
 		} );
 	}, [ view ] );
 
