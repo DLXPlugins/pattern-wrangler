@@ -66,6 +66,10 @@ body div.updated.warning {
 		color: #FFFFFF;
 	}
 
+	.f-html {
+		transition: width 0.3s ease-in-out;
+	}
+
 	&[data-dlxpw-preview-device="desktop"] .f-html {
 		width: 100%;
 		max-width: unset;

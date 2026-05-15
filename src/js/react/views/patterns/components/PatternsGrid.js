@@ -633,6 +633,20 @@ const Interface = ( props ) => {
 										onClick={ ( e ) => {
 											e.preventDefault();
 											e.stopPropagation();
+											const redirectUrl = encodeURIComponent(
+												window.location.href
+											);
+											window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
+										} }
+									>
+										{ __( 'Edit', 'pattern-wrangler' ) }
+									</Button>
+									{ ' | ' }
+									<Button
+										variant="link"
+										onClick={ ( e ) => {
+											e.preventDefault();
+											e.stopPropagation();
 											setIsQuickEditModalOpen( { item } );
 										} }
 									>
