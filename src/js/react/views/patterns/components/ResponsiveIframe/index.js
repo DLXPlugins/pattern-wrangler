@@ -6,7 +6,10 @@ import ZoomIcon from '../Icons/ZoomIcon';
 import { ReactSpinner3 } from '@mediaron/react-spinners';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
 import { Fancybox } from '@fancyapps/ui/dist/fancybox/fancybox.js';
-import { canonicalPatternId, patternIdsEqual } from '../../utils/patternIdUtils';
+import {
+	canonicalPatternId,
+	patternIdsEqual,
+} from '../../utils/patternIdUtils';
 
 /** Patterns available for the open preview (single row or gallery). */
 let previewToolbarPatterns = [];
@@ -59,9 +62,7 @@ const syncPreviewToolbarDeviceState = ( fancybox ) => {
 
 	const toolbarModes = [ 'desktop', 'tablet', 'mobile' ];
 	toolbarModes.forEach( ( mode ) => {
-		const el = root.querySelector(
-			`[data-dlxpw-toolbar="preview-${ mode }"]`
-		);
+		const el = root.querySelector( `[data-dlxpw-toolbar="preview-${ mode }"]` );
 		if ( ! el ) {
 			return;
 		}
@@ -233,7 +234,7 @@ const syncPreviewToolbarButtons = ( fancybox ) => {
 
 /**
  * @param {Object} fancybox Fancybox instance.
- * @param {string} mode Device mode slug (`desktop`, `tablet`, `mobile`).
+ * @param {string} mode     Device mode slug (`desktop`, `tablet`, `mobile`).
  */
 const setPreviewDeviceMode = ( fancybox, mode ) => {
 	previewDeviceMode = mode;
@@ -284,10 +285,7 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 					return;
 				}
 				Fancybox.close();
-				dispatchPreviewToolbarEvent(
-					'dlxpw-pattern-preview-delete-request',
-					id
-				);
+				dispatchPreviewToolbarEvent( 'dlxpw-pattern-preview-delete-request', id );
 			},
 		},
 		editPattern: {
@@ -301,10 +299,7 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 			click: () => {
 				const id = getActivePreviewPattern()?.id;
 				Fancybox.close();
-				dispatchPreviewToolbarEvent(
-					'dlxpw-pattern-preview-edit-request',
-					id
-				);
+				dispatchPreviewToolbarEvent( 'dlxpw-pattern-preview-edit-request', id );
 			},
 		},
 		exportPattern: {
@@ -319,10 +314,7 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>`,
 			click: () => {
 				const id = getActivePreviewPattern()?.id;
-				dispatchPreviewToolbarEvent(
-					'dlxpw-pattern-preview-export-request',
-					id
-				);
+				dispatchPreviewToolbarEvent( 'dlxpw-pattern-preview-export-request', id );
 			},
 		},
 		copyPattern: {
@@ -393,12 +385,7 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 				display: {
 					left: [ 'disablePattern', 'deletePattern' ],
 					middle: [ 'editPattern', 'exportPattern', 'copyPattern' ],
-					right: [
-						'previewDesktop',
-						'previewTablet',
-						'previewMobile',
-						'close',
-					],
+					right: [ 'previewDesktop', 'previewTablet', 'previewMobile', 'close' ],
 				},
 				items: toolbarItems,
 			},
@@ -420,9 +407,7 @@ const buildPatternPreviewSlide = ( patternItem ) => {
 	if ( null !== viewportWidth ) {
 		previewArgs.viewport_width = viewportWidth;
 	}
-	const previewUrl = patternItem?.id
-		? addQueryArgs( ajaxurl, previewArgs )
-		: '';
+	const previewUrl = patternItem?.id ? addQueryArgs( ajaxurl, previewArgs ) : '';
 
 	return {
 		src: previewUrl,
@@ -592,7 +577,7 @@ const ResponsiveIframe = ( {
 									className="pattern-preview-loading-label"
 									style={ {
 										position: 'absolute',
-										top: '50%',
+										top: '40%',
 										left: '50%',
 										transform: 'translate(-50%, -50%)',
 										width: '100%',
