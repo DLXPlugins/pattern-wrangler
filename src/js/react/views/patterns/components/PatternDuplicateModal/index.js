@@ -18,6 +18,7 @@ import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 
 // Local imports.
 import Notice from '../../../../components/Notice';
+import classnames from 'classnames';
 
 /**
  * Pattern Create Modal.
@@ -44,11 +45,7 @@ const PatternDuplicateModal = ( props ) => {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ showExpandedSuggestions, setShowExpandedSuggestions ] = useState( true );
 
-	const {
-		control,
-		handleSubmit,
-		setError,
-	} = useForm( {
+	const { control, handleSubmit, setError } = useForm( {
 		defaultValues: {
 			patternId: props.item?.id || 0,
 			patternNonce: props.item?.duplicateNonce || '',
@@ -63,6 +60,7 @@ const PatternDuplicateModal = ( props ) => {
 	const formValues = useWatch( { control } );
 	const { errors } = useFormState( {
 		control,
+		shouldFocusError: true,
 	} );
 
 	/**
@@ -92,7 +90,7 @@ const PatternDuplicateModal = ( props ) => {
 
 		const path = '/dlxplugins/pattern-wrangler/v1/patterns/duplicate/';
 
-		const response = await apiFetch( {
+		apiFetch( {
 			path,
 			method: 'POST',
 			data: {
@@ -102,18 +100,25 @@ const PatternDuplicateModal = ( props ) => {
 				patternCategories: newCategories,
 				patternSyncStatus: formData.patternSyncStatus,
 			},
-		} );
-		if ( response?.error ) {
-			setError( 'patternTitle', { message: response.error } );
-		} else if ( formData.editPatternAfterDuplicating ) {
-			const patternId = response.patternId;
-			const redirectUrl = encodeURIComponent( window.location.href );
-			window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
-		} else {
-			props.onDuplicate( response.patternId );
-			props.onRequestClose();
-		}
-		setIsSaving( false );
+		} )
+			.then( ( response ) => {
+				if ( response?.error ) {
+					setError( 'patternTitle', { message: response.error } );
+				} else if ( formData.editPatternAfterDuplicating ) {
+					const patternId = response.patternId;
+					const redirectUrl = encodeURIComponent( window.location.href );
+					window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
+				} else {
+					props.onDuplicate( response.patternId );
+					props.onRequestClose();
+				}
+			} )
+			.catch( ( error ) => {
+				setError( 'patternTitle', { message: error.message } );
+			} )
+			.finally( () => {
+				setIsSaving( false );
+			} );
 	};
 
 	/**
@@ -149,16 +154,33 @@ const PatternDuplicateModal = ( props ) => {
 									),
 								} }
 								render={ ( { field } ) => (
-									<TextControl
-										label={ __( 'Pattern Title', 'pattern-wrangler' ) }
-										help={ __(
-											'Enter the title of the pattern.',
-											'pattern-wrangler'
+									<>
+										<TextControl
+											label={ __( 'Pattern Title', 'pattern-wrangler' ) }
+											help={ __(
+												'Enter the title of the pattern.',
+												'pattern-wrangler'
+											) }
+											className={ classnames( {
+												'is-required': true,
+												'has-error': errors?.patternTitle,
+											} ) }
+											value={ field.value }
+											onChange={ ( value ) => field.onChange( value ) }
+											disabled={ isSaving }
+											ref={ field.ref }
+										/>
+										{ errors?.patternTitle && (
+											<Notice
+												className="dlx-pw-admin-notice"
+												status="error"
+												inline={ true }
+												icon={ () => <AlertTriangle /> }
+											>
+												{ errors.patternTitle.message }
+											</Notice>
 										) }
-										value={ field.value }
-										onChange={ ( value ) => field.onChange( value ) }
-										disabled={ isSaving }
-									/>
+									</>
 								) }
 							/>
 						</div>

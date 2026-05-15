@@ -99,7 +99,6 @@ const PatternCreateModal = ( props ) => {
 			patternSyncStatus: props.patternSyncStatus || syncedDefaultStatus,
 			patternCopyId: copyPatternId,
 		},
-		shouldFocusError: true,
 	} );
 	// eslint-disable-next-line no-unused-vars
 	const formValues = useWatch( { control } );

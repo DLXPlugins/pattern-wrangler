@@ -268,7 +268,7 @@ const PatternVersionsSidebar = () => {
 			</PluginSidebar>
 			{ createVersionModalOpen && (
 				<PatternVersionCreateModal
-					title={ __( 'Create new version', 'pattern-wrangler' ) }
+					title={ __( 'Create New Version', 'pattern-wrangler' ) }
 					patternId={ postId }
 					patternNonce={ dlxPatternWranglerPreview.createVersionNonce }
 					onRequestClose={ () => setCreateVersionModalOpen( false ) }
@@ -298,7 +298,7 @@ const PatternVersionsSidebar = () => {
 				<PatternVersionCloneToPatternModal
 					key={ cloneFromVersion.version.id }
 					version={ cloneFromVersion.version }
-					title={ __( 'Clone version to new pattern', 'pattern-wrangler' ) }
+					title={ __( 'Clone Version to New Pattern', 'pattern-wrangler' ) }
 					onRequestClose={ () => setCloneFromVersion( null ) }
 				/>
 			) }

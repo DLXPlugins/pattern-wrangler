@@ -48,6 +48,7 @@ const PatternVersionCreateModal = ( props ) => {
 	const formValues = useWatch( { control } );
 	const { errors } = useFormState( {
 		control,
+		shouldFocusError: true,
 	} );
 
 	const onSubmit = async( formData ) => {
@@ -114,21 +115,33 @@ const PatternVersionCreateModal = ( props ) => {
 									),
 								} }
 								render={ ( { field } ) => (
-									<TextControl
-										label={ __( 'Version Title', 'pattern-wrangler' ) }
-										help={ __(
-											'Enter the title of the version.',
-											'pattern-wrangler'
+									<>
+										<TextControl
+											label={ __( 'Version Title', 'pattern-wrangler' ) }
+											help={ __(
+												'Enter the title of the version.',
+												'pattern-wrangler'
+											) }
+											className={ classnames( {
+												'is-required': true,
+												'has-error': errors?.versionTitle,
+											} ) }
+											value={ field.value }
+											onChange={ ( value ) => field.onChange( value ) }
+											disabled={ isSaving }
+											ref={ field.ref }
+										/>
+										{ errors?.versionTitle && (
+											<Notice
+												className="dlx-pw-admin-notice"
+												status="error"
+												inline={ true }
+												icon={ () => <AlertTriangle /> }
+											>
+												{ errors.versionTitle.message }
+											</Notice>
 										) }
-										className={ classnames( {
-											'is-required': true,
-											'has-error': errors?.versionTitle,
-											'has-error': errors?.versionTitle,
-										} ) }
-										value={ field.value }
-										onChange={ ( value ) => field.onChange( value ) }
-										disabled={ isSaving }
-									/>
+									</>
 								) }
 							/>
 						</div>

@@ -116,6 +116,7 @@ const PatternVersionCloneToPatternModal = ( props ) => {
 	const formValues = useWatch( { control } );
 	const { errors } = useFormState( {
 		control,
+		shouldFocusError: true,
 	} );
 
 	/**
@@ -201,21 +202,33 @@ const PatternVersionCloneToPatternModal = ( props ) => {
 									),
 								} }
 								render={ ( { field } ) => (
-									<TextControl
-										label={ __( 'Pattern title', 'pattern-wrangler' ) }
-										help={ __(
-											'Enter the title of the new pattern.',
-											'pattern-wrangler'
+									<>
+										<TextControl
+											label={ __( 'Pattern title', 'pattern-wrangler' ) }
+											help={ __(
+												'Enter the title of the new pattern.',
+												'pattern-wrangler'
+											) }
+											className={ classnames( {
+												'is-required': true,
+												'has-error': errors?.patternTitle,
+											} ) }
+											value={ field.value }
+											onChange={ ( value ) => field.onChange( value ) }
+											disabled={ isSaving }
+											ref={ field.ref }
+										/>
+										{ errors?.patternTitle && (
+											<Notice
+												className="dlx-pw-admin-notice"
+												status="error"
+												inline={ true }
+												icon={ () => <AlertTriangle /> }
+											>
+												{ errors.patternTitle.message }
+											</Notice>
 										) }
-										className={ classnames( {
-											'is-required': true,
-											'has-error': errors?.patternTitle,
-											'has-error': errors?.patternTitle,
-										} ) }
-										value={ field.value }
-										onChange={ ( value ) => field.onChange( value ) }
-										disabled={ isSaving }
-									/>
+									</>
 								) }
 							/>
 						</div>
