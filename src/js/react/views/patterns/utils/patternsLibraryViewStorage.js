@@ -1,5 +1,5 @@
 /**
- * Patterns Library DataViews preferences (per page, sort) in localStorage.
+ * Patterns Library DataViews preferences (per page, sort, preview size) in localStorage.
  *
  * @package
  */
@@ -10,6 +10,9 @@ const STORAGE_VERSION = 1;
 
 const ALLOWED_SORT_FIELDS = [ 'title' ];
 const ALLOWED_SORT_DIRECTIONS = [ 'asc', 'desc' ];
+const DEFAULT_PREVIEW_SIZE = 300;
+const MIN_PREVIEW_SIZE = 100;
+const MAX_PREVIEW_SIZE = 500;
 
 /**
  * Normalize per-page value for storage and restore.
@@ -20,6 +23,20 @@ const ALLOWED_SORT_DIRECTIONS = [ 'asc', 'desc' ];
 function normalizePerPage( value ) {
 	const n = parseInt( value, 10 );
 	if ( Number.isNaN( n ) || n < 1 || n > 999 ) {
+		return null;
+	}
+	return n;
+}
+
+/**
+ * Normalize grid preview size (pixels, any positive integer in a safe range).
+ *
+ * @param {*} value Raw value.
+ * @return {number|null} Integer or null if invalid.
+ */
+function normalizePreviewSize( value ) {
+	const n = parseInt( value, 10 );
+	if ( Number.isNaN( n ) || n < MIN_PREVIEW_SIZE || n > MAX_PREVIEW_SIZE ) {
 		return null;
 	}
 	return n;
@@ -87,6 +104,20 @@ export function getPreferredPatternsLibraryPerPage( fallback = 10 ) {
 }
 
 /**
+ * Resolved grid preview size from storage.
+ *
+ * @param {number} fallback Value when storage is missing or invalid.
+ * @return {number} Preview size in pixels.
+ */
+export function getPreferredPatternsLibraryPreviewSize(
+	fallback = DEFAULT_PREVIEW_SIZE
+) {
+	const stored = readPatternsLibraryViewPreferences();
+	const n = normalizePreviewSize( stored?.previewSize );
+	return n !== null ? n : fallback;
+}
+
+/**
  * Resolved sort field and direction from storage, for views that should keep the user preference (e.g. filter reset).
  *
  * @param {Object} fallback Value when storage is missing or invalid.
@@ -106,7 +137,7 @@ export function getPreferredPatternsLibrarySort(
 /**
  * Write preferences, merging onto any existing JSON so future keys are preserved.
  *
- * @param {Object} patch Partial update (perPage, sort).
+ * @param {Object} patch Partial update (perPage, sort, previewSize).
  * @return {void}
  */
 export function writePatternsLibraryViewPreferences( patch ) {
@@ -135,8 +166,9 @@ export function writePatternsLibraryViewPreferences( patch ) {
 }
 
 /**
- * Apply stored perPage and sort to a default view using URL refinement: URL wins
- * when both orderby and order are set; otherwise fill missing pieces from storage.
+ * Apply stored perPage, sort, and preview layout to a default view using URL refinement: URL wins
+ * when both orderby and order are set; otherwise fill missing sort pieces from storage. Preview size
+ * is applied from storage when valid (positive pixel size within a safe range).
  *
  * @param {Object} defaultView  View object from getDefaultView (mutated in place).
  * @param {Object} rawQueryArgs Output of getQueryArgs( window.location.href ).
@@ -195,11 +227,21 @@ export function applyStoredPatternsLibraryViewPreferences(
 		}
 	}
 
+	const storedPreview = normalizePreviewSize( stored?.previewSize );
+	if ( storedPreview !== null ) {
+		defaultView.layout = {
+			...( defaultView.layout && typeof defaultView.layout === 'object'
+				? defaultView.layout
+				: {} ),
+			previewSize: storedPreview,
+		};
+	}
+
 	return defaultView;
 }
 
 /**
- * Persist perPage and sort when they differ from the previous view.
+ * Persist perPage, sort, and previewSize when they differ from the previous view.
  *
  * @param {Object|null|undefined} prevView Previous React view state.
  * @param {Object}                newView  View after change.
@@ -218,11 +260,14 @@ export function persistPatternsLibraryViewPreferencesIfChanged(
 	const newField = newView?.sort?.field;
 	const prevDirection = prevView?.sort?.direction;
 	const newDirection = newView?.sort?.direction;
+	const prevPreviewSize = prevView?.layout?.previewSize;
+	const newPreviewSize = newView?.layout?.previewSize;
 
 	const perPageChanged = prevPerPage !== newPerPage;
 	const sortChanged = prevField !== newField || prevDirection !== newDirection;
+	const previewSizeChanged = prevPreviewSize !== newPreviewSize;
 
-	if ( ! perPageChanged && ! sortChanged ) {
+	if ( ! perPageChanged && ! sortChanged && ! previewSizeChanged ) {
 		return;
 	}
 
@@ -237,6 +282,12 @@ export function persistPatternsLibraryViewPreferencesIfChanged(
 		const field = normalizeSortField( newField ) || 'title';
 		const direction = normalizeSortDirection( newDirection ) || 'asc';
 		patch.sort = { field, direction };
+	}
+	if ( previewSizeChanged ) {
+		const ps = normalizePreviewSize( newPreviewSize );
+		if ( ps !== null ) {
+			patch.previewSize = ps;
+		}
 	}
 
 	if ( Object.keys( patch ).length > 0 ) {

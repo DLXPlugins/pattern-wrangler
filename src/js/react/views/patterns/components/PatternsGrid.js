@@ -47,6 +47,7 @@ import {
 import {
 	applyStoredPatternsLibraryViewPreferences,
 	getPreferredPatternsLibraryPerPage,
+	getPreferredPatternsLibraryPreviewSize,
 	persistPatternsLibraryViewPreferencesIfChanged,
 	resetPatternsLibraryViewPreferences,
 } from '../utils/patternsLibraryViewStorage';
@@ -536,6 +537,7 @@ const Interface = ( props ) => {
 		const queryArgs = mergePresetIntoQueryArgs( {}, presetSlug );
 		const normalizedStatusFilters = getNormalizedStatusFilters( queryArgs );
 		const resetPerPage = getPreferredPatternsLibraryPerPage( 10 );
+		const resetPreviewSize = getPreferredPatternsLibraryPreviewSize( 300 );
 
 		resetPatternsLibraryViewPreferences();
 
@@ -554,7 +556,10 @@ const Interface = ( props ) => {
 			},
 			titleField: 'title',
 			mediaField: 'pattern-view-json',
-			layout: defaultLayouts.grid.layout,
+			layout: {
+				...defaultLayouts.grid.layout,
+				previewSize: resetPreviewSize,
+			},
 			fields: [ 'title', 'pattern-view-json' ],
 			search: '',
 			filters: [
