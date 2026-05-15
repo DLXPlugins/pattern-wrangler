@@ -173,9 +173,13 @@ add_action(
 			array(),
 			Functions::get_plugin_version()
 		);
+		$can_overflow = true;
+		if ( isset( $_GET['iframe_preview'] ) && $_GET['iframe_preview'] ) {
+			$can_overflow = false;
+		}
 		wp_add_inline_style(
 			'dlxpw-pattern-preview',
-			'body { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } #pattern-preview-content header, #pattern-preview-content footer { display: inherit; } img { max-width: 100%; height: auto; }'
+			'body { position: absolute; top: 0; left: 0; width: 100%; height: 100%;' . ( ! $can_overflow ? 'overflow: hidden;' : '' ) . ' display: relative; box-sizing: border-box; width: 100%; box-sizing: border-box; } header,.header,.site-header,footer,.footer,.site-footer { display: none; } #pattern-preview-content header, #pattern-preview-content footer { display: inherit; } img { max-width: 100%; height: auto; }'
 		);
 		wp_enqueue_style( 'dlxpw-pattern-preview' );
 
@@ -246,7 +250,7 @@ if ( ! wp_is_block_theme() ) {
 		echo apply_filters( 'the_content', $pattern_content );
 		?>
 	</div>
-	<?php
+		<?php
 } else {
 	?>
 	<!doctype html>
@@ -260,31 +264,24 @@ if ( ! wp_is_block_theme() ) {
 		?>
 		<?php wp_head(); ?>
 	</head>
-
-	<?php
-	$can_overflow = true;
-	if ( isset( $_GET['iframe_preview'] ) && $_GET['iframe_preview'] ) {
-		$can_overflow = false;
-	}
-	?>
-	<body <?php body_class(); ?> style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; <?php echo ! $can_overflow ? 'overflow: hidden;' : ''; ?> display: relative; box-sizing: border-box; width: 100%;">
-	<?php
+	<body <?php body_class(); ?>>
+		<?php
 		wp_body_open();
-	?>
+		?>
 		<div class="wp-site-blocks">
 			<header class="wp-block-template-part site-header">
-				<?php block_header_area(); ?>
+			<?php block_header_area(); ?>
 			</header>
 			<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto;">
-				<?php
-				if ( wp_is_block_theme() ) {
-					echo apply_filters( 'the_content', $blocks );
-				} else {
-					echo apply_filters( 'the_content', $pattern_content );
-				}
-				?>
+			<?php
+			if ( wp_is_block_theme() ) {
+				echo apply_filters( 'the_content', $blocks );
+			} else {
+				echo apply_filters( 'the_content', $pattern_content );
+			}
+			?>
 			</div>
-		<?php
+			<?php
 }
 
 	// Render block pattern here.
@@ -309,14 +306,14 @@ if ( ! wp_is_block_theme() ) {
 } else {
 	?>
 			<footer class="wp-block-template-part site-footer">
-			<?php block_footer_area(); ?>
+		<?php block_footer_area(); ?>
 			</footer>
 		<?php wp_footer(); ?>
 		</div>
 	</body>
 
 	</html>
-	<?php
+		<?php
 }
 	$wp_query = $temp;
 	wp_reset_postdata();
