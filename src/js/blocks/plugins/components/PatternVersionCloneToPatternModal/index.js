@@ -13,7 +13,7 @@ import {
 import apiFetch from '@wordpress/api-fetch';
 import { AlertTriangle } from 'lucide-react';
 import { escapeHTML } from '@wordpress/escape-html';
-
+import classnames from 'classnames';
 import { __, sprintf } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 
@@ -75,9 +75,7 @@ const PatternVersionCloneToPatternModal = ( props ) => {
 		const labels = [];
 		if ( ids.length && allCats.length ) {
 			for ( const id of ids ) {
-				const found = allCats.find(
-					( c ) => absInt( c.id ) === absInt( id )
-				);
+				const found = allCats.find( ( c ) => absInt( c.id ) === absInt( id ) );
 				if ( found?.label ) {
 					labels.push( escapeHTML( found.label ) );
 				}
@@ -186,7 +184,7 @@ const PatternVersionCloneToPatternModal = ( props ) => {
 	return (
 		<>
 			<Modal
-				title={ title || __( 'Clone version to new pattern', 'pattern-wrangler' ) }
+				title={ title || __( 'Clone Version to New Pattern', 'pattern-wrangler' ) }
 				onRequestClose={ onRequestClose }
 				focusOnMount="firstContentElement"
 			>
@@ -209,6 +207,11 @@ const PatternVersionCloneToPatternModal = ( props ) => {
 											'Enter the title of the new pattern.',
 											'pattern-wrangler'
 										) }
+										className={ classnames( {
+											'is-required': true,
+											'is-error': errors?.patternTitle,
+											'has-error': errors?.patternTitle,
+										} ) }
 										value={ field.value }
 										onChange={ ( value ) => field.onChange( value ) }
 										disabled={ isSaving }

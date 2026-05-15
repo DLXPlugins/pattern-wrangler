@@ -34,19 +34,27 @@ const VersionDeleteModal = ( props ) => {
 
 		const path = '/dlxplugins/pattern-wrangler/v1/versions';
 
-		const response = await apiFetch( {
+		apiFetch( {
 			path,
 			method: 'DELETE',
 			data: {
 				id: props.id,
 				nonce: props.nonce,
 			},
-		} );
-		if ( response.error ) {
-			setError( 'versionTitle', response.error );
-		}
-		props.onDelete( response );
-		setIsSaving( false );
+		} )
+			.then( ( response ) => {
+				if ( response.error ) {
+					setError( 'versionTitle', response.error );
+				} else {
+					props.onDelete( response );
+				}
+			} )
+			.catch( ( error ) => {
+				setError( 'versionTitle', error.message );
+			} )
+			.finally( () => {
+				setIsSaving( false );
+			} );
 	};
 
 	useEffect( () => {
