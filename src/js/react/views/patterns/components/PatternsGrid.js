@@ -1935,6 +1935,15 @@ const Interface = ( props ) => {
 											dispatch( patternsStore ).addPattern( getPatternResponse );
 										}
 									}
+									setSnackbar( {
+										isVisible: true,
+										message: __( 'Pattern imported', 'pattern-wrangler' ),
+										title: __( 'Pattern Imported', 'pattern-wrangler' ),
+										type: 'success',
+										onClose: () => {
+											setSnackbar( { isVisible: false } );
+										},
+									} );
 								} catch ( err ) {}
 								// Reset so selecting the same file again triggers onChange.
 								event.target.value = '';
