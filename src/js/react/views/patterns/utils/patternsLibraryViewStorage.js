@@ -189,7 +189,7 @@ export function applyStoredPatternsLibraryViewPreferences(
 		String( perPageRaw ).trim() !== '';
 
 	if ( ! perPageExplicit && stored?.perPage !== null ) {
-		const n = normalizePerPage( stored.perPage );
+		const n = normalizePerPage( stored?.perPage ?? 10 );
 		if ( n !== null ) {
 			defaultView.perPage = n;
 		}
