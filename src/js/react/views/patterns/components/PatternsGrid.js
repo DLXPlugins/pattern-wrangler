@@ -175,6 +175,11 @@ const Interface = ( props ) => {
 		);
 	}, [ categories ] );
 
+	// Check if any patterns are network-only to determine if the network-only toggle should be shown.
+	const hasNetworkOnlyPatterns = useMemo( () => {
+		return Object.values( patterns ).some( ( pattern ) => pattern.network );
+	}, [ patterns ] );
+
 	const [ localCategories, setLocalCategories ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
 	const [ snackbar, setSnackbar ] = useState( {
@@ -990,6 +995,13 @@ const Interface = ( props ) => {
 											},
 										);
 										break;
+									case 'networkonly':
+										patternsCopy = patternsCopy.filter(
+											( pattern ) => {
+												return pattern.network;
+											},
+										);
+										break;
 									case 'both':
 										break;
 								}
@@ -1549,6 +1561,10 @@ const Interface = ( props ) => {
 					{
 						label: __( 'Published Patterns', 'pattern-wrangler' ),
 						value: 'published',
+					},
+					{
+						label: __( 'Network-only Patterns', 'pattern-wrangler' ),
+						value: 'networkonly',
 					},
 					{
 						label: __( 'Both', 'pattern-wrangler' ),
@@ -2202,6 +2218,15 @@ const Interface = ( props ) => {
 		return getFilteredPatternsCount( view ) > view.perPage;
 	}, [ view ] );
 
+	const canShowPublishedStatus = useMemo( () => {
+		return (
+			dlxEnhancedPatternsView.isNetworkSource ||
+			( dlxEnhancedPatternsView.isMultisite &&
+				'network_only' !==
+					dlxEnhancedPatternsView.networkPatternsConfiguration )
+		);
+	}, [ dlxEnhancedPatternsView ] );
+
 	if ( loading ) {
 		return <>Loading...</>;
 	}
@@ -2621,79 +2646,98 @@ const Interface = ( props ) => {
 												) }
 											/>
 										</ToggleGroupControl>
-										<ToggleGroupControl
-											label={ __(
-												'Published Status',
-												'pattern-wrangler',
-											) }
-											isAdaptiveWidth={ true }
-											hideLabelFromVision={ true }
-											value={
-												view?.filters?.find(
-													( filter ) =>
-														filter.field ===
-														'patternLocalStatus',
-												)?.value || 'both'
-											}
-											onChange={ ( value ) => {
-												const myNewView = { ...view };
-												// Merge with existing filters, replacing patternStatus if it exists
-												const existingFilters =
-													myNewView.filters?.filter(
+										{ canShowPublishedStatus && (
+											<ToggleGroupControl
+												label={ __(
+													'Published Status',
+													'pattern-wrangler',
+												) }
+												isAdaptiveWidth={ true }
+												hideLabelFromVision={ true }
+												value={
+													view?.filters?.find(
 														( filter ) =>
-															filter.field !==
+															filter.field ===
 															'patternLocalStatus',
-													) || [];
-												myNewView.filters = [
-													...existingFilters,
-													{
-														field: 'patternLocalStatus',
-														operator: 'is',
-														value,
-													},
-												];
-												// Reset to first page when filter changes
-												myNewView.page = 1;
-												onChangeView( myNewView );
-											} }
-										>
-											<ToggleGroupControlOption
-												value="draft"
-												label={ __(
-													'Draft',
-													'pattern-wrangler',
+													)?.value || 'both'
+												}
+												onChange={ ( value ) => {
+													const myNewView = {
+														...view,
+													};
+													// Merge with existing filters, replacing patternStatus if it exists
+													const existingFilters =
+														myNewView.filters?.filter(
+															( filter ) =>
+																filter.field !==
+																'patternLocalStatus',
+														) || [];
+													myNewView.filters = [
+														...existingFilters,
+														{
+															field: 'patternLocalStatus',
+															operator: 'is',
+															value,
+														},
+													];
+													// Reset to first page when filter changes
+													myNewView.page = 1;
+													onChangeView( myNewView );
+												} }
+											>
+												<ToggleGroupControlOption
+													value="draft"
+													label={ __(
+														'Draft',
+														'pattern-wrangler',
+													) }
+													showTooltip={ true }
+													aria-label={ __(
+														'Show Only Draft Patterns',
+														'pattern-wrangler',
+													) }
+												/>
+												<ToggleGroupControlOption
+													value="both"
+													label={ __(
+														'Both',
+														'pattern-wrangler',
+													) }
+													aria-label={ __(
+														'Show Both Draft and Published Patterns',
+														'pattern-wrangler',
+													) }
+													showTooltip={ true }
+												/>
+												{ ! dlxEnhancedPatternsView.isNetworkSource &&
+													hasNetworkOnlyPatterns && (
+													<ToggleGroupControlOption
+														value="networkonly"
+														label={ __(
+															'Network-only',
+															'pattern-wrangler',
+														) }
+														showTooltip={ true }
+														aria-label={ __(
+															'Show Only Network-only Patterns',
+															'pattern-wrangler',
+														) }
+													/>
 												) }
-												showTooltip={ true }
-												aria-label={ __(
-													'Show Only Draft Patterns',
-													'pattern-wrangler',
-												) }
-											/>
-											<ToggleGroupControlOption
-												value="both"
-												label={ __(
-													'Both',
-													'pattern-wrangler',
-												) }
-												aria-label={ __(
-													'Show Both Draft and Published Patterns',
-													'pattern-wrangler',
-												) }
-												showTooltip={ true }
-											/>
-											<ToggleGroupControlOption
-												value="published"
-												label={ __(
-													'Published',
-													'pattern-wrangler',
-												) }
-												showTooltip={ true }
-												aria-label={ __(
-													'Show Only Published Patterns',
-													'pattern-wrangler',
-												) }
-											/>
-										</ToggleGroupControl>
+												<ToggleGroupControlOption
+													value="published"
+													label={ __(
+														'Published',
+														'pattern-wrangler',
+													) }
+													showTooltip={ true }
+													aria-label={ __(
+														'Show Only Published Patterns',
+														'pattern-wrangler',
+													) }
+												/>
+											</ToggleGroupControl>
+										) }
 									</>
 								)
 							}
