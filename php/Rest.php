@@ -60,6 +60,60 @@ class Rest {
 		);
 
 		/**
+		 * For retrieving site patterns for a site.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/patterns/network',
+			array(
+				array(
+					'methods'             => 'GET',
+					'callback'            => array( $this, 'rest_get_network_patterns' ),
+					'permission_callback' => function () {
+						return current_user_can( 'edit_posts' );
+					},
+					'args'                => array(
+						'site_id' => array(
+							'type'              => 'integer',
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
+				),
+			)
+		);
+
+		/**
+		 * For retrieving sites in the network.
+		 */
+		register_rest_route(
+			'dlxplugins/pattern-wrangler/v1',
+			'/search/sites',
+			array(
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'rest_get_sites' ),
+					'permission_callback' => function () {
+						return current_user_can( 'manage_network' );
+					},
+					'args'                => array(
+						'search' => array(
+							'type'              => 'string',
+							'validate_callback' => function ( $param, $request, $key ) {
+								return is_string( $param );
+							},
+							'sanitize_callback' => function ( $param ) {
+								return sanitize_text_field( $param );
+							},
+							'required'          => false,
+						),
+					),
+				),
+
+			)
+		);
+
+		/**
 		 * For retrieving site pattern categories for a site.
 		 */
 		register_rest_route(
@@ -1301,14 +1355,41 @@ class Rest {
 		// Get registered patterns.
 		$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 
-		// Get local/DB patterns.
-		$post_args      = array(
-			'post_type'      => 'wp_block',
-			'posts_per_page' => 500, /* if there are more than 500 patterns, we need to paginate */
-			'post_status'    => array( 'publish', 'draft' ),
-		);
-		$post_args      = Patterns::get_instance()->modify_blocks_rest_query( $post_args, null );
-		$local_patterns = get_posts( $post_args );
+		// Get network configuration.
+		$is_multisite          = Functions::is_multisite( false );
+		$network_patterns_data = array();
+		$site_id               = get_current_blog_id();
+		$pattern_configuration = ! $is_multisite ? 'local_only' : Functions::get_network_pattern_configuration( $site_id );
+		if ( $is_multisite ) {
+			if ( 'network_only' === $pattern_configuration || 'hybrid' === $pattern_configuration ) {
+				$mothership_site_id = Functions::get_network_default_patterns_site_id();
+				$network_request    = new \WP_REST_Request(
+					'GET',
+					'/dlxplugins/pattern-wrangler/v1/patterns/network'
+				);
+				$network_request->set_param( 'nonce', wp_create_nonce( 'dlx_pw_get_network_patterns' ) );
+				$network_request->set_param( 'site_id', $mothership_site_id );
+				$network_pattern_response = rest_do_request( $network_request );
+				if ( ! $network_pattern_response->is_error() ) {
+					$network_patterns_data = $network_pattern_response->get_data();
+					if ( ! is_array( $network_patterns_data ) ) {
+						$network_patterns_data = array();
+					}
+				}
+			}
+		}
+
+		// Get local/DB patterns if network allows it.
+		$local_patterns = array();
+		if ( in_array( $pattern_configuration, array( 'local_only', 'hybrid' ), true ) ) {
+			$post_args      = array(
+				'post_type'      => 'wp_block',
+				'posts_per_page' => 500, /* if there are more than 500 patterns, we need to paginate */
+				'post_status'    => array( 'publish', 'draft' ),
+			);
+			$post_args      = Patterns::get_instance()->modify_blocks_rest_query( $post_args, null );
+			$local_patterns = get_posts( $post_args );
+		}
 
 		// Get registered and local categories pre filters.
 		$categories = Functions::get_pattern_categories( false );
@@ -1316,6 +1397,10 @@ class Rest {
 		// Merge the registered and local categories.
 		$registered_categories = $categories['registered'];
 		$local_categories      = $categories['categories'];
+
+		if ( 'network_only' === $pattern_configuration ) {
+			$local_categories = array();
+		}
 
 		$mapped_to = array();
 		// Get registered categories into shape. Registerd are label arrays.
@@ -1344,6 +1429,8 @@ class Rest {
 				'mappedTo'    => $registered_category['mappedTo'] ?? false,
 				'registered'  => true,
 				'id'          => 0,
+				'network'     => false,
+				'siteId'      => $site_id,
 			);
 		}
 
@@ -1364,19 +1451,13 @@ class Rest {
 				'mappedTo'    => false,
 				'registered'  => false,
 				'id'          => $local_category->term_id,
+				'network'     => false,
+				'siteId'      => $site_id,
 			);
 		}
 
 		// Merge the registered and local categories.
-		$all_categories = array_merge( $registered_categories_arr, $local_categories_arr ); // We don't care about duplicates here.
-
-		// Sort by label.
-		uasort(
-			$all_categories,
-			function ( $a, $b ) {
-				return strcasecmp( $a['label'], $b['label'] );
-			}
-		);
+		$all_categories = Functions::sort_pattern_categories( array_merge( $registered_categories_arr, $local_categories_arr ) ); // We don't care about duplicates here.
 
 		set_transient( 'dlx_all_categories_cache', $all_categories, HOUR_IN_SECONDS );
 
@@ -1461,21 +1542,23 @@ class Rest {
 				}
 
 				$patterns[ $pattern['name'] ] = array(
-					'id'             => Functions::get_sanitized_pattern_id( $pattern['name'] ),
-					'title'          => $pattern['title'],
-					'slug'           => $pattern['name'],
-					'content'        => $pattern['content'],
-					'categories'     => $categories,
-					'categorySlugs'  => $category_slugs,
-					'isDisabled'     => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
-					'isLocal'        => false,
-					'syncStatus'     => 'registered',
-					'viewportWidth'  => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
-					'patternType'    => 'registered',
-					'editNonce'      => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
-					'siteId'         => get_current_blog_id(),
-					'asset'          => $has_asset ? $asset_slug : null,
-					'duplicateNonce' => '',
+					'id'               => Functions::get_sanitized_pattern_id( $pattern['name'] ),
+					'title'            => $pattern['title'],
+					'slug'             => $pattern['name'],
+					'content'          => $pattern['content'],
+					'categories'       => $categories,
+					'categorySlugs'    => $category_slugs,
+					'isDisabled'       => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
+					'isLocal'          => false,
+					'syncStatus'       => 'registered',
+					'viewportWidth'    => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
+					'patternType'      => 'registered',
+					'editNonce'        => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
+					'asset'            => $has_asset ? $asset_slug : null,
+					'duplicateNonce'   => '',
+					'network'          => false,
+					'siteId'           => $site_id,
+					'siteAdminAjaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 				);
 			}
 		}
@@ -1493,22 +1576,43 @@ class Rest {
 				$category_slugs[]  = sanitize_title( $category->slug );
 			}
 			$patterns[ $pattern->post_name ] = array(
-				'id'             => $pattern->ID,
-				'title'          => $pattern->post_title,
-				'slug'           => $pattern->post_name,
-				'content'        => $pattern->post_content,
-				'categories'     => $category_labels,
-				'categorySlugs'  => $category_slugs,
-				'isDisabled'     => 'draft' === $pattern->post_status,
-				'isLocal'        => true,
-				'syncStatus'     => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'id'               => $pattern->ID,
+				'title'            => $pattern->post_title,
+				'slug'             => $pattern->post_name,
+				'content'          => $pattern->post_content,
+				'categories'       => $category_labels,
+				'categorySlugs'    => $category_slugs,
+				'isDisabled'       => 'draft' === $pattern->post_status,
+				'isLocal'          => true,
+				'syncStatus'       => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
-				'patternType'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
-				'editNonce'      => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
-				'duplicateNonce' => wp_create_nonce( 'dlx-pw-patterns-view-duplicate-pattern-' . $pattern->ID ),
-				'siteId'         => get_current_blog_id(),
-				'asset'          => null,
+				'patternType'      => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'editNonce'        => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
+				'duplicateNonce'   => wp_create_nonce( 'dlx-pw-patterns-view-duplicate-pattern-' . $pattern->ID ),
+				'asset'            => null,
+				'network'          => false,
+				'siteId'           => $site_id,
+				'siteAdminAjaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 			);
+		}
+
+		if ( ! empty( $network_patterns_data ) ) {
+			$network_patterns   = isset( $network_patterns_data['patterns'] ) ? $network_patterns_data['patterns'] : array();
+			$network_categories = isset( $network_patterns_data['categories'] ) ? $network_patterns_data['categories'] : array();
+			switch ( $pattern_configuration ) {
+				case 'network_only':
+					$patterns       = $network_patterns;
+					$all_categories = $network_categories;
+					break;
+				case 'hybrid':
+					$patterns       = array_merge( $patterns, $network_patterns );
+					$all_categories = array_merge( $all_categories, $network_categories );
+					break;
+
+				default:
+			}
+
+			$all_categories = Functions::sort_pattern_categories( $all_categories );
 		}
 
 		// Sort patterns by title ascending.
@@ -1530,6 +1634,147 @@ class Rest {
 				'patterns'   => $patterns,
 				'categories' => $all_categories,
 				'assets'     => $assets,
+			)
+		);
+	}
+
+	/**
+	 * Get all network patterns for a site.
+	 *
+	 * @param \WP_REST_Request $request The REST request.
+	 *
+	 * @return \WP_REST_Response The REST response.
+	 */
+	public function rest_get_network_patterns( $request ) {
+		$site_id = absint( $request->get_param( 'site_id' ) );
+		// Check transient first.
+		$patterns       = get_transient( 'dlx_network_patterns_cache_' . $site_id );
+		$all_categories = get_transient( 'dlx_network_categories_cache_' . $site_id );
+		if ( false !== $patterns && false !== $all_categories && false ) {
+			return rest_ensure_response(
+				array(
+					'patterns'   => $patterns,
+					'categories' => $all_categories,
+				)
+			);
+		}
+
+		if ( 0 === $site_id ) {
+			return rest_ensure_response(
+				array(
+					'patterns'   => array(),
+					'categories' => array(),
+				)
+			);
+		}
+
+		switch_to_blog( $site_id );
+
+		// Run the pattern class filters.
+		Patterns::get_instance()->maybe_deregister_pattern_categories();
+		Patterns::get_instance()->maybe_deregister_theme_patterns();
+		Patterns::get_instance()->maybe_deregister_plugin_patterns();
+		Patterns::get_instance()->maybe_deregister_uncategorized_patterns();
+		Patterns::get_instance()->maybe_deregister_all_patterns();
+
+		// Get local/DB patterns.
+		$post_args      = array(
+			'post_type'      => 'wp_block',
+			'posts_per_page' => 500, /* if there are more than 500 patterns, we need to paginate */
+			'post_status'    => array( 'publish', 'draft' ),
+		);
+		$post_args      = Patterns::get_instance()->modify_blocks_rest_query( $post_args, null );
+		$local_patterns = get_posts( $post_args );
+
+		// Get registered and local categories pre filters.
+		$local_categories = Functions::get_pattern_categories_from_taxonomy();
+
+		$mapped_to = array();
+
+		// Get local categories into shape. Terms are objects.
+		$local_categories_arr = array();
+		foreach ( $local_categories as $local_category ) {
+			if ( isset( $mapped_to[ $local_category->slug ] ) ) {
+				$local_category->count += $mapped_to[ $local_category->slug ];
+			}
+			// Decode HTML entities to prevent double encoding in React.
+			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
+			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
+				'label'            => $category_name,
+				'customLabel'      => $category_name,
+				'slug'             => $local_category->slug,
+				'enabled'          => true,
+				'count'            => $local_category->count,
+				'mappedTo'         => false,
+				'registered'       => false,
+				'id'               => $local_category->term_id,
+				'network'          => true,
+				'siteId'           => $site_id,
+				'siteAdminAjaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+			);
+		}
+
+		// Merge the local categories.
+		$all_categories = array_merge( $local_categories_arr ); // We don't care about duplicates here.
+
+		// Sort by label.
+		uasort(
+			$all_categories,
+			function ( $a, $b ) {
+				return strcasecmp( $a['label'], $b['label'] );
+			}
+		);
+
+		set_site_transient( 'dlx_network_categories_cache_' . $site_id, $all_categories, HOUR_IN_SECONDS );
+
+		// Placeholder for patterns.
+		$patterns = array();
+
+		// Process local patterns.
+		foreach ( $local_patterns as $pattern ) {
+			$categories      = get_the_terms( $pattern->ID, 'wp_pattern_category' );
+			$category_labels = array();
+			$category_slugs  = array();
+			foreach ( $categories as $category ) {
+				$category_labels[] = sanitize_text_field( $category->name );
+				$category_slugs[]  = sanitize_title( $category->slug );
+			}
+			$patterns[ $pattern->post_name ] = array(
+				'id'               => $pattern->ID,
+				'title'            => $pattern->post_title,
+				'slug'             => $pattern->post_name,
+				'content'          => $pattern->post_content,
+				'categories'       => $category_labels,
+				'categorySlugs'    => $category_slugs,
+				'isDisabled'       => 'draft' === $pattern->post_status,
+				'isLocal'          => true,
+				'syncStatus'       => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
+				'patternType'      => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'siteId'           => $site_id,
+				'asset'            => null,
+				'network'          => true,
+				'siteAdminAjaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+			);
+		}
+
+		// Sort patterns by title ascending.
+		usort(
+			$patterns,
+			function ( $a, $b ) {
+				return strcmp( $a['title'], $b['title'] );
+			}
+		);
+
+		// Cache for 1 hour.
+		set_site_transient( 'dlx_network_patterns_cache_' . $site_id, $patterns, HOUR_IN_SECONDS );
+
+		restore_current_blog();
+
+		return rest_ensure_response(
+			array(
+				'patterns'   => $patterns,
+				'categories' => $all_categories,
 			)
 		);
 	}
@@ -1742,9 +1987,13 @@ class Rest {
 	 * Get the REST endpoint.
 	 *
 	 * @param string $endpoint The endpoint to get.
+	 * @param bool   $relative_path Whether to return a relative path.
 	 * @return string The REST endpoint.
 	 */
-	public static function get_rest_endpoint( $endpoint ) {
+	public static function get_rest_endpoint( $endpoint, $relative_path = false ) {
+		if ( $relative_path ) {
+			return sprintf( '/dlxplugins/pattern-wrangler/v1/%s', $endpoint );
+		}
 		return Functions::get_rest_url( sprintf( 'dlxplugins/pattern-wrangler/v1/%s', $endpoint ) );
 	}
 

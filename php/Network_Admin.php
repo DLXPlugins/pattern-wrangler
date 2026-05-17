@@ -229,7 +229,7 @@ class Network_Admin {
 		$nonce = sanitize_text_field( filter_input( INPUT_POST, 'dlx_pattern_configuration_nonce', \FILTER_SANITIZE_SPECIAL_CHARS ) );
 		if ( wp_verify_nonce( $nonce, 'dlx_pattern_configuration_nonce' ) && current_user_can( 'manage_network' ) ) {
 			$pattern_config = sanitize_text_field( filter_input( INPUT_POST, 'dlx_pw_pattern_config', \FILTER_SANITIZE_SPECIAL_CHARS ) );
-			$site_id = absint( $site->blog_id );
+			$site_id        = absint( $site->blog_id );
 			update_blog_option( $site_id, 'dlx_pw_pattern_config', $pattern_config );
 		}
 	}

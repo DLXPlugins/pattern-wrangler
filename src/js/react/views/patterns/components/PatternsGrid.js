@@ -85,8 +85,14 @@ const PatternsGrid = ( props ) => {
 				<div className="dlx-patterns-view-container">
 					<div className="dataviews-wrapper">
 						<div className="dlx-patterns-view-container-header">
-							<h1>{ __( 'Loading patterns…', 'pattern-wrangler' ) }</h1>
-							<ReactSpinner3 size={ 94 } speedMultiplier={ 1.8 } color="#9ca0a5" />
+							<h1>
+								{ __( 'Loading patterns…', 'pattern-wrangler' ) }
+							</h1>
+							<ReactSpinner3
+								size={ 94 }
+								speedMultiplier={ 1.8 }
+								color="#9ca0a5"
+							/>
 						</div>
 					</div>
 				</div>
@@ -157,7 +163,9 @@ const Interface = ( props ) => {
 		};
 	} );
 	const nonEmptyCategories = useMemo( () => {
-		return Object.values( categories ).filter( ( category ) => category.count > 0 );
+		return Object.values( categories ).filter(
+			( category ) => category.count > 0,
+		);
 	}, [ categories ] );
 
 	const [ localCategories, setLocalCategories ] = useState( [] );
@@ -236,7 +244,8 @@ const Interface = ( props ) => {
 		const patternLocalStatus = queryArgs?.patternLocalStatus || 'both';
 		const patternLocalRegisteredStatus =
 			queryArgs?.patternLocalRegisteredStatus || 'enabled';
-		let patternRegisteredStatus = queryArgs?.patternRegisteredStatus || 'both';
+		let patternRegisteredStatus =
+			queryArgs?.patternRegisteredStatus || 'both';
 
 		if (
 			'registered' === patternType &&
@@ -245,7 +254,7 @@ const Interface = ( props ) => {
 		) {
 			patternRegisteredStatus =
 				mapCombinedStatusToRegisteredStatus(
-					queryArgs?.patternLocalRegisteredStatus
+					queryArgs?.patternLocalRegisteredStatus,
 				) || 'both';
 		}
 
@@ -305,7 +314,7 @@ const Interface = ( props ) => {
 		const nextStatusById = { ...currentStatusById };
 
 		const activeCount = Object.values( nextStatusById ).filter(
-			( status ) => status === 'loading'
+			( status ) => status === 'loading',
 		).length;
 
 		const availableSlots = Math.max( 0, previewConcurrency - activeCount );
@@ -330,17 +339,23 @@ const Interface = ( props ) => {
 		return nextStatusById;
 	};
 
-	const handlePreviewSettled = ( patternId, generation, status = 'settled' ) => {
+	const handlePreviewSettled = (
+		patternId,
+		generation,
+		status = 'settled',
+	) => {
 		if ( generation !== previewQueueRef.current.generation ) {
 			return;
 		}
 
 		const pattern = patternsDisplay.find( ( item ) =>
-			patternIdsEqual( item.id, patternId )
+			patternIdsEqual( item.id, patternId ),
 		);
 
 		if ( pattern && status === 'settled' ) {
-			loadedPreviewSignaturesRef.current.add( getPreviewSignature( pattern ) );
+			loadedPreviewSignaturesRef.current.add(
+				getPreviewSignature( pattern ),
+			);
 		}
 
 		setPreviewQueueState( ( current ) => {
@@ -383,7 +398,7 @@ const Interface = ( props ) => {
 				syncStatus,
 			},
 			null,
-			2
+			2,
 		);
 		downloadBlob( `${ title }.json`, fileContent, 'application/json' );
 	}, [] );
@@ -395,7 +410,7 @@ const Interface = ( props ) => {
 			}
 			return patterns.find( ( p ) => patternIdsEqual( p.id, patternId ) );
 		},
-		[ patterns ]
+		[ patterns ],
 	);
 
 	useEffect( () => {
@@ -430,37 +445,37 @@ const Interface = ( props ) => {
 
 		document.addEventListener(
 			'dlxpw-pattern-preview-delete-request',
-			onPreviewDeleteRequest
+			onPreviewDeleteRequest,
 		);
 		document.addEventListener(
 			'dlxpw-pattern-preview-disable-request',
-			onPreviewDisableRequest
+			onPreviewDisableRequest,
 		);
 		document.addEventListener(
 			'dlxpw-pattern-preview-edit-request',
-			onPreviewEditRequest
+			onPreviewEditRequest,
 		);
 		document.addEventListener(
 			'dlxpw-pattern-preview-export-request',
-			onPreviewExportRequest
+			onPreviewExportRequest,
 		);
 
 		return () => {
 			document.removeEventListener(
 				'dlxpw-pattern-preview-delete-request',
-				onPreviewDeleteRequest
+				onPreviewDeleteRequest,
 			);
 			document.removeEventListener(
 				'dlxpw-pattern-preview-disable-request',
-				onPreviewDisableRequest
+				onPreviewDisableRequest,
 			);
 			document.removeEventListener(
 				'dlxpw-pattern-preview-edit-request',
-				onPreviewEditRequest
+				onPreviewEditRequest,
 			);
 			document.removeEventListener(
 				'dlxpw-pattern-preview-export-request',
-				onPreviewExportRequest
+				onPreviewExportRequest,
 			);
 		};
 	}, [ patterns, exportPattern, getPatternFromPreviewEvent ] );
@@ -595,7 +610,7 @@ const Interface = ( props ) => {
 	const getDefaultViewWithStoredPreferences = () => {
 		const defaultView = getDefaultView();
 		const queryCategories = decodeURIComponent(
-			getQueryArgs( window.location.href )?.categories || ''
+			getQueryArgs( window.location.href )?.categories || '',
 		);
 
 		if ( queryCategories ) {
@@ -608,7 +623,7 @@ const Interface = ( props ) => {
 
 		applyStoredPatternsLibraryViewPreferences(
 			defaultView,
-			getQueryArgs( window.location.href )
+			getQueryArgs( window.location.href ),
 		);
 
 		return defaultView;
@@ -633,9 +648,10 @@ const Interface = ( props ) => {
 										onClick={ ( e ) => {
 											e.preventDefault();
 											e.stopPropagation();
-											const redirectUrl = encodeURIComponent(
-												window.location.href
-											);
+											const redirectUrl =
+												encodeURIComponent(
+													window.location.href,
+												);
 											window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
 										} }
 									>
@@ -674,7 +690,11 @@ const Interface = ( props ) => {
 									exportPattern( item );
 								} }
 							>
-								{ _x( 'Export', 'Export pattern', 'pattern-wrangler' ) }
+								{ _x(
+									'Export',
+									'Export pattern',
+									'pattern-wrangler',
+								) }
 							</Button>
 							{ ' | ' }
 							<Button
@@ -686,7 +706,11 @@ const Interface = ( props ) => {
 									setIsDeleteModalOpen( { items: [ item ] } );
 								} }
 							>
-								{ _x( 'Delete', 'Delete pattern', 'pattern-wrangler' ) }
+								{ _x(
+									'Delete',
+									'Delete pattern',
+									'pattern-wrangler',
+								) }
 							</Button>
 						</>
 					) }
@@ -701,7 +725,11 @@ const Interface = ( props ) => {
 									setIsCopyToLocalModalOpen( { item } );
 								} }
 							>
-								{ _x( 'Copy to New', 'pattern-wrangler', 'Copy to New Pattern' ) }
+								{ _x(
+									'Copy to New',
+									'pattern-wrangler',
+									'Copy to New Pattern',
+								) }
 							</Button>
 							{ ' | ' }
 							<Button
@@ -712,7 +740,11 @@ const Interface = ( props ) => {
 									exportPattern( item );
 								} }
 							>
-								{ _x( 'Export', 'Export Pattern', 'pattern-wrangler' ) }
+								{ _x(
+									'Export',
+									'Export Pattern',
+									'pattern-wrangler',
+								) }
 							</Button>
 							{ ! item.isDisabled && (
 								<>
@@ -722,10 +754,16 @@ const Interface = ( props ) => {
 										onClick={ ( e ) => {
 											e.preventDefault();
 											e.stopPropagation();
-											setIsPauseModalOpen( { items: [ item ] } );
+											setIsPauseModalOpen( {
+												items: [ item ],
+											} );
 										} }
 									>
-										{ _x( 'Disable', 'Disable Pattern', 'pattern-wrangler' ) }
+										{ _x(
+											'Disable',
+											'Disable Pattern',
+											'pattern-wrangler',
+										) }
 									</Button>
 								</>
 							) }
@@ -736,7 +774,9 @@ const Interface = ( props ) => {
 		);
 	};
 
-	const [ view, setView ] = useState( () => getDefaultViewWithStoredPreferences() );
+	const [ view, setView ] = useState( () =>
+		getDefaultViewWithStoredPreferences(),
+	);
 
 	/**
 	 * Filtered and sorted patterns for the current view (full list, no pagination).
@@ -768,41 +808,56 @@ const Interface = ( props ) => {
 				switch ( filter.field ) {
 					case 'categories':
 						if ( filter.value ) {
-							const cleanedFilterValues = filter.value.map( ( value ) =>
-								cleanForSlug( value )
+							const cleanedFilterValues = filter.value.map(
+								( value ) => cleanForSlug( value ),
 							);
 
 							if ( filter.operator === 'isAny' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
-									return patternCategories.some( ( category ) => {
-										const tempSlug =
-											category.name ||
-											category.label ||
-											category.toString() ||
-											'';
-										const categoryToCheck = cleanForSlug( tempSlug );
-										return cleanedFilterValues.includes( categoryToCheck );
-									} );
-								} );
+								patternsCopy = patternsCopy.filter(
+									( pattern ) => {
+										const patternCategories =
+											pattern.categorySlugs || [];
+										return patternCategories.some(
+											( category ) => {
+												const tempSlug =
+													category.name ||
+													category.label ||
+													category.toString() ||
+													'';
+												const categoryToCheck =
+													cleanForSlug( tempSlug );
+												return cleanedFilterValues.includes(
+													categoryToCheck,
+												);
+											},
+										);
+									},
+								);
 							} else if ( filter.operator === 'isNone' ) {
-								patternsCopy = patternsCopy.filter( ( pattern ) => {
-									const patternCategories = pattern.categorySlugs || [];
+								patternsCopy = patternsCopy.filter(
+									( pattern ) => {
+										const patternCategories =
+											pattern.categorySlugs || [];
 
-									const hasExcludedCategory = patternCategories.some(
-										( category ) => {
-											const tempSlug =
-												category.name ||
-												category.label ||
-												category.toString() ||
-												'';
-											const categoryToCheck = cleanForSlug( tempSlug );
-											return cleanedFilterValues.includes( categoryToCheck );
-										}
-									);
+										const hasExcludedCategory =
+											patternCategories.some(
+												( category ) => {
+													const tempSlug =
+														category.name ||
+														category.label ||
+														category.toString() ||
+														'';
+													const categoryToCheck =
+														cleanForSlug( tempSlug );
+													return cleanedFilterValues.includes(
+														categoryToCheck,
+													);
+												},
+											);
 
-									return ! hasExcludedCategory;
-								} );
+										return ! hasExcludedCategory;
+									},
+								);
 							}
 						}
 						break;
@@ -820,12 +875,12 @@ const Interface = ( props ) => {
 									break;
 								case 'local':
 									patternsCopy = patternsCopy.filter(
-										( pattern ) => pattern.isLocal
+										( pattern ) => pattern.isLocal,
 									);
 									break;
 								case 'registered':
 									patternsCopy = patternsCopy.filter(
-										( pattern ) => ! pattern.isLocal
+										( pattern ) => ! pattern.isLocal,
 									);
 									break;
 							}
@@ -834,7 +889,7 @@ const Interface = ( props ) => {
 					case 'patternStatus':
 						if ( filter.value ) {
 							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
+								( f ) => f.field === 'patternType',
 							);
 							if (
 								patternTypeFilter &&
@@ -843,24 +898,32 @@ const Interface = ( props ) => {
 							) {
 								switch ( filter.value ) {
 									case 'unsynced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'unsynced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
+										patternsCopy = patternsCopy.filter(
+											( pattern ) => {
+												if ( pattern.syncStatus ) {
+													return (
+														pattern.syncStatus ===
+															'unsynced' &&
+														pattern.isLocal
+													);
+												}
+												return false;
+											},
+										);
 										break;
 									case 'synced':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											if ( pattern.syncStatus ) {
-												return (
-													pattern.syncStatus === 'synced' && pattern.isLocal
-												);
-											}
-											return false;
-										} );
+										patternsCopy = patternsCopy.filter(
+											( pattern ) => {
+												if ( pattern.syncStatus ) {
+													return (
+														pattern.syncStatus ===
+															'synced' &&
+														pattern.isLocal
+													);
+												}
+												return false;
+											},
+										);
 										break;
 									case 'both':
 										break;
@@ -871,7 +934,7 @@ const Interface = ( props ) => {
 					case 'patternLocalStatus':
 						if ( filter.value ) {
 							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
+								( f ) => f.field === 'patternType',
 							);
 							if (
 								patternTypeFilter &&
@@ -881,14 +944,24 @@ const Interface = ( props ) => {
 								switch ( filter.value ) {
 									case 'draft':
 									case 'paused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && pattern.isLocal;
-										} );
+										patternsCopy = patternsCopy.filter(
+											( pattern ) => {
+												return (
+													pattern.isDisabled &&
+													pattern.isLocal
+												);
+											},
+										);
 										break;
 									case 'published':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && pattern.isLocal;
-										} );
+										patternsCopy = patternsCopy.filter(
+											( pattern ) => {
+												return (
+													! pattern.isDisabled &&
+													pattern.isLocal
+												);
+											},
+										);
 										break;
 									case 'both':
 										break;
@@ -899,7 +972,7 @@ const Interface = ( props ) => {
 					case 'patternRegisteredStatus':
 						if ( filter.value ) {
 							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
+								( f ) => f.field === 'patternType',
 							);
 							if (
 								patternTypeFilter &&
@@ -908,14 +981,24 @@ const Interface = ( props ) => {
 							) {
 								switch ( filter.value ) {
 									case 'paused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled && ! pattern.isLocal;
-										} );
+										patternsCopy = patternsCopy.filter(
+											( pattern ) => {
+												return (
+													pattern.isDisabled &&
+													! pattern.isLocal
+												);
+											},
+										);
 										break;
 									case 'unpaused':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled && ! pattern.isLocal;
-										} );
+										patternsCopy = patternsCopy.filter(
+											( pattern ) => {
+												return (
+													! pattern.isDisabled &&
+													! pattern.isLocal
+												);
+											},
+										);
 										break;
 									case 'both':
 										break;
@@ -926,7 +1009,7 @@ const Interface = ( props ) => {
 					case 'patternLocalRegisteredStatus':
 						if ( filter.value ) {
 							const patternTypeFilter = filters.find(
-								( f ) => f.field === 'patternType'
+								( f ) => f.field === 'patternType',
 							);
 							if (
 								patternTypeFilter &&
@@ -935,14 +1018,18 @@ const Interface = ( props ) => {
 							) {
 								switch ( filter.value ) {
 									case 'disabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return pattern.isDisabled;
-										} );
+										patternsCopy = patternsCopy.filter(
+											( pattern ) => {
+												return pattern.isDisabled;
+											},
+										);
 										break;
 									case 'enabled':
-										patternsCopy = patternsCopy.filter( ( pattern ) => {
-											return ! pattern.isDisabled;
-										} );
+										patternsCopy = patternsCopy.filter(
+											( pattern ) => {
+												return ! pattern.isDisabled;
+											},
+										);
 										break;
 									case 'both':
 										break;
@@ -965,13 +1052,20 @@ const Interface = ( props ) => {
 				const patternCategoriesMatches = pattern.categorySlugs.some(
 					( category ) => {
 						const categoryName =
-							category.name || category.label || category.toString();
+							category.name ||
+							category.label ||
+							category.toString();
 						return categoryName
 							.toLowerCase()
-							.includes( ( newView.search || searchField ).toLowerCase() );
-					}
+							.includes(
+								( newView.search || searchField ).toLowerCase(),
+							);
+					},
 				);
-				const patternMatches = [ patternLabelMatches, patternCategoriesMatches ];
+				const patternMatches = [
+					patternLabelMatches,
+					patternCategoriesMatches,
+				];
 				return patternMatches.some( ( match ) => match );
 			} );
 		}
@@ -999,7 +1093,7 @@ const Interface = ( props ) => {
 		const ordered = getFilteredPatternsOrdered( newView );
 		return ordered.slice(
 			( newView.page - 1 ) * newView.perPage,
-			newView.page * newView.perPage
+			newView.page * newView.perPage,
 		);
 	};
 
@@ -1013,7 +1107,10 @@ const Interface = ( props ) => {
 				id: 'title',
 				label: __( 'Title', 'pattern-wrangler' ),
 				render: ( { item } ) => {
-					if ( ! item?.categorySlugs || item.categorySlugs.length === 0 ) {
+					if (
+						! item?.categorySlugs ||
+						item.categorySlugs.length === 0
+					) {
 						return (
 							<div className="pattern-title-categories">
 								<div className="pattern-title">
@@ -1022,9 +1119,10 @@ const Interface = ( props ) => {
 											variant="link"
 											onClick={ ( e ) => {
 												e.preventDefault();
-												const redirectUrl = encodeURIComponent(
-													window.location.href
-												);
+												const redirectUrl =
+													encodeURIComponent(
+														window.location.href,
+													);
 												window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
 											} }
 										>
@@ -1032,7 +1130,9 @@ const Interface = ( props ) => {
 										</Button>
 									) }
 									{ ! item.isLocal && (
-										<span className="pattern-title">{ item.title }</span>
+										<span className="pattern-title">
+											{ item.title }
+										</span>
 									) }
 								</div>
 								<div className="pattern-categories">
@@ -1043,7 +1143,8 @@ const Interface = ( props ) => {
 						);
 					}
 
-					const currentCategories = select( patternsStore ).getCategories();
+					const currentCategories =
+						select( patternsStore ).getCategories();
 
 					return (
 						<>
@@ -1054,9 +1155,10 @@ const Interface = ( props ) => {
 											variant="link"
 											onClick={ ( e ) => {
 												e.preventDefault();
-												const redirectUrl = encodeURIComponent(
-													window.location.href
-												);
+												const redirectUrl =
+													encodeURIComponent(
+														window.location.href,
+													);
 												window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
 											} }
 										>
@@ -1064,34 +1166,58 @@ const Interface = ( props ) => {
 										</Button>
 									) }
 									{ ! item.isLocal && (
-										<span className="pattern-title">{ item.title }</span>
+										<span className="pattern-title">
+											{ item.title }
+										</span>
 									) }
 								</div>
 								{ item.categorySlugs.length > 0 &&
-									Object.values( currentCategories ).length > 0 && (
-									<div className="pattern-categories">
-										{ __( 'Categories:', 'pattern-wrangler' ) }{ ' ' }
-										{ item.categorySlugs.map( ( category, index ) => {
-											const catSlug = category?.slug || category.toString();
-											if ( ! currentCategories.hasOwnProperty( catSlug ) ) {
-												return null;
-											}
+									Object.values( currentCategories ).length >
+										0 && (
+										<div className="pattern-categories">
+										{ __(
+											'Categories:',
+											'pattern-wrangler',
+										) }{ ' ' }
+										{ item.categorySlugs.map(
+											( category, index ) => {
+												const catSlug =
+														category?.slug ||
+														category.toString();
+												if (
+													! currentCategories.hasOwnProperty(
+														catSlug,
+													)
+												) {
+													return null;
+												}
 
-											const catLabel =
-													currentCategories[ catSlug ]?.customLabel ||
-													currentCategories[ catSlug ]?.label ||
-													currentCategories[ catSlug ]?.name;
+												const catLabel =
+														currentCategories[
+															catSlug
+														]?.customLabel ||
+														currentCategories[
+															catSlug
+														]?.label ||
+														currentCategories[
+															catSlug
+														]?.name;
 
-											return (
-												<span
-													key={ `category-${ index }` }
-													className="pattern-category"
-												>
-													{ catLabel }{ ' ' }
-													{ index < item.categorySlugs.length - 1 && ', ' }
-												</span>
-											);
-										} ) }
+												return (
+													<span
+														key={ `category-${ index }` }
+														className="pattern-category"
+													>
+														{ catLabel }{ ' ' }
+														{ index <
+																item
+																	.categorySlugs
+																	.length -
+																	1 && ', ' }
+													</span>
+												);
+											},
+										) }
 									</div>
 								) }
 								{ getQuickLinks( item ) }
@@ -1110,11 +1236,12 @@ const Interface = ( props ) => {
 					const previewStatus =
 						previewQueueState.statusById[ item.id ] || 'queued';
 					const shouldLoadPreview =
-						previewStatus === 'loading' || previewStatus === 'settled';
+						previewStatus === 'loading' ||
+						previewStatus === 'settled';
 					const viewportWidth = item.viewportWidth || 1200;
 
 					const previewUrl = item?.id
-						? addQueryArgs( ajaxurl, {
+						? addQueryArgs( item.siteAdminAjaxUrl, {
 							action: 'dlxpw_pattern_preview',
 							pattern_id: item.id,
 							viewport_width: viewportWidth,
@@ -1152,7 +1279,9 @@ const Interface = ( props ) => {
 						<>
 							<div className="pattern-badge-wrapper">
 								{ showDisabledBadge && (
-									<span className={ `pattern-badge ${ badgeDisabledClass }` }>
+									<span
+										className={ `pattern-badge ${ badgeDisabledClass }` }
+									>
 										{ badgeDisabledText }
 									</span>
 								) }
@@ -1171,14 +1300,33 @@ const Interface = ( props ) => {
 										src={ previewUrl }
 										title={ `Preview: ${ item.title }` }
 										item={ item }
-										galleryItems={ patternsDisplay ?? lightboxGalleryItems }
-										queueGeneration={ previewQueueState.generation }
+										galleryItems={
+											patternsDisplay ??
+											lightboxGalleryItems
+										}
+										queueGeneration={
+											previewQueueState.generation
+										}
 										queueStatus={ previewStatus }
-										onPreviewSettled={ ( patternId, generation ) => {
-											handlePreviewSettled( patternId, generation, 'settled' );
+										onPreviewSettled={ (
+											patternId,
+											generation,
+										) => {
+											handlePreviewSettled(
+												patternId,
+												generation,
+												'settled',
+											);
 										} }
-										onPreviewError={ ( patternId, generation ) => {
-											handlePreviewSettled( patternId, generation, 'error' );
+										onPreviewError={ (
+											patternId,
+											generation,
+										) => {
+											handlePreviewSettled(
+												patternId,
+												generation,
+												'error',
+											);
 										} }
 									/>
 								) }
@@ -1189,8 +1337,14 @@ const Interface = ( props ) => {
 										style={ { minHeight: '260px' } }
 									>
 										{ previewStatus === 'queued'
-											? __( 'Preview queued…', 'pattern-wrangler' )
-											: __( 'Preview pending…', 'pattern-wrangler' ) }
+											? __(
+												'Preview queued…',
+												'pattern-wrangler',
+											  )
+											: __(
+												'Preview pending…',
+												'pattern-wrangler',
+											  ) }
 									</div>
 								) }
 							</div>
@@ -1218,7 +1372,9 @@ const Interface = ( props ) => {
 						? Object.values( nonEmptyCategories ).map( ( category ) => {
 							return {
 								label:
-										category.customLabel || category.label || category.name,
+										category.customLabel ||
+										category.label ||
+										category.name,
 								value: category.slug,
 							};
 						  } )
@@ -1239,14 +1395,14 @@ const Interface = ( props ) => {
 				elements:
 					select( patternsStore ).getAssets() &&
 					select( patternsStore ).getAssets().length > 0
-						? Object.values( select( patternsStore ).getAssets() || [] ).map(
-							( asset ) => {
-								return {
-									label: asset.label,
-									value: asset.slug,
-								};
-							}
-						  )
+						? Object.values(
+							select( patternsStore ).getAssets() || [],
+						  ).map( ( asset ) => {
+							return {
+								label: asset.label,
+								value: asset.slug,
+							};
+						  } )
 						: null,
 			},
 			{
@@ -1373,7 +1529,10 @@ const Interface = ( props ) => {
 				},
 				type: 'array',
 				id: 'patternLocalRegisteredStatus',
-				label: __( 'Pattern Local and Registered Status', 'pattern-wrangler' ),
+				label: __(
+					'Pattern Local and Registered Status',
+					'pattern-wrangler',
+				),
 			},
 		],
 		[
@@ -1381,7 +1540,7 @@ const Interface = ( props ) => {
 			patternsDisplay,
 			previewQueueState,
 			lightboxGalleryItems,
-		]
+		],
 	);
 
 	const actions = useMemo(
@@ -1395,9 +1554,9 @@ const Interface = ( props ) => {
 							'Assign Categories to %d Pattern',
 							'Assign Categories to %d Patterns',
 							items.length,
-							'pattern-wrangler'
+							'pattern-wrangler',
 						),
-						items.length
+						items.length,
 					);
 				},
 				icon: 'tag',
@@ -1438,7 +1597,9 @@ const Interface = ( props ) => {
 						// Modern API attempt first
 						if ( navigator.clipboard?.writeText ) {
 							try {
-								await navigator.clipboard.writeText( copyContent );
+								await navigator.clipboard.writeText(
+									copyContent,
+								);
 								copied = true;
 							} catch ( err ) {
 								// Fail silently and fall back
@@ -1467,7 +1628,10 @@ const Interface = ( props ) => {
 
 						setSnackbar( {
 							isVisible: true,
-							message: __( 'Pattern copied to clipboard', 'pattern-wrangler' ),
+							message: __(
+								'Pattern copied to clipboard',
+								'pattern-wrangler',
+							),
 							title: __( 'Pattern Copied', 'pattern-wrangler' ),
 							type: 'success',
 							onClose: () => {
@@ -1495,9 +1659,9 @@ const Interface = ( props ) => {
 							'Delete %d Pattern',
 							'Delete %d Patterns',
 							items.length,
-							'pattern-wrangler'
+							'pattern-wrangler',
 						),
-						items.length
+						items.length,
 					);
 				},
 				icon: 'trash',
@@ -1521,9 +1685,9 @@ const Interface = ( props ) => {
 							'Disable %d Pattern',
 							'Disable %d Patterns',
 							items.length,
-							'pattern-wrangler'
+							'pattern-wrangler',
 						),
-						items.length
+						items.length,
 					);
 				},
 				icon: 'controls-pause',
@@ -1573,9 +1737,13 @@ const Interface = ( props ) => {
 							syncStatus,
 						},
 						null,
-						2
+						2,
 					);
-					downloadBlob( `${ title }.json`, fileContent, 'application/json' );
+					downloadBlob(
+						`${ title }.json`,
+						fileContent,
+						'application/json',
+					);
 				},
 				isEligible: () => {
 					return true;
@@ -1605,9 +1773,9 @@ const Interface = ( props ) => {
 							'Publish %d Pattern',
 							'Publish %d Patterns',
 							items.length,
-							'pattern-wrangler'
+							'pattern-wrangler',
 						),
-						items.length
+						items.length,
 					);
 				},
 				icon: 'yes-alt',
@@ -1631,9 +1799,9 @@ const Interface = ( props ) => {
 							'Re-enable %d Pattern',
 							'Re-enable %d Patterns',
 							items.length,
-							'pattern-wrangler'
+							'pattern-wrangler',
 						),
-						items.length
+						items.length,
 					);
 				},
 				icon: 'controls-play',
@@ -1661,7 +1829,7 @@ const Interface = ( props ) => {
 				isPrimary: false,
 			},
 		],
-		[ categories, patterns ]
+		[ categories, patterns ],
 	);
 
 	/**
@@ -1686,7 +1854,7 @@ const Interface = ( props ) => {
 
 		// Add categories filter parameters if they exist.
 		const categoriesFilter = newView.filters?.find(
-			( filter ) => filter.field === 'categories'
+			( filter ) => filter.field === 'categories',
 		);
 		if ( categoriesFilter ) {
 			const categoryValues = categoriesFilter.value || [];
@@ -1694,7 +1862,7 @@ const Interface = ( props ) => {
 			// Set query var to category values encoded for URL.
 			if ( categoryValues.length > 0 ) {
 				changeQueryArgs.categories = encodeURIComponent(
-					categoryValues.join( ',' )
+					categoryValues.join( ',' ),
 				);
 			}
 		}
@@ -1707,37 +1875,38 @@ const Interface = ( props ) => {
 
 		// Get pattern type and status from filters.
 		const patternTypeFilter = newView.filters?.find(
-			( filter ) => filter.field === 'patternType'
+			( filter ) => filter.field === 'patternType',
 		);
 		const patternStatusFilter = newView.filters?.find(
-			( filter ) => filter.field === 'patternStatus'
+			( filter ) => filter.field === 'patternStatus',
 		);
 		const patternTypeValue = patternTypeFilter?.value || 'all';
 		changeQueryArgs.patternType = patternTypeValue;
 
 		// Get registered/local pattern disabled/enabled status from filters.
 		const patternRegisteredStatusFilter = newView.filters?.find(
-			( filter ) => filter.field === 'patternRegisteredStatus'
+			( filter ) => filter.field === 'patternRegisteredStatus',
 		);
 		const patternLocalStatusFilter = newView.filters?.find(
-			( filter ) => filter.field === 'patternLocalStatus'
+			( filter ) => filter.field === 'patternLocalStatus',
 		);
 		const patternLocalRegisteredStatusFilter = newView.filters?.find(
-			( filter ) => filter.field === 'patternLocalRegisteredStatus'
+			( filter ) => filter.field === 'patternLocalRegisteredStatus',
 		);
 
 		if ( 'registered' === patternTypeValue ) {
 			changeQueryArgs.patternRegisteredStatus =
 				patternRegisteredStatusFilter?.value ||
 				mapCombinedStatusToRegisteredStatus(
-					patternLocalRegisteredStatusFilter?.value
+					patternLocalRegisteredStatusFilter?.value,
 				) ||
 				'both';
 			changeQueryArgs.patternStatus = '';
 			changeQueryArgs.patternLocalStatus = '';
 			changeQueryArgs.patternLocalRegisteredStatus = '';
 		} else if ( 'local' === patternTypeValue ) {
-			changeQueryArgs.patternStatus = patternStatusFilter?.value || 'both';
+			changeQueryArgs.patternStatus =
+				patternStatusFilter?.value || 'both';
 			changeQueryArgs.patternLocalStatus =
 				patternLocalStatusFilter?.value || 'both';
 			changeQueryArgs.patternRegisteredStatus = '';
@@ -1759,19 +1928,19 @@ const Interface = ( props ) => {
 			newUrl = removeQueryArgs(
 				removeQueryArgs(
 					removeQueryArgs( newUrl, 'patternStatus' ),
-					'patternLocalStatus'
+					'patternLocalStatus',
 				),
-				'patternLocalRegisteredStatus'
+				'patternLocalRegisteredStatus',
 			);
 		} else if ( 'local' === patternTypeValue ) {
 			newUrl = removeQueryArgs(
 				removeQueryArgs( newUrl, 'patternRegisteredStatus' ),
-				'patternLocalRegisteredStatus'
+				'patternLocalRegisteredStatus',
 			);
 		} else {
 			newUrl = removeQueryArgs(
 				removeQueryArgs( newUrl, 'patternStatus' ),
-				'patternLocalStatus'
+				'patternLocalStatus',
 			);
 			newUrl = removeQueryArgs( newUrl, 'patternRegisteredStatus' );
 		}
@@ -1811,7 +1980,7 @@ const Interface = ( props ) => {
 
 		persistPatternsLibraryViewPreferencesIfChanged(
 			previousViewForStorage,
-			newView
+			newView,
 		);
 
 		// Update the view state.
@@ -1859,7 +2028,9 @@ const Interface = ( props ) => {
 
 	const refreshCategories = ( updatedCategories ) => {
 		// Find the index of the pattern-categories field.
-		const fieldsIndex = fields.findIndex( ( field ) => field.id === 'categories' );
+		const fieldsIndex = fields.findIndex(
+			( field ) => field.id === 'categories',
+		);
 
 		// Check if the field exists before trying to modify it.
 		if ( fieldsIndex === -1 || updatedCategories.length === 0 ) {
@@ -1886,7 +2057,7 @@ const Interface = ( props ) => {
 					label: catLabel,
 					value: category.slug,
 				};
-			}
+			},
 		);
 
 		// Create a new fields array instead of mutating the existing one.
@@ -1901,13 +2072,15 @@ const Interface = ( props ) => {
 		// If categories are empty, remove the category filter.
 		if ( originalLocalCategories.length === 0 ) {
 			updatedFields = updatedFields.filter(
-				( field ) => field.id !== 'categories'
+				( field ) => field.id !== 'categories',
 			);
 		}
 
 		// If assets are empty, remove the assets filter.
 		if ( Object.values( data.assets || {} ).length === 0 ) {
-			updatedFields = updatedFields.filter( ( field ) => field.id !== 'assets' );
+			updatedFields = updatedFields.filter(
+				( field ) => field.id !== 'assets',
+			);
 		}
 
 		const newViewCopy = {
@@ -1924,7 +2097,7 @@ const Interface = ( props ) => {
 			if ( data.categories ) {
 				// Find the index of the pattern-categories field.
 				const fieldsIndex = fields.findIndex(
-					( field ) => field.id === 'categories'
+					( field ) => field.id === 'categories',
 				);
 
 				// Check if the field exists before trying to modify it.
@@ -1977,7 +2150,9 @@ const Interface = ( props ) => {
 				onChangeView={ onChangeView }
 				paginationInfo={ {
 					totalItems: getFilteredPatternsCount( view ),
-					totalPages: Math.ceil( getFilteredPatternsCount( view ) / view.perPage ),
+					totalPages: Math.ceil(
+						getFilteredPatternsCount( view ) / view.perPage,
+					),
 				} }
 				perPage={ view.perPage }
 				selection={ selectedItems }
@@ -2014,14 +2189,19 @@ const Interface = ( props ) => {
 								}
 								try {
 									// Post the new pattern to the REST API.
-									const pattern = await createPatternFromFile( file );
+									const pattern = await createPatternFromFile(
+										file,
+									);
 
 									// REST API only accepts wp_pattern_sync_status: "partial" or "unsynced".
 									// Omit for synced/blank so we don't send invalid enum values.
 									const meta =
 										pattern.syncStatus === 'unsynced' ||
 										pattern.syncStatus === 'partial'
-											? { wp_pattern_sync_status: pattern.syncStatus }
+											? {
+												wp_pattern_sync_status:
+														pattern.syncStatus,
+											  }
 											: {};
 
 									const response = await apiFetch( {
@@ -2035,18 +2215,27 @@ const Interface = ( props ) => {
 										},
 									} );
 									if ( response?.id ) {
-										const getPatternResponse = await apiFetch( {
-											path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ response.id }`,
-											method: 'GET',
-										} );
+										const getPatternResponse =
+											await apiFetch( {
+												path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ response.id }`,
+												method: 'GET',
+											} );
 										if ( getPatternResponse ) {
-											dispatch( patternsStore ).addPattern( getPatternResponse );
+											dispatch( patternsStore ).addPattern(
+												getPatternResponse,
+											);
 										}
 									}
 									setSnackbar( {
 										isVisible: true,
-										message: __( 'Pattern imported', 'pattern-wrangler' ),
-										title: __( 'Pattern Imported', 'pattern-wrangler' ),
+										message: __(
+											'Pattern imported',
+											'pattern-wrangler',
+										),
+										title: __(
+											'Pattern Imported',
+											'pattern-wrangler',
+										),
 										type: 'success',
 										onClose: () => {
 											setSnackbar( { isVisible: false } );
@@ -2057,13 +2246,19 @@ const Interface = ( props ) => {
 								event.target.value = '';
 							} }
 						>
-							{ __( 'Import Pattern From JSON File', 'pattern-wrangler' ) }
+							{ __(
+								'Import Pattern From JSON File',
+								'pattern-wrangler',
+							) }
 						</FormFileUpload>
 					</div>
 					<div className="dlx-patterns-view-grid">
 						<div className="dlx-patterns-view-search-filters-wrapper">
 							<DataViews.Search
-								label={ __( 'Search Patterns', 'pattern-wrangler' ) }
+								label={ __(
+									'Search Patterns',
+									'pattern-wrangler',
+								) }
 							/>
 							<DataViews.FiltersToggle />
 						</div>
@@ -2074,7 +2269,8 @@ const Interface = ( props ) => {
 								hideLabelFromVision={ true }
 								value={
 									view?.filters?.find(
-										( filter ) => filter.field === 'patternType'
+										( filter ) =>
+											filter.field === 'patternType',
 									)?.value || 'all'
 								}
 								onChange={ ( value ) => {
@@ -2082,11 +2278,16 @@ const Interface = ( props ) => {
 									// Merge with existing filters, replacing patternType if it exists
 									const existingFilters =
 										myNewView.filters?.filter(
-											( filter ) => filter.field !== 'patternType'
+											( filter ) =>
+												filter.field !== 'patternType',
 										) || [];
 									myNewView.filters = [
 										...existingFilters,
-										{ field: 'patternType', operator: 'is', value },
+										{
+											field: 'patternType',
+											operator: 'is',
+											value,
+										},
 									];
 									// Reset to first page when filter changes
 									myNewView.page = 1;
@@ -2095,43 +2296,61 @@ const Interface = ( props ) => {
 									let patternUrl = window.location.href;
 									switch ( value ) {
 										case 'all':
-											patternUrl = removeQueryArgs( patternUrl, 'patternStatus' );
 											patternUrl = removeQueryArgs(
 												patternUrl,
-												'patternRegisteredStatus'
+												'patternStatus',
 											);
 											patternUrl = removeQueryArgs(
 												patternUrl,
-												'patternLocalStatus'
+												'patternRegisteredStatus',
 											);
 											patternUrl = removeQueryArgs(
 												patternUrl,
-												'patternLocalRegisteredStatus'
+												'patternLocalStatus',
 											);
-											window.history.pushState( {}, '', patternUrl );
+											patternUrl = removeQueryArgs(
+												patternUrl,
+												'patternLocalRegisteredStatus',
+											);
+											window.history.pushState(
+												{},
+												'',
+												patternUrl,
+											);
 											break;
 										case 'local':
 											patternUrl = removeQueryArgs(
 												patternUrl,
-												'patternRegisteredStatus'
+												'patternRegisteredStatus',
 											);
 											patternUrl = removeQueryArgs(
 												patternUrl,
-												'patternLocalRegisteredStatus'
+												'patternLocalRegisteredStatus',
 											);
-											window.history.pushState( {}, '', patternUrl );
+											window.history.pushState(
+												{},
+												'',
+												patternUrl,
+											);
 											break;
 										case 'registered':
-											patternUrl = removeQueryArgs( patternUrl, 'patternStatus' );
 											patternUrl = removeQueryArgs(
 												patternUrl,
-												'patternLocalStatus'
+												'patternStatus',
 											);
 											patternUrl = removeQueryArgs(
 												patternUrl,
-												'patternLocalRegisteredStatus'
+												'patternLocalStatus',
 											);
-											window.history.pushState( {}, '', patternUrl );
+											patternUrl = removeQueryArgs(
+												patternUrl,
+												'patternLocalRegisteredStatus',
+											);
+											window.history.pushState(
+												{},
+												'',
+												patternUrl,
+											);
 											break;
 										default:
 											break;
@@ -2144,14 +2363,17 @@ const Interface = ( props ) => {
 									showTooltip={ true }
 									aria-label={ __(
 										'Show Only Local Patterns',
-										'pattern-wrangler'
+										'pattern-wrangler',
 									) }
 								/>
 								<ToggleGroupControlOption
 									value="all"
 									label={ __( 'All', 'pattern-wrangler' ) }
 									showTooltip={ true }
-									aria-label={ __( 'Show All Patterns', 'pattern-wrangler' ) }
+									aria-label={ __(
+										'Show All Patterns',
+										'pattern-wrangler',
+									) }
 								/>
 								<ToggleGroupControlOption
 									value="registered"
@@ -2159,22 +2381,28 @@ const Interface = ( props ) => {
 									showTooltip={ true }
 									aria-label={ __(
 										'Show Only Registered Patterns',
-										'pattern-wrangler'
+										'pattern-wrangler',
 									) }
 								/>
 							</ToggleGroupControl>
 							{
 								// If patttern type is local, show synced|both|unsynced buttons.
-								view?.filters?.find( ( filter ) => filter.field === 'patternType' )
-									?.value === 'registered' && (
+								view?.filters?.find(
+									( filter ) => filter.field === 'patternType',
+								)?.value === 'registered' && (
 									<>
 										<ToggleGroupControl
-											label={ __( 'Registered Status', 'pattern-wrangler' ) }
+											label={ __(
+												'Registered Status',
+												'pattern-wrangler',
+											) }
 											isAdaptiveWidth={ true }
 											hideLabelFromVision={ true }
 											value={
 												view?.filters?.find(
-													( filter ) => filter.field === 'patternRegisteredStatus'
+													( filter ) =>
+														filter.field ===
+														'patternRegisteredStatus',
 												)?.value || 'both'
 											}
 											onChange={ ( value ) => {
@@ -2183,7 +2411,8 @@ const Interface = ( props ) => {
 												const existingFilters =
 													myNewView.filters?.filter(
 														( filter ) =>
-															filter.field !== 'patternRegisteredStatus'
+															filter.field !==
+															'patternRegisteredStatus',
 													) || [];
 												myNewView.filters = [
 													...existingFilters,
@@ -2200,29 +2429,38 @@ const Interface = ( props ) => {
 										>
 											<ToggleGroupControlOption
 												value="paused"
-												label={ __( 'Disabled', 'pattern-wrangler' ) }
+												label={ __(
+													'Disabled',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
 												aria-label={ __(
 													'Show Only Disabled Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 											/>
 											<ToggleGroupControlOption
 												value="both"
-												label={ __( 'Both', 'pattern-wrangler' ) }
+												label={ __(
+													'Both',
+													'pattern-wrangler',
+												) }
 												aria-label={ __(
 													'Show Both Disabled and Enabled Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 												showTooltip={ true }
 											/>
 											<ToggleGroupControlOption
 												value="unpaused"
-												label={ __( 'Enabled', 'pattern-wrangler' ) }
+												label={ __(
+													'Enabled',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
 												aria-label={ __(
 													'Show Only Enabled Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 											/>
 										</ToggleGroupControl>
@@ -2231,16 +2469,22 @@ const Interface = ( props ) => {
 							}
 							{
 								// If patttern type is local, show synced|both|unsynced buttons.
-								view?.filters?.find( ( filter ) => filter.field === 'patternType' )
-									?.value === 'local' && (
+								view?.filters?.find(
+									( filter ) => filter.field === 'patternType',
+								)?.value === 'local' && (
 									<>
 										<ToggleGroupControl
-											label={ __( 'Pattern Status', 'pattern-wrangler' ) }
+											label={ __(
+												'Pattern Status',
+												'pattern-wrangler',
+											) }
 											isAdaptiveWidth={ true }
 											hideLabelFromVision={ true }
 											value={
 												view?.filters?.find(
-													( filter ) => filter.field === 'patternStatus'
+													( filter ) =>
+														filter.field ===
+														'patternStatus',
 												)?.value || 'both'
 											}
 											onChange={ ( value ) => {
@@ -2248,11 +2492,17 @@ const Interface = ( props ) => {
 												// Merge with existing filters, replacing patternStatus if it exists
 												const existingFilters =
 													myNewView.filters?.filter(
-														( filter ) => filter.field !== 'patternStatus'
+														( filter ) =>
+															filter.field !==
+															'patternStatus',
 													) || [];
 												myNewView.filters = [
 													...existingFilters,
-													{ field: 'patternStatus', operator: 'is', value },
+													{
+														field: 'patternStatus',
+														operator: 'is',
+														value,
+													},
 												];
 												// Reset to first page when filter changes
 												myNewView.page = 1;
@@ -2261,39 +2511,53 @@ const Interface = ( props ) => {
 										>
 											<ToggleGroupControlOption
 												value="unsynced"
-												label={ __( 'Unsynced', 'pattern-wrangler' ) }
+												label={ __(
+													'Unsynced',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
 												aria-label={ __(
 													'Show Only Unsynced Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 											/>
 											<ToggleGroupControlOption
 												value="both"
-												label={ __( 'Both', 'pattern-wrangler' ) }
+												label={ __(
+													'Both',
+													'pattern-wrangler',
+												) }
 												aria-label={ __(
 													'Show Both Synced and Unsynced Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 												showTooltip={ true }
 											/>
 											<ToggleGroupControlOption
 												value="synced"
-												label={ __( 'Synced', 'pattern-wrangler' ) }
+												label={ __(
+													'Synced',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
 												aria-label={ __(
 													'Show Only Synced Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 											/>
 										</ToggleGroupControl>
 										<ToggleGroupControl
-											label={ __( 'Published Status', 'pattern-wrangler' ) }
+											label={ __(
+												'Published Status',
+												'pattern-wrangler',
+											) }
 											isAdaptiveWidth={ true }
 											hideLabelFromVision={ true }
 											value={
 												view?.filters?.find(
-													( filter ) => filter.field === 'patternLocalStatus'
+													( filter ) =>
+														filter.field ===
+														'patternLocalStatus',
 												)?.value || 'both'
 											}
 											onChange={ ( value ) => {
@@ -2301,7 +2565,9 @@ const Interface = ( props ) => {
 												// Merge with existing filters, replacing patternStatus if it exists
 												const existingFilters =
 													myNewView.filters?.filter(
-														( filter ) => filter.field !== 'patternLocalStatus'
+														( filter ) =>
+															filter.field !==
+															'patternLocalStatus',
 													) || [];
 												myNewView.filters = [
 													...existingFilters,
@@ -2318,29 +2584,38 @@ const Interface = ( props ) => {
 										>
 											<ToggleGroupControlOption
 												value="draft"
-												label={ __( 'Draft', 'pattern-wrangler' ) }
+												label={ __(
+													'Draft',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
 												aria-label={ __(
 													'Show Only Draft Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 											/>
 											<ToggleGroupControlOption
 												value="both"
-												label={ __( 'Both', 'pattern-wrangler' ) }
+												label={ __(
+													'Both',
+													'pattern-wrangler',
+												) }
 												aria-label={ __(
 													'Show Both Draft and Published Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 												showTooltip={ true }
 											/>
 											<ToggleGroupControlOption
 												value="published"
-												label={ __( 'Published', 'pattern-wrangler' ) }
+												label={ __(
+													'Published',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
 												aria-label={ __(
 													'Show Only Published Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 											/>
 										</ToggleGroupControl>
@@ -2349,17 +2624,22 @@ const Interface = ( props ) => {
 							}
 							{
 								// If patttern type is local, show synced|both|unsynced buttons.
-								view?.filters?.find( ( filter ) => filter.field === 'patternType' )
-									?.value === 'all' && (
+								view?.filters?.find(
+									( filter ) => filter.field === 'patternType',
+								)?.value === 'all' && (
 									<>
 										<ToggleGroupControl
-											label={ __( 'Disabled Status', 'pattern-wrangler' ) }
+											label={ __(
+												'Disabled Status',
+												'pattern-wrangler',
+											) }
 											isAdaptiveWidth={ true }
 											hideLabelFromVision={ true }
 											value={
 												view?.filters?.find(
 													( filter ) =>
-														filter.field === 'patternLocalRegisteredStatus'
+														filter.field ===
+														'patternLocalRegisteredStatus',
 												)?.value || 'both'
 											}
 											onChange={ ( value ) => {
@@ -2368,7 +2648,8 @@ const Interface = ( props ) => {
 												const existingFilters =
 													myNewView.filters?.filter(
 														( filter ) =>
-															filter.field !== 'patternLocalRegisteredStatus'
+															filter.field !==
+															'patternLocalRegisteredStatus',
 													) || [];
 												myNewView.filters = [
 													...existingFilters,
@@ -2385,29 +2666,38 @@ const Interface = ( props ) => {
 										>
 											<ToggleGroupControlOption
 												value="disabled"
-												label={ __( 'Disabled', 'pattern-wrangler' ) }
+												label={ __(
+													'Disabled',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
 												aria-label={ __(
 													'Show Only Disabled Local and Registered Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 											/>
 											<ToggleGroupControlOption
 												value="both"
-												label={ __( 'Both', 'pattern-wrangler' ) }
+												label={ __(
+													'Both',
+													'pattern-wrangler',
+												) }
 												aria-label={ __(
 													'Show Both Disabled and Enabled Local and Registered Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 												showTooltip={ true }
 											/>
 											<ToggleGroupControlOption
 												value="enabled"
-												label={ __( 'Enabled', 'pattern-wrangler' ) }
+												label={ __(
+													'Enabled',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
 												aria-label={ __(
 													'Show Only Enabled Local and Registered Patterns',
-													'pattern-wrangler'
+													'pattern-wrangler',
 												) }
 											/>
 										</ToggleGroupControl>
@@ -2452,7 +2742,9 @@ const Interface = ( props ) => {
 				{ isAddNewPatternModalOpen && (
 					<PatternCreateModal
 						isOpen={ isAddNewPatternModalOpen }
-						onRequestClose={ () => setIsAddNewPatternModalOpen( false ) }
+						onRequestClose={ () =>
+							setIsAddNewPatternModalOpen( false )
+						}
 						categories={ localCategories }
 						title={ __( 'Create New Pattern', 'pattern-wrangler' ) }
 						onEdit={ async( { patternId } ) => {
@@ -2462,14 +2754,22 @@ const Interface = ( props ) => {
 									method: 'GET',
 								} );
 								if ( getPatternResponse ) {
-									dispatch( patternsStore ).addPattern( getPatternResponse );
+									dispatch( patternsStore ).addPattern(
+										getPatternResponse,
+									);
 								}
 							}
 							setIsAddNewPatternModalOpen( false );
 							setSnackbar( {
 								isVisible: true,
-								message: __( 'Pattern created', 'pattern-wrangler' ),
-								title: __( 'Pattern Created', 'pattern-wrangler' ),
+								message: __(
+									'Pattern created',
+									'pattern-wrangler',
+								),
+								title: __(
+									'Pattern Created',
+									'pattern-wrangler',
+								),
 								type: 'success',
 								onClose: () => {
 									setSnackbar( { isVisible: false } );
@@ -2486,16 +2786,23 @@ const Interface = ( props ) => {
 						title={ __( 'Copy Pattern to Local', 'pattern-wrangler' ) }
 						syncedDefaultStatus={ 'unsynced' }
 						patternTitle={ isCopyToLocalModalOpen.item.title }
-						patternCategories={ isCopyToLocalModalOpen.item.categories }
+						patternCategories={
+							isCopyToLocalModalOpen.item.categories
+						}
 						copyItem={ isCopyToLocalModalOpen.item }
-						onEdit={ async( { disableRegisteredPattern, patternId } ) => {
+						onEdit={ async( {
+							disableRegisteredPattern,
+							patternId,
+						} ) => {
 							if ( patternId ) {
 								const getPatternResponse = await apiFetch( {
 									path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ patternId }`,
 									method: 'GET',
 								} );
 								if ( getPatternResponse ) {
-									dispatch( patternsStore ).addPattern( getPatternResponse );
+									dispatch( patternsStore ).addPattern(
+										getPatternResponse,
+									);
 								}
 
 								// Now disable the registered pattern.
@@ -2503,17 +2810,26 @@ const Interface = ( props ) => {
 									const itemIdsAndNonces = [
 										{
 											id: isCopyToLocalModalOpen.item.id,
-											nonce: isCopyToLocalModalOpen.item.editNonce,
+											nonce: isCopyToLocalModalOpen.item
+												.editNonce,
 										},
 									];
-									dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
+									dispatch( patternsStore ).disablePatterns(
+										itemIdsAndNonces,
+									);
 								}
 							}
 							setIsCopyToLocalModalOpen( false );
 							setSnackbar( {
 								isVisible: true,
-								message: __( 'Local pattern created', 'pattern-wrangler' ),
-								title: __( 'Patterns Copied to Local', 'pattern-wrangler' ),
+								message: __(
+									'Local pattern created',
+									'pattern-wrangler',
+								),
+								title: __(
+									'Patterns Copied to Local',
+									'pattern-wrangler',
+								),
 								type: 'success',
 								onClose: () => {
 									setSnackbar( { isVisible: false } );
@@ -2536,18 +2852,26 @@ const Interface = ( props ) => {
 						patternNonce={ isQuickEditModalOpen.item.editNonce }
 						isEditMode={ true }
 						onEdit={ ( editResponse ) => {
-							dispatch( patternsStore ).upsertCategory( editResponse.categories );
+							dispatch( patternsStore ).upsertCategory(
+								editResponse.categories,
+							);
 							dispatch( patternsStore ).setPattern(
 								editResponse.patternId,
 								editResponse.patternTitle,
 								editResponse.categorySlugs,
-								editResponse.categorySlugs
+								editResponse.categorySlugs,
 							);
 							setIsQuickEditModalOpen( null );
 							setSnackbar( {
 								isVisible: true,
-								message: __( 'Pattern updated', 'pattern-wrangler' ),
-								title: __( 'Pattern Updated', 'pattern-wrangler' ),
+								message: __(
+									'Pattern updated',
+									'pattern-wrangler',
+								),
+								title: __(
+									'Pattern Updated',
+									'pattern-wrangler',
+								),
 								type: 'success',
 								onClose: () => {
 									setSnackbar( { isVisible: false } );
@@ -2559,14 +2883,28 @@ const Interface = ( props ) => {
 				{ isPauseModalOpen && (
 					<PatternPauseModal
 						items={ isPauseModalOpen.items }
-						onPause={ ( pauseResponse, itemIdsAndNonces, showAgain ) => {
-							dispatch( patternsStore ).disablePatterns( itemIdsAndNonces );
-							dispatch( patternsStore ).setDoNotShowAgain( showAgain );
+						onPause={ (
+							pauseResponse,
+							itemIdsAndNonces,
+							showAgain,
+						) => {
+							dispatch( patternsStore ).disablePatterns(
+								itemIdsAndNonces,
+							);
+							dispatch( patternsStore ).setDoNotShowAgain(
+								showAgain,
+							);
 							setIsPauseModalOpen( null );
 							setSnackbar( {
 								isVisible: true,
-								message: __( 'Patterns disabled', 'pattern-wrangler' ),
-								title: __( 'Patterns Disabled', 'pattern-wrangler' ),
+								message: __(
+									'Patterns disabled',
+									'pattern-wrangler',
+								),
+								title: __(
+									'Patterns Disabled',
+									'pattern-wrangler',
+								),
 								type: 'success',
 								onClose: () => {
 									setSnackbar( { isVisible: false } );
@@ -2581,12 +2919,20 @@ const Interface = ( props ) => {
 					<PatternPublishModal
 						items={ isPublishModalOpen.items }
 						onPublish={ ( publishResponse, itemIdsAndNonces ) => {
-							dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
+							dispatch( patternsStore ).enablePatterns(
+								itemIdsAndNonces,
+							);
 							setIsPublishModalOpen( null );
 							setSnackbar( {
 								isVisible: true,
-								message: __( 'Patterns published', 'pattern-wrangler' ),
-								title: __( 'Patterns Published', 'pattern-wrangler' ),
+								message: __(
+									'Patterns published',
+									'pattern-wrangler',
+								),
+								title: __(
+									'Patterns Published',
+									'pattern-wrangler',
+								),
 								type: 'success',
 								onClose: () => {
 									setSnackbar( { isVisible: false } );
@@ -2599,14 +2945,28 @@ const Interface = ( props ) => {
 				{ isUnpauseModalOpen && (
 					<PatternUnpauseModal
 						items={ isUnpauseModalOpen.items }
-						onReenable={ ( reenableResponse, itemIdsAndNonces, showAgain ) => {
-							dispatch( patternsStore ).enablePatterns( itemIdsAndNonces );
-							dispatch( patternsStore ).setDoNotShowAgain( showAgain );
+						onReenable={ (
+							reenableResponse,
+							itemIdsAndNonces,
+							showAgain,
+						) => {
+							dispatch( patternsStore ).enablePatterns(
+								itemIdsAndNonces,
+							);
+							dispatch( patternsStore ).setDoNotShowAgain(
+								showAgain,
+							);
 							setIsUnpauseModalOpen( null );
 							setSnackbar( {
 								isVisible: true,
-								message: __( 'Patterns re-enabled', 'pattern-wrangler' ),
-								title: __( 'Patterns Re-enabled', 'pattern-wrangler' ),
+								message: __(
+									'Patterns re-enabled',
+									'pattern-wrangler',
+								),
+								title: __(
+									'Patterns Re-enabled',
+									'pattern-wrangler',
+								),
 								type: 'success',
 								onClose: () => {
 									setSnackbar( { isVisible: false } );
@@ -2620,14 +2980,28 @@ const Interface = ( props ) => {
 				{ isDeleteModalOpen && (
 					<PatternDeleteModal
 						items={ isDeleteModalOpen.items }
-						onDelete={ ( deleteResponse, itemIdsAndNonces, showAgain ) => {
-							dispatch( patternsStore ).setDoNotShowAgain( showAgain );
-							dispatch( patternsStore ).deletePatterns( itemIdsAndNonces );
+						onDelete={ (
+							deleteResponse,
+							itemIdsAndNonces,
+							showAgain,
+						) => {
+							dispatch( patternsStore ).setDoNotShowAgain(
+								showAgain,
+							);
+							dispatch( patternsStore ).deletePatterns(
+								itemIdsAndNonces,
+							);
 							setIsDeleteModalOpen( null );
 							setSnackbar( {
 								isVisible: true,
-								message: __( 'Patterns deleted', 'pattern-wrangler' ),
-								title: __( 'Patterns Deleted', 'pattern-wrangler' ),
+								message: __(
+									'Patterns deleted',
+									'pattern-wrangler',
+								),
+								title: __(
+									'Patterns Deleted',
+									'pattern-wrangler',
+								),
 								type: 'success',
 								onClose: () => {
 									setSnackbar( { isVisible: false } );
@@ -2647,15 +3021,17 @@ const Interface = ( props ) => {
 							itemIdsAndNonces,
 							itemsAffected,
 							newCategories,
-							affectedSlugs
+							affectedSlugs,
 						) => {
-							dispatch( patternsStore ).upsertCategory( newCategories );
+							dispatch( patternsStore ).upsertCategory(
+								newCategories,
+							);
 							itemsAffected.forEach( ( item ) => {
 								dispatch( patternsStore ).setPattern(
 									item.patternId,
 									item.patternTitle,
 									affectedSlugs,
-									affectedSlugs
+									affectedSlugs,
 								);
 							} );
 							setIsTagPatternModalOpen( null );
@@ -2663,11 +3039,11 @@ const Interface = ( props ) => {
 								isVisible: true,
 								message: __(
 									'Categories assigned to patterns',
-									'pattern-wrangler'
+									'pattern-wrangler',
 								),
 								title: __(
 									'Categories Assigned to Patterns',
-									'pattern-wrangler'
+									'pattern-wrangler',
 								),
 								type: 'success',
 								onClose: () => {
@@ -2702,7 +3078,9 @@ const Interface = ( props ) => {
 									method: 'GET',
 								} );
 								if ( getPatternResponse ) {
-									dispatch( patternsStore ).addPattern( getPatternResponse );
+									dispatch( patternsStore ).addPattern(
+										getPatternResponse,
+									);
 								}
 							}
 						} }

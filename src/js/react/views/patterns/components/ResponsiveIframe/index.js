@@ -126,7 +126,7 @@ const dispatchPreviewToolbarEvent = ( name, patternId ) => {
 		new CustomEvent( name, {
 			bubbles: true,
 			detail: { patternId },
-		} )
+		} ),
 	);
 };
 
@@ -257,27 +257,27 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 		disablePattern: {
 			tpl: `<button type="button" class="f-button" title="${ __(
 				'Disable pattern',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" data-dlxpw-toolbar="disable" aria-label="${ __(
 				'Disable pattern',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>`,
 			click: () => {
 				const id = getActivePreviewPattern()?.id;
 				Fancybox.close();
 				dispatchPreviewToolbarEvent(
 					'dlxpw-pattern-preview-disable-request',
-					id
+					id,
 				);
 			},
 		},
 		deletePattern: {
 			tpl: `<button type="button" class="f-button pattern-preview-fancybox-toolbar-btn--destructive" title="${ __(
 				'Delete pattern',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" data-dlxpw-toolbar="delete" aria-label="${ __(
 				'Delete pattern',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>`,
 			click: () => {
 				const id = getActivePreviewPattern()?.id;
@@ -285,45 +285,54 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 					return;
 				}
 				Fancybox.close();
-				dispatchPreviewToolbarEvent( 'dlxpw-pattern-preview-delete-request', id );
+				dispatchPreviewToolbarEvent(
+					'dlxpw-pattern-preview-delete-request',
+					id,
+				);
 			},
 		},
 		editPattern: {
 			tpl: `<button type="button" class="f-button" title="${ __(
 				'Edit pattern',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" data-dlxpw-toolbar="edit" aria-label="${ __(
 				'Edit pattern',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`,
 			click: () => {
 				const id = getActivePreviewPattern()?.id;
 				Fancybox.close();
-				dispatchPreviewToolbarEvent( 'dlxpw-pattern-preview-edit-request', id );
+				dispatchPreviewToolbarEvent(
+					'dlxpw-pattern-preview-edit-request',
+					id,
+				);
 			},
 		},
 		exportPattern: {
 			tpl: `<button type="button" class="f-button" title="${ _x(
 				'Export',
 				'Export pattern file',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" data-dlxpw-toolbar="export" aria-label="${ _x(
 				'Export',
 				'Export pattern file',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>`,
 			click: () => {
 				const id = getActivePreviewPattern()?.id;
-				dispatchPreviewToolbarEvent( 'dlxpw-pattern-preview-export-request', id );
+				dispatchPreviewToolbarEvent(
+					'dlxpw-pattern-preview-export-request',
+					id,
+				);
 			},
 		},
 		copyPattern: {
 			tpl: `<button type="button" class="f-button" title="${ __(
 				'Copy pattern markup',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" data-dlxpw-toolbar="copy" aria-label="${ __(
 				'Copy pattern markup',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>`,
 			click: () => {
 				const pattern = getActivePreviewPattern();
@@ -333,10 +342,10 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 		previewDesktop: {
 			tpl: `<button type="button" class="f-button" title="${ __(
 				'Desktop preview',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" data-dlxpw-toolbar="preview-desktop" aria-label="${ __(
 				'Desktop preview',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" aria-pressed="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></button>`,
 			click: ( event, button ) => {
 				setPreviewDeviceMode( button?.fancybox, 'desktop' );
@@ -345,10 +354,10 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 		previewTablet: {
 			tpl: `<button type="button" class="f-button" title="${ __(
 				'Tablet preview',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" data-dlxpw-toolbar="preview-tablet" aria-label="${ __(
 				'Tablet preview',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" aria-pressed="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></button>`,
 			click: ( event, button ) => {
 				setPreviewDeviceMode( button?.fancybox, 'tablet' );
@@ -357,10 +366,10 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 		previewMobile: {
 			tpl: `<button type="button" class="f-button" title="${ __(
 				'Mobile preview',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" data-dlxpw-toolbar="preview-mobile" aria-label="${ __(
 				'Mobile preview',
-				'pattern-wrangler'
+				'pattern-wrangler',
 			) }" aria-pressed="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="2" width="8" height="20" rx="2"/><line x1="11" y1="19" x2="13" y2="19"/></svg></button>`,
 			click: ( event, button ) => {
 				setPreviewDeviceMode( button?.fancybox, 'mobile' );
@@ -385,7 +394,12 @@ const getPatternPreviewFancyboxOptions = ( extra = {} ) => {
 				display: {
 					left: [ 'disablePattern', 'deletePattern' ],
 					middle: [ 'editPattern', 'exportPattern', 'copyPattern' ],
-					right: [ 'previewDesktop', 'previewTablet', 'previewMobile', 'close' ],
+					right: [
+						'previewDesktop',
+						'previewTablet',
+						'previewMobile',
+						'close',
+					],
 				},
 				items: toolbarItems,
 			},
@@ -407,7 +421,9 @@ const buildPatternPreviewSlide = ( patternItem ) => {
 	if ( null !== viewportWidth ) {
 		previewArgs.viewport_width = viewportWidth;
 	}
-	const previewUrl = patternItem?.id ? addQueryArgs( ajaxurl, previewArgs ) : '';
+	const previewUrl = patternItem?.id
+		? addQueryArgs( patternItem.siteAdminAjaxUrl, previewArgs )
+		: '';
 
 	return {
 		src: previewUrl,
@@ -425,16 +441,16 @@ const popPatternPreview = ( item, galleryItems ) => {
 	if ( ! galleryItems || galleryItems.length < 2 ) {
 		Fancybox.show(
 			[ buildPatternPreviewSlide( item ) ],
-			getPatternPreviewFancyboxOptions()
+			getPatternPreviewFancyboxOptions(),
 		);
 		return;
 	}
 
 	const slides = galleryItems.map( ( patternItem ) =>
-		buildPatternPreviewSlide( patternItem )
+		buildPatternPreviewSlide( patternItem ),
 	);
 	let startIndex = galleryItems.findIndex( ( p ) =>
-		patternIdsEqual( p.id, item.id )
+		patternIdsEqual( p.id, item.id ),
 	);
 	if ( startIndex < 0 ) {
 		startIndex = 0;
@@ -447,7 +463,7 @@ const popPatternPreview = ( item, galleryItems ) => {
 			Carousel: {
 				infinite: false,
 			},
-		} )
+		} ),
 	);
 };
 

@@ -123,6 +123,23 @@ class Functions {
 	}
 
 	/**
+	 * Sort pattern categories by label.
+	 *
+	 * @param array $categories The categories to sort.
+	 * @return array The sorted categories.
+	 */
+	public static function sort_pattern_categories( $categories ) {
+		$categories = array_unique( $categories, SORT_REGULAR );
+		uasort(
+			$categories,
+			function ( $a, $b ) {
+				return strcasecmp( $a['label'], $b['label'] );
+			}
+		);
+		return $categories;
+	}
+
+	/**
 	 * Get the pattern categories.
 	 *
 	 * @param bool $after_filters Whether to get categories after filters.
@@ -147,8 +164,19 @@ class Functions {
 			$pattern_registry   = $pattern_registry->get_all_registered();
 		}
 
-		// Get all pattern categories from the built-in WP taxonomy.
-		$pattern_categories_taxonomy = self::get_pattern_categories_from_taxonomy();
+		$pattern_categories_taxonomy = array();
+		$is_network_only             = false;
+		if ( self::is_multisite( false ) ) {
+			$network_options       = Options::get_network_options();
+			$pattern_configuration = $network_options['patternConfiguration'] ?? 'local_only';
+			if ( 'network_only' === $pattern_configuration ) {
+				$pattern_categories_taxonomy = array();
+				$is_network_only             = true;
+			}
+		}
+		if ( ! $is_network_only ) {
+			$pattern_categories_taxonomy = self::get_pattern_categories_from_taxonomy();
+		}
 
 		// Get saved category data.
 		$custom_pattern_categories = $options['categories'];
@@ -277,6 +305,37 @@ class Functions {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Get the network pattern configuration.
+	 *
+	 * This is checks a given site's pattern configuration, and returns the network pattern configuration.
+	 *
+	 * @param int $site_id The site ID.
+	 *
+	 * @return bool true if enabled, false if disabled.
+	 */
+	public static function get_network_pattern_configuration( $site_id = 1 ) {
+		$pattern_configuration = 'local_only';
+		if ( Functions::is_multisite( false ) ) {
+			$options = Options::get_network_options();
+
+			// Get local site options for local patterns.
+			$network_site_option = $options['patternConfiguration'];
+			$mothership_id       = self::get_network_default_patterns_site_id();
+			if ( $mothership_id === $site_id ) {
+				$pattern_configuration = 'local_only';
+			} else {
+				$local_site_option = get_blog_option( $site_id, 'dlx_pattern_configuration', '' );
+				if ( ! empty( $local_site_option ) ) {
+					$pattern_configuration = $local_site_option;
+				} else {
+					$pattern_configuration = $network_site_option;
+				}
+			}
+		}
+		return $pattern_configuration;
 	}
 
 	/**

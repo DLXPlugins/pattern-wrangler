@@ -56,15 +56,16 @@ const SitePicker = ( props ) => {
 		useState( null );
 	const [ selectedSuggestion, setSelectedSuggestion ] = useState( null );
 	const [ currentSuggestion, setCurrentSuggestion ] = useState( null );
-	const [ selectedSuggestionIndex, setSelectedSuggestionIndex ] = useState( null );
+	const [ selectedSuggestionIndex, setSelectedSuggestionIndex ] =
+		useState( null );
 	const [ suggestionListboxId, setSuggestionListboxId ] = useState( '' );
 	const [ suggestionValue, setSuggestionValue ] = useState( '' );
 	const [ isInitialRequest, setIsInitialRequest ] = useState( true );
 	const [ savedSuggestionValue, setSavedSuggestionValue ] = useState(
-		props.selectedSite
+		props.selectedSite,
 	);
 	const [ uniqueInstanceId, setUniqueInstanceId ] = useState(
-		`url-input-control-${ generatedUniqueId }`
+		`url-input-control-${ generatedUniqueId }`,
 	);
 	const [ loading, setLoading ] = useState( false );
 
@@ -175,7 +176,7 @@ const SitePicker = ( props ) => {
 						// Set the input caret to the last position.
 						event.target.setSelectionRange(
 							suggestionValue.length,
-							suggestionValue.length
+							suggestionValue.length,
 						);
 					}
 					break;
@@ -248,7 +249,7 @@ const SitePicker = ( props ) => {
 	 */
 	const getSuggestion = ( value ) => {
 		const foundSuggestion = suggestions.find(
-			( suggestion ) => suggestion.id === value
+			( suggestion ) => suggestion.id === value,
 		);
 		if ( null === foundSuggestion || undefined === foundSuggestion ) {
 			return null;
@@ -309,7 +310,7 @@ const SitePicker = ( props ) => {
 						headers: {
 							'X-WP-Nonce': restNonce,
 						},
-					}
+					},
 				)
 				.then( ( response ) => {
 					setCurrentSuggestionRequest( null );
@@ -343,10 +344,16 @@ const SitePicker = ( props ) => {
 												{ __( 'Site', 'pattern-wrangler' ) }
 											</th>
 											<th scope="col">
-												{ __( 'Site ID', 'pattern-wrangler' ) }
+												{ __(
+													'Site ID',
+													'pattern-wrangler',
+												) }
 											</th>
 											<th scope="col">
-												{ __( 'Actions', 'pattern-wrangler' ) }
+												{ __(
+													'Actions',
+													'pattern-wrangler',
+												) }
 											</th>
 										</tr>
 									</thead>
@@ -358,8 +365,14 @@ const SitePicker = ( props ) => {
 													icon={ <ExternalLink /> }
 													iconSize={ 18 }
 													iconPosition="right"
-													label={ __( 'Open in new tab', 'pattern-wrangler' ) }
-													href={ currentSuggestion?.permalink || '' }
+													label={ __(
+														'Open in new tab',
+														'pattern-wrangler',
+													) }
+													href={
+														currentSuggestion?.permalink ||
+														''
+													}
 													target="_blank"
 													rel="noopener noreferrer"
 												>
@@ -368,7 +381,12 @@ const SitePicker = ( props ) => {
 											</td>
 											<td>
 												<span className="pw-pub-url-input__suggestion-label-id">
-													( { __( 'Site ID:', 'pattern-wrangler' ) } { currentSuggestion.id } )
+													({ ' ' }
+													{ __(
+														'Site ID:',
+														'pattern-wrangler',
+													) }{ ' ' }
+													{ currentSuggestion.id } )
 												</span>
 											</td>
 											<td className="pw-pub-url-input__suggestion-actions">
@@ -377,15 +395,21 @@ const SitePicker = ( props ) => {
 													icon={ <XCircle /> }
 													className="button-reset"
 													iconSize={ 18 }
-													label={ __( 'Remove Current Selection', 'pattern-wrangler' ) }
+													label={ __(
+														'Remove Current Selection',
+														'pattern-wrangler',
+													) }
 													onClick={ ( e ) => {
 														setSuggestionValue( '' );
-														setCurrentSuggestion( null );
+														setCurrentSuggestion(
+															null,
+														);
 														props.onItemSelect( e, {
 															id: 0,
 															name: '',
 															permalink: '',
-															selectedSitePatternsUrl: '',
+															selectedSitePatternsUrl:
+																'',
 														} );
 													} }
 												/>
@@ -395,12 +419,20 @@ const SitePicker = ( props ) => {
 													className="button-reset"
 													iconSize={ 18 }
 													iconPosition="left"
-													label={ __( 'View Patterns', 'pattern-wrangler' ) }
-													href={ currentSuggestion.selectedSitePatternsUrl }
+													label={ __(
+														'View Patterns',
+														'pattern-wrangler',
+													) }
+													href={
+														currentSuggestion.selectedSitePatternsUrl
+													}
 													target="_blank"
 													rel="noopener noreferrer"
 												>
-													{ __( 'Patterns', 'pattern-wrangler' ) }
+													{ __(
+														'Patterns',
+														'pattern-wrangler',
+													) }
 												</Button>
 											</td>
 										</tr>
@@ -413,7 +445,10 @@ const SitePicker = ( props ) => {
 						<div className="pw-pub-url-search-wrapper">
 							<input
 								type="text"
-								placeholder={ __( 'Search by Site Name', 'pattern-wrangler' ) }
+								placeholder={ __(
+									'Search by Site Name',
+									'pattern-wrangler',
+								) }
 								id={ uniqueInstanceId }
 								className="pw-pub-url-input__input"
 								value={ suggestionValue }
@@ -421,7 +456,9 @@ const SitePicker = ( props ) => {
 								onFocus={ onFocus }
 								onKeyDown={ onKeyDown }
 								aria-label={
-									props.label ? undefined : __( 'Site', 'pattern-wrangler' )
+									props.label
+										? undefined
+										: __( 'Site', 'pattern-wrangler' )
 								}
 								aria-autocomplete="list"
 								ref={ inputRef }
@@ -437,7 +474,10 @@ const SitePicker = ( props ) => {
 										className="pw-pub-url-input__search-button"
 										icon={ <Search /> }
 										iconSize={ 18 }
-										label={ __( 'Search for a Site', 'pattern-wrangler' ) }
+										label={ __(
+											'Search for a Site',
+											'pattern-wrangler',
+										) }
 										onClick={ () => {
 											setShowSuggestions( true );
 										} }
@@ -457,14 +497,23 @@ const SitePicker = ( props ) => {
 					>
 						<div className="pw-url-input__suggestions-close-wrapper">
 							<div className="pw-url-input__sugestions-results-count">
-								{ suggestions.length } { _n( 'Result', 'Results', suggestions.length, 'pattern-wrangler' ) }
+								{ suggestions.length }{ ' ' }
+								{ _n(
+									'Result',
+									'Results',
+									suggestions.length,
+									'pattern-wrangler',
+								) }
 							</div>
 							<Button
 								variant="secondary"
 								icon={ <XCircle /> }
 								iconSize={ 18 }
 								iconPosition="left"
-								label={ __( 'Close Suggestions', 'pattern-wrangler' ) }
+								label={ __(
+									'Close Suggestions',
+									'pattern-wrangler',
+								) }
 								onClick={ () => {
 									setShowSuggestions( false );
 									inputRef?.current?.focus();
@@ -475,9 +524,14 @@ const SitePicker = ( props ) => {
 						<div className="pw-url-input__suggestions-wrapper">
 							{ suggestions.map( ( suggestion, index ) => {
 								const suggestionId = `pw-suggested-value-${ suggestion.id }`;
-								const suggestionClass = classNames( 'pw-url-input__suggestion', {
-									'is-selected': suggestion.id === selectedSuggestion,
-								} );
+								const suggestionClass = classNames(
+									'pw-url-input__suggestion',
+									{
+										'is-selected':
+											suggestion.id ===
+											selectedSuggestion,
+									},
+								);
 
 								return (
 									<Button
@@ -485,10 +539,14 @@ const SitePicker = ( props ) => {
 										id={ suggestionId }
 										value={ suggestion.id }
 										role="option"
-										aria-selected={ suggestion.id === selectedSuggestion }
+										aria-selected={
+											suggestion.id === selectedSuggestion
+										}
 										className={ suggestionClass }
 										onClick={ ( e ) => {
-											setSelectedSuggestion( parseInt( e.target.value ) );
+											setSelectedSuggestion(
+												parseInt( e.target.value ),
+											);
 											setSelectedSuggestionIndex( index );
 											setCurrentSuggestion( suggestion );
 											setShowSuggestions( false );
