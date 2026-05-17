@@ -392,6 +392,7 @@ dlx-patterns-view-filters-wrapper {
 .pattern-badge-wrapper {
 	display: flex;
 	justify-content: flex-end;
+	flex-wrap: wrap;
 	padding: 0 0 12px 0;
 	gap: 8px;
 	margin-right: 28px;
