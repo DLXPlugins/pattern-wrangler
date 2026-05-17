@@ -1687,7 +1687,7 @@ class Rest {
 		$post_args      = array(
 			'post_type'      => 'wp_block',
 			'posts_per_page' => 500, /* if there are more than 500 patterns, we need to paginate */
-			'post_status'    => array( 'publish', 'draft' ),
+			'post_status'    => array( 'publish' ),
 		);
 		$post_args      = Patterns::get_instance()->modify_blocks_rest_query( $post_args, null );
 		$local_patterns = get_posts( $post_args );
