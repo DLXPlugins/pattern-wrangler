@@ -419,7 +419,7 @@ class Admin {
 					'themes.php',
 					__( 'Patterns', 'pattern-wrangler' ),
 					__( 'Patterns', 'pattern-wrangler' ),
-					'edit_posts',
+					'edit_others_posts',
 					'edit.php?post_type=wp_block',
 					'',
 					4
@@ -428,7 +428,7 @@ class Admin {
 				add_menu_page(
 					__( 'Patterns', 'pattern-wrangler' ),
 					__( 'Patterns', 'pattern-wrangler' ),
-					'edit_posts',
+					'edit_others_posts',
 					'edit.php?post_type=wp_block',
 					'',
 					'dashicons-layout',
@@ -438,7 +438,7 @@ class Admin {
 					'edit.php?post_type=wp_block',
 					__( 'All Patterns', 'pattern-wrangler' ),
 					__( 'All Patterns', 'pattern-wrangler' ),
-					'edit_posts',
+					'edit_others_posts',
 					'edit.php?post_type=wp_block',
 					'',
 					1
@@ -450,7 +450,7 @@ class Admin {
 					'themes.php',
 					__( 'Pattern Library', 'pattern-wrangler' ),
 					__( 'Pattern Library', 'pattern-wrangler' ),
-					'edit_posts',
+					'edit_others_posts',
 					'pattern-wrangler-view',
 					array( $this, 'enhanced_patterns_view' ),
 					4
@@ -459,7 +459,7 @@ class Admin {
 				$enhanced_patterns_hook = add_menu_page(
 					__( 'All Patterns', 'pattern-wrangler' ),
 					__( 'Patterns', 'pattern-wrangler' ),
-					'edit_posts',
+					'edit_others_posts',
 					'pattern-wrangler-view',
 					array( $this, 'enhanced_patterns_view' ),
 					'dashicons-layout',
@@ -469,7 +469,7 @@ class Admin {
 					'pattern-wrangler-view',
 					__( 'All Patterns', 'pattern-wrangler' ),
 					__( 'All Patterns', 'pattern-wrangler' ),
-					'edit_posts',
+					'edit_others_posts',
 					'pattern-wrangler-view',
 					array( $this, 'enhanced_patterns_view' ),
 					1

@@ -48,22 +48,32 @@ class Preview {
 		if ( 0 === $pattern_id ) {
 			die( 'Invalid pattern ID.' );
 		}
+		$site_id         = absint( filter_input( INPUT_GET, 'site_id', FILTER_VALIDATE_INT ) ?? 0 );
+		$current_site_id = absint( filter_input( INPUT_GET, 'current_site_id', FILTER_VALIDATE_INT ) ?? 0 );
 		add_filter(
 			'dlxpw_pattern_preview_id',
 			function () use ( $pattern_id ) {
 				return urlencode( $pattern_id );
 			}
 		);
-
+		add_filter(
+			'dlxpw_pattern_preview_site_id',
+			function () use ( $site_id ) {
+				return $site_id;
+			}
+		);
+		add_filter(
+			'dlxpw_pattern_preview_current_site_id',
+			function () use ( $current_site_id ) {
+				return $current_site_id;
+			}
+		);
 		add_filter(
 			'dlxpw_pattern_preview_nonce',
 			function () use ( $pattern_id ) {
 				return wp_create_nonce( 'preview-pattern_' . $pattern_id );
 			}
 		);
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_die( 'You do not have permission to preview this pattern.' );
-		}
 
 		// Get the pattern preview HTML.
 		ob_start();

@@ -422,6 +422,9 @@ const buildPatternPreviewSlide = ( patternItem ) => {
 	const previewArgs = {
 		action: 'dlxpw_pattern_preview',
 		pattern_id: patternItem.id,
+		site_id: patternItem.siteId,
+		current_site_id: patternItem.currentSiteId ?? 0,
+		nonce: patternItem.previewNonce,
 	};
 	if ( null !== viewportWidth ) {
 		previewArgs.viewport_width = viewportWidth;

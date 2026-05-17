@@ -1265,8 +1265,11 @@ const Interface = ( props ) => {
 						? addQueryArgs( item.siteAdminAjaxUrl, {
 							action: 'dlxpw_pattern_preview',
 							pattern_id: item.id,
+							site_id: item.siteId,
+							current_site_id: item.currentSiteId ?? 0,
 							viewport_width: viewportWidth,
 							iframe_preview: true,
+							nonce: item.previewNonce,
 						  } )
 						: '';
 

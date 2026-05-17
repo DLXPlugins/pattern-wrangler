@@ -52,7 +52,7 @@ class Rest {
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'rest_get_all_patterns' ),
 					'permission_callback' => function () {
-						return current_user_can( 'edit_posts' );
+						return current_user_can( 'edit_others_posts' );
 					},
 
 				),
@@ -70,7 +70,7 @@ class Rest {
 					'methods'             => 'GET',
 					'callback'            => array( $this, 'rest_get_network_patterns' ),
 					'permission_callback' => function () {
-						return current_user_can( 'edit_posts' );
+						return current_user_can( 'edit_others_posts' );
 					},
 					'args'                => array(
 						'site_id' => array(
@@ -141,7 +141,7 @@ class Rest {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_create_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'edit_posts' );
+					return current_user_can( 'edit_others_posts' );
 				},
 			)
 		);
@@ -276,7 +276,7 @@ class Rest {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_update_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'edit_posts' );
+					return current_user_can( 'edit_others_posts' );
 				},
 			)
 		);
@@ -291,7 +291,7 @@ class Rest {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_delete_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'delete_posts' );
+					return current_user_can( 'delete_others_posts' );
 				},
 			)
 		);
@@ -336,7 +336,7 @@ class Rest {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_tag_pattern' ),
 				'permission_callback' => function () {
-					return current_user_can( 'edit_posts' );
+					return current_user_can( 'edit_others_posts' );
 				},
 			)
 		);
@@ -373,7 +373,7 @@ class Rest {
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'rest_get_pattern_versions' ),
 					'permission_callback' => function () {
-						return current_user_can( 'edit_posts' );
+						return current_user_can( 'edit_others_posts' );
 					},
 					'args'                => array(
 						'parent' => array(
@@ -387,7 +387,7 @@ class Rest {
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'rest_create_pattern_version' ),
 					'permission_callback' => function () {
-						return current_user_can( 'edit_posts' );
+						return current_user_can( 'edit_others_posts' );
 					},
 				),
 				array(
@@ -400,7 +400,7 @@ class Rest {
 						),
 					),
 					'permission_callback' => function () {
-						return current_user_can( 'delete_posts' );
+						return current_user_can( 'delete_others_posts' );
 					},
 				),
 			)
@@ -416,7 +416,7 @@ class Rest {
 					'methods'             => 'POST',
 					'callback'            => array( $this, 'rest_restore_pattern_version' ),
 					'permission_callback' => function () {
-						return current_user_can( 'edit_posts' );
+						return current_user_can( 'edit_others_posts' );
 					},
 					'args'                => array(
 						'id' => array(
@@ -1329,7 +1329,7 @@ class Rest {
 	public function rest_get_all_patterns() {
 		// Check nonce and permissions.
 		$nonce = sanitize_text_field( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ) );
-		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-get-patterns' ) || ! current_user_can( 'edit_posts' ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-get-patterns' ) || ! current_user_can( 'edit_others_posts' ) ) {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to view patterns.' ) );
 		}
 
@@ -1559,6 +1559,7 @@ class Rest {
 					'editNonce'            => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
 					'asset'                => $has_asset ? $asset_slug : null,
 					'duplicateNonce'       => '',
+					'previewNonce'         => wp_create_nonce( 'dlx-pw-patterns-view-preview-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
 					'network'              => false,
 					'siteId'               => $site_id,
 					'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
@@ -1593,6 +1594,7 @@ class Rest {
 				'patternType'          => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				'editNonce'            => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
 				'duplicateNonce'       => wp_create_nonce( 'dlx-pw-patterns-view-duplicate-pattern-' . $pattern->ID ),
+				'previewNonce'         => wp_create_nonce( 'dlx-pw-patterns-view-preview-pattern-' . $pattern->ID ),
 				'asset'                => null,
 				'network'              => false,
 				'siteId'               => $site_id,
@@ -1651,7 +1653,8 @@ class Rest {
 	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_get_network_patterns( $request ) {
-		$site_id = absint( $request->get_param( 'site_id' ) );
+		$site_id         = absint( $request->get_param( 'site_id' ) ); // This is the passed network site id to retrieve patterns for.
+		$current_site_id = get_current_blog_id();
 		// Check transient first.
 		$patterns              = get_site_transient( 'dlx_network_patterns_cache' );
 		$all_categories        = get_site_transient( 'dlx_network_categories_cache' );
@@ -1759,10 +1762,12 @@ class Rest {
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
 				'patternType'          => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				'siteId'               => $site_id,
+				'currentSiteId'        => $current_site_id,
 				'asset'                => null,
 				'network'              => true,
 				'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 				'patternConfiguration' => $pattern_configuration,
+				'previewNonce'         => wp_create_nonce( 'dlx-pw-patterns-view-preview-pattern-' . $pattern->ID ),
 			);
 		}
 

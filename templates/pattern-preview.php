@@ -10,18 +10,16 @@ namespace DLXPlugins\PatternWrangler;
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'No direct access.' );
 }
-if ( ! current_user_can( 'edit_posts' ) ) {
-	die( 'You do not have permission to preview this pattern.' );
-}
 
 /**
  * Filter to get the pattern ID.
  *
  * @since 1.1.0
  */
-$pattern_id = urldecode( apply_filters( 'dlxpw_pattern_preview_id', '' ) );
-
-$nonce = apply_filters( 'dlxpw_pattern_preview_nonce', '' );
+$pattern_id      = urldecode( apply_filters( 'dlxpw_pattern_preview_id', '' ) );
+$site_id         = absint( apply_filters( 'dlxpw_pattern_preview_site_id', '' ) );
+$current_site_id = absint( apply_filters( 'dlxpw_pattern_preview_current_site_id', '' ) );
+$nonce           = apply_filters( 'dlxpw_pattern_preview_nonce', '' );
 
 $pattern_content = apply_filters( 'dlxpw_pattern_preview_content', '' );
 
@@ -32,6 +30,14 @@ if ( ! wp_verify_nonce( $nonce, 'preview-pattern_' . $pattern_id ) ) {
 if ( '' === $pattern_id ) {
 	die( 'Pattern not found.' );
 }
+
+if ( 0 !== $site_id && is_multisite() && $site_id !== $current_site_id && is_numeric( $pattern_id ) && ! current_user_can( 'edit_post', $pattern_id ) ) {
+	switch_to_blog( $current_site_id );
+}
+if ( ! current_user_can( 'edit_others_posts' ) ) {
+	die( 'You do not have permission to preview this pattern.' );
+}
+restore_current_blog();
 
 // Adding Spectra compatibility.
 if ( class_exists( 'UAGB_Init_Blocks' ) && is_numeric( $pattern_id ) ) {
@@ -59,9 +65,6 @@ if ( is_numeric( $pattern_id ) ) {
 	} else {
 		$wp_query->the_post();
 		$pattern_content = $wp_query->post->post_content;
-	}
-	if ( ! current_user_can( 'edit_post', $pattern_id ) ) {
-		die( 'You do not have permission to preview this pattern.' );
 	}
 } elseif ( empty( $pattern_content ) && $pattern_id ) {
 	if ( ! current_user_can( 'edit_others_posts' ) ) {

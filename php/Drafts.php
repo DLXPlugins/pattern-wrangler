@@ -38,7 +38,7 @@ class Drafts {
 		if ( ! $notice_action ) {
 			return;
 		}
-		if ( ! current_user_can( 'edit_posts' ) ) {
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
 			return;
 		}
 		$notice_message = '';
@@ -67,7 +67,7 @@ class Drafts {
 		if ( ! $action ) {
 			return;
 		}
-		if ( ! current_user_can( 'edit_posts' ) ) {
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
 			return;
 		}
 		$notice_action = 'draft_pattern';
@@ -123,7 +123,7 @@ class Drafts {
 		if ( 'wp_block' !== $post->post_type ) {
 			return $actions;
 		}
-		if ( ! current_user_can( 'edit_posts' ) ) {
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
 			return $actions;
 		}
 		$draft_disable_url = add_query_arg(
