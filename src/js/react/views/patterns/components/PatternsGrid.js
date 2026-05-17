@@ -51,6 +51,13 @@ import {
 	persistPatternsLibraryViewPreferencesIfChanged,
 	resetPatternsLibraryViewPreferences,
 } from '../utils/patternsLibraryViewStorage';
+import {
+	canAddPatterns,
+	canDuplicatePattern,
+	canImportPatterns,
+	canDeletePattern,
+	canEditPattern,
+} from '../utils/common';
 
 const defaultLayouts = {
 	grid: {
@@ -630,59 +637,6 @@ const Interface = ( props ) => {
 	};
 
 	/**
-	 * Check if a pattern can be duplicated.
-	 *
-	 * @param {Object} pattern The pattern object.
-	 * @return {boolean} True if the pattern can be duplicated, false otherwise.
-	 */
-	const canDuplicatePattern = ( pattern ) => {
-		if ( dlxEnhancedPatternsView.isMultisite ) {
-			return (
-				pattern.isLocal &&
-				! pattern.disabled &&
-				pattern.network &&
-				'hybrid' === pattern.patternConfiguration
-			);
-		}
-		return pattern.isLocal && ! pattern.isDisabled;
-	};
-
-	/**
-	 * Check if patterns can be added.
-	 *
-	 * @return {boolean} True if patterns can be added, false otherwise.
-	 */
-	const canAddPatterns = () => {
-		if ( dlxEnhancedPatternsView.isMultisite ) {
-			return (
-				'hybrid' ===
-					dlxEnhancedPatternsView.networkOptions
-						.patternConfiguration ||
-				'local_only' ===
-					dlxEnhancedPatternsView.networkOptions.patternConfiguration
-			);
-		}
-		return true;
-	};
-	/**
-	 * Check if patterns can be imported.
-	 *
-	 * @return {boolean} True if patterns can be imported, false otherwise.
-	 */
-	const canImportPatterns = () => {
-		if ( dlxEnhancedPatternsView.isMultisite ) {
-			return (
-				'hybrid' ===
-					dlxEnhancedPatternsView.networkOptions
-						.patternConfiguration ||
-				'local_only' ===
-					dlxEnhancedPatternsView.networkOptions.patternConfiguration
-			);
-		}
-		return true;
-	};
-
-	/**
 	 * Returns the quick links for a pattern.
 	 *
 	 * @param {Object} item - The pattern item.
@@ -696,7 +650,7 @@ const Interface = ( props ) => {
 						<>
 							{ ! item.isDisabled && (
 								<>
-									{ ! item.network && (
+									{ canEditPattern( item ) && (
 										<>
 											<Button
 												variant="link"
@@ -716,7 +670,7 @@ const Interface = ( props ) => {
 											{ ' | ' }
 										</>
 									) }
-									{ ! item.network && (
+									{ canEditPattern( item ) && (
 										<>
 											<Button
 												variant="link"
@@ -763,7 +717,7 @@ const Interface = ( props ) => {
 									'pattern-wrangler',
 								) }
 							</Button>
-							{ ! item.network && (
+							{ canDeletePattern( item ) && (
 								<>
 									{ ' | ' }
 									<Button
@@ -1223,7 +1177,7 @@ const Interface = ( props ) => {
 						return (
 							<div className="pattern-title-categories">
 								<div className="pattern-title">
-									{ item.isLocal && (
+									{ canEditPattern( item ) && (
 										<Button
 											variant="link"
 											onClick={ ( e ) => {
@@ -1238,7 +1192,7 @@ const Interface = ( props ) => {
 											{ item.title }
 										</Button>
 									) }
-									{ ! item.isLocal && (
+									{ ! canEditPattern( item ) && (
 										<span className="pattern-title">
 											{ item.title }
 										</span>
@@ -1259,7 +1213,7 @@ const Interface = ( props ) => {
 						<>
 							<div className="pattern-title-categories">
 								<div className="pattern-title">
-									{ item.isLocal && (
+									{ canEditPattern( item ) && (
 										<Button
 											variant="link"
 											onClick={ ( e ) => {
@@ -1274,7 +1228,7 @@ const Interface = ( props ) => {
 											{ item.title }
 										</Button>
 									) }
-									{ ! item.isLocal && (
+									{ ! canEditPattern( item ) && (
 										<span className="pattern-title">
 											{ item.title }
 										</span>
@@ -1912,11 +1866,7 @@ const Interface = ( props ) => {
 					setIsQuickEditModalOpen( { item: items[ 0 ] } );
 				},
 				isEligible: ( pattern ) => {
-					return (
-						pattern.isLocal &&
-						! pattern.isDisabled &&
-						! pattern.network
-					);
+					return canEditPattern( pattern );
 				},
 				isPrimary: false,
 			},

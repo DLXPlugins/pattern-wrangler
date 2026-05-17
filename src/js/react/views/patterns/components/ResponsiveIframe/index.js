@@ -10,6 +10,11 @@ import {
 	canonicalPatternId,
 	patternIdsEqual,
 } from '../../utils/patternIdUtils';
+import {
+	canDeletePattern,
+	canEditPattern,
+	canDisablePattern,
+} from '../../utils/common';
 
 /** Patterns available for the open preview (single row or gallery). */
 let previewToolbarPatterns = [];
@@ -192,9 +197,9 @@ const getPreviewToolbarButtonVisibility = ( pattern ) => {
 	const hasCopyableContent =
 		'string' === typeof pattern.content && pattern.content.trim();
 	return {
-		disable: ! pattern.isLocal && ! pattern.isDisabled,
-		delete: !! pattern.isLocal,
-		edit: !! pattern.isLocal && ! pattern.isDisabled,
+		disable: canDisablePattern( pattern ),
+		delete: canDeletePattern( pattern ),
+		edit: canEditPattern( pattern ),
 		export: true,
 		copy: !! hasCopyableContent,
 	};

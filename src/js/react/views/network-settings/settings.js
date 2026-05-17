@@ -37,7 +37,7 @@ const Settings = () => {
 		useForm( {
 			defaultValues: {
 				patternConfiguration: data.patternConfiguration,
-				patternMothershipSiteId: data.patternMothershipSiteId,
+				patternNetworkSourceSiteId: data.patternNetworkSourceSiteId,
 				saveNonce: dlxPatternWranglerNetworkAdminSettings.saveNonce,
 				resetNonce: dlxPatternWranglerNetworkAdminSettings.resetNonce,
 				hideSyncedPatternsForNetwork: data.hideSyncedPatternsForNetwork,
@@ -103,7 +103,7 @@ const Settings = () => {
 										: null;
 									if ( newValue ) {
 										setValue(
-											'patternMothershipSiteId',
+											'patternNetworkSourceSiteId',
 											newValue,
 										);
 										setSelectedSiteId( newValue );

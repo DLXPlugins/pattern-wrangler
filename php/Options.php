@@ -243,7 +243,7 @@ class Options {
 	 */
 	public static function get_network_defaults() {
 		$defaults = array(
-			'patternMothershipSiteId'           => 1,
+			'patternNetworkSourceSiteId'        => 1,
 			'patternConfiguration'              => 'local_only', // Can be `nework_only`, `local_only`, `hybrid`.
 			'hideSyncedPatternsForNetwork'      => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
 			'hideUnsyncedPatternsForNetwork'    => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.

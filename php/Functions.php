@@ -323,8 +323,8 @@ class Functions {
 
 			// Get local site options for local patterns.
 			$network_site_option = $options['patternConfiguration'];
-			$mothership_id       = self::get_network_default_patterns_site_id();
-			if ( $mothership_id === $site_id ) {
+			$network_source_id   = self::get_network_default_patterns_site_id();
+			if ( $network_source_id === $site_id ) {
 				$pattern_configuration = 'local_only';
 			} else {
 				$local_site_option = get_blog_option( $site_id, 'dlx_pattern_configuration', '' );
@@ -347,7 +347,7 @@ class Functions {
 		$default_site_id = 1;
 		if ( Functions::is_multisite( false ) ) {
 			$options         = Options::get_network_options();
-			$default_site_id = absint( $options['patternMothershipSiteId'] );
+			$default_site_id = absint( $options['patternNetworkSourceSiteId'] );
 		}
 
 		return $default_site_id;

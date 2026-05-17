@@ -1362,13 +1362,13 @@ class Rest {
 		$pattern_configuration = ! $is_multisite ? 'local_only' : Functions::get_network_pattern_configuration( $site_id );
 		if ( $is_multisite ) {
 			if ( 'network_only' === $pattern_configuration || 'hybrid' === $pattern_configuration ) {
-				$mothership_site_id = Functions::get_network_default_patterns_site_id();
-				$network_request    = new \WP_REST_Request(
+				$network_source_site_id = Functions::get_network_default_patterns_site_id();
+				$network_request        = new \WP_REST_Request(
 					'GET',
 					'/dlxplugins/pattern-wrangler/v1/patterns/network'
 				);
 				$network_request->set_param( 'nonce', wp_create_nonce( 'dlx_pw_get_network_patterns' ) );
-				$network_request->set_param( 'site_id', $mothership_site_id );
+				$network_request->set_param( 'site_id', $network_source_site_id );
 				$network_pattern_response = rest_do_request( $network_request );
 				if ( ! $network_pattern_response->is_error() ) {
 					$network_patterns_data = $network_pattern_response->get_data();
@@ -1652,10 +1652,10 @@ class Rest {
 	public function rest_get_network_patterns( $request ) {
 		$site_id = absint( $request->get_param( 'site_id' ) );
 		// Check transient first.
-		$patterns              = get_transient( 'dlx_network_patterns_cache_' . $site_id );
-		$all_categories        = get_transient( 'dlx_network_categories_cache_' . $site_id );
+		$patterns              = get_site_transient( 'dlx_network_patterns_cache' );
+		$all_categories        = get_site_transient( 'dlx_network_categories_cache' );
 		$pattern_configuration = Options::get_network_options( $site_id )['patternConfiguration'] ?? 'local_only';
-		if ( false !== $patterns && false !== $all_categories && false ) {
+		if ( false !== $patterns && false !== $all_categories ) {
 			return rest_ensure_response(
 				array(
 					'patterns'   => $patterns,
@@ -1731,7 +1731,7 @@ class Rest {
 			}
 		);
 
-		set_site_transient( 'dlx_network_categories_cache_' . $site_id, $all_categories, HOUR_IN_SECONDS );
+		set_site_transient( 'dlx_network_categories_cache', $all_categories, HOUR_IN_SECONDS );
 
 		// Placeholder for patterns.
 		$patterns = array();
@@ -1774,7 +1774,7 @@ class Rest {
 		);
 
 		// Cache for 1 hour.
-		set_site_transient( 'dlx_network_patterns_cache_' . $site_id, $patterns, HOUR_IN_SECONDS );
+		set_site_transient( 'dlx_network_patterns_cache', $patterns, HOUR_IN_SECONDS );
 
 		restore_current_blog();
 

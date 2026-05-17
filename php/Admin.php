@@ -245,10 +245,10 @@ class Admin {
 		// Get array values.
 		$form_data = Functions::sanitize_array_recursive( $form_data );
 
-		$form_data['patternMothershipSiteId'] = isset( $form_data['patternMothershipSiteId'] ) ? absint( $form_data['patternMothershipSiteId'] ) : 0;
+		$form_data['patternNetworkSourceSiteId'] = isset( $form_data['patternNetworkSourceSiteId'] ) ? absint( $form_data['patternNetworkSourceSiteId'] ) : 0;
 
-		// If the mothership Site ID is 0, return error.
-		if ( 0 === $form_data['patternMothershipSiteId'] ) {
+		// If the network_source Site ID is 0, return error.
+		if ( 0 === $form_data['patternNetworkSourceSiteId'] ) {
 			wp_send_json_error(
 				array(
 					'message'     => __( 'A Default Network Site ID is required.', 'pattern-wrangler' ),
@@ -261,6 +261,9 @@ class Admin {
 
 		// Update options.
 		Options::update_network_options( $form_data );
+
+		delete_site_transient( 'dlx_network_patterns_cache' );
+		delete_site_transient( 'dlx_network_categories_cache' );
 
 		// Send success message.
 		wp_send_json_success(
@@ -652,6 +655,10 @@ class Admin {
 				true
 			);
 
+			$network_options   = Options::get_network_options();
+			$site_id           = get_current_blog_id();
+			$is_network_source = ! Functions::is_multisite() || absint( $network_options['patternNetworkSourceSiteId'] ) === $site_id;
+
 			wp_localize_script(
 				'dlx-pw-patterns-view',
 				'dlxEnhancedPatternsView',
@@ -671,6 +678,7 @@ class Admin {
 					'syncedPatternPopupsActive' => Functions::is_activated( 'synced-pattern-popups/sppopups.php' ),
 					'syncedPatternPopupsUrl'    => esc_url_raw( admin_url( 'themes.php?page=simplest-popup-patterns' ) ),
 					'patternsDefaultView'       => Functions::get_patterns_default_view_slug_for_user( get_current_user_id() ),
+					'isNetworkSource'           => $is_network_source,
 				)
 			);
 			\wp_set_script_translations( 'dlx-pw-patterns-view', 'pattern-wrangler' );

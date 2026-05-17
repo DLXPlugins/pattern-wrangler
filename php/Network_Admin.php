@@ -116,13 +116,13 @@ class Network_Admin {
 			true
 		);
 
-		// Get mothership (default network site) selected data.
-		$mothership_site_id        = Functions::get_network_default_patterns_site_id();
-		$mothership_site_permalink = get_admin_url( $mothership_site_id );
-		$mothership_site_title     = Functions::get_network_site_name( $mothership_site_id );
+		// Get network_source (default network site) selected data.
+		$network_source_site_id        = Functions::get_network_default_patterns_site_id();
+		$network_source_site_permalink = get_admin_url( $network_source_site_id );
+		$network_source_site_title     = Functions::get_network_site_name( $network_source_site_id );
 
-		// Create the patterns URL for the mothership site.
-		$patterns_url = get_admin_url( $mothership_site_id, 'edit.php?post_type=wp_block' );
+		// Create the patterns URL for the network_source site.
+		$patterns_url = get_admin_url( $network_source_site_id, 'edit.php?post_type=wp_block' );
 
 		wp_localize_script(
 			'dlx-pw-network-admin-settings',
@@ -135,9 +135,9 @@ class Network_Admin {
 				'restNonce'               => wp_create_nonce( 'wp_rest' ),
 				'ajaxurl'                 => admin_url( 'admin-ajax.php' ),
 				'options'                 => $options,
-				'selectedSite'            => $mothership_site_id,
-				'selectedSitePermalink'   => $mothership_site_permalink,
-				'selectedSiteTitle'       => $mothership_site_title,
+				'selectedSite'            => $network_source_site_id,
+				'selectedSitePermalink'   => $network_source_site_permalink,
+				'selectedSiteTitle'       => $network_source_site_title,
 				'selectedSitePatternsUrl' => $patterns_url,
 			)
 		);
