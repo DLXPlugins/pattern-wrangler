@@ -1288,7 +1288,7 @@ const Interface = ( props ) => {
 					}
 					const badgeNetworkText = __( 'Network', 'pattern-wrangler' );
 					const badgeNetworkClass = 'pattern-badge-network';
-					if ( item.network ) {
+					if ( item.network && item.isLocal ) {
 						showNetworkBadge = true;
 					}
 
@@ -1298,7 +1298,10 @@ const Interface = ( props ) => {
 					);
 					const badgeNetworkSourceClass =
 						'pattern-badge-network-source';
-					if ( dlxEnhancedPatternsView.isNetworkSource ) {
+					if (
+						dlxEnhancedPatternsView.isNetworkSource &&
+						item.isLocal
+					) {
 						showNetworkSourceBadge = true;
 						showNetworkBadge = false;
 					}

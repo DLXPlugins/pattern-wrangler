@@ -1359,8 +1359,9 @@ class Rest {
 		$is_multisite          = Functions::is_multisite( false );
 		$network_patterns_data = array();
 		$site_id               = get_current_blog_id();
+		$is_network_source     = Functions::is_network_patterns_site();
 		$pattern_configuration = ! $is_multisite ? 'local_only' : Functions::get_network_pattern_configuration( $site_id );
-		if ( $is_multisite ) {
+		if ( $is_multisite && ! $is_network_source ) {
 			if ( 'network_only' === $pattern_configuration || 'hybrid' === $pattern_configuration ) {
 				$network_source_site_id = Functions::get_network_default_patterns_site_id();
 				$network_request        = new \WP_REST_Request(
@@ -1381,7 +1382,7 @@ class Rest {
 
 		// Get local/DB patterns if network allows it.
 		$local_patterns = array();
-		if ( in_array( $pattern_configuration, array( 'local_only', 'hybrid' ), true ) ) {
+		if ( is_multisite() && ( in_array( $pattern_configuration, array( 'local_only', 'hybrid' ), true ) || $is_network_source ) ) {
 			$post_args      = array(
 				'post_type'      => 'wp_block',
 				'posts_per_page' => 500, /* if there are more than 500 patterns, we need to paginate */
@@ -1398,7 +1399,7 @@ class Rest {
 		$registered_categories = $categories['registered'];
 		$local_categories      = $categories['categories'];
 
-		if ( 'network_only' === $pattern_configuration ) {
+		if ( is_multisite() && ! $is_network_source && 'network_only' === $pattern_configuration ) {
 			$local_categories = array();
 		}
 
@@ -1654,7 +1655,7 @@ class Rest {
 		// Check transient first.
 		$patterns              = get_site_transient( 'dlx_network_patterns_cache' );
 		$all_categories        = get_site_transient( 'dlx_network_categories_cache' );
-		$pattern_configuration = Options::get_network_options( $site_id )['patternConfiguration'] ?? 'local_only';
+		$pattern_configuration = Options::get_network_options()['patternConfiguration'] ?? 'local_only';
 		if ( false !== $patterns && false !== $all_categories ) {
 			return rest_ensure_response(
 				array(
@@ -1968,22 +1969,28 @@ class Rest {
 
 		$pattern = get_post( $pattern_id );
 
+		$pattern_configuration = Options::get_network_options()['patternConfiguration'] ?? 'local_only';
+
 		// Process local patterns.
 		$return_pattern = array(
-			'id'            => $pattern->ID,
-			'title'         => $pattern->post_title,
-			'slug'          => $pattern->post_name,
-			'content'       => $pattern->post_content,
-			'categories'    => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
-			'categorySlugs' => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
-			'isDisabled'    => 'draft' === $pattern->post_status,
-			'isLocal'       => true,
-			'syncStatus'    => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+			'id'                   => $pattern->ID,
+			'title'                => $pattern->post_title,
+			'slug'                 => $pattern->post_name,
+			'content'              => $pattern->post_content,
+			'categories'           => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
+			'categorySlugs'        => get_the_terms( $pattern->ID, 'wp_pattern_category' ),
+			'isDisabled'           => 'draft' === $pattern->post_status,
+			'isLocal'              => true,
+			'syncStatus'           => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 			// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
-			'patternType'   => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
-			'editNonce'     => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
-			'siteId'        => get_current_blog_id(),
-			'asset'         => null,
+			'patternType'          => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+			'editNonce'            => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
+			'siteId'               => get_current_blog_id(),
+			'asset'                => null,
+			'network'              => false,
+			'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+			'patternConfiguration' => $pattern_configuration,
+
 		);
 
 		return rest_ensure_response( $return_pattern );
