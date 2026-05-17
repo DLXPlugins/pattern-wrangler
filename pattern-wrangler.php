@@ -88,6 +88,24 @@ class PatternWrangler {
 			$network_admin->run();
 		}
 
+		// Initialize network and helpers.
+		if ( Functions::is_multisite( false ) ) {
+
+			add_action(
+				'init',
+				function () {
+					$options = Options::get_network_options();
+					if ( 'local_only' !== $options['patternConfiguration'] ) {
+						if ( Functions::is_network_patterns_site() ) {
+							$network = new Network();
+							$network->init_post_actions();
+						}
+					}
+				}
+			);
+
+		}
+
 		// Determine if blocks can run or not.
 		$options            = Options::get_options();
 		$can_disable_blocks = ! (bool) $options['disablePatternImporterBlock'];

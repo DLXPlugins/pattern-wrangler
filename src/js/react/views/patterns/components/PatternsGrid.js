@@ -1278,6 +1278,7 @@ const Interface = ( props ) => {
 					const badgeDisabledClass = 'pattern-badge-disabled';
 					let showDisabledBadge = true;
 					let showNetworkBadge = false;
+					let showNetworkSourceBadge = false;
 					if ( item.isDisabled && item.isLocal ) {
 						badgeDisabledText = __( 'Draft', 'pattern-wrangler' );
 					} else if ( ! item.isDisabled && item.isLocal ) {
@@ -1289,6 +1290,17 @@ const Interface = ( props ) => {
 					const badgeNetworkClass = 'pattern-badge-network';
 					if ( item.network ) {
 						showNetworkBadge = true;
+					}
+
+					const badgeNetworkSourceText = __(
+						'Network Source',
+						'pattern-wrangler',
+					);
+					const badgeNetworkSourceClass =
+						'pattern-badge-network-source';
+					if ( dlxEnhancedPatternsView.isNetworkSource ) {
+						showNetworkSourceBadge = true;
+						showNetworkBadge = false;
 					}
 
 					if ( ! item.isLocal ) {
@@ -1310,6 +1322,13 @@ const Interface = ( props ) => {
 										className={ `pattern-badge ${ badgeNetworkClass }` }
 									>
 										{ badgeNetworkText }
+									</span>
+								) }
+								{ showNetworkSourceBadge && (
+									<span
+										className={ `pattern-badge ${ badgeNetworkSourceClass }` }
+									>
+										{ badgeNetworkSourceText }
 									</span>
 								) }
 								{ showDisabledBadge && (

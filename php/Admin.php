@@ -655,9 +655,7 @@ class Admin {
 				true
 			);
 
-			$network_options   = Options::get_network_options();
-			$site_id           = get_current_blog_id();
-			$is_network_source = ! Functions::is_multisite() || absint( $network_options['patternNetworkSourceSiteId'] ) === $site_id;
+			$is_network_source = Functions::is_network_patterns_site();
 
 			wp_localize_script(
 				'dlx-pw-patterns-view',

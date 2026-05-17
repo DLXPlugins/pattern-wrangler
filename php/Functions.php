@@ -354,6 +354,21 @@ class Functions {
 	}
 
 	/**
+	 * Check if the current site is the network patterns site.
+	 *
+	 * This is useful to determine if the current site is the source of network patterns.
+	 *
+	 * @return bool true if the current site is the network patterns site, false if not.
+	 */
+	public static function is_network_patterns_site() {
+		if ( ! is_multisite() ) {
+			return false;
+		}
+		$default_site_id = Functions::get_network_default_patterns_site_id();
+		return get_current_blog_id() === $default_site_id;
+	}
+
+	/**
 	 * Check if paterns are enabled for the current site.
 	 *
 	 * @param int $site_id The site ID.

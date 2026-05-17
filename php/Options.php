@@ -118,6 +118,9 @@ class Options {
 				case 'enableEnhancedView':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
+				case 'patternNetworkSourceSiteId':
+					$option = absint( $options[ $key ] );
+					break;
 				default:
 					if ( is_array( $option ) ) {
 						$option = Functions::sanitize_array_recursive( $option );
