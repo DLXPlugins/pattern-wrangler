@@ -630,6 +630,59 @@ const Interface = ( props ) => {
 	};
 
 	/**
+	 * Check if a pattern can be duplicated.
+	 *
+	 * @param {Object} pattern The pattern object.
+	 * @return {boolean} True if the pattern can be duplicated, false otherwise.
+	 */
+	const canDuplicatePattern = ( pattern ) => {
+		if ( dlxEnhancedPatternsView.isMultisite ) {
+			return (
+				pattern.isLocal &&
+				! pattern.disabled &&
+				pattern.network &&
+				'hybrid' === pattern.patternConfiguration
+			);
+		}
+		return pattern.isLocal && ! pattern.isDisabled;
+	};
+
+	/**
+	 * Check if patterns can be added.
+	 *
+	 * @return {boolean} True if patterns can be added, false otherwise.
+	 */
+	const canAddPatterns = () => {
+		if ( dlxEnhancedPatternsView.isMultisite ) {
+			return (
+				'hybrid' ===
+					dlxEnhancedPatternsView.networkOptions
+						.patternConfiguration ||
+				'local_only' ===
+					dlxEnhancedPatternsView.networkOptions.patternConfiguration
+			);
+		}
+		return true;
+	};
+	/**
+	 * Check if patterns can be imported.
+	 *
+	 * @return {boolean} True if patterns can be imported, false otherwise.
+	 */
+	const canImportPatterns = () => {
+		if ( dlxEnhancedPatternsView.isMultisite ) {
+			return (
+				'hybrid' ===
+					dlxEnhancedPatternsView.networkOptions
+						.patternConfiguration ||
+				'local_only' ===
+					dlxEnhancedPatternsView.networkOptions.patternConfiguration
+			);
+		}
+		return true;
+	};
+
+	/**
 	 * Returns the quick links for a pattern.
 	 *
 	 * @param {Object} item - The pattern item.
@@ -643,32 +696,46 @@ const Interface = ( props ) => {
 						<>
 							{ ! item.isDisabled && (
 								<>
-									<Button
-										variant="link"
-										onClick={ ( e ) => {
-											e.preventDefault();
-											e.stopPropagation();
-											const redirectUrl =
-												encodeURIComponent(
-													window.location.href,
-												);
-											window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
-										} }
-									>
-										{ __( 'Edit', 'pattern-wrangler' ) }
-									</Button>
-									{ ' | ' }
-									<Button
-										variant="link"
-										onClick={ ( e ) => {
-											e.preventDefault();
-											e.stopPropagation();
-											setIsQuickEditModalOpen( { item } );
-										} }
-									>
-										{ __( 'Quick Edit', 'pattern-wrangler' ) }
-									</Button>
-									{ ' | ' }
+									{ ! item.network && (
+										<>
+											<Button
+												variant="link"
+												onClick={ ( e ) => {
+													e.preventDefault();
+													e.stopPropagation();
+													const redirectUrl =
+														encodeURIComponent(
+															window.location
+																.href,
+														);
+													window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ item.id }&action=edit&redirect_to=${ redirectUrl }`;
+												} }
+											>
+												{ __( 'Edit', 'pattern-wrangler' ) }
+											</Button>
+											{ ' | ' }
+										</>
+									) }
+									{ ! item.network && (
+										<>
+											<Button
+												variant="link"
+												onClick={ ( e ) => {
+													e.preventDefault();
+													e.stopPropagation();
+													setIsQuickEditModalOpen( {
+														item,
+													} );
+												} }
+											>
+												{ __(
+													'Quick Edit',
+													'pattern-wrangler',
+												) }
+											</Button>
+											{ ' | ' }
+										</>
+									) }
 									<Button
 										variant="link"
 										onClick={ ( e ) => {
@@ -696,22 +763,28 @@ const Interface = ( props ) => {
 									'pattern-wrangler',
 								) }
 							</Button>
-							{ ' | ' }
-							<Button
-								variant="link"
-								isDestructive={ true }
-								onClick={ ( e ) => {
-									e.preventDefault();
-									e.stopPropagation();
-									setIsDeleteModalOpen( { items: [ item ] } );
-								} }
-							>
-								{ _x(
-									'Delete',
-									'Delete pattern',
-									'pattern-wrangler',
-								) }
-							</Button>
+							{ ! item.network && (
+								<>
+									{ ' | ' }
+									<Button
+										variant="link"
+										isDestructive={ true }
+										onClick={ ( e ) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setIsDeleteModalOpen( {
+												items: [ item ],
+											} );
+										} }
+									>
+										{ _x(
+											'Delete',
+											'Delete pattern',
+											'pattern-wrangler',
+										) }
+									</Button>
+								</>
+							) }
 						</>
 					) }
 					{ ! item.isLocal && (
@@ -1101,6 +1174,42 @@ const Interface = ( props ) => {
 		return getFilteredPatternsOrdered( view );
 	}, [ view, patterns, data?.patterns ] );
 
+	/**
+	 * Get the categories for a field.
+	 *
+	 * @param {Object} item              The item object.
+	 * @param {Object} currentCategories The current categories object.
+	 * @return {JSX.Element} The categories for the field.
+	 */
+	const getCategoryForField = ( item, currentCategories ) => {
+		return (
+			<div className="pattern-categories">
+				{ __( 'Categories:', 'pattern-wrangler' ) }{ ' ' }
+				{ item.categorySlugs.map( ( category, index ) => {
+					const catSlug = category?.slug || category.toString();
+					if ( ! currentCategories.hasOwnProperty( catSlug ) ) {
+						return null;
+					}
+
+					const catLabel =
+						currentCategories[ catSlug ]?.customLabel ||
+						currentCategories[ catSlug ]?.label ||
+						currentCategories[ catSlug ]?.name;
+
+					return (
+						<span
+							key={ `category-${ index }` }
+							className="pattern-category"
+						>
+							{ catLabel }{ ' ' }
+							{ index < item.categorySlugs.length - 1 && ', ' }
+						</span>
+					);
+				} ) }
+			</div>
+		);
+	};
+
 	const fields = useMemo(
 		() => [
 			{
@@ -1173,53 +1282,11 @@ const Interface = ( props ) => {
 								</div>
 								{ item.categorySlugs.length > 0 &&
 									Object.values( currentCategories ).length >
-										0 && (
-										<div className="pattern-categories">
-										{ __(
-											'Categories:',
-											'pattern-wrangler',
-										) }{ ' ' }
-										{ item.categorySlugs.map(
-											( category, index ) => {
-												const catSlug =
-														category?.slug ||
-														category.toString();
-												if (
-													! currentCategories.hasOwnProperty(
-														catSlug,
-													)
-												) {
-													return null;
-												}
-
-												const catLabel =
-														currentCategories[
-															catSlug
-														]?.customLabel ||
-														currentCategories[
-															catSlug
-														]?.label ||
-														currentCategories[
-															catSlug
-														]?.name;
-
-												return (
-													<span
-														key={ `category-${ index }` }
-														className="pattern-category"
-													>
-														{ catLabel }{ ' ' }
-														{ index <
-																item
-																	.categorySlugs
-																	.length -
-																	1 && ', ' }
-													</span>
-												);
-											},
-										) }
-									</div>
-								) }
+										0 &&
+									getCategoryForField(
+										item,
+										currentCategories,
+									) }
 								{ getQuickLinks( item ) }
 							</div>
 						</>
@@ -1256,12 +1323,18 @@ const Interface = ( props ) => {
 					let badgeDisabledText = __( 'Disabled', 'pattern-wrangler' );
 					const badgeDisabledClass = 'pattern-badge-disabled';
 					let showDisabledBadge = true;
+					let showNetworkBadge = false;
 					if ( item.isDisabled && item.isLocal ) {
 						badgeDisabledText = __( 'Draft', 'pattern-wrangler' );
 					} else if ( ! item.isDisabled && item.isLocal ) {
 						showDisabledBadge = false;
 					} else if ( ! item.isDisabled && ! item.isLocal ) {
 						showDisabledBadge = false;
+					}
+					const badgeNetworkText = __( 'Network', 'pattern-wrangler' );
+					const badgeNetworkClass = 'pattern-badge-network';
+					if ( item.network ) {
+						showNetworkBadge = true;
 					}
 
 					if ( ! item.isLocal ) {
@@ -1278,6 +1351,13 @@ const Interface = ( props ) => {
 					const Badge = (
 						<>
 							<div className="pattern-badge-wrapper">
+								{ showNetworkBadge && (
+									<span
+										className={ `pattern-badge ${ badgeNetworkClass }` }
+									>
+										{ badgeNetworkText }
+									</span>
+								) }
 								{ showDisabledBadge && (
 									<span
 										className={ `pattern-badge ${ badgeDisabledClass }` }
@@ -1562,7 +1642,11 @@ const Interface = ( props ) => {
 				icon: 'tag',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and enabled.
-					return pattern.isLocal && ! pattern.isDisabled;
+					return (
+						pattern.isLocal &&
+						! pattern.isDisabled &&
+						! pattern.network
+					);
 				},
 				callback: ( items ) => {
 					setIsTagPatternModalOpen( { items } );
@@ -1667,7 +1751,7 @@ const Interface = ( props ) => {
 				icon: 'trash',
 				isEligible: ( pattern ) => {
 					// Pattern must be local
-					return pattern.isLocal;
+					return pattern.isLocal && ! pattern.network;
 				},
 				callback: ( items ) => {
 					setIsDeleteModalOpen( { items } );
@@ -1695,7 +1779,7 @@ const Interface = ( props ) => {
 					setIsPauseModalOpen( { items } );
 				},
 				isEligible: ( item ) => {
-					return ! item.isDisabled;
+					return ! item.isDisabled && ! item.network;
 				},
 				isDestructive: true,
 				supportsBulk: true,
@@ -1710,7 +1794,7 @@ const Interface = ( props ) => {
 					setIsDuplicateModalOpen( item );
 				},
 				isEligible: ( item ) => {
-					return item.isLocal && ! item.isDisabled;
+					return canDuplicatePattern( item );
 				},
 				isPrimary: false,
 				isDestructive: false,
@@ -1781,7 +1865,11 @@ const Interface = ( props ) => {
 				icon: 'yes-alt',
 				isEligible: ( pattern ) => {
 					// Pattern must be local and disabled.
-					return pattern.isLocal && pattern.isDisabled;
+					return (
+						pattern.isLocal &&
+						pattern.isDisabled &&
+						! pattern.network
+					);
 				},
 				callback: ( items ) => {
 					setIsPublishModalOpen( { items } );
@@ -1824,7 +1912,11 @@ const Interface = ( props ) => {
 					setIsQuickEditModalOpen( { item: items[ 0 ] } );
 				},
 				isEligible: ( pattern ) => {
-					return pattern.isLocal && ! pattern.isDisabled;
+					return (
+						pattern.isLocal &&
+						! pattern.isDisabled &&
+						! pattern.network
+					);
 				},
 				isPrimary: false,
 			},
@@ -2169,89 +2261,97 @@ const Interface = ( props ) => {
 						<h1>{ __( 'Pattern Library', 'pattern-wrangler' ) }</h1>
 					</div>
 					<div className="dlx-patterns-view-quick-buttons-wrapper">
-						<Button
-							variant="primary"
-							className="dlx-patterns-view-quick-button"
-							onClick={ () => {
-								setIsAddNewPatternModalOpen( true );
-							} }
-						>
-							{ __( 'Add New Pattern', 'pattern-wrangler' ) }
-						</Button>
-						<FormFileUpload
-							accept=".json"
-							variant="secondary"
-							className="dlx-patterns-view-quick-button"
-							onChange={ async( event ) => {
-								const file = event.target.files?.[ 0 ];
-								if ( ! file ) {
-									return;
-								}
-								try {
-									// Post the new pattern to the REST API.
-									const pattern = await createPatternFromFile(
-										file,
-									);
-
-									// REST API only accepts wp_pattern_sync_status: "partial" or "unsynced".
-									// Omit for synced/blank so we don't send invalid enum values.
-									const meta =
-										pattern.syncStatus === 'unsynced' ||
-										pattern.syncStatus === 'partial'
-											? {
-												wp_pattern_sync_status:
-														pattern.syncStatus,
-											  }
-											: {};
-
-									const response = await apiFetch( {
-										path: '/wp/v2/blocks',
-										method: 'POST',
-										data: {
-											title: pattern.title,
-											content: pattern.content,
-											status: 'publish',
-											meta,
-										},
-									} );
-									if ( response?.id ) {
-										const getPatternResponse =
-											await apiFetch( {
-												path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ response.id }`,
-												method: 'GET',
-											} );
-										if ( getPatternResponse ) {
-											dispatch( patternsStore ).addPattern(
-												getPatternResponse,
-											);
-										}
+						{ canAddPatterns() && (
+							<Button
+								variant="primary"
+								className="dlx-patterns-view-quick-button"
+								onClick={ () => {
+									setIsAddNewPatternModalOpen( true );
+								} }
+							>
+								{ __( 'Add New Pattern', 'pattern-wrangler' ) }
+							</Button>
+						) }
+						{ canImportPatterns() && (
+							<FormFileUpload
+								accept=".json"
+								variant="secondary"
+								className="dlx-patterns-view-quick-button"
+								onChange={ async( event ) => {
+									const file = event.target.files?.[ 0 ];
+									if ( ! file ) {
+										return;
 									}
-									setSnackbar( {
-										isVisible: true,
-										message: __(
-											'Pattern imported',
-											'pattern-wrangler',
-										),
-										title: __(
-											'Pattern Imported',
-											'pattern-wrangler',
-										),
-										type: 'success',
-										onClose: () => {
-											setSnackbar( { isVisible: false } );
-										},
-									} );
-								} catch ( err ) {}
-								// Reset so selecting the same file again triggers onChange.
-								event.target.value = '';
-							} }
-						>
-							{ __(
-								'Import Pattern From JSON File',
-								'pattern-wrangler',
-							) }
-						</FormFileUpload>
+									try {
+										// Post the new pattern to the REST API.
+										const pattern =
+											await createPatternFromFile( file );
+
+										// REST API only accepts wp_pattern_sync_status: "partial" or "unsynced".
+										// Omit for synced/blank so we don't send invalid enum values.
+										const meta =
+											pattern.syncStatus === 'unsynced' ||
+											pattern.syncStatus === 'partial'
+												? {
+													wp_pattern_sync_status:
+															pattern.syncStatus,
+												  }
+												: {};
+
+										const response = await apiFetch( {
+											path: '/wp/v2/blocks',
+											method: 'POST',
+											data: {
+												title: pattern.title,
+												content: pattern.content,
+												status: 'publish',
+												meta,
+											},
+										} );
+										if ( response?.id ) {
+											const getPatternResponse =
+												await apiFetch( {
+													path: `/dlxplugins/pattern-wrangler/v1/patterns/get/${ response.id }`,
+													method: 'GET',
+												} );
+											if ( getPatternResponse ) {
+												dispatch(
+													patternsStore,
+												).addPattern(
+													getPatternResponse,
+												);
+											}
+										}
+										setSnackbar( {
+											isVisible: true,
+											message: __(
+												'Pattern imported',
+												'pattern-wrangler',
+											),
+											title: __(
+												'Pattern Imported',
+												'pattern-wrangler',
+											),
+											type: 'success',
+											onClose: () => {
+												setSnackbar( {
+													isVisible: false,
+												} );
+											},
+										} );
+									} catch ( err ) {}
+									// Reset so selecting the same file again triggers onChange.
+									event.target.value = '';
+								} }
+							>
+								{ __(
+									'Import Pattern From JSON File',
+									'pattern-wrangler',
+								) }
+							</FormFileUpload>
+						) }
 					</div>
+
 					<div className="dlx-patterns-view-grid">
 						<div className="dlx-patterns-view-search-filters-wrapper">
 							<DataViews.Search

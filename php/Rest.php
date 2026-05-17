@@ -1421,16 +1421,17 @@ class Rest {
 			$category_label        = wp_specialchars_decode( $registered_category['label'], ENT_QUOTES );
 			$category_custom_label = isset( $registered_category['customLabel'] ) ? wp_specialchars_decode( $registered_category['customLabel'], ENT_QUOTES ) : $category_label;
 			$registered_categories_arr[ sanitize_title( $registered_category['slug'] ) ] = array(
-				'label'       => $category_label,
-				'customLabel' => $category_custom_label,
-				'slug'        => $registered_category['slug'],
-				'enabled'     => isset( $registered_category['enabled'] ) ? $registered_category['enabled'] : true,
-				'count'       => isset( $registered_category['count'] ) ? $registered_category['count'] : 0,
-				'mappedTo'    => $registered_category['mappedTo'] ?? false,
-				'registered'  => true,
-				'id'          => 0,
-				'network'     => false,
-				'siteId'      => $site_id,
+				'label'                => $category_label,
+				'customLabel'          => $category_custom_label,
+				'slug'                 => $registered_category['slug'],
+				'enabled'              => isset( $registered_category['enabled'] ) ? $registered_category['enabled'] : true,
+				'count'                => isset( $registered_category['count'] ) ? $registered_category['count'] : 0,
+				'mappedTo'             => $registered_category['mappedTo'] ?? false,
+				'registered'           => true,
+				'id'                   => 0,
+				'network'              => false,
+				'siteId'               => $site_id,
+				'patternConfiguration' => $pattern_configuration,
 			);
 		}
 
@@ -1443,16 +1444,17 @@ class Rest {
 			// Decode HTML entities to prevent double encoding in React.
 			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
 			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
-				'label'       => $category_name,
-				'customLabel' => $category_name,
-				'slug'        => $local_category->slug,
-				'enabled'     => true,
-				'count'       => $local_category->count,
-				'mappedTo'    => false,
-				'registered'  => false,
-				'id'          => $local_category->term_id,
-				'network'     => false,
-				'siteId'      => $site_id,
+				'label'                => $category_name,
+				'customLabel'          => $category_name,
+				'slug'                 => $local_category->slug,
+				'enabled'              => true,
+				'count'                => $local_category->count,
+				'mappedTo'             => false,
+				'registered'           => false,
+				'id'                   => $local_category->term_id,
+				'network'              => false,
+				'siteId'               => $site_id,
+				'patternConfiguration' => $pattern_configuration,
 			);
 		}
 
@@ -1542,23 +1544,24 @@ class Rest {
 				}
 
 				$patterns[ $pattern['name'] ] = array(
-					'id'               => Functions::get_sanitized_pattern_id( $pattern['name'] ),
-					'title'            => $pattern['title'],
-					'slug'             => $pattern['name'],
-					'content'          => $pattern['content'],
-					'categories'       => $categories,
-					'categorySlugs'    => $category_slugs,
-					'isDisabled'       => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
-					'isLocal'          => false,
-					'syncStatus'       => 'registered',
-					'viewportWidth'    => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
-					'patternType'      => 'registered',
-					'editNonce'        => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
-					'asset'            => $has_asset ? $asset_slug : null,
-					'duplicateNonce'   => '',
-					'network'          => false,
-					'siteId'           => $site_id,
-					'siteAdminAjaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+					'id'                   => Functions::get_sanitized_pattern_id( $pattern['name'] ),
+					'title'                => $pattern['title'],
+					'slug'                 => $pattern['name'],
+					'content'              => $pattern['content'],
+					'categories'           => $categories,
+					'categorySlugs'        => $category_slugs,
+					'isDisabled'           => in_array( $pattern['name'], Options::get_disabled_patterns(), true ),
+					'isLocal'              => false,
+					'syncStatus'           => 'registered',
+					'viewportWidth'        => isset( $pattern['viewportWidth'] ) ? $pattern['viewportWidth'] : $default_viewport_width,
+					'patternType'          => 'registered',
+					'editNonce'            => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
+					'asset'                => $has_asset ? $asset_slug : null,
+					'duplicateNonce'       => '',
+					'network'              => false,
+					'siteId'               => $site_id,
+					'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+					'patternConfiguration' => $pattern_configuration,
 				);
 			}
 		}
@@ -1576,23 +1579,24 @@ class Rest {
 				$category_slugs[]  = sanitize_title( $category->slug );
 			}
 			$patterns[ $pattern->post_name ] = array(
-				'id'               => $pattern->ID,
-				'title'            => $pattern->post_title,
-				'slug'             => $pattern->post_name,
-				'content'          => $pattern->post_content,
-				'categories'       => $category_labels,
-				'categorySlugs'    => $category_slugs,
-				'isDisabled'       => 'draft' === $pattern->post_status,
-				'isLocal'          => true,
-				'syncStatus'       => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'id'                   => $pattern->ID,
+				'title'                => $pattern->post_title,
+				'slug'                 => $pattern->post_name,
+				'content'              => $pattern->post_content,
+				'categories'           => $category_labels,
+				'categorySlugs'        => $category_slugs,
+				'isDisabled'           => 'draft' === $pattern->post_status,
+				'isLocal'              => true,
+				'syncStatus'           => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
-				'patternType'      => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
-				'editNonce'        => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
-				'duplicateNonce'   => wp_create_nonce( 'dlx-pw-patterns-view-duplicate-pattern-' . $pattern->ID ),
-				'asset'            => null,
-				'network'          => false,
-				'siteId'           => $site_id,
-				'siteAdminAjaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'patternType'          => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'editNonce'            => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
+				'duplicateNonce'       => wp_create_nonce( 'dlx-pw-patterns-view-duplicate-pattern-' . $pattern->ID ),
+				'asset'                => null,
+				'network'              => false,
+				'siteId'               => $site_id,
+				'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'patternConfiguration' => $pattern_configuration,
 			);
 		}
 
@@ -1648,8 +1652,9 @@ class Rest {
 	public function rest_get_network_patterns( $request ) {
 		$site_id = absint( $request->get_param( 'site_id' ) );
 		// Check transient first.
-		$patterns       = get_transient( 'dlx_network_patterns_cache_' . $site_id );
-		$all_categories = get_transient( 'dlx_network_categories_cache_' . $site_id );
+		$patterns              = get_transient( 'dlx_network_patterns_cache_' . $site_id );
+		$all_categories        = get_transient( 'dlx_network_categories_cache_' . $site_id );
+		$pattern_configuration = Options::get_network_options( $site_id )['patternConfiguration'] ?? 'local_only';
 		if ( false !== $patterns && false !== $all_categories && false ) {
 			return rest_ensure_response(
 				array(
@@ -1700,17 +1705,18 @@ class Rest {
 			// Decode HTML entities to prevent double encoding in React.
 			$category_name = wp_specialchars_decode( $local_category->name, ENT_QUOTES );
 			$local_categories_arr[ sanitize_title( $local_category->slug ) ] = array(
-				'label'            => $category_name,
-				'customLabel'      => $category_name,
-				'slug'             => $local_category->slug,
-				'enabled'          => true,
-				'count'            => $local_category->count,
-				'mappedTo'         => false,
-				'registered'       => false,
-				'id'               => $local_category->term_id,
-				'network'          => true,
-				'siteId'           => $site_id,
-				'siteAdminAjaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'label'                => $category_name,
+				'customLabel'          => $category_name,
+				'slug'                 => $local_category->slug,
+				'enabled'              => true,
+				'count'                => $local_category->count,
+				'mappedTo'             => false,
+				'registered'           => false,
+				'id'                   => $local_category->term_id,
+				'network'              => true,
+				'siteId'               => $site_id,
+				'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'patternConfiguration' => $pattern_configuration,
 			);
 		}
 
@@ -1740,21 +1746,22 @@ class Rest {
 				$category_slugs[]  = sanitize_title( $category->slug );
 			}
 			$patterns[ $pattern->post_name ] = array(
-				'id'               => $pattern->ID,
-				'title'            => $pattern->post_title,
-				'slug'             => $pattern->post_name,
-				'content'          => $pattern->post_content,
-				'categories'       => $category_labels,
-				'categorySlugs'    => $category_slugs,
-				'isDisabled'       => 'draft' === $pattern->post_status,
-				'isLocal'          => true,
-				'syncStatus'       => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'id'                   => $pattern->ID,
+				'title'                => $pattern->post_title,
+				'slug'                 => $pattern->post_name,
+				'content'              => $pattern->post_content,
+				'categories'           => $category_labels,
+				'categorySlugs'        => $category_slugs,
+				'isDisabled'           => 'draft' === $pattern->post_status,
+				'isLocal'              => true,
+				'syncStatus'           => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
-				'patternType'      => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
-				'siteId'           => $site_id,
-				'asset'            => null,
-				'network'          => true,
-				'siteAdminAjaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'patternType'          => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
+				'siteId'               => $site_id,
+				'asset'                => null,
+				'network'              => true,
+				'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'patternConfiguration' => $pattern_configuration,
 			);
 		}
 
