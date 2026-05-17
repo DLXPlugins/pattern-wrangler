@@ -5,10 +5,10 @@
  * @return {boolean} True if the pattern can be duplicated, false otherwise.
  */
 export const canDuplicatePattern = ( pattern ) => {
-	if ( dlxEnhancedPatternsView.isNetworkSource ) {
-		return true;
-	}
-	if ( dlxEnhancedPatternsView.isMultisite ) {
+	if (
+		dlxEnhancedPatternsView.isMultisite &&
+		! dlxEnhancedPatternsView.isNetworkSource
+	) {
 		return (
 			pattern.isLocal &&
 			! pattern.disabled &&
@@ -26,10 +26,10 @@ export const canDuplicatePattern = ( pattern ) => {
  * @return {boolean} True if patterns can be added, false otherwise.
  */
 export const canAddPatterns = () => {
-	if ( dlxEnhancedPatternsView.isNetworkSource ) {
-		return true;
-	}
-	if ( dlxEnhancedPatternsView.isMultisite ) {
+	if (
+		dlxEnhancedPatternsView.isMultisite &&
+		! dlxEnhancedPatternsView.isNetworkSource
+	) {
 		return (
 			'hybrid' ===
 				dlxEnhancedPatternsView.networkOptions.patternConfiguration ||
@@ -45,10 +45,10 @@ export const canAddPatterns = () => {
  * @return {boolean} True if patterns can be imported, false otherwise.
  */
 export const canImportPatterns = () => {
-	if ( dlxEnhancedPatternsView.isNetworkSource ) {
-		return true;
-	}
-	if ( dlxEnhancedPatternsView.isMultisite ) {
+	if (
+		dlxEnhancedPatternsView.isMultisite &&
+		! dlxEnhancedPatternsView.isNetworkSource
+	) {
 		return (
 			'hybrid' ===
 				dlxEnhancedPatternsView.networkOptions.patternConfiguration ||
@@ -66,10 +66,10 @@ export const canImportPatterns = () => {
  * @return {boolean} True if the pattern can be deleted, false otherwise.
  */
 export const canDeletePattern = ( pattern ) => {
-	if ( dlxEnhancedPatternsView.isNetworkSource ) {
-		return true;
-	}
-	if ( dlxEnhancedPatternsView.isMultisite ) {
+	if (
+		dlxEnhancedPatternsView.isMultisite &&
+		! dlxEnhancedPatternsView.isNetworkSource
+	) {
 		return (
 			pattern.isLocal &&
 			! pattern.network &&
@@ -87,10 +87,10 @@ export const canDeletePattern = ( pattern ) => {
  * @return {boolean} True if the pattern can be edited, false otherwise.
  */
 export const canEditPattern = ( pattern ) => {
-	if ( dlxEnhancedPatternsView.isNetworkSource ) {
-		return true;
-	}
-	if ( dlxEnhancedPatternsView.isMultisite ) {
+	if (
+		dlxEnhancedPatternsView.isMultisite &&
+		! dlxEnhancedPatternsView.isNetworkSource
+	) {
 		return (
 			pattern.isLocal &&
 			! pattern.network &&
@@ -108,10 +108,10 @@ export const canEditPattern = ( pattern ) => {
  * @return {boolean} True if the pattern can be disabled, false otherwise.
  */
 export const canDisablePattern = ( pattern ) => {
-	if ( dlxEnhancedPatternsView.isNetworkSource ) {
-		return true;
-	}
-	if ( dlxEnhancedPatternsView.isMultisite ) {
+	if (
+		dlxEnhancedPatternsView.isMultisite &&
+		! dlxEnhancedPatternsView.isNetworkSource
+	) {
 		return (
 			! pattern.isLocal &&
 			! pattern.isDisabled &&
