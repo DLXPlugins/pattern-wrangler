@@ -73,7 +73,7 @@ class Rest {
 						return current_user_can( 'edit_others_posts' );
 					},
 					'args'                => array(
-						'site_id' => array(
+						'source_site_id' => array(
 							'type'              => 'integer',
 							'required'          => true,
 							'sanitize_callback' => 'absint',
@@ -1006,9 +1006,9 @@ class Rest {
 		$pattern_categories  = Functions::sanitize_array_recursive( $request->get_param( 'patternCategories' ) ); // Cats are in format, [name, id].
 		$pattern_sync_status = sanitize_text_field( $request->get_param( 'patternSyncStatus' ) );
 		$pattern_id          = absint( $request->get_param( 'patternId' ) );
-
+		$pattern_site_id     = absint( $request->get_param( 'patternSiteId' ) );
 		// Get the original pattern.
-		$maybe_pattern_content = Functions::get_pattern_by_id( $pattern_id );
+		$maybe_pattern_content = Functions::get_pattern_by_id( $pattern_id, $pattern_site_id );
 		$content               = '';
 		if ( null !== $maybe_pattern_content ) {
 			$content = $maybe_pattern_content;
@@ -1358,9 +1358,9 @@ class Rest {
 		// Get network configuration.
 		$is_multisite          = Functions::is_multisite( false );
 		$network_patterns_data = array();
-		$site_id               = get_current_blog_id();
+		$current_site_id       = get_current_blog_id();
 		$is_network_source     = Functions::is_network_patterns_site();
-		$pattern_configuration = ! $is_multisite ? 'local_only' : Functions::get_network_pattern_configuration( $site_id );
+		$pattern_configuration = ! $is_multisite ? 'local_only' : Functions::get_network_pattern_configuration( $current_site_id );
 		if ( $is_multisite && ! $is_network_source ) {
 			if ( 'network_only' === $pattern_configuration || 'hybrid' === $pattern_configuration ) {
 				$network_source_site_id = Functions::get_network_default_patterns_site_id();
@@ -1369,7 +1369,7 @@ class Rest {
 					'/dlxplugins/pattern-wrangler/v1/patterns/network'
 				);
 				$network_request->set_param( 'nonce', wp_create_nonce( 'dlx_pw_get_network_patterns' ) );
-				$network_request->set_param( 'site_id', $network_source_site_id );
+				$network_request->set_param( 'source_site_id', $network_source_site_id );
 				$network_pattern_response = rest_do_request( $network_request );
 				if ( ! $network_pattern_response->is_error() ) {
 					$network_patterns_data = $network_pattern_response->get_data();
@@ -1431,7 +1431,7 @@ class Rest {
 				'registered'           => true,
 				'id'                   => 0,
 				'network'              => false,
-				'siteId'               => $site_id,
+				'currentSiteId'        => $current_site_id,
 				'patternConfiguration' => $pattern_configuration,
 			);
 		}
@@ -1454,7 +1454,7 @@ class Rest {
 				'registered'           => false,
 				'id'                   => $local_category->term_id,
 				'network'              => false,
-				'siteId'               => $site_id,
+				'currentSiteId'        => $current_site_id,
 				'patternConfiguration' => $pattern_configuration,
 			);
 		}
@@ -1561,7 +1561,7 @@ class Rest {
 					'duplicateNonce'       => '',
 					'previewNonce'         => wp_create_nonce( 'dlx-pw-patterns-view-preview-pattern-' . Functions::get_sanitized_pattern_id( $pattern['name'] ) ),
 					'network'              => false,
-					'siteId'               => $site_id,
+					'currentSiteId'        => $current_site_id,
 					'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 					'patternConfiguration' => $pattern_configuration,
 				);
@@ -1597,7 +1597,7 @@ class Rest {
 				'previewNonce'         => wp_create_nonce( 'dlx-pw-patterns-view-preview-pattern-' . $pattern->ID ),
 				'asset'                => null,
 				'network'              => false,
-				'siteId'               => $site_id,
+				'currentSiteId'        => $current_site_id,
 				'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 				'patternConfiguration' => $pattern_configuration,
 			);
@@ -1653,12 +1653,13 @@ class Rest {
 	 * @return \WP_REST_Response The REST response.
 	 */
 	public function rest_get_network_patterns( $request ) {
-		$site_id         = absint( $request->get_param( 'site_id' ) ); // This is the passed network site id to retrieve patterns for.
+		$source_site_id  = absint( $request->get_param( 'source_site_id' ) ); // This is the passed network site id to retrieve patterns for.
 		$current_site_id = get_current_blog_id();
 		// Check transient first.
 		$patterns              = get_site_transient( 'dlx_network_patterns_cache' );
 		$all_categories        = get_site_transient( 'dlx_network_categories_cache' );
 		$pattern_configuration = Options::get_network_options()['patternConfiguration'] ?? 'local_only';
+		$site_ajax_url         = admin_url( 'admin-ajax.php' );
 		if ( false !== $patterns && false !== $all_categories ) {
 			return rest_ensure_response(
 				array(
@@ -1668,7 +1669,7 @@ class Rest {
 			);
 		}
 
-		if ( 0 === $site_id ) {
+		if ( 0 === $source_site_id ) {
 			return rest_ensure_response(
 				array(
 					'patterns'   => array(),
@@ -1677,7 +1678,7 @@ class Rest {
 			);
 		}
 
-		switch_to_blog( $site_id );
+		switch_to_blog( $source_site_id );
 
 		// Run the pattern class filters.
 		Patterns::get_instance()->maybe_deregister_pattern_categories();
@@ -1718,8 +1719,9 @@ class Rest {
 				'registered'           => false,
 				'id'                   => $local_category->term_id,
 				'network'              => true,
-				'siteId'               => $site_id,
-				'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'sourceSiteId'         => $source_site_id,
+				'currentSiteId'        => $current_site_id,
+				'siteAdminAjaxUrl'     => esc_url_raw( $site_ajax_url ),
 				'patternConfiguration' => $pattern_configuration,
 			);
 		}
@@ -1761,13 +1763,14 @@ class Rest {
 				'syncStatus'           => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 				// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
 				'patternType'          => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
-				'siteId'               => $site_id,
+				'sourceSiteId'         => $source_site_id,
 				'currentSiteId'        => $current_site_id,
 				'asset'                => null,
 				'network'              => true,
-				'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'siteAdminAjaxUrl'     => esc_url_raw( $site_ajax_url ),
 				'patternConfiguration' => $pattern_configuration,
 				'previewNonce'         => wp_create_nonce( 'dlx-pw-patterns-view-preview-pattern-' . $pattern->ID ),
+				'duplicateNonce'       => wp_create_nonce( 'dlx-pw-patterns-view-duplicate-pattern-' . $pattern->ID ),
 			);
 		}
 
@@ -1990,7 +1993,7 @@ class Rest {
 			// Unsynced patterns are explicitly set in post meta, whereas synced are not and assumed synced.
 			'patternType'          => 'unsynced' === get_post_meta( $pattern->ID, 'wp_pattern_sync_status', true ) ? 'unsynced' : 'synced',
 			'editNonce'            => wp_create_nonce( 'dlx-pw-patterns-view-edit-pattern-' . $pattern->ID ),
-			'siteId'               => get_current_blog_id(),
+			'currentSiteId'        => get_current_blog_id(),
 			'asset'                => null,
 			'network'              => false,
 			'siteAdminAjaxUrl'     => esc_url_raw( admin_url( 'admin-ajax.php' ) ),

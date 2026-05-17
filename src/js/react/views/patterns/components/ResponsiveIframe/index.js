@@ -422,7 +422,7 @@ const buildPatternPreviewSlide = ( patternItem ) => {
 	const previewArgs = {
 		action: 'dlxpw_pattern_preview',
 		pattern_id: patternItem.id,
-		site_id: patternItem.siteId,
+		source_site_id: patternItem.sourceSiteId,
 		current_site_id: patternItem.currentSiteId ?? 0,
 		nonce: patternItem.previewNonce,
 	};

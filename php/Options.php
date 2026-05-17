@@ -53,6 +53,20 @@ class Options {
 	protected static $pattern_statuses_key = 'dlx_pw_disabled_patterns';
 
 	/**
+	 * The cache version.
+	 *
+	 * @var string
+	 */
+	protected static $cache_version = DLXPW_PATTERN_WRANGLER_CACHE_VERSION;
+
+	/**
+	 * The cache option key.
+	 *
+	 * @var string
+	 */
+	protected static $cache_option_key = 'dlx_pw_pattern_wrangler_cache_version';
+
+	/**
 	 * Update options via sanitization
 	 *
 	 * @since 1.0.0
@@ -147,6 +161,11 @@ class Options {
 		if ( is_array( self::$options ) && ! $force ) {
 			return self::$options;
 		}
+		$cache_version = get_option( self::$cache_option_key, self::$cache_version );
+		if ( $cache_version !== self::$cache_version ) {
+			// todo - clear any regular site cache related to pattern wrangler.
+			update_option( self::$cache_option_key, self::$cache_version );
+		}
 		$options = get_option( self::$options_key, array() );
 
 		$defaults = self::get_defaults();
@@ -188,6 +207,11 @@ class Options {
 		if ( is_array( self::$network_options ) && ! $force ) {
 			return self::$network_options;
 		}
+		$cache_version = get_site_option( self::$cache_option_key, '' );
+		if ( $cache_version !== self::$cache_version ) {
+			Network::clear_network_pattern_cache();
+			update_site_option( self::$cache_option_key, self::$cache_version );
+		}
 		$options               = get_site_option( self::$network_options_key, array() );
 		$defaults              = self::get_network_defaults();
 		$options               = wp_parse_args( $options, $defaults );
@@ -227,6 +251,7 @@ class Options {
 			'enableVersionsModule'         => false,
 			'enableEnhancedView'           => true,
 			'patternWranglerMenuLocation'  => 'above_media', /* Can be above_media, below_appearance, below_settings, in_appearance. */
+			'patternWranglerCacheVersion'  => DLXPW_PATTERN_WRANGLER_CACHE_VERSION,
 		);
 
 		/**
@@ -260,6 +285,7 @@ class Options {
 			'hideThemePatterns'                 => 'default',
 			'hidePluginPatterns'                => 'default',
 			'hideUncategorizedPatterns'         => 'default',
+			'patternWranglerCacheVersion'       => DLXPW_PATTERN_WRANGLER_CACHE_VERSION,
 		);
 		/**
 		 * Allow options to be extended by plugins.

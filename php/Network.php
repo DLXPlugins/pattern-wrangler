@@ -31,9 +31,9 @@ class Network {
 	/**
 	 * Clear network pattern cache.
 	 *
-	 * @param int $post_id The post ID.
+	 * @param int|null $post_id (Optional) The post ID.
 	 */
-	public static function clear_network_pattern_cache( $post_id ) {
+	public static function clear_network_pattern_cache( $post_id = null ) {
 		delete_site_transient( 'dlx_network_categories_cache' );
 		delete_site_transient( 'dlx_network_patterns_cache' );
 	}

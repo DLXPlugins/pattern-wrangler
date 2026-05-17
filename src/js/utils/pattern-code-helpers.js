@@ -6,14 +6,14 @@
 /**
  * Get the pattern shortcode. Adds a site_id parameter if the site is multisite.
  *
- * @param {string}  slug        Pattern slug (post_name).
- * @param {number}  siteId      Site ID for multisite.
- * @param {boolean} isMultisite Whether the site is multisite.
+ * @param {string}  slug              Pattern slug (post_name).
+ * @param {number}  copyPatternSiteId Site ID to be used for the copy pattern.
+ * @param {boolean} isMultisite       Whether the site is multisite.
  * @return {string} The pattern shortcode.
  */
-export function getPatternShortcode( slug, siteId, isMultisite ) {
-	if ( isMultisite && siteId ) {
-		return `[wp_block slug="${ slug }" site_id="${ siteId }"]`;
+export function getPatternShortcode( slug, copyPatternSiteId, isMultisite ) {
+	if ( isMultisite && copyPatternSiteId ) {
+		return `[wp_block slug="${ slug }" site_id="${ copyPatternSiteId }"]`;
 	}
 	return `[wp_block slug="${ slug }"]`;
 }
@@ -21,14 +21,14 @@ export function getPatternShortcode( slug, siteId, isMultisite ) {
 /**
  * Get the pattern PHP function.
  *
- * @param {string}  slug        Pattern slug (post_name).
- * @param {number}  siteId      Site ID for multisite.
- * @param {boolean} isMultisite Whether the site is multisite.
+ * @param {string}  slug              Pattern slug (post_name).
+ * @param {number}  copyPatternSiteId Site ID to be used for the copy pattern.
+ * @param {boolean} isMultisite       Whether the site is multisite.
  * @return {string} The PHP snippet.
  */
-export function getPatternPHPFunction( slug, siteId, isMultisite ) {
-	if ( isMultisite && siteId ) {
-		return `<?php function_exists( 'pw_wp_block' ) ? pw_wp_block( '${ slug }', ${ siteId }, $echo = true ) : ''; ?>`;
+export function getPatternPHPFunction( slug, copyPatternSiteId, isMultisite ) {
+	if ( isMultisite && copyPatternSiteId ) {
+		return `<?php function_exists( 'pw_wp_block' ) ? pw_wp_block( '${ slug }', ${ copyPatternSiteId }, $echo = true ) : ''; ?>`;
 	}
 	return `<?php function_exists( 'pw_wp_block' ) ? pw_wp_block( '${ slug }', null, $echo = true ) : ''; ?>`;
 }
@@ -60,7 +60,10 @@ export function getPatternPopupTriggerAnchorCode( id ) {
  * @return {Promise<boolean>} Resolves to true if copy succeeded, false otherwise.
  */
 export async function copyToClipboard( text ) {
-	if ( navigator.clipboard && typeof navigator.clipboard.writeText === 'function' ) {
+	if (
+		navigator.clipboard &&
+		typeof navigator.clipboard.writeText === 'function'
+	) {
 		try {
 			await navigator.clipboard.writeText( text );
 			return true;

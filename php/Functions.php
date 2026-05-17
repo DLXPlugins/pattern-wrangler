@@ -516,19 +516,30 @@ class Functions {
 	/**
 	 * Get a pattern by ID.
 	 *
+	 * Warning, this function should not be used in a loop or batch process if a pattern_site_id is provided as it has switch_to_blog context.
+	 *
 	 * @param string|int $pattern_id The pattern ID.
+	 * @param int        $pattern_site_id The original pattern site ID.
 	 *
 	 * @return string|null The pattern content or null if not found. Note you may need to call wp_slash on content if inserting into the database.
 	 */
-	public static function get_pattern_by_id( $pattern_id ) {
+	public static function get_pattern_by_id( $pattern_id, $pattern_site_id = 0 ) {
 		$pattern_content = null;
 		// Perform query.
 		if ( is_numeric( $pattern_id ) ) {
+			$switched = false;
+			if ( 0 !== $pattern_site_id && is_multisite() ) {
+				switch_to_blog( $pattern_site_id );
+				$switched = true;
+			}
 			$pattern = get_post( $pattern_id );
 			if ( ! $pattern || 'wp_block' !== $pattern->post_type ) {
 				return null;
 			}
 			$pattern_content = $pattern->post_content;
+			if ( $switched ) {
+				restore_current_blog();
+			}
 		} elseif ( empty( $pattern_content ) && $pattern_id ) {
 			$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 			foreach ( $registered_patterns as $pattern ) {

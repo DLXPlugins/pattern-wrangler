@@ -23,14 +23,7 @@ import {
  * @param {string}   opts.help        Optional help text.
  * @return {Object} The rendered row.
  */
-const CodeRow = ( {
-	label,
-	value,
-	copiedId,
-	thisId,
-	setCopiedId,
-	help,
-} ) => {
+const CodeRow = ( { label, value, copiedId, thisId, setCopiedId, help } ) => {
 	const handleCopy = async() => {
 		const ok = await copyToClipboard( value );
 		if ( ok ) {
@@ -40,7 +33,10 @@ const CodeRow = ( {
 	};
 
 	return (
-		<div className="dlx-pw-pattern-code-row" style={ { marginBottom: '12px' } }>
+		<div
+			className="dlx-pw-pattern-code-row"
+			style={ { marginBottom: '12px' } }
+		>
 			<style>
 				{ `
 					.dlx-pw-pattern-code-row {
@@ -68,8 +64,19 @@ const CodeRow = ( {
 				className="dlx-pw-pattern-code-input"
 				style={ { marginBottom: '4px' } }
 			/>
-			<Tooltip text={ copiedId === thisId ? __( 'Copied!', 'pattern-wrangler' ) : __( 'Copy', 'pattern-wrangler' ) }>
-				<Button icon="clipboard" label={ __( 'Copy', 'pattern-wrangler' ) } variant="secondary" onClick={ handleCopy } />
+			<Tooltip
+				text={
+					copiedId === thisId
+						? __( 'Copied!', 'pattern-wrangler' )
+						: __( 'Copy', 'pattern-wrangler' )
+				}
+			>
+				<Button
+					icon="clipboard"
+					label={ __( 'Copy', 'pattern-wrangler' ) }
+					variant="secondary"
+					onClick={ handleCopy }
+				/>
 			</Tooltip>
 		</div>
 	);
@@ -83,12 +90,15 @@ const CodeRow = ( {
 const PatternCodePanel = () => {
 	const [ copiedId, setCopiedId ] = useState( null );
 
-	const config = typeof window.dlxPatternWranglerPreview !== 'undefined' ? window.dlxPatternWranglerPreview : {};
+	const config =
+		typeof window.dlxPatternWranglerPreview !== 'undefined'
+			? window.dlxPatternWranglerPreview
+			: {};
 	const pattern = config.pattern || {};
 	const id = pattern.id ?? 0;
 	const slug = pattern.slug ?? '';
 	const syncStatus = pattern.syncStatus ?? 'unsynced';
-	const siteId = pattern.siteId ?? null;
+	const copySiteId = pattern.sourceSiteId ?? pattern.currentSiteId ?? null;
 	const isMultisite = config.isMultisite ?? false;
 	const syncedPatternPopupsActive = config.syncedPatternPopupsActive ?? false;
 	const syncedPatternPopupsUrl = config.syncedPatternPopupsUrl ?? '';
@@ -103,14 +113,17 @@ const PatternCodePanel = () => {
 				className="dlx-pw-preview-sidebar"
 			>
 				<p className="description">
-					{ __( 'Save the pattern to see shortcode and PHP code.', 'pattern-wrangler' ) }
+					{ __(
+						'Save the pattern to see shortcode and PHP code.',
+						'pattern-wrangler',
+					) }
 				</p>
 			</PluginDocumentSettingPanel>
 		);
 	}
 
-	const shortcode = getPatternShortcode( slug, siteId, isMultisite );
-	const phpCode = getPatternPHPFunction( slug, siteId, isMultisite );
+	const shortcode = getPatternShortcode( slug, copySiteId, isMultisite );
+	const phpCode = getPatternPHPFunction( slug, copySiteId, isMultisite );
 	const showSpp = syncedPatternPopupsActive && syncStatus === 'synced';
 
 	return (
@@ -122,7 +135,7 @@ const PatternCodePanel = () => {
 			<p className="description" style={ { marginBottom: '12px' } }>
 				{ __(
 					'Use the shortcode or PHP below to output this pattern on your site.',
-					'pattern-wrangler'
+					'pattern-wrangler',
 				) }
 			</p>
 			<CodeRow
@@ -142,14 +155,20 @@ const PatternCodePanel = () => {
 			{ showSpp && (
 				<>
 					<CodeRow
-						label={ __( 'Synced Pattern Popups Trigger Code', 'pattern-wrangler' ) }
+						label={ __(
+							'Synced Pattern Popups Trigger Code',
+							'pattern-wrangler',
+						) }
 						value={ getPatternPopupTriggerCode( id ) }
 						copiedId={ copiedId }
 						thisId="spp-trigger"
 						setCopiedId={ setCopiedId }
 					/>
 					<CodeRow
-						label={ __( 'Synced Pattern Popups Trigger Anchor Code', 'pattern-wrangler' ) }
+						label={ __(
+							'Synced Pattern Popups Trigger Anchor Code',
+							'pattern-wrangler',
+						) }
 						value={ getPatternPopupTriggerAnchorCode( id ) }
 						copiedId={ copiedId }
 						thisId="spp-anchor"
@@ -162,7 +181,10 @@ const PatternCodePanel = () => {
 								target="_blank"
 								rel="noreferrer"
 							>
-								{ __( 'Synced Pattern Popups documentation', 'pattern-wrangler' ) }
+								{ __(
+									'Synced Pattern Popups documentation',
+									'pattern-wrangler',
+								) }
 							</a>
 						</p>
 					) }

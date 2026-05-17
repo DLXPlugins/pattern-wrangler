@@ -26,17 +26,18 @@ const PatternGetCodeModal = ( props ) => {
 	const [ shortcodeInputRef, setShortcodeInputRef ] = useState( null );
 	const [ phpFunctionInputRef, setPhpFunctionInputRef ] = useState( null );
 	const [ popupTriggerInputRef, setPopupTriggerInputRef ] = useState( null );
-	const [ popupTriggerAnchorInputRef, setPopupTriggerAnchorInputRef ] = useState( null );
+	const [ popupTriggerAnchorInputRef, setPopupTriggerAnchorInputRef ] =
+		useState( null );
 
 	const shortcode = getPatternShortcode(
 		props.item?.slug ?? '',
-		props.item?.siteId ?? null,
-		isMultisite
+		props.item?.sourceSiteId ?? props.item?.currentSiteId ?? null,
+		isMultisite,
 	);
 	const phpCode = getPatternPHPFunction(
 		props.item?.slug ?? '',
-		props.item?.siteId ?? null,
-		isMultisite
+		props.item?.sourceSiteId ?? props.item?.currentSiteId ?? null,
+		isMultisite,
 	);
 	const popupTriggerCode = getPatternPopupTriggerCode( id );
 	const popupTriggerAnchorCode = getPatternPopupTriggerAnchorCode( id );
@@ -81,7 +82,8 @@ const PatternGetCodeModal = ( props ) => {
 			}
 
 			if ( copied ) {
-				copyButton.innerHTML = '<span class="dashicons dashicons-yes"></span>';
+				copyButton.innerHTML =
+					'<span class="dashicons dashicons-yes"></span>';
 				setTimeout( () => {
 					copyButton.innerHTML =
 						'<span class="dashicons dashicons-clipboard"></span>';
@@ -147,7 +149,10 @@ const PatternGetCodeModal = ( props ) => {
 			return;
 		}
 
-		addCopyClipboardButton( popupTriggerAnchorInputRef, popupTriggerAnchorCode );
+		addCopyClipboardButton(
+			popupTriggerAnchorInputRef,
+			popupTriggerAnchorCode,
+		);
 	}, [ popupTriggerAnchorInputRef, popupTriggerAnchorCode ] );
 
 	/**
@@ -170,7 +175,7 @@ const PatternGetCodeModal = ( props ) => {
 					<p className="description">
 						{ __(
 							'Use the fields below to get a shortcode or PHP function to output the pattern on your site.',
-							'pattern-wrangler'
+							'pattern-wrangler',
 						) }
 					</p>
 					<div className="dlx-pw-modal-admin-row">
@@ -184,7 +189,10 @@ const PatternGetCodeModal = ( props ) => {
 					</div>
 					<div className="dlx-pw-modal-admin-row">
 						<TextControl
-							label={ __( 'Pattern PHP Function', 'pattern-wrangler' ) }
+							label={ __(
+								'Pattern PHP Function',
+								'pattern-wrangler',
+							) }
 							value={ phpCode }
 							disabled={ true }
 							ref={ setPhpFunctionInputRef }
@@ -198,7 +206,7 @@ const PatternGetCodeModal = ( props ) => {
 								<TextControl
 									label={ __(
 										'Synced Pattern Popups Trigger Code',
-										'pattern-wrangler'
+										'pattern-wrangler',
 									) }
 									value={ popupTriggerCode }
 									disabled={ true }
@@ -206,13 +214,13 @@ const PatternGetCodeModal = ( props ) => {
 									className="dlx-pw-modal-admin-row-input"
 									help={ __(
 										'This is the code to trigger the Synced Pattern Popup on your site.',
-										'pattern-wrangler'
+										'pattern-wrangler',
 									) }
 								/>
 								<TextControl
 									label={ __(
 										'Synced Pattern Popups Trigger Anchor Code',
-										'pattern-wrangler'
+										'pattern-wrangler',
 									) }
 									value={ popupTriggerAnchorCode }
 									disabled={ true }
@@ -220,19 +228,29 @@ const PatternGetCodeModal = ( props ) => {
 									className="dlx-pw-modal-admin-row-input"
 									help={ __(
 										'This is the code to add to the anchor of the Synced Pattern Popup on your site.',
-										'pattern-wrangler'
+										'pattern-wrangler',
 									) }
 								/>
 								<p className="description">
-									<a href={ `${ dlxEnhancedPatternsView.syncedPatternPopupsUrl }#how-to-use` } target="_blank" rel="noreferrer">
-										{ __( 'Synced Pattern Popups documentation', 'pattern-wrangler' ) }
+									<a
+										href={ `${ dlxEnhancedPatternsView.syncedPatternPopupsUrl }#how-to-use` }
+										target="_blank"
+										rel="noreferrer"
+									>
+										{ __(
+											'Synced Pattern Popups documentation',
+											'pattern-wrangler',
+										) }
 									</a>
 								</p>
 							</div>
 						</>
 					) }
 					<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
-						<Button variant="secondary" onClick={ props.onRequestClose }>
+						<Button
+							variant="secondary"
+							onClick={ props.onRequestClose }
+						>
 							{ __( 'Cancel', 'pattern-wrangler' ) }
 						</Button>
 					</div>

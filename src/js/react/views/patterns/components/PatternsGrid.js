@@ -1277,7 +1277,7 @@ const Interface = ( props ) => {
 						? addQueryArgs( item.siteAdminAjaxUrl, {
 							action: 'dlxpw_pattern_preview',
 							pattern_id: item.id,
-							site_id: item.siteId,
+							source_site_id: item.sourceSiteId,
 							current_site_id: item.currentSiteId ?? 0,
 							viewport_width: viewportWidth,
 							iframe_preview: true,
@@ -2714,12 +2714,12 @@ const Interface = ( props ) => {
 													<ToggleGroupControlOption
 														value="networkonly"
 														label={ __(
-															'Network-only',
+															'Network Only',
 															'pattern-wrangler',
 														) }
 														showTooltip={ true }
 														aria-label={ __(
-															'Show Only Network-only Patterns',
+															'Show Only Network Only Patterns',
 															'pattern-wrangler',
 														) }
 													/>

@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
 	TextControl,
 	Modal,
@@ -41,9 +41,20 @@ const PatternDuplicateModal = ( props ) => {
 		return category.label || category.name;
 	} );
 	const [ copyPatternId ] = useState( props.copyPatternId || 0 );
-	const [ syncedDefaultStatus ] = useState( props.syncedDefaultStatus || 'synced' );
+	const [ syncedDefaultStatus ] = useState(
+		props.syncedDefaultStatus || 'synced',
+	);
 	const [ isSaving, setIsSaving ] = useState( false );
-	const [ showExpandedSuggestions, setShowExpandedSuggestions ] = useState( true );
+	const [ showExpandedSuggestions, setShowExpandedSuggestions ] =
+		useState( true );
+
+	const getPatternSiteId = useMemo( () => {
+		const isNetworkPattern = props.item.network ?? false;
+		if ( isNetworkPattern ) {
+			return props.item.sourceSiteId ?? 0;
+		}
+		return 0;
+	}, [ props.item ] );
 
 	const { control, handleSubmit, setError } = useForm( {
 		defaultValues: {
@@ -53,7 +64,9 @@ const PatternDuplicateModal = ( props ) => {
 			patternCategories: props.item.categories || [],
 			patternSyncStatus: props.syncedDefaultStatus || syncedDefaultStatus,
 			patternCopyId: copyPatternId,
-			editPatternAfterDuplicating: props.editPatternAfterDuplicating || true,
+			editPatternAfterDuplicating:
+				props.editPatternAfterDuplicating || true,
+			patternSiteId: getPatternSiteId,
 		},
 	} );
 	// eslint-disable-next-line no-unused-vars
@@ -99,6 +112,7 @@ const PatternDuplicateModal = ( props ) => {
 				patternTitle: formData.patternTitle,
 				patternCategories: newCategories,
 				patternSyncStatus: formData.patternSyncStatus,
+				patternSiteId: formData.patternSiteId,
 			},
 		} )
 			.then( ( response ) => {
@@ -106,7 +120,9 @@ const PatternDuplicateModal = ( props ) => {
 					setError( 'patternTitle', { message: response.error } );
 				} else if ( formData.editPatternAfterDuplicating ) {
 					const patternId = response.patternId;
-					const redirectUrl = encodeURIComponent( window.location.href );
+					const redirectUrl = encodeURIComponent(
+						window.location.href,
+					);
 					window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ patternId }&action=edit&redirect_to=${ redirectUrl }`;
 				} else {
 					props.onDuplicate( response.patternId );
@@ -137,7 +153,9 @@ const PatternDuplicateModal = ( props ) => {
 	return (
 		<>
 			<Modal
-				title={ props.title || __( 'Duplicate Pattern', 'pattern-wrangler' ) }
+				title={
+					props.title || __( 'Duplicate Pattern', 'pattern-wrangler' )
+				}
 				onRequestClose={ props.onRequestClose }
 				focusOnMount="firstContentElement"
 			>
@@ -150,23 +168,29 @@ const PatternDuplicateModal = ( props ) => {
 								rules={ {
 									required: __(
 										'Pattern title is required.',
-										'pattern-wrangler'
+										'pattern-wrangler',
 									),
 								} }
 								render={ ( { field } ) => (
 									<>
 										<TextControl
-											label={ __( 'Pattern Title', 'pattern-wrangler' ) }
+											label={ __(
+												'Pattern Title',
+												'pattern-wrangler',
+											) }
 											help={ __(
 												'Enter the title of the pattern.',
-												'pattern-wrangler'
+												'pattern-wrangler',
 											) }
 											className={ classnames( {
 												'is-required': true,
-												'has-error': errors?.patternTitle,
+												'has-error':
+													errors?.patternTitle,
 											} ) }
 											value={ field.value }
-											onChange={ ( value ) => field.onChange( value ) }
+											onChange={ ( value ) =>
+												field.onChange( value )
+											}
 											disabled={ isSaving }
 											ref={ field.ref }
 										/>
@@ -191,40 +215,53 @@ const PatternDuplicateModal = ( props ) => {
 								render={ ( { field } ) => (
 									<>
 										<FormTokenField
-											label={ __( 'Categories', 'pattern-wrangler' ) }
+											label={ __(
+												'Categories',
+												'pattern-wrangler',
+											) }
 											help={ __(
 												'Enter the categories of the pattern.',
-												'pattern-wrangler'
+												'pattern-wrangler',
 											) }
 											value={ field.value }
 											onChange={ ( tokens ) => {
 												field.onChange( tokens );
-												setShowExpandedSuggestions( false );
+												setShowExpandedSuggestions(
+													false,
+												);
 											} }
 											tokenizeOnBlur={ true }
 											tokenizeOnSpace={ false }
 											allowMultiple={ true }
-											placeholder={ __( 'Add a category', 'pattern-wrangler' ) }
+											placeholder={ __(
+												'Add a category',
+												'pattern-wrangler',
+											) }
 											suggestions={ categories }
 											disabled={ isSaving }
 											__experimentalShowHowTo={ false }
 											maxSuggestions={ 20 }
 											onInputChange={ ( input ) => {
 												if ( input.length > 1 ) {
-													setShowExpandedSuggestions( false );
+													setShowExpandedSuggestions(
+														false,
+													);
 												} else {
-													setShowExpandedSuggestions( true );
+													setShowExpandedSuggestions(
+														true,
+													);
 												}
 											} }
 											__experimentalExpandOnFocus={
-												( field.value.length === 0 && showExpandedSuggestions ) ||
+												( field.value.length === 0 &&
+													showExpandedSuggestions ) ||
 												showExpandedSuggestions
 											}
 										/>
 										<p className="description">
 											{ __(
 												'Separate with commas or press the Enter key.',
-												'pattern-wrangler'
+												'pattern-wrangler',
 											) }
 										</p>
 									</>
@@ -238,7 +275,10 @@ const PatternDuplicateModal = ( props ) => {
 								render={ ( { field } ) => (
 									<>
 										<ToggleGroupControl
-											label={ __( 'Sync Status', 'pattern-wrangler' ) }
+											label={ __(
+												'Sync Status',
+												'pattern-wrangler',
+											) }
 											isAdaptiveWidth={ true }
 											value={ field.value }
 											onChange={ ( value ) => {
@@ -248,15 +288,27 @@ const PatternDuplicateModal = ( props ) => {
 										>
 											<ToggleGroupControlOption
 												value="synced"
-												label={ __( 'Synced', 'pattern-wrangler' ) }
+												label={ __(
+													'Synced',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
-												aria-label={ __( 'Synced', 'pattern-wrangler' ) }
+												aria-label={ __(
+													'Synced',
+													'pattern-wrangler',
+												) }
 											/>
 											<ToggleGroupControlOption
 												value="unsynced"
-												label={ __( 'Unsynced', 'pattern-wrangler' ) }
+												label={ __(
+													'Unsynced',
+													'pattern-wrangler',
+												) }
 												showTooltip={ true }
-												aria-label={ __( 'Unsynced', 'pattern-wrangler' ) }
+												aria-label={ __(
+													'Unsynced',
+													'pattern-wrangler',
+												) }
 											/>
 										</ToggleGroupControl>
 									</>
@@ -271,17 +323,23 @@ const PatternDuplicateModal = ( props ) => {
 									<ToggleControl
 										label={ __(
 											'Edit Pattern After Duplicating',
-											'pattern-wrangler'
+											'pattern-wrangler',
 										) }
 										checked={ field.value }
-										onChange={ ( value ) => field.onChange( value ) }
+										onChange={ ( value ) =>
+											field.onChange( value )
+										}
 										disabled={ isSaving }
 									/>
 								) }
 							/>
 						</div>
 						<div className="dlx-pw-modal-admin-row dlx-pw-modal-admin-row-buttons">
-							<Button variant="primary" type="submit" disabled={ isSaving }>
+							<Button
+								variant="primary"
+								type="submit"
+								disabled={ isSaving }
+							>
 								{ getButtonText() }
 							</Button>
 							<Button

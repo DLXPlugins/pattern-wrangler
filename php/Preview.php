@@ -48,7 +48,7 @@ class Preview {
 		if ( 0 === $pattern_id ) {
 			die( 'Invalid pattern ID.' );
 		}
-		$site_id         = absint( filter_input( INPUT_GET, 'site_id', FILTER_VALIDATE_INT ) ?? 0 );
+		$source_site_id  = absint( filter_input( INPUT_GET, 'source_site_id', FILTER_VALIDATE_INT ) ?? 0 );
 		$current_site_id = absint( filter_input( INPUT_GET, 'current_site_id', FILTER_VALIDATE_INT ) ?? 0 );
 		add_filter(
 			'dlxpw_pattern_preview_id',
@@ -57,9 +57,9 @@ class Preview {
 			}
 		);
 		add_filter(
-			'dlxpw_pattern_preview_site_id',
-			function () use ( $site_id ) {
-				return $site_id;
+			'dlxpw_pattern_preview_source_site_id',
+			function () use ( $source_site_id ) {
+				return $source_site_id;
 			}
 		);
 		add_filter(
@@ -156,11 +156,11 @@ class Preview {
 				'previewUrl'                   => $preview_on ? Functions::get_pattern_preview_url( get_the_ID() ) : '',
 				'showFrontendPreviewButton'    => $preview_on,
 				'pattern'                      => array(
-					'id'         => $post_id ? absint( $post_id ) : 0,
-					'slug'       => $post ? sanitize_title( $post->post_name ) : '',
-					'syncStatus' => sanitize_text_field( $sync_status ),
-					'siteId'     => absint( get_current_blog_id() ),
-					'title'      => $post ? $post->post_title : '',
+					'id'            => $post_id ? absint( $post_id ) : 0,
+					'slug'          => $post ? sanitize_title( $post->post_name ) : '',
+					'syncStatus'    => sanitize_text_field( $sync_status ),
+					'currentSiteId' => absint( get_current_blog_id() ),
+					'title'         => $post ? $post->post_title : '',
 				),
 				'isMultisite'                  => is_multisite(),
 				'syncedPatternPopupsActive'    => Functions::is_activated( 'synced-pattern-popups/sppopups.php' ),
