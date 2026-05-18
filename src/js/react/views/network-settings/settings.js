@@ -59,6 +59,7 @@ const Settings = () => {
 				hideThemePatterns: data.hideThemePatterns,
 				hidePluginPatterns: data.hidePluginPatterns,
 				hideUncategorizedPatterns: data.hideUncategorizedPatterns,
+				localPatternConfiguration: data.localPatternConfiguration,
 			},
 		} );
 	const formValues = useWatch( { control } );
@@ -127,6 +128,13 @@ const Settings = () => {
 	};
 
 	const canShowRegisteredPatternConfiguration = () => {
+		return (
+			formValues.patternConfiguration === 'hybrid' ||
+			formValues.patternConfiguration === 'network_only'
+		);
+	};
+
+	const canShowLocalPatternConfiguration = () => {
 		return (
 			formValues.patternConfiguration === 'hybrid' ||
 			formValues.patternConfiguration === 'network_only'
@@ -252,7 +260,86 @@ const Settings = () => {
 											</div>
 										</>
 									) }
-
+									{ canShowRegisteredPatternConfiguration() && (
+										<>
+											<div className="dlx-admin__row">
+												<Controller
+													control={ control }
+													name="localPatternConfiguration"
+													render={ ( { field } ) => (
+														<>
+															<ToggleGroupControl
+																label={ __(
+																	'Local Pattern Configuration',
+																	'pattern-wrangler',
+																) }
+																help={ __(
+																	'Select which local patterns are visible when selecting patterns. If, for example, you select "Unsynced", only unsynced local patterns will be visible.',
+																	'pattern-wrangler',
+																) }
+																isAdaptiveWidth={
+																	true
+																}
+																value={
+																	field.value
+																}
+																onChange={ (
+																	value,
+																) => {
+																	field.onChange(
+																		value,
+																	);
+																} }
+															>
+																<ToggleGroupControlOption
+																	value="unsynced"
+																	label={ __(
+																		'Unsynced',
+																		'pattern-wrangler',
+																	) }
+																	showTooltip={
+																		true
+																	}
+																	aria-label={ __(
+																		'Unsynced Local Patterns',
+																		'pattern-wrangler',
+																	) }
+																/>
+																<ToggleGroupControlOption
+																	value="both"
+																	label={ __(
+																		'Both',
+																		'pattern-wrangler',
+																	) }
+																	showTooltip={
+																		true
+																	}
+																	aria-label={ __(
+																		'Both Local and Synced Patterns',
+																		'pattern-wrangler',
+																	) }
+																/>
+																<ToggleGroupControlOption
+																	value="synced"
+																	label={ __(
+																		'Synced',
+																		'pattern-wrangler',
+																	) }
+																	showTooltip={
+																		true
+																	}
+																	aria-label={ __(
+																		'Synced Local Patterns',
+																		'pattern-wrangler',
+																	) }
+																/>
+															</ToggleGroupControl>
+														</>
+													) }
+												/>
+											</div>
+										</>
+									) }
 									<div className="dlx-admin__row">
 										<PanelBody
 											title={ __(

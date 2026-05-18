@@ -1362,6 +1362,7 @@ class Rest {
 		$is_network_source                 = Functions::is_network_patterns_site();
 		$pattern_configuration             = ! $is_multisite ? 'local_only' : Functions::get_network_pattern_configuration( $current_site_id );
 		$registrated_pattern_configuration = ! $is_multisite ? 'allow_all' : Options::get_network_options()['registeredPatternConfiguration'] ?? 'allow_all';
+		$local_pattern_configuration       = ! $is_multisite ? 'both' : Options::get_network_options()['localPatternConfiguration'] ?? 'both';
 		if ( $is_multisite && ! $is_network_source ) {
 			if ( 'network_only' === $pattern_configuration || 'hybrid' === $pattern_configuration ) {
 				$network_source_site_id = Functions::get_network_default_patterns_site_id();
@@ -1610,6 +1611,22 @@ class Rest {
 			$network_patterns          = isset( $network_patterns_data['patterns'] ) ? $network_patterns_data['patterns'] : array();
 			$network_categories        = isset( $network_patterns_data['categories'] ) ? $network_patterns_data['categories'] : array();
 			$network_disabled_patterns = isset( $network_patterns_data['disabledPatterns'] ) ? $network_patterns_data['disabledPatterns'] : array();
+
+			if ( 'synced' === $local_pattern_configuration ) {
+				$network_patterns = array_filter(
+					$network_patterns,
+					function ( $pattern ) {
+						return 'synced' === $pattern['syncStatus'];
+					}
+				);
+			} elseif ( 'unsynced' === $local_pattern_configuration ) {
+				$network_patterns = array_filter(
+					$network_patterns,
+					function ( $pattern ) {
+						return 'unsynced' === $pattern['syncStatus'];
+					}
+				);
+			}
 			switch ( $pattern_configuration ) {
 				case 'network_only':
 					$stored_local_patterns = $network_patterns;
