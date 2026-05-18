@@ -124,6 +124,8 @@ class Network_Admin {
 		// Create the patterns URL for the network_source site.
 		$patterns_url = get_admin_url( $network_source_site_id, 'edit.php?post_type=wp_block' );
 
+		$maybe_gb_class = apply_filters( 'dlxpw_gb_class', '' );
+
 		wp_localize_script(
 			'dlx-pw-network-admin-settings',
 			'dlxPatternWranglerNetworkAdminSettings',
@@ -139,6 +141,7 @@ class Network_Admin {
 				'selectedSitePermalink'   => $network_source_site_permalink,
 				'selectedSiteTitle'       => $network_source_site_title,
 				'selectedSitePatternsUrl' => $patterns_url,
+				'generateBlocksProActive' => class_exists( $maybe_gb_class ) && $maybe_gb_class::is_gb_pro_network_active(),
 			)
 		);
 		\wp_set_script_translations( 'dlx-pw-network-admin-settings', 'pattern-wrangler' );

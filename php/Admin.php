@@ -259,8 +259,18 @@ class Admin {
 			);
 		}
 
+		$previous_options = Options::get_network_options();
+
 		// Update options.
 		Options::update_network_options( $form_data );
+
+		$gb_class = apply_filters( 'dlxpw_gb_class', '' );
+		if ( class_exists( $gb_class ) ) {
+			$gb_class::maybe_bump_version_on_settings_save(
+				$previous_options,
+				Options::get_network_options( true )
+			);
+		}
 
 		delete_site_transient( 'dlx_network_patterns_cache' );
 		delete_site_transient( 'dlx_network_categories_cache' );

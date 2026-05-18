@@ -90,7 +90,18 @@ class PatternWrangler {
 		}
 
 		// Initialize network and helpers.
-		if ( Functions::is_multisite( false ) ) {
+		if ( is_multisite() ) {
+
+			// Allow GB Pro global styles to be output network wide by Pattern Wrangler.
+			if ( class_exists( 'GenerateBlocks_Pro_Styles' ) ) {
+				Compatibility\GenerateBlocks::init();
+				add_filter(
+					'dlxpw_gb_class',
+					function () {
+						return __NAMESPACE__ . '\Compatibility\GenerateBlocks';
+					}
+				);
+			}
 
 			add_action(
 				'init',
@@ -156,7 +167,8 @@ add_action(
 	function () {
 		$pattern_wrangler = PatternWrangler::get_instance();
 		$pattern_wrangler->plugins_loaded();
-	}
+	},
+	15
 );
 
 /**

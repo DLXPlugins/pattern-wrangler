@@ -7,14 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInit27b17fd2c20dabf2ea56e4a83a2355a0
 {
     public static $prefixLengthsPsr4 = array (
-        'D' => 
+        'D' =>
         array (
             'DLXPlugins\\PatternWrangler\\' => 27,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'DLXPlugins\\PatternWrangler\\' => 
+        'DLXPlugins\\PatternWrangler\\' =>
         array (
             0 => __DIR__ . '/../..' . '/php',
         ),

@@ -54,6 +54,8 @@ const Settings = () => {
 				hideThemePatterns: data.hideThemePatterns,
 				hidePluginPatterns: data.hidePluginPatterns,
 				hideUncategorizedPatterns: data.hideUncategorizedPatterns,
+				applyNetworkGenerateBlocksGlobalStyles:
+					data.applyNetworkGenerateBlocksGlobalStyles ?? false,
 			},
 		} );
 	const formValues = useWatch( { control } );
@@ -119,6 +121,21 @@ const Settings = () => {
 			default:
 				return null;
 		}
+	};
+
+	/**
+	 * Check if GenerateBlocks Pro is active and the pattern configuration is not local only.
+	 *
+	 * @return {boolean} True if the user can apply network generate blocks global styles, false otherwise.
+	 */
+	const canApplyNetworkGenerateBlocksGlobalStyles = () => {
+		console.log(
+			dlxPatternWranglerNetworkAdminSettings.generateBlocksProActive,
+		);
+		return (
+			dlxPatternWranglerNetworkAdminSettings.generateBlocksProActive &&
+			'local_only' !== formValues.patternConfiguration
+		);
 	};
 
 	return (
@@ -193,6 +210,30 @@ const Settings = () => {
 										/>
 									</div>
 									{ getSitePicker() }
+									{ canApplyNetworkGenerateBlocksGlobalStyles() && (
+										<div className="dlx-admin__row">
+											<Controller
+												control={ control }
+												name="applyNetworkGenerateBlocksGlobalStyles"
+												render={ ( { field } ) => (
+													<ToggleControl
+														label={ __(
+															'Apply GenerateBlocks Global Styles Network-Wide',
+															'pattern-wrangler',
+														) }
+														help={ __(
+															'When enabled, subsites use global styles from the default patterns source site (merged in hybrid mode). GenerateBlocks Pro must be kept network activated.',
+															'pattern-wrangler',
+														) }
+														checked={ field.value }
+														onChange={
+															field.onChange
+														}
+													/>
+												) }
+											/>
+										</div>
+									) }
 								</td>
 							</tr>
 							<tr>
