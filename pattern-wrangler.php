@@ -92,6 +92,8 @@ class PatternWrangler {
 		// Initialize network and helpers.
 		if ( Functions::is_multisite( false ) ) {
 
+			Network::init_restrictions();
+
 			add_action(
 				'init',
 				function () {

@@ -27,6 +27,7 @@ import RegisteredCategoryEditModal from './RegisteredCategoryEditModal';
 import CategoryBulkActions from './CategoryBulkActions';
 import CategoryPauseModal from './CategoryPauseModal';
 import CategoryMapModal from './CategoryMapModal';
+import { canAddCategories } from '../utils/common';
 
 const CategoriesListView = ( props ) => {
 	const { categories, loading, error } = useSelect( ( newSelect ) => {
@@ -703,18 +704,20 @@ const Interface = ( props ) => {
 						<h1>{ __( 'Pattern Categories', 'pattern-wrangler' ) }</h1>
 					</div>
 					<div className="dlx-patterns-view-quick-buttons-wrapper">
-						<Button
-							variant="primary"
-							className="dlx-patterns-view-quick-button"
-							onClick={ () => {
-								setIsAddNewCategoryModalOpen( {
-									isOpen: true,
-									termId: 0,
-								} );
-							} }
-						>
-							{ __( 'Add New Category', 'pattern-wrangler' ) }
-						</Button>
+						{ canAddCategories() && (
+							<Button
+								variant="primary"
+								className="dlx-patterns-view-quick-button"
+								onClick={ () => {
+									setIsAddNewCategoryModalOpen( {
+										isOpen: true,
+										termId: 0,
+									} );
+								} }
+							>
+								{ __( 'Add New Category', 'pattern-wrangler' ) }
+							</Button>
+						) }
 					</div>
 					<div className="dlx-patterns-view-categories">
 						<div className="dlx-patterns-view-button-actions-wrapper">

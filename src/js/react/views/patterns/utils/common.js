@@ -1,4 +1,20 @@
 /**
+ * Effective pattern configuration for the current site.
+ *
+ * @return {string} Pattern configuration slug.
+ */
+const getEffectivePatternConfiguration = () => {
+	if ( dlxEnhancedPatternsView.effectivePatternConfiguration ) {
+		return dlxEnhancedPatternsView.effectivePatternConfiguration;
+	}
+
+	return (
+		dlxEnhancedPatternsView.networkOptions?.patternConfiguration ||
+		'local_only'
+	);
+};
+
+/**
  * Check if a pattern can be duplicated.
  *
  * @param {Object} pattern The pattern object.
@@ -30,12 +46,8 @@ export const canAddPatterns = () => {
 		dlxEnhancedPatternsView.isMultisite &&
 		! dlxEnhancedPatternsView.isNetworkSource
 	) {
-		return (
-			'hybrid' ===
-				dlxEnhancedPatternsView.networkOptions.patternConfiguration ||
-			'local_only' ===
-				dlxEnhancedPatternsView.networkOptions.patternConfiguration
-		);
+		const configuration = getEffectivePatternConfiguration();
+		return 'hybrid' === configuration || 'local_only' === configuration;
 	}
 	return true;
 };
@@ -49,12 +61,8 @@ export const canImportPatterns = () => {
 		dlxEnhancedPatternsView.isMultisite &&
 		! dlxEnhancedPatternsView.isNetworkSource
 	) {
-		return (
-			'hybrid' ===
-				dlxEnhancedPatternsView.networkOptions.patternConfiguration ||
-			'local_only' ===
-				dlxEnhancedPatternsView.networkOptions.patternConfiguration
-		);
+		const configuration = getEffectivePatternConfiguration();
+		return 'hybrid' === configuration || 'local_only' === configuration;
 	}
 	return true;
 };

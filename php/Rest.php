@@ -919,6 +919,11 @@ class Rest {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
 		}
 
+		$create_forbidden = Network::assert_can_create_local_patterns();
+		if ( $create_forbidden ) {
+			return rest_ensure_response( array( 'error' => $create_forbidden->get_error_message() ) );
+		}
+
 		$pattern_title              = sanitize_text_field( $request->get_param( 'patternTitle' ) );
 		$pattern_categories         = Functions::sanitize_array_recursive( $request->get_param( 'patternCategories' ) ); // Cats are in format, [name, id].
 		$pattern_sync_status        = sanitize_text_field( $request->get_param( 'patternSyncStatus' ) );
@@ -1000,6 +1005,11 @@ class Rest {
 		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
 		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-patterns-view-duplicate-pattern-' . absint( $request->get_param( 'patternId' ) ) ) || ! current_user_can( 'edit_others_posts' ) ) {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to duplicate patterns.' ) );
+		}
+
+		$create_forbidden = Network::assert_can_create_local_patterns();
+		if ( $create_forbidden ) {
+			return rest_ensure_response( array( 'error' => $create_forbidden->get_error_message() ) );
 		}
 
 		$pattern_title       = sanitize_text_field( $request->get_param( 'patternTitle' ) );
@@ -1156,6 +1166,11 @@ class Rest {
 		$nonce = sanitize_text_field( $request->get_param( 'nonce' ) );
 		if ( ! wp_verify_nonce( $nonce, 'dlx-pw-categories-view-create-category' ) || ! current_user_can( 'edit_others_posts' ) ) {
 			return rest_ensure_response( array( 'error' => 'Invalid nonce or user does not have permission to create patterns.' ) );
+		}
+
+		$create_forbidden = Network::assert_can_create_local_patterns();
+		if ( $create_forbidden ) {
+			return rest_ensure_response( array( 'error' => $create_forbidden->get_error_message() ) );
 		}
 
 		$term_title = sanitize_text_field( wp_strip_all_tags( $request->get_param( 'termTitle' ) ) );

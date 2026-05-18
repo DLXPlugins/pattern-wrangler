@@ -47,38 +47,46 @@ $viewport_width = 1600;
 
 // Perform query.
 if ( is_numeric( $pattern_id ) ) {
-	$switched = false;
-	if ( 0 !== $source_site_id && is_multisite() && $source_site_id !== $current_site_id ) {
-		switch_to_blog( $source_site_id );
-		$switched = true;
-	}
-	global $wp_query;
-	$temp     = $wp_query;
-	$wp_query = new \WP_Query(
-		array(
-			'p'         => $pattern_id,
-			'post_type' => 'wp_block',
-		)
-	);
-	if ( ! $wp_query->have_posts() ) {
-		die( 'Pattern not found.' );
-	} else {
-		$wp_query->the_post();
-		$pattern_content = $wp_query->post->post_content;
-	}
-	if ( $switched ) {
-		restore_current_blog();
+	$pattern_content = get_transient( 'dlxpw_pattern_preview_content_' . $pattern_id );
+	if ( empty( $pattern_content ) ) {
+		$switched = false;
+		if ( 0 !== $source_site_id && is_multisite() && $source_site_id !== $current_site_id ) {
+			switch_to_blog( $source_site_id );
+			$switched = true;
+		}
+		global $wp_query;
+		$temp     = $wp_query;
+		$wp_query = new \WP_Query(
+			array(
+				'p'         => $pattern_id,
+				'post_type' => 'wp_block',
+			)
+		);
+		if ( ! $wp_query->have_posts() ) {
+			die( 'Pattern not found.' );
+		} else {
+			$wp_query->the_post();
+			$pattern_content = $wp_query->post->post_content;
+		}
+		if ( $switched ) {
+			restore_current_blog();
+		}
+		set_transient( 'dlxpw_pattern_preview_content_' . $pattern_id, $pattern_content, 5 * MINUTE_IN_SECONDS );
 	}
 } elseif ( empty( $pattern_content ) && $pattern_id ) {
 	if ( ! current_user_can( 'edit_others_posts' ) ) {
 		die( 'You do not have permission to preview this pattern.' );
 	}
-	$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
-	foreach ( $registered_patterns as $pattern ) {
-		if ( $pattern_id === $pattern['slug'] || $pattern_id === $pattern['name'] ) {
-			$pattern_content = $pattern['content'];
-			$viewport_width  = absint( $pattern['viewportWidth'] );
-			break;
+	$pattern_content = get_transient( 'dlxpw_pattern_preview_content_' . $pattern_id );
+	if ( empty( $pattern_content ) ) {
+		$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+		foreach ( $registered_patterns as $pattern ) {
+			if ( $pattern_id === $pattern['slug'] || $pattern_id === $pattern['name'] ) {
+				$pattern_content = $pattern['content'];
+				set_transient( 'dlxpw_pattern_preview_content_' . $pattern_id, $pattern_content, 5 * MINUTE_IN_SECONDS );
+				$viewport_width = absint( $pattern['viewportWidth'] );
+				break;
+			}
 		}
 	}
 	if ( ! isset( $pattern_content ) ) {

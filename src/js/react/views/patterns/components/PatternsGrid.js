@@ -748,22 +748,26 @@ const Interface = ( props ) => {
 					) }
 					{ ! item.isLocal && (
 						<>
-							<Button
-								variant="link"
-								onClick={ ( e ) => {
-									e.preventDefault();
-									e.stopPropagation();
-									setCopyPatternId( item.id );
-									setIsCopyToLocalModalOpen( { item } );
-								} }
-							>
-								{ _x(
-									'Copy to New',
-									'pattern-wrangler',
-									'Copy to New Pattern',
-								) }
-							</Button>
-							{ ' | ' }
+							{ canDuplicatePattern( item ) && (
+								<>
+									<Button
+										variant="link"
+										onClick={ ( e ) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setCopyPatternId( item.id );
+											setIsCopyToLocalModalOpen( { item } );
+										} }
+									>
+										{ _x(
+											'Copy to New',
+											'pattern-wrangler',
+											'Copy to New Pattern',
+										) }
+									</Button>
+									{ ' | ' }
+								</>
+							) }
 							<Button
 								variant="link"
 								onClick={ ( e ) => {
@@ -1660,7 +1664,7 @@ const Interface = ( props ) => {
 					setIsCopyToLocalModalOpen( { item } );
 				},
 				isEligible: ( pattern ) => {
-					return ! pattern.isLocal;
+					return ! pattern.isLocal && canDuplicatePattern( pattern );
 				},
 				isPrimary: false,
 				isDestructive: false,
