@@ -308,6 +308,15 @@ class Functions {
 	}
 
 	/**
+	 * Clear the network pattern cache.
+	 */
+	public static function clear_network_pattern_cache() {
+		delete_site_transient( 'dlx_network_patterns_cache' );
+		delete_site_transient( 'dlx_network_categories_cache' );
+		delete_site_transient( 'dlx_network_disabled_patterns_cache' );
+	}
+
+	/**
 	 * Get the network pattern configuration.
 	 *
 	 * This is checks a given site's pattern configuration, and returns the network pattern configuration.

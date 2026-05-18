@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/functions.php';
 
 define( 'DLXPW_PATTERN_WRANGLER_VERSION', '2.5.0-beta3' );
-define( 'DLXPW_PATTERN_WRANGLER_CACHE_VERSION', '0.0.3' );
+define( 'DLXPW_PATTERN_WRANGLER_CACHE_VERSION', '0.0.4' );
 define( 'DLXPW_PATTERN_WRANGLER_FILE', __FILE__ );
 
 // Support for site-level autoloading.

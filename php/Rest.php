@@ -1356,11 +1356,12 @@ class Rest {
 		$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 
 		// Get network configuration.
-		$is_multisite          = Functions::is_multisite( false );
-		$network_patterns_data = array();
-		$current_site_id       = get_current_blog_id();
-		$is_network_source     = Functions::is_network_patterns_site();
-		$pattern_configuration = ! $is_multisite ? 'local_only' : Functions::get_network_pattern_configuration( $current_site_id );
+		$is_multisite                      = Functions::is_multisite( false );
+		$network_patterns_data             = array();
+		$current_site_id                   = get_current_blog_id();
+		$is_network_source                 = Functions::is_network_patterns_site();
+		$pattern_configuration             = ! $is_multisite ? 'local_only' : Functions::get_network_pattern_configuration( $current_site_id );
+		$registrated_pattern_configuration = ! $is_multisite ? 'allow_all' : Options::get_network_options()['registeredPatternConfiguration'] ?? 'allow_all';
 		if ( $is_multisite && ! $is_network_source ) {
 			if ( 'network_only' === $pattern_configuration || 'hybrid' === $pattern_configuration ) {
 				$network_source_site_id = Functions::get_network_default_patterns_site_id();
@@ -1491,6 +1492,7 @@ class Rest {
 		// Get Assets.
 		$assets = array(); // key/pair of theme name and array of assets.
 
+		$stored_registered_patterns = array();
 		// Process registered patterns. Skip if user isn't editor or above.
 		if ( current_user_can( 'edit_others_posts' ) ) {
 			foreach ( $registered_patterns as $pattern ) {
@@ -1544,7 +1546,7 @@ class Rest {
 					}
 				}
 
-				$patterns[ $pattern['name'] ] = array(
+				$stored_registered_patterns[ $pattern['name'] ] = array(
 					'id'                   => Functions::get_sanitized_pattern_id( $pattern['name'] ),
 					'title'                => $pattern['title'],
 					'slug'                 => $pattern['name'],
@@ -1568,6 +1570,7 @@ class Rest {
 			}
 		}
 
+		$stored_local_patterns = array();
 		// Process local patterns.
 		foreach ( $local_patterns as $pattern ) {
 			if ( ! current_user_can( 'edit_post', $pattern->ID ) ) {
@@ -1580,7 +1583,7 @@ class Rest {
 				$category_labels[] = sanitize_text_field( $category->name );
 				$category_slugs[]  = sanitize_title( $category->slug );
 			}
-			$patterns[ $pattern->post_name ] = array(
+			$stored_local_patterns[ $pattern->post_name ] = array(
 				'id'                   => $pattern->ID,
 				'title'                => $pattern->post_title,
 				'slug'                 => $pattern->post_name,
@@ -1604,23 +1607,39 @@ class Rest {
 		}
 
 		if ( ! empty( $network_patterns_data ) ) {
-			$network_patterns   = isset( $network_patterns_data['patterns'] ) ? $network_patterns_data['patterns'] : array();
-			$network_categories = isset( $network_patterns_data['categories'] ) ? $network_patterns_data['categories'] : array();
+			$network_patterns          = isset( $network_patterns_data['patterns'] ) ? $network_patterns_data['patterns'] : array();
+			$network_categories        = isset( $network_patterns_data['categories'] ) ? $network_patterns_data['categories'] : array();
+			$network_disabled_patterns = isset( $network_patterns_data['disabledPatterns'] ) ? $network_patterns_data['disabledPatterns'] : array();
 			switch ( $pattern_configuration ) {
 				case 'network_only':
-					$patterns       = $network_patterns;
-					$all_categories = $network_categories;
+					$stored_local_patterns = $network_patterns;
+					$all_categories        = $network_categories;
 					break;
 				case 'hybrid':
-					$patterns       = array_merge( $patterns, $network_patterns );
-					$all_categories = array_merge( $all_categories, $network_categories );
+					$stored_local_patterns = array_merge( $stored_local_patterns, $network_patterns );
+					$all_categories        = array_merge( $all_categories, $network_categories );
 					break;
 
 				default:
 			}
+			// Strip out disabled patterns from the registered patterns if network_only or hybrid.
+			if ( 'network_only' === $pattern_configuration || 'hybrid' === $pattern_configuration ) {
+				if ( 'inherit' === $registrated_pattern_configuration ) {
+					$stored_registered_patterns = array_filter(
+						$stored_registered_patterns,
+						function ( $pattern ) use ( $network_disabled_patterns ) {
+							return ! in_array( $pattern['slug'], $network_disabled_patterns, true );
+						}
+					);
+				} elseif ( 'disable' === $registrated_pattern_configuration ) {
+					$stored_registered_patterns = array();
+				}
+			}
 
 			$all_categories = Functions::sort_pattern_categories( $all_categories );
 		}
+
+		$patterns = array_merge( $stored_registered_patterns, $stored_local_patterns );
 
 		// Sort patterns by title ascending.
 		usort(
@@ -1658,13 +1677,15 @@ class Rest {
 		// Check transient first.
 		$patterns              = get_site_transient( 'dlx_network_patterns_cache' );
 		$all_categories        = get_site_transient( 'dlx_network_categories_cache' );
+		$disabled_patterns     = get_site_transient( 'dlx_network_disabled_patterns_cache' );
 		$pattern_configuration = Options::get_network_options()['patternConfiguration'] ?? 'local_only';
 		$site_ajax_url         = admin_url( 'admin-ajax.php' );
-		if ( false !== $patterns && false !== $all_categories ) {
+		if ( false !== $patterns && false !== $all_categories && false !== $disabled_patterns ) {
 			return rest_ensure_response(
 				array(
-					'patterns'   => $patterns,
-					'categories' => $all_categories,
+					'patterns'         => $patterns,
+					'categories'       => $all_categories,
+					'disabledPatterns' => $disabled_patterns,
 				)
 			);
 		}
@@ -1785,12 +1806,16 @@ class Rest {
 		// Cache for 1 hour.
 		set_site_transient( 'dlx_network_patterns_cache', $patterns, HOUR_IN_SECONDS );
 
+		$disabled_patterns = Options::get_disabled_patterns();
+		set_site_transient( 'dlx_network_disabled_patterns_cache', $disabled_patterns, HOUR_IN_SECONDS );
+
 		restore_current_blog();
 
 		return rest_ensure_response(
 			array(
-				'patterns'   => $patterns,
-				'categories' => $all_categories,
+				'patterns'         => $patterns,
+				'categories'       => $all_categories,
+				'disabledPatterns' => $disabled_patterns,
 			)
 		);
 	}

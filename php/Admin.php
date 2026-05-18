@@ -262,8 +262,7 @@ class Admin {
 		// Update options.
 		Options::update_network_options( $form_data );
 
-		delete_site_transient( 'dlx_network_patterns_cache' );
-		delete_site_transient( 'dlx_network_categories_cache' );
+		Functions::clear_network_pattern_cache();
 
 		// Send success message.
 		wp_send_json_success(
