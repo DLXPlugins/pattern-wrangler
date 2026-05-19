@@ -243,12 +243,13 @@ class Admin {
 		}
 
 		// Get array values.
-		$form_data = Functions::sanitize_array_recursive( $form_data );
+		$form_data             = Functions::sanitize_array_recursive( $form_data );
+		$pattern_configuration = $form_data['patternConfiguration'] ?? 'local_only';
 
 		$form_data['patternNetworkSourceSiteId'] = isset( $form_data['patternNetworkSourceSiteId'] ) ? absint( $form_data['patternNetworkSourceSiteId'] ) : 0;
 
 		// If the network_source Site ID is 0, return error.
-		if ( 0 === $form_data['patternNetworkSourceSiteId'] ) {
+		if ( 0 === $form_data['patternNetworkSourceSiteId'] && 'local_only' !== $pattern_configuration ) {
 			wp_send_json_error(
 				array(
 					'message'     => __( 'A Default Network Site ID is required.', 'pattern-wrangler' ),

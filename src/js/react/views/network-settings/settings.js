@@ -6,12 +6,11 @@ import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	__experimentalFlyout as Flyout,
 	SelectControl,
 	BaseControl,
 	PanelBody,
 } from '@wordpress/components';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { useForm, Controller, useWatch, useFormState } from 'react-hook-form';
 import SaveResetButtons from '../../components/SaveResetButtons';
@@ -60,6 +59,7 @@ const Settings = () => {
 				hidePluginPatterns: data.hidePluginPatterns,
 				hideUncategorizedPatterns: data.hideUncategorizedPatterns,
 				localPatternConfiguration: data.localPatternConfiguration,
+				showNetworkPatternColumns: data.showNetworkPatternColumns,
 			},
 		} );
 	const formValues = useWatch( { control } );
@@ -76,16 +76,17 @@ const Settings = () => {
 		switch ( formValues.patternConfiguration ) {
 			case 'network_only':
 			case 'hybrid':
+			case 'custom':
 				return (
 					<div className="dlx-admin__row">
 						<BaseControl
 							id="dlx-pw-network-settings-default-patterns-source"
 							label={ __(
-								'Default Patterns Source',
+								'Default Patterns Source (Required)',
 								'pattern-wrangler',
 							) }
 							help={ __(
-								'Select the site that will be used as the source of truth for patterns across the network.',
+								'Select the site that will be used as the source of truth for patterns across the network. This will only be used for hybrid, network only, or custom site configurations.',
 								'pattern-wrangler',
 							) }
 						>
@@ -116,6 +117,13 @@ const Settings = () => {
 										setSelectedSitePatternsUrl(
 											valueSuggestion.selectedSitePatternsUrl,
 										);
+									} else {
+										setValue(
+											'patternNetworkSourceSiteId',
+											0,
+										);
+										setSelectedSiteId( null );
+										setSelectedSitePatternsUrl( '' );
 									}
 								} }
 							/>
@@ -130,14 +138,8 @@ const Settings = () => {
 	const canShowRegisteredPatternConfiguration = () => {
 		return (
 			formValues.patternConfiguration === 'hybrid' ||
-			formValues.patternConfiguration === 'network_only'
-		);
-	};
-
-	const canShowLocalPatternConfiguration = () => {
-		return (
-			formValues.patternConfiguration === 'hybrid' ||
-			formValues.patternConfiguration === 'network_only'
+			formValues.patternConfiguration === 'network_only' ||
+			formValues.patternConfiguration === 'custom'
 		);
 	};
 
@@ -180,7 +182,8 @@ const Settings = () => {
 														'pattern-wrangler',
 													) }
 													help={ __(
-														'Select the pattern configuration for the network. Choose `Local Only` to allow each site to manage their patterns independently.',
+														"Select the pattern configuration for the network. Choose `Local Only (default)` to allow each site to manage their patterns independently. You can configure each site's pattern configuration individually by editing the site's settings under Network Admin > Sites -> All Sites.",
+														'pattern-wrangler',
 													) }
 													value={ field.value }
 													onChange={ field.onChange }
@@ -206,10 +209,135 @@ const Settings = () => {
 															),
 															value: 'hybrid',
 														},
+														{
+															label: __(
+																'Custom (Experimental)',
+																'pattern-wrangler',
+															),
+															value: 'custom',
+														},
 													] }
 												/>
 											) }
 										/>
+									</div>
+									<div className="dlx-admin__row">
+										<PanelBody
+											title={ __(
+												'Pattern Configuration Help',
+												'pattern-wrangler',
+											) }
+											initialOpen={ false }
+										>
+											<div className="dlx-admin__row">
+												<p>
+													{ __(
+														'You can share local patterns across the network by selecting a source Pattern Library. Each site within the network can either control their own patterns, or inherit the Pattern Library from the source site.',
+														'pattern-wrangler',
+													) }
+												</p>
+											</div>
+											<div className="dlx-admin__row">
+												<table className="pw-pub-url-input__suggestion-table">
+													<thead>
+														<tr>
+															<th>
+																{ __(
+																	'Pattern Configuration',
+																	'pattern-wrangler',
+																) }
+															</th>
+															<th>
+																{ __(
+																	'Description',
+																	'pattern-wrangler',
+																) }
+															</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td>
+																{ __(
+																	'Network Only (Experimental)',
+																	'pattern-wrangler',
+																) }
+															</td>
+															<td>
+																{ __(
+																	'Only allow patterns from the source Pattern Library to be used on the network.',
+																	'pattern-wrangler',
+																) }
+															</td>
+														</tr>
+														<tr>
+															<td>
+																{ __(
+																	'Local Only (default)',
+																	'pattern-wrangler',
+																) }
+															</td>
+															<td>
+																{ __(
+																	'Allow each site to manage their own patterns independently. This is the default behavior.',
+																	'pattern-wrangler',
+																) }
+															</td>
+														</tr>
+														<tr>
+															<td>
+																{ __(
+																	'Hybrid (Experimental)',
+																	'pattern-wrangler',
+																) }
+															</td>
+															<td>
+																{ __(
+																	'Allow each site to manage their own patterns independently, but also inherits patterns from the source Pattern Library.',
+																	'pattern-wrangler',
+																) }
+															</td>
+														</tr>
+														<tr>
+															<td>
+																{ __(
+																	'Custom (Experimental)',
+																	'pattern-wrangler',
+																) }
+															</td>
+															<td>
+																{ __(
+																	'Same as Local Only, but allows you to specify a different pattern configuration for each site, and configure registered patterns for the network.',
+																	'pattern-wrangler',
+																) }
+															</td>
+														</tr>
+													</tbody>
+												</table>
+												<div className="dlx-admin__row">
+													<Notice
+														message={ __(
+															'Pattern Wrangler can not ensure that all patterns look consistent across the network, as each site can have their own plugin and theme configurations.',
+															'pattern-wrangler',
+														) }
+														status="warning"
+														icon={ () => (
+															<AlertCircle />
+														) }
+													/>
+												</div>
+												<div className="dlx-admin__row">
+													<Notice
+														message={ __(
+															"You can force certain sites to have a different pattern configuration (e.g., Network Only or Hybrid) by editing the site's settings under Network Admin > Sites -> All Sites. This only applies to hybrid, network only, or custom site configurations.",
+															'pattern-wrangler',
+														) }
+														status="info"
+														icon={ () => <Info /> }
+													/>
+												</div>
+											</div>
+										</PanelBody>
 									</div>
 									{ canShowRegisteredPatternConfiguration() && (
 										<>
@@ -270,11 +398,11 @@ const Settings = () => {
 														<>
 															<ToggleGroupControl
 																label={ __(
-																	'Local Pattern Configuration',
+																	'Network Source Pattern Configuration',
 																	'pattern-wrangler',
 																) }
 																help={ __(
-																	'Select which local patterns are visible when selecting patterns. If, for example, you select "Unsynced", only unsynced local patterns will be visible.',
+																	'Select which source patterns are visible when selecting patterns. If, for example, you select "Unsynced", only unsynced local patterns from the source site will be visible.',
 																	'pattern-wrangler',
 																) }
 																isAdaptiveWidth={
@@ -340,101 +468,27 @@ const Settings = () => {
 											</div>
 										</>
 									) }
+									{ getSitePicker() }
 									<div className="dlx-admin__row">
-										<PanelBody
-											title={ __(
-												'Pattern Configuration Help',
-												'pattern-wrangler',
-											) }
-											initialOpen={ false }
-										>
-											<div className="dlx-admin__row">
-												<p>
-													{ __(
-														'You can share local patterns across the network by selecting a source Pattern Library. Each site within the network can either control their own patterns, or inherit the Pattern Library from the source site.',
+										<Controller
+											control={ control }
+											name="showNetworkPatternColumns"
+											render={ ( { field } ) => (
+												<ToggleControl
+													label={ __(
+														'Show Network Admin Site Pattern Columns',
 														'pattern-wrangler',
 													) }
-												</p>
-											</div>
-											<div className="dlx-admin__row">
-												<table className="pw-pub-url-input__suggestion-table">
-													<thead>
-														<tr>
-															<th>
-																{ __(
-																	'Pattern Configuration',
-																	'pattern-wrangler',
-																) }
-															</th>
-															<th>
-																{ __(
-																	'Description',
-																	'pattern-wrangler',
-																) }
-															</th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr>
-															<td>
-																{ __(
-																	'Network Only (Experimental)',
-																	'pattern-wrangler',
-																) }
-															</td>
-															<td>
-																{ __(
-																	'Only allow patterns from the source Pattern Library to be used on the network.',
-																	'pattern-wrangler',
-																) }
-															</td>
-														</tr>
-														<tr>
-															<td>
-																{ __(
-																	'Local Only (default)',
-																	'pattern-wrangler',
-																) }
-															</td>
-															<td>
-																{ __(
-																	'Allow each site to manage their own patterns independently.',
-																	'pattern-wrangler',
-																) }
-															</td>
-														</tr>
-														<tr>
-															<td>
-																{ __(
-																	'Hybrid (Experimental)',
-																	'pattern-wrangler',
-																) }
-															</td>
-															<td>
-																{ __(
-																	'Allow each site to manage their own patterns independently, but also inherits patterns from the source Pattern Library.',
-																	'pattern-wrangler',
-																) }
-															</td>
-														</tr>
-													</tbody>
-												</table>
-												<div className="dlx-admin__row">
-													<Notice
-														message={ __(
-															'Pattern Wrangler can not ensure that all patterns look consistent across the network, as each site can have their own plugin and theme configurations.',
-															'pattern-wrangler',
-														) }
-														status="warning"
-														icon={ () => (
-															<AlertCircle />
-														) }
-													/>
-												</div>
-											</div>
-										</PanelBody>
+													help={ __(
+														'If enabled, site-admins can see the pattern count of each site and configuration columns in the sites list table in the network admin.',
+														'pattern-wrangler',
+													) }
+													checked={ field.value }
+													onChange={ field.onChange }
+												/>
+											) }
+										/>
 									</div>
-									{ getSitePicker() }
 								</td>
 							</tr>
 							<tr>

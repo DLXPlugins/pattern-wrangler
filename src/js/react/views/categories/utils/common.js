@@ -22,7 +22,11 @@ export const canAddCategories = () => {
 
 	if ( viewGlobals.isMultisite && ! viewGlobals.isNetworkSource ) {
 		const configuration = getEffectivePatternConfiguration( viewGlobals );
-		return 'hybrid' === configuration || 'local_only' === configuration;
+		return (
+			'hybrid' === configuration ||
+			'local_only' === configuration ||
+			'custom' === configuration
+		);
 	}
 
 	return true;

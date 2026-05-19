@@ -1399,7 +1399,7 @@ class Rest {
 
 		// Get local/DB patterns if network allows it.
 		$local_patterns = array();
-		if ( is_multisite() && ( in_array( $pattern_configuration, array( 'local_only', 'hybrid' ), true ) || $is_network_source ) ) {
+		if ( is_multisite() && ( in_array( $pattern_configuration, array( 'local_only', 'hybrid', 'custom' ), true ) || $is_network_source ) ) {
 			$post_args      = array(
 				'post_type'      => 'wp_block',
 				'posts_per_page' => 500, /* if there are more than 500 patterns, we need to paginate */
@@ -1622,7 +1622,7 @@ class Rest {
 			);
 		}
 
-		if ( ! empty( $network_patterns_data ) ) {
+		if ( ! empty( $network_patterns_data ) || 'custom' === $pattern_configuration ) {
 			$network_patterns          = isset( $network_patterns_data['patterns'] ) ? $network_patterns_data['patterns'] : array();
 			$network_categories        = isset( $network_patterns_data['categories'] ) ? $network_patterns_data['categories'] : array();
 			$network_disabled_patterns = isset( $network_patterns_data['disabledPatterns'] ) ? $network_patterns_data['disabledPatterns'] : array();
@@ -1655,7 +1655,7 @@ class Rest {
 				default:
 			}
 			// Strip out disabled patterns from the registered patterns if network_only or hybrid.
-			if ( 'network_only' === $pattern_configuration || 'hybrid' === $pattern_configuration ) {
+			if ( 'network_only' === $pattern_configuration || 'hybrid' === $pattern_configuration || 'custom' === $pattern_configuration ) {
 				if ( 'inherit' === $registrated_pattern_configuration ) {
 					$stored_registered_patterns = array_filter(
 						$stored_registered_patterns,
@@ -1710,7 +1710,7 @@ class Rest {
 		$patterns              = get_site_transient( 'dlx_network_patterns_cache' );
 		$all_categories        = get_site_transient( 'dlx_network_categories_cache' );
 		$disabled_patterns     = get_site_transient( 'dlx_network_disabled_patterns_cache' );
-		$pattern_configuration = Options::get_network_options()['patternConfiguration'] ?? 'local_only';
+		$pattern_configuration = Functions::get_network_pattern_configuration( $current_site_id );
 		$site_ajax_url         = admin_url( 'admin-ajax.php' );
 		if ( false !== $patterns && false !== $all_categories && false !== $disabled_patterns ) {
 			return rest_ensure_response(

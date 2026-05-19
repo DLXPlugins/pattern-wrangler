@@ -643,10 +643,7 @@ const Main = () => {
 			networkAllPatternsDisabled: false,
 		};
 		if ( dlxPatternWranglerAdmin.isMultisite ) {
-			if (
-				networkOptions.patternConfiguration === 'disabled' ||
-				'hide' === networkOptions.hideAllPatterns
-			) {
+			if ( 'hide' === networkOptions.hideAllPatterns ) {
 				hideAllPatternsData.allPatternsDisabled = true;
 				hideAllPatternsData.networkAllPatternsDisabled = true;
 			} else if ( 'show' === networkOptions.hideAllPatterns ) {

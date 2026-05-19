@@ -30,6 +30,7 @@ export const canDuplicatePattern = ( pattern ) => {
 			! pattern.disabled &&
 			( ( pattern.network && 'hybrid' === pattern.patternConfiguration ) ||
 				'local_only' === pattern.patternConfiguration ||
+				'custom' === pattern.patternConfiguration ||
 				! pattern.network )
 		);
 	}
@@ -47,7 +48,11 @@ export const canAddPatterns = () => {
 		! dlxEnhancedPatternsView.isNetworkSource
 	) {
 		const configuration = getEffectivePatternConfiguration();
-		return 'hybrid' === configuration || 'local_only' === configuration;
+		return (
+			'hybrid' === configuration ||
+			'local_only' === configuration ||
+			'custom' === configuration
+		);
 	}
 	return true;
 };
@@ -62,7 +67,11 @@ export const canImportPatterns = () => {
 		! dlxEnhancedPatternsView.isNetworkSource
 	) {
 		const configuration = getEffectivePatternConfiguration();
-		return 'hybrid' === configuration || 'local_only' === configuration;
+		return (
+			'hybrid' === configuration ||
+			'local_only' === configuration ||
+			'custom' === configuration
+		);
 	}
 	return true;
 };
@@ -82,7 +91,8 @@ export const canDeletePattern = ( pattern ) => {
 			pattern.isLocal &&
 			! pattern.network &&
 			( 'hybrid' === pattern.patternConfiguration ||
-				'local_only' === pattern.patternConfiguration )
+				'local_only' === pattern.patternConfiguration ||
+				'custom' === pattern.patternConfiguration )
 		);
 	}
 	return pattern.isLocal;
@@ -103,7 +113,8 @@ export const canEditPattern = ( pattern ) => {
 			pattern.isLocal &&
 			! pattern.network &&
 			( 'hybrid' === pattern.patternConfiguration ||
-				'local_only' === pattern.patternConfiguration )
+				'local_only' === pattern.patternConfiguration ||
+				'custom' === pattern.patternConfiguration )
 		);
 	}
 	return pattern.isLocal;
@@ -124,7 +135,8 @@ export const canDisablePattern = ( pattern ) => {
 			! pattern.isLocal &&
 			! pattern.isDisabled &&
 			( 'hybrid' === pattern.patternConfiguration ||
-				'local_only' === pattern.patternConfiguration )
+				'local_only' === pattern.patternConfiguration ||
+				'custom' === pattern.patternConfiguration )
 		);
 	}
 	return ! pattern.isLocal && ! pattern.isDisabled;

@@ -272,9 +272,10 @@ class Options {
 	public static function get_network_defaults() {
 		$defaults = array(
 			'patternNetworkSourceSiteId'        => 1,
-			'patternConfiguration'              => 'local_only', // Can be `nework_only`, `local_only`, `hybrid`.
+			'patternConfiguration'              => 'local_only', // Can be `nework_only`, `local_only`, `hybrid`, `custom`.
 			'registeredPatternConfiguration'    => 'allow_all', // Can be `allow_all`, `inherit`, `disable`.
 			'localPatternConfiguration'         => 'both', // Can be `both`, `synced`, `unsynced`.
+			'showNetworkPatternColumns'         => false, // If true, site-admins can see the pattern columns in the sites list table in the network admin.
 			'hideSyncedPatternsForNetwork'      => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide synced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see a synced patterns option.
 			'hideUnsyncedPatternsForNetwork'    => 'default', // If patternConfiguration is `hybrid`, site-admins can still show/hide unsynced local and network patterns. If `local_only`, site-admins can only show/hide local patterns. IF `network_only`, site-admins will not see an unsynced patterns option.
 			'disablePatternImporterBlock'       => false, // If false, site admins can still configure this option per site.

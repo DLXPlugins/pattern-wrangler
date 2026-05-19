@@ -167,8 +167,7 @@ class Functions {
 		$pattern_categories_taxonomy = array();
 		$is_network_only             = false;
 		if ( self::is_multisite( false ) ) {
-			$network_options       = Options::get_network_options();
-			$pattern_configuration = $network_options['patternConfiguration'] ?? 'local_only';
+			$pattern_configuration = Functions::get_network_pattern_configuration( get_current_blog_id() );
 			if ( 'network_only' === $pattern_configuration ) {
 				$pattern_categories_taxonomy = array();
 				$is_network_only             = true;
@@ -289,22 +288,13 @@ class Functions {
 	 * @return bool true if enabled, false if disabled.
 	 */
 	public static function has_local_patterns_enabled( $site_id = 1 ) {
-		$has_local_patterns = false;
-		if ( Functions::is_multisite( false ) ) {
-			$options = Options::get_network_options();
-
-			// Get local site options for local patterns.
-			$local_site_option = get_blog_option( $site_id, 'dlx_pattern_configuration', 'hybrid' );
-			if ( 'hybrid' === $local_site_option || 'local_only' === $local_site_option ) {
-				$has_local_patterns = true;
-			}
-
-			// Local options take priority over network options when set per site.
-			if ( ! $has_local_patterns && ! Functions::is_patterns_enabled_for_site( $site_id ) && ( 'disabled' === $options['patternConfiguration'] || 'network_only' === $options['patternConfiguration'] ) ) {
-				return false;
-			}
+		if ( ! Functions::is_multisite( false ) ) {
+			return true;
 		}
-		return true;
+
+		$pattern_configuration = self::get_network_pattern_configuration( $site_id );
+
+		return in_array( $pattern_configuration, array( 'hybrid', 'local_only' ), true );
 	}
 
 	/**
@@ -337,7 +327,7 @@ class Functions {
 				$pattern_configuration = 'local_only';
 			} else {
 				$local_site_option = get_blog_option( $site_id, 'dlx_pattern_configuration', '' );
-				if ( ! empty( $local_site_option ) ) {
+				if ( ! empty( $local_site_option ) && 'inherit' !== $local_site_option ) {
 					$pattern_configuration = $local_site_option;
 				} else {
 					$pattern_configuration = $network_site_option;
@@ -367,14 +357,20 @@ class Functions {
 	 *
 	 * This is useful to determine if the current site is the source of network patterns.
 	 *
+	 * @param int $site_id (optional) The site ID. If not provided, the current site ID will be used.
 	 * @return bool true if the current site is the network patterns site, false if not.
 	 */
-	public static function is_network_patterns_site() {
+	public static function is_network_patterns_site( $site_id = 0 ) {
+		if ( 0 !== $site_id ) {
+			$site_id = absint( $site_id );
+		} else {
+			$site_id = get_current_blog_id();
+		}
 		if ( ! is_multisite() ) {
 			return false;
 		}
 		$default_site_id = Functions::get_network_default_patterns_site_id();
-		return get_current_blog_id() === $default_site_id;
+		return $site_id === $default_site_id;
 	}
 
 	/**
