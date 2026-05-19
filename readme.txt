@@ -12,7 +12,7 @@ Curate, build, and manage your block patterns, registered patterns, synced patte
 
 == Description ==
 
-Pattern Wrangler a pattern manager helps curate a bloated pattern library, and makes managing a complicated WordPress block pattern library a breeze. If you manage dozens of layouts, are in love with reusable blocks (or synced patterns), you will love this plugin.
+Pattern Wrangler, a pattern manager, helps curate a bloated pattern library, and makes managing a complicated WordPress block pattern library a breeze. If you manage dozens of layouts, are in love with reusable blocks (or synced patterns), you will love this plugin.
 
 This handy plugin is designed for both classic and modern themes, block themes (including FSE - Full-site editing), and is compatible with page builders through its shortcode support and PHP code snippets. Pattern Wrangler allows you to manage a complicated and heavy library for your clients, controlling down to the block pattern and category what the client sees in the block editor when building layouts.
 
