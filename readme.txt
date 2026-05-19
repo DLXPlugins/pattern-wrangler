@@ -142,6 +142,18 @@ That being said, some layouts are unsalvageable, and should just be disabled or 
 
 == Changelog ==
 
+= 2.5.0 =
+* Released 2026-05-19
+* New: Pattern Versions (via feature request) are now available. These are similar to revisions, but act more as manual snapshots/checkpoints. Versions can be previewed, restored, copied, exported, and even saved as a new pattern.
+* New: You can now search categories as well as patterns from the Grid view.
+* New: If you sort or change pagination, the interface remembers your last choice.
+* New: New "Reset View" button is now available, which defaults to your preferred view.
+* New: Edit shortcut is now displayed for local patterns.
+* Fix: Snackbar notification displays when a pattern is successfully imported.
+* Fix: Featured image is now disabled if not using the old 1.x Pattern Wrangler interface.
+* Fix: Modals have improved validation and error messages.
+* Update: Updated DataViews component to 14.3.0.
+
 = 2.4.6 =
 * Released 2026-05-09
 * Fix: Previews would prevent blocks with header/footer markup from displaying.
@@ -313,5 +325,5 @@ That being said, some layouts are unsalvageable, and should just be disabled or 
 
 == Upgrade Notice ==
 
-= 2.4.6 =
-Fixing header/footer preview markup from being displayed. Fixing excess top spacing in some previews.
+= 2.5.0 =
+New Pattern Versions, a powerful new feature inspired by revisions that allows you to create manual snapshots and checkpoints of your patterns, complete with previewing, restoring, copying, exporting, and saving versions as entirely new patterns. The update also improves usability across the Patterns View with searchable categories, remembered sorting and pagination preferences, a new Reset View button tied to your preferred layout, and a new "Edit" shortcut for local patterns. Additional improvements include updated DataViews support (14.3.0), better modal validation and error messaging, import success notifications, and cleanup fixes such as disabling featured images when not using the legacy 1.x interface.
