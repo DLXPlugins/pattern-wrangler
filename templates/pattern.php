@@ -45,6 +45,13 @@ if ( class_exists( 'UAGB_Init_Blocks' ) && is_numeric( $pattern_id ) ) {
  */
 do_action( 'dlxpw_preview_actions' );
 
+// Register global-styles before do_blocks() (see pattern-preview.php).
+if ( function_exists( 'wp_enqueue_global_styles' ) && ! wp_style_is( 'global-styles', 'registered' ) ) {
+	wp_enqueue_style( 'wp-block-library' );
+	wp_enqueue_style( 'wp-block-library-theme' );
+	wp_enqueue_global_styles();
+}
+
 // Get header if theme is not FSE theme.
 if ( ! wp_is_block_theme() ) {
 	$blocks       = do_blocks( $wp_query->post->post_content );

@@ -137,13 +137,23 @@ $scale = apply_filters( 'dlxpw_pattern_preview_scale', 1, $viewport_width );
 // Calculate scale as opposed to aspect ratio and viewport width.
 $scale = round( min( $viewport_width, ( $viewport_width / $aspect_ratio ) ) / 1600, 2 );
 
+/**
+ * Register core block/global styles before do_blocks() so block style variations
+ * (which depend on global-styles) do not trigger WP 6.9+ dependency notices.
+ */
+$dlxpw_enqueue_pattern_preview_core_styles = static function (): void {
+	wp_enqueue_style( 'wp-block-library' );
+	wp_enqueue_style( 'wp-block-library-theme' );
+	if ( function_exists( 'wp_enqueue_global_styles' ) && ! wp_style_is( 'global-styles', 'registered' ) ) {
+		wp_enqueue_global_styles();
+	}
+};
+
 // Add inline styles to try to hide the header and footer.
 add_action(
 	'wp_enqueue_scripts',
-	function () {
-		// Enqueue core block styles.
-		wp_enqueue_style( 'wp-block-library' ); // needed for preview.
-		wp_enqueue_style( 'wp-block-library-theme' ); // needed for preview.
+	function () use ( $dlxpw_enqueue_pattern_preview_core_styles ) {
+		$dlxpw_enqueue_pattern_preview_core_styles();
 
 		// Enqueue hide UI script.
 		wp_enqueue_script(
@@ -153,18 +163,6 @@ add_action(
 			Functions::get_plugin_version(),
 			false
 		);
-
-		// Get block styles.
-		if ( function_exists( 'wp_get_global_stylesheet' ) ) { // needed for preview.
-
-			$global_styles = wp_get_global_stylesheet( array( 'variables' ) );
-			wp_add_global_styles_for_blocks();
-			if ( ! empty( $global_styles ) && wp_style_is( 'global-styles', 'registered' ) ) {
-				wp_register_style( 'dlxpw-global-styles', false, array(), Functions::get_plugin_version() );
-				wp_add_inline_style( 'dlxpw-global-styles', $global_styles );
-				wp_enqueue_style( 'dlxpw-global-styles' );
-			}
-		}
 
 		// Load dashicons for social icons fallbacks.
 		wp_enqueue_style( 'dashicons' ); // needed for preview.
@@ -227,6 +225,7 @@ add_action(
 
 // Get header if theme is not FSE theme.
 if ( ! wp_is_block_theme() ) {
+	$dlxpw_enqueue_pattern_preview_core_styles();
 	$blocks = do_blocks( $pattern_content );
 	global $wp_query;
 	$current_post = $wp_query->post ?? null;
@@ -262,6 +261,7 @@ if ( ! wp_is_block_theme() ) {
 		<meta charset="<?php bloginfo( 'charset' ); ?>">
 		<?php
 		// Need to do blocks in head tag for block styles to be output.
+		$dlxpw_enqueue_pattern_preview_core_styles();
 		$blocks = do_blocks( $pattern_content );
 		?>
 		<?php wp_head(); ?>
