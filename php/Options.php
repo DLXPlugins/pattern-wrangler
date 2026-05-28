@@ -81,6 +81,7 @@ class Options {
 				case 'makePatternsExportable':
 				case 'enableEnhancedView':
 				case 'disablePatternRevisions':
+				case 'disableContentOnlyForUnsyncedPatterns':
 				case 'enableVersionsModule':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
@@ -117,6 +118,10 @@ class Options {
 				case 'disablePatternRevisionsForNetwork':
 				case 'enableEnhancedView':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
+					break;
+				case 'disableContentOnlyForUnsyncedPatternsForNetwork':
+					$allowed = array( 'enable', 'default', 'disable' );
+					$option  = in_array( $options[ $key ], $allowed, true ) ? $options[ $key ] : 'default';
 					break;
 				default:
 					if ( is_array( $option ) ) {
@@ -203,27 +208,28 @@ class Options {
 	public static function get_defaults() {
 
 		$defaults = array(
-			'hideAllPatterns'              => false,
-			'hidePatternsMenu'             => false, /* only if hideAllPatterns is true, place in the Appearance menu */
-			'hideCorePatterns'             => false,
-			'hideRemotePatterns'           => false,
-			'hideThemePatterns'            => false,
-			'hidePluginPatterns'           => false,
-			'hideCoreSyncedPatterns'       => false,
-			'hideCoreUnsyncedPatterns'     => false,
-			'disablePatternImporterBlock'  => false,
-			'categories'                   => array(),
-			'allowFrontendPatternPreview'  => true,
-			'hideUncategorizedPatterns'    => false,
-			'showCustomizerUI'             => 'default',
-			'showMenusUI'                  => true,
-			'loadCustomizerCSSBlockEditor' => false,
-			'loadCustomizerCSSFrontend'    => true,
-			'makePatternsExportable'       => false,
-			'disablePatternRevisions'      => false,
-			'enableVersionsModule'         => false,
-			'enableEnhancedView'           => true,
-			'patternWranglerMenuLocation'  => 'above_media', /* Can be above_media, below_appearance, below_settings, in_appearance. */
+			'hideAllPatterns'                       => false,
+			'hidePatternsMenu'                      => false, /* only if hideAllPatterns is true, place in the Appearance menu */
+			'hideCorePatterns'                      => false,
+			'hideRemotePatterns'                    => false,
+			'hideThemePatterns'                     => false,
+			'hidePluginPatterns'                    => false,
+			'hideCoreSyncedPatterns'                => false,
+			'hideCoreUnsyncedPatterns'              => false,
+			'disablePatternImporterBlock'           => false,
+			'categories'                            => array(),
+			'allowFrontendPatternPreview'           => true,
+			'hideUncategorizedPatterns'             => false,
+			'showCustomizerUI'                      => 'default',
+			'showMenusUI'                           => true,
+			'loadCustomizerCSSBlockEditor'          => false,
+			'loadCustomizerCSSFrontend'             => true,
+			'makePatternsExportable'                => false,
+			'disablePatternRevisions'               => false,
+			'disableContentOnlyForUnsyncedPatterns' => false,
+			'enableVersionsModule'                  => false,
+			'enableEnhancedView'                    => true,
+			'patternWranglerMenuLocation'           => 'above_media', /* Can be above_media, below_appearance, below_settings, in_appearance. */
 		);
 
 		/**
@@ -257,6 +263,7 @@ class Options {
 			'hideThemePatterns'                 => 'default',
 			'hidePluginPatterns'                => 'default',
 			'hideUncategorizedPatterns'         => 'default',
+			'disableContentOnlyForUnsyncedPatternsForNetwork' => false,
 		);
 		/**
 		 * Allow options to be extended by plugins.

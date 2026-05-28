@@ -358,6 +358,44 @@ class Functions {
 	}
 
 	/**
+	 * Whether content-only editing should be disabled for unsynced patterns (WP 7.0+).
+	 *
+	 * When true, passes disableContentOnlyForUnsyncedPatterns to the block editor.
+	 *
+	 * @param int $site_id Site ID (0 = current blog).
+	 *
+	 * @return bool True to opt out of content-only mode for unsynced patterns.
+	 */
+	public static function should_disable_content_only_for_unsynced_patterns( $site_id = 0 ) {
+		$options       = Options::get_options();
+		$maybe_enabled = (bool) ( $options['disableContentOnlyForUnsyncedPatterns'] ?? false );
+		$is_multi      = self::is_multisite( false );
+
+		if ( $is_multi ) {
+			$network_options = Options::get_network_options();
+			$network_setting = $network_options['disableContentOnlyForUnsyncedPatternsForNetwork'] ?? 'default';
+
+			if ( 'enable' === $network_setting ) {
+				$maybe_enabled = true;
+			} elseif ( 'disable' === $network_setting ) {
+				$maybe_enabled = false;
+			}
+		}
+
+		if ( 0 === $site_id ) {
+			$site_id = get_current_blog_id();
+		}
+
+		/**
+		 * Filter whether content-only mode is disabled for unsynced patterns.
+		 *
+		 * @param bool $enabled  Whether to disable content-only for unsynced patterns.
+		 * @param int  $site_id  The site ID.
+		 */
+		return apply_filters( 'dlxpw_disable_content_only_for_unsynced_patterns', ! $maybe_enabled, $site_id );
+	}
+
+	/**
 	 * Check if core patterns are enabled for the current site.
 	 *
 	 * @param int $site_id The site ID.

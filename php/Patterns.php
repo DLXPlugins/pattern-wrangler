@@ -97,6 +97,8 @@ class Patterns {
 		// Optionally remove revisions support from wp_block.
 		add_action( 'init', array( $this, 'maybe_remove_pattern_revisions_support' ), 11 );
 
+		add_filter( 'block_editor_settings_all', array( $this, 'filter_block_editor_content_only_settings' ), 10, 2 );
+
 		// Register tax terms as categories.
 		add_action( 'rest_api_init', array( $this, 'register_terms_as_pattern_categories' ) );
 
@@ -312,6 +314,20 @@ class Patterns {
 			return;
 		}
 		remove_post_type_support( 'wp_block', 'revisions' );
+	}
+
+	/**
+	 * Filter block editor settings for WP 7.0 content-only pattern behavior.
+	 *
+	 * @param array  $settings Editor settings.
+	 * @param object $context  Block editor context.
+	 *
+	 * @return array Filtered editor settings.
+	 */
+	public function filter_block_editor_content_only_settings( $settings, $context ) {
+		unset( $context );
+		$settings['disableContentOnlyForUnsyncedPatterns'] = Functions::should_disable_content_only_for_unsynced_patterns();
+		return $settings;
 	}
 
 	/**
