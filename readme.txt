@@ -4,7 +4,7 @@ Tags: patterns, block patterns, pattern, pattern builder, synced patterns
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -141,6 +141,12 @@ That being said, some layouts are unsalvageable, and should just be disabled or 
 7. An organized pattern library, demonstrating a trimmed down view and less category clutter.
 
 == Changelog ==
+
+= 2.5.1 =
+* Released 2026-05-28
+* New: Added content-only opt-out for Unsynced Patterns that was introduced in WordPress 7.0. With content-only enabled, there are extra steps to edit inserted patterns content. This prevents content-only patterns from being inserted by default. This can be enabled/disabled network-wide, or site-wide if on single-site.
+* Fix: Resolved several PHP warnings involving the preview.
+
 
 = 2.5.0 =
 * Released 2026-05-19
@@ -325,5 +331,5 @@ That being said, some layouts are unsalvageable, and should just be disabled or 
 
 == Upgrade Notice ==
 
-= 2.5.0 =
-New Pattern Versions, a powerful new feature inspired by revisions that allows you to create manual snapshots and checkpoints of your patterns, complete with previewing, restoring, copying, exporting, and saving versions as entirely new patterns. The update also improves usability across the Patterns View with searchable categories, remembered sorting and pagination preferences, a new Reset View button tied to your preferred layout, and a new "Edit" shortcut for local patterns. Additional improvements include updated DataViews support (14.3.0), better modal validation and error messaging, import success notifications, and cleanup fixes such as disabling featured images when not using the legacy 1.x interface.
+= 2.5.1 =
+New: content-only opt-out for unsynced patterns is enabled by default. Fixing several PHP warnings that were reported.
