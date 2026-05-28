@@ -45,9 +45,9 @@ $aspect_ratio   = 1 / 1;
 $viewport_width = 1600;
 
 // Perform query.
+global $wp_query;
+$temp = $wp_query;
 if ( is_numeric( $pattern_id ) ) {
-	global $wp_query;
-	$temp     = $wp_query;
 	$wp_query = new \WP_Query(
 		array(
 			'p'         => $pattern_id,
@@ -69,9 +69,11 @@ if ( is_numeric( $pattern_id ) ) {
 	}
 	$registered_patterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 	foreach ( $registered_patterns as $pattern ) {
-		if ( $pattern_id === $pattern['slug'] || $pattern_id === $pattern['name'] ) {
+		$pattern_slug = isset( $pattern['slug'] ) ? $pattern['slug'] : '';
+		$pattern_name = isset( $pattern['name'] ) ? $pattern['name'] : '';
+		if ( $pattern_id === $pattern_slug || $pattern_id === $pattern_name ) {
 			$pattern_content = $pattern['content'];
-			$viewport_width  = absint( $pattern['viewportWidth'] );
+			$viewport_width  = isset( $pattern['viewportWidth'] ) ? absint( $pattern['viewportWidth'] ) : 1400;
 			break;
 		}
 	}
