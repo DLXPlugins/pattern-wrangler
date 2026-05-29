@@ -60,6 +60,8 @@ const Settings = () => {
 				hideUncategorizedPatterns: data.hideUncategorizedPatterns,
 				localPatternConfiguration: data.localPatternConfiguration,
 				showNetworkPatternColumns: data.showNetworkPatternColumns,
+				disableContentOnlyForUnsyncedPatternsForNetwork:
+					data.disableContentOnlyForUnsyncedPatternsForNetwork,
 			},
 		} );
 	const formValues = useWatch( { control } );
@@ -983,6 +985,70 @@ const Settings = () => {
 													checked={ field.value }
 													onChange={ field.onChange }
 												/>
+											) }
+										/>
+									</div>
+									<div className="dlx-admin__row">
+										<Controller
+											control={ control }
+											name="disableContentOnlyForUnsyncedPatternsForNetwork"
+											render={ ( { field } ) => (
+												<>
+													<ToggleGroupControl
+														label={ __(
+															'Content Only Patterns Editing',
+															'pattern-wrangler',
+														) }
+														isAdaptiveWidth={ true }
+														value={ field.value }
+														onChange={ ( value ) => {
+															field.onChange(
+																value,
+															);
+														} }
+														help={ __(
+															'WordPress imits unsynced patterns to content-only editing by default. Disable opts all sites out (full block editing). Enable keeps core behavior. Default lets each site decide.',
+															'pattern-wrangler',
+														) }
+													>
+														<ToggleGroupControlOption
+															value="disable"
+															label={ __(
+																'Disable',
+																'pattern-wrangler',
+															) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Disables content-only patterns for unsynced patterns',
+																'pattern-wrangler',
+															) }
+														/>
+														<ToggleGroupControlOption
+															value="default"
+															label={ __(
+																'Default',
+																'pattern-wrangler',
+															) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Let site admins decide',
+																'pattern-wrangler',
+															) }
+														/>
+														<ToggleGroupControlOption
+															value="enable"
+															label={ __(
+																'Enable',
+																'pattern-wrangler',
+															) }
+															showTooltip={ true }
+															aria-label={ __(
+																'Enables content-only patterns for unsynced patterns',
+																'pattern-wrangler',
+															) }
+														/>
+													</ToggleGroupControl>
+												</>
 											) }
 										/>
 									</div>

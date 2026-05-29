@@ -1595,9 +1595,11 @@ class Rest {
 			$categories      = get_the_terms( $pattern->ID, 'wp_pattern_category' );
 			$category_labels = array();
 			$category_slugs  = array();
-			foreach ( $categories as $category ) {
-				$category_labels[] = sanitize_text_field( $category->name );
-				$category_slugs[]  = sanitize_title( $category->slug );
+			if ( is_array( $categories ) ) {
+				foreach ( $categories as $category ) {
+					$category_labels[] = sanitize_text_field( $category->name );
+					$category_slugs[]  = sanitize_title( $category->slug );
+				}
 			}
 			$stored_local_patterns[ $pattern->post_name ] = array(
 				'id'                   => $pattern->ID,
