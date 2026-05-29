@@ -79,6 +79,18 @@ export function createPatternInstanceProvenance( pattern ) {
  * @return {Object} Group block.
  */
 export function wrapPatternInstance( blocks, provenance ) {
+	// If first block is a group and the overall parent, then use that block to wrap the pattern instance.
+	if (
+		blocks[ 0 ].name === 'core/group' &&
+		blocks[ 0 ].parent === blocks[ 0 ].parent
+	) {
+		blocks[ 0 ].attributes.metadata = {
+			...( blocks[ 0 ].attributes?.metadata || {} ),
+			patternWrangler: provenance,
+		};
+		return blocks[ 0 ];
+	}
+
 	return createBlock(
 		'core/group',
 		{
