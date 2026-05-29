@@ -71,6 +71,9 @@ class PatternWrangler {
 		$patterns = new Patterns();
 		$patterns->run();
 
+		$pattern_provenance = new Pattern_Provenance();
+		$pattern_provenance->run();
+
 		$drafts = new Drafts();
 		$drafts->run();
 

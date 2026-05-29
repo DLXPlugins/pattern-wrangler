@@ -51,6 +51,7 @@ const Main = () => {
 				disableContentOnlyForUnsyncedPatterns:
 					data.disableContentOnlyForUnsyncedPatterns ?? true,
 				enableVersionsModule: data.enableVersionsModule ?? false,
+				trackPatternInstances: data.trackPatternInstances ?? true,
 				patternWranglerMenuLocation: data.patternWranglerMenuLocation,
 				patternsDefaultView:
 					dlxPatternWranglerAdmin.patternsDefaultView || 'all',
@@ -1297,6 +1298,37 @@ const Main = () => {
 														) }
 													</option>
 												</SelectControl>
+											) }
+										/>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									{ __( 'Pattern Tracking', 'pattern-wrangler' ) }
+								</th>
+								<td>
+									<div className="dlx-admin__row">
+										<Controller
+											name="trackPatternInstances"
+											control={ control }
+											render={ ( {
+												field: { onChange, value },
+											} ) => (
+												<ToggleControl
+													label={ __(
+														'Track Pattern Instances',
+														'pattern-wrangler',
+													) }
+													checked={ value }
+													onChange={ ( boolValue ) => {
+														onChange( boolValue );
+													} }
+													help={ __(
+														'Attach provenance metadata to newly inserted patterns so Pattern Wrangler can locate them in the future.',
+														'pattern-wrangler',
+													) }
+												/>
 											) }
 										/>
 									</div>

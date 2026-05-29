@@ -83,6 +83,7 @@ class Options {
 				case 'disablePatternRevisions':
 				case 'disableContentOnlyForUnsyncedPatterns':
 				case 'enableVersionsModule':
+				case 'trackPatternInstances':
 					$option = filter_var( $options[ $key ], FILTER_VALIDATE_BOOLEAN );
 					break;
 				default:
@@ -228,6 +229,7 @@ class Options {
 			'disablePatternRevisions'               => false,
 			'disableContentOnlyForUnsyncedPatterns' => false,
 			'enableVersionsModule'                  => false,
+			'trackPatternInstances'                 => true,
 			'enableEnhancedView'                    => true,
 			'patternWranglerMenuLocation'           => 'above_media', /* Can be above_media, below_appearance, below_settings, in_appearance. */
 		);
