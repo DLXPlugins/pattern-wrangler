@@ -40,6 +40,7 @@ import PatternTagModal from './PatternTagModal';
 import patternsStore from '../store';
 import createPatternFromFile from '../utils/createPatternFromFile';
 import ResponsiveIframe from './ResponsiveIframe';
+import PatternPreviewLightbox from './PatternPreviewLightbox';
 import { canonicalPatternId, patternIdsEqual } from '../utils/patternIdUtils';
 import {
 	mergePresetIntoQueryArgs,
@@ -136,6 +137,12 @@ const Interface = ( props ) => {
 	} );
 
 	const [ patternsDisplay, setPatternsDisplay ] = useState( [] );
+
+	const [ previewLightbox, setPreviewLightbox ] = useState( {
+		open: false,
+		index: 0,
+		items: [],
+	} );
 
 	// Begin queue.
 	const previewConcurrency = 6;
@@ -414,72 +421,69 @@ const Interface = ( props ) => {
 		[ patterns ],
 	);
 
-	useEffect( () => {
-		const onPreviewDeleteRequest = ( event ) => {
-			const pattern = getPatternFromPreviewEvent( event.detail?.patternId );
-			if ( pattern && pattern.isLocal ) {
-				setIsDeleteModalOpen( { items: [ pattern ] } );
-			}
-		};
+	const handleOpenPreview = useCallback( ( item, galleryItems ) => {
+		const items =
+			galleryItems && galleryItems.length >= 2 ? galleryItems : [ item ];
+		let startIndex = items.findIndex( ( p ) =>
+			patternIdsEqual( p.id, item.id ),
+		);
+		if ( startIndex < 0 ) {
+			startIndex = 0;
+		}
+		setPreviewLightbox( {
+			open: true,
+			index: startIndex,
+			items,
+		} );
+	}, [] );
 
-		const onPreviewDisableRequest = ( event ) => {
-			const pattern = getPatternFromPreviewEvent( event.detail?.patternId );
+	const handlePreviewLightboxClose = useCallback( () => {
+		setPreviewLightbox( ( prev ) => ( {
+			...prev,
+			open: false,
+		} ) );
+	}, [] );
+
+	const handlePreviewDisable = useCallback(
+		( patternId ) => {
+			const pattern = getPatternFromPreviewEvent( patternId );
 			if ( pattern && ! pattern.isLocal && ! pattern.isDisabled ) {
 				setIsPauseModalOpen( { items: [ pattern ] } );
 			}
-		};
+		},
+		[ getPatternFromPreviewEvent ],
+	);
 
-		const onPreviewEditRequest = ( event ) => {
-			const pattern = getPatternFromPreviewEvent( event.detail?.patternId );
+	const handlePreviewDelete = useCallback(
+		( patternId ) => {
+			const pattern = getPatternFromPreviewEvent( patternId );
+			if ( pattern && pattern.isLocal ) {
+				setIsDeleteModalOpen( { items: [ pattern ] } );
+			}
+		},
+		[ getPatternFromPreviewEvent ],
+	);
+
+	const handlePreviewEdit = useCallback(
+		( patternId ) => {
+			const pattern = getPatternFromPreviewEvent( patternId );
 			if ( pattern && pattern.isLocal && ! pattern.isDisabled ) {
 				const redirectUrl = encodeURIComponent( window.location.href );
 				window.location.href = `${ dlxEnhancedPatternsView.getSiteBaseUrl }post.php?post=${ pattern.id }&action=edit&redirect_to=${ redirectUrl }`;
 			}
-		};
+		},
+		[ getPatternFromPreviewEvent ],
+	);
 
-		const onPreviewExportRequest = ( event ) => {
-			const pattern = getPatternFromPreviewEvent( event.detail?.patternId );
+	const handlePreviewExport = useCallback(
+		( patternId ) => {
+			const pattern = getPatternFromPreviewEvent( patternId );
 			if ( pattern ) {
 				exportPattern( pattern );
 			}
-		};
-
-		document.addEventListener(
-			'dlxpw-pattern-preview-delete-request',
-			onPreviewDeleteRequest,
-		);
-		document.addEventListener(
-			'dlxpw-pattern-preview-disable-request',
-			onPreviewDisableRequest,
-		);
-		document.addEventListener(
-			'dlxpw-pattern-preview-edit-request',
-			onPreviewEditRequest,
-		);
-		document.addEventListener(
-			'dlxpw-pattern-preview-export-request',
-			onPreviewExportRequest,
-		);
-
-		return () => {
-			document.removeEventListener(
-				'dlxpw-pattern-preview-delete-request',
-				onPreviewDeleteRequest,
-			);
-			document.removeEventListener(
-				'dlxpw-pattern-preview-disable-request',
-				onPreviewDisableRequest,
-			);
-			document.removeEventListener(
-				'dlxpw-pattern-preview-edit-request',
-				onPreviewEditRequest,
-			);
-			document.removeEventListener(
-				'dlxpw-pattern-preview-export-request',
-				onPreviewExportRequest,
-			);
-		};
-	}, [ patterns, exportPattern, getPatternFromPreviewEvent ] );
+		},
+		[ getPatternFromPreviewEvent, exportPattern ],
+	);
 
 	/**
 	 * Returns a default view with query vars. Useful for setting or refreshing the view.
@@ -1288,6 +1292,7 @@ const Interface = ( props ) => {
 											patternsDisplay ??
 											lightboxGalleryItems
 										}
+										onOpenPreview={ handleOpenPreview }
 										queueGeneration={
 											previewQueueState.generation
 										}
@@ -1524,6 +1529,7 @@ const Interface = ( props ) => {
 			patternsDisplay,
 			previewQueueState,
 			lightboxGalleryItems,
+			handleOpenPreview,
 		],
 	);
 
@@ -2125,6 +2131,22 @@ const Interface = ( props ) => {
 
 	return (
 		<div className="dlx-patterns-view-container-wrapper">
+			<PatternPreviewLightbox
+				open={ previewLightbox.open }
+				onClose={ handlePreviewLightboxClose }
+				items={ previewLightbox.items }
+				index={ previewLightbox.index }
+				onIndexChange={ ( nextIndex ) => {
+					setPreviewLightbox( ( prev ) => ( {
+						...prev,
+						index: nextIndex,
+					} ) );
+				} }
+				onDisable={ handlePreviewDisable }
+				onDelete={ handlePreviewDelete }
+				onEdit={ handlePreviewEdit }
+				onExport={ handlePreviewExport }
+			/>
 			<DataViews
 				data={ patternsDisplay }
 				fields={ fields }
