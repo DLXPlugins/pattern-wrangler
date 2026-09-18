@@ -20,7 +20,7 @@ module.exports = ( env ) => {
 			entry: {
 				index: '/src/index.js',
 				'dlx-pw-preview': [ './src/js/blocks/plugins/pattern-preview.js' ],
-				'dlx-pw-fancybox': './src/js/fancybox/index.js',
+				'dlx-pw-pattern-list-lightbox': './src/js/pattern-list-lightbox/index.js',
 				'dlx-pw-patterns-view': [ './src/js/react/views/patterns/index.js' ],
 				'dlx-pw-categories-view': [ './src/js/react/views/categories/index.js' ],
 				'dlx-pw-hide-ui': [ './src/js/helpers/hide-ui.js' ],

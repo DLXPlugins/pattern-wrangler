@@ -142,6 +142,9 @@ That being said, some layouts are unsalvageable, and should just be disabled or 
 
 == Changelog ==
 
+= 2.5.2 =
+* Update: Removed Fancybox. Classic Patterns list featured-image previews and the enhanced Patterns grid lightbox now use Yet Another React Lightbox.
+
 = 2.5.1 =
 * Released 2026-05-28
 * New: Added content-only opt-out for Unsynced Patterns that was introduced in WordPress 7.0. With content-only enabled, there are extra steps to edit inserted patterns content. This prevents content-only patterns from being inserted by default. This can be enabled/disabled network-wide, or site-wide if on single-site.

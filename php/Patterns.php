@@ -369,25 +369,25 @@ class Patterns {
 			return;
 		}
 
-		// Enqueue Fancybox and styles.
-		$deps = require_once Functions::get_plugin_dir( 'build/dlx-pw-fancybox.asset.php' );
+		// Enqueue pattern list featured-image lightbox.
+		$deps = require_once Functions::get_plugin_dir( 'build/dlx-pw-pattern-list-lightbox.asset.php' );
 		wp_enqueue_script(
-			'fancybox',
-			Functions::get_plugin_url( 'build/dlx-pw-fancybox.js' ),
+			'dlx-pw-pattern-list-lightbox',
+			Functions::get_plugin_url( 'build/dlx-pw-pattern-list-lightbox.js' ),
 			$deps['dependencies'],
 			$deps['version'],
 			true
 		);
 		wp_enqueue_style(
-			'fancybox',
-			Functions::get_plugin_url( 'build/dlx-pw-fancybox.css' ),
+			'dlx-pw-pattern-list-lightbox',
+			Functions::get_plugin_url( 'build/dlx-pw-pattern-list-lightbox.css' ),
 			array(),
 			$deps['version'],
 			'all'
 		);
 		wp_add_inline_style(
-			'fancybox',
-			'.fancybox__container { z-index: 100000; }'
+			'dlx-pw-pattern-list-lightbox',
+			'.yarl__root.dlxpw-pattern-list-lightbox { z-index: 100000; }'
 		);
 	}
 
@@ -613,7 +613,7 @@ class Patterns {
 				array( 150, 0 )
 			);
 			$thumbnail = sprintf(
-				'<a href="%s" class="admin-fancybox" title="%s">%s</a>',
+				'<a href="%s" class="dlxpw-pattern-image-preview" title="%s">%s</a>',
 				esc_url( \wp_get_attachment_image_url( get_post_thumbnail_id( $post_id ), 'full' ) ),
 				esc_attr( get_the_title( $post_id ) ),
 				$thumbnail
