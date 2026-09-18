@@ -195,6 +195,7 @@ const ResponsiveIframe = ( {
 									height: `${ iframeMinHeight }px`,
 									maxHeight: '1200px',
 									overflow: 'visible',
+									pointerEvents: 'none',
 								} }
 							/>
 						</div>

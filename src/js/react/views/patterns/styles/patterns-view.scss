@@ -379,13 +379,17 @@ dlx-patterns-view-filters-wrapper {
 }
 
 // Pattern preview iframe styles.
+// Stay in normal flow under the badge row. Position plus z-index made a stacking
+// context, so the scaled iframe painted over that row and the preview sat higher.
 .pattern-preview-wrapper {
 	display: flex;
 	box-sizing: inherit;
 	align-items: center;
 	border-radius: 4px;
 	flex-direction: column;
-	height: 100%;
+	flex: 1 1 auto;
+	min-height: 0;
+	height: auto;
 	justify-content: center;
 	overflow: hidden;
 }
@@ -422,6 +426,8 @@ dlx-patterns-view-filters-wrapper {
 	display: absolute;
 	top: 0;
 	left: 0;
+	/* Iframes create their own layers; never let them steal card control clicks. */
+	pointer-events: none;
 }
 
 .pattern-preview-iframe-scale-container-wrapper {
@@ -430,7 +436,12 @@ dlx-patterns-view-filters-wrapper {
 
 .pattern-preview-iframe-link {
 	position: relative;
+	/* Stay below DataViews selection checkbox and media actions (z-index 1+). */
+	z-index: 0;
 	display: block;
+	flex: 1 1 auto;
+	align-self: stretch;
+	min-height: 0;
 	width: 100%;
 	height: 100%;
 	text-decoration: none;
@@ -449,10 +460,13 @@ dlx-patterns-view-filters-wrapper {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	z-index: 2;
+	/* Below card chrome; only stacks within the preview link. */
+	z-index: 1;
 	padding: 6px 10px;
 	background: rgba(255, 255, 255, 0.7);
 	border-radius: 4px;
+	/* Hover overlay is visual only; the parent link handles activation. */
+	pointer-events: none;
 
 	svg {
 		color: #333;
@@ -535,6 +549,8 @@ dlx-patterns-view-filters-wrapper {
 	background-color: #FFFFFF;
 	border-radius: 4px;
 	position: relative;
+	display: flex;
+	flex-direction: column;
 	width: 100%;
 	aspect-ratio: 1 / 1;
 	overflow: hidden;
@@ -557,10 +573,14 @@ dlx-patterns-view-filters-wrapper {
 
 .pattern-badge-wrapper {
 	display: flex;
+	flex: 0 0 auto;
 	justify-content: flex-end;
 	padding: 0 0 12px 0;
 	gap: 8px;
 	margin-right: 28px;
+	position: relative;
+	/* Above the preview link so badges are not covered by the iframe layer. */
+	z-index: 2;
 }
 
 .pattern-badge-local {
@@ -817,6 +837,20 @@ Hide erronous display when hittnig the back button on a filter change.
 	.components-base-control__field {
 		margin-bottom: 0 !important;
 	}
+}
+
+/* Keep selection and actions above the full-bleed preview open trigger. */
+.dlx-patterns-view-container .dataviews-view-grid__card {
+
+	.dataviews-selection-checkbox,
+	.dataviews-view-grid__media-actions {
+		z-index: 5;
+		pointer-events: auto;
+	}
+}
+
+div[data-wp-compat-overlay-slot] div[data-open] {
+	pointer-events: auto;
 }
 
 .dataviews-view-grid__card .dataviews-view-grid__media-actions {
