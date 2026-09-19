@@ -9,7 +9,7 @@
  *
  * Positive integer post IDs normalize to a Number. Registered pattern names keep as string.
  *
- * @param {*} id Raw pattern id from REST, Fancybox URL, or events.
+ * @param {*} id Raw pattern id from REST, preview URL, or events.
  * @return {number|string} Canonical id, or '' when invalid.
  */
 export function canonicalPatternId( id ) {
