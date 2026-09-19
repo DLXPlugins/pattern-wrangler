@@ -274,7 +274,7 @@ if ( ! wp_is_block_theme() ) {
 			<header class="wp-block-template-part site-header">
 			<?php block_header_area(); ?>
 			</header>
-			<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto;">
+			<div id="pattern-preview-content" class="pattern-preview-wrapper" style="max-width: 1400px; margin: 0 auto; width: 100%;">
 			<?php
 			if ( wp_is_block_theme() ) {
 				echo apply_filters( 'the_content', $blocks );
