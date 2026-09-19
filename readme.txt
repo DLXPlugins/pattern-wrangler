@@ -1,10 +1,10 @@
 === Pattern Wrangler - Manage Block Patterns and Pattern Categories ===
 Contributors: ronalfy
 Tags: patterns, block patterns, pattern, pattern builder, synced patterns
-Requires at least: 6.8
-Tested up to: 7.0
+Requires at least: 7.0
+Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 2.5.1
+Stable tag: 2.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,8 +56,6 @@ Available features on the Pattern Categories screen include:
 
 === Quick Links ===
 
-<a href="https://docs.dlxplugins.com/v/pattern-wrangler">All Features and Documentation</a> | <a href="https://github.com/sponsors/DLXPlugins">Sponsor Us</a> | <a href="https://dlxplugins.com/plugins/pattern-wrangler/">Pattern Wrangler Home</a>
-
 > Source code is available on <a href="https://github.com/DLXPlugins/pattern-wrangler">GitHub</a>. Code contributions and sponsorships appreciated.
 
 === Requirements and Compatibility ===
@@ -79,6 +77,11 @@ This plugin integrates well with the following:
 * Spectra, Kadence, and GenerateBlocks.
 
 If you have an idea for other integrations, please leave a support thread.
+
+=== Dependencies and Credits ===
+
+* <a href="https://yet-another-react-lightbox.com/">Yet Another React Lightbox</a> - MIT Licensed
+* <a href="https://developer.wordpress.org/block-editor/reference-guides/packages/packages-dataviews/">WP DataViews</a> library.
 
 === Help This Plugin Grow ===
 
@@ -142,14 +145,14 @@ That being said, some layouts are unsalvageable, and should just be disabled or 
 
 == Changelog ==
 
-= 2.5.2 =
-* Update: Removed Fancybox. Classic Patterns list featured-image previews and the enhanced Patterns grid lightbox now use Yet Another React Lightbox.
+= 2.6.0 =
+* Update: Removed Fancybox preview in place for MIT-licensed Yet Another React Lightbox. All functionality is preserved.
+* Fix: iFrame preview would warm some layouts without a width set.
 
 = 2.5.1 =
 * Released 2026-05-28
 * New: Added content-only opt-out for Unsynced Patterns that was introduced in WordPress 7.0. With content-only enabled, there are extra steps to edit inserted patterns content. This prevents content-only patterns from being inserted by default. This can be enabled/disabled network-wide, or site-wide if on single-site.
 * Fix: Resolved several PHP warnings involving the preview.
-
 
 = 2.5.0 =
 * Released 2026-05-19
@@ -334,5 +337,5 @@ That being said, some layouts are unsalvageable, and should just be disabled or 
 
 == Upgrade Notice ==
 
-= 2.5.1 =
-New: content-only opt-out for unsynced patterns is enabled by default. Fixing several PHP warnings that were reported.
+= 2.6.0 =
+Removing Fancybox and replacing with Yet Another React Lightbox, which is more permissively licensed.
